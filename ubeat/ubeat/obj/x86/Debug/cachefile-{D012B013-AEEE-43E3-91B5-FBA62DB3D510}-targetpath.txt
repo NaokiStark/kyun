@@ -1,0 +1,17 @@
+Content\button.xnb
+Content\SpriteFont1.xnb
+Content\hitsound.xnb
+Content\holder.xnb
+Content\wait.xnb
+Content\HolderFill.xnb
+Content\button2.xnb
+Content\radiance.xnb
+Content\pausesplash.xnb
+Content\Excellent.xnb
+Content\Good.xnb
+Content\Miss.xnb
+Content\Perfect.xnb
+Content\normal-hitnormal2.xnb
+Content\failsplash.xnb
+Content\HolderFilling.xnb
+Content\HolderTick.xnb
