@@ -46,7 +46,7 @@ namespace ubeat
                         break;
                 }
                 total += (ulong)ho.GetScoreValue();
-                acc += ((Grid.Instance.autoMode)?100:ho.GetAccuracyPercentage());
+                acc += ho.GetAccuracyPercentage();
             }
 
             label7.Text = perfect.ToString();

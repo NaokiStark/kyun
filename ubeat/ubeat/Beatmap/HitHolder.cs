@@ -10,6 +10,7 @@ using Troschuetz.Random;
 using Troschuetz.Random.Generators;
 using ubeat.Beatmap;
 using ubeat.GameScreen;
+using ubeat.OsuUtils;
 
 namespace ubeat.UIObjs
 {
@@ -71,6 +72,25 @@ namespace ubeat.UIObjs
         SoundEffectInstance holdFld;
         public void Update(long Position)
         {
+            if (holdFld != null)
+            {
+                if (isFilling && Grid.Instance.Paused)
+                {
+                    if (holdFld.State == SoundState.Playing)
+                        holdFld.Pause();
+
+                }
+                if (isFilling && !Grid.Instance.Paused)
+                {
+                    if (holdFld.State != SoundState.Playing)
+                        holdFld.Play();
+                }
+                if (!isFilling && holdFld.State == SoundState.Playing)
+                    holdFld.Stop();
+                if (!isActive && holdFld.State == SoundState.Playing)
+                    holdFld.Stop();
+            }
+
             if (isActive)
             {
                 if (apo == null)
@@ -80,9 +100,9 @@ namespace ubeat.UIObjs
                 }
                 if (Grid.Instance.autoMode)
                 {
-                    if (Position > StartTime + 0 && !hasAlredyPressed)
+                    if (Position > StartTime + OsuBeatMap.rnd.Next(-(BeatmapContainer.Timing300), BeatmapContainer.Timing300) && !hasAlredyPressed)
                     {
-                        PressedAt = Position;
+                        PressedAt = (long)StartTime;
                         SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
                         ins.Volume = Game1.Instance.player.Volume;
                         ins.Play();
@@ -113,13 +133,16 @@ namespace ubeat.UIObjs
                     }
                     if (Keyboard.GetState().IsKeyDown((Microsoft.Xna.Framework.Input.Keys)Location) && !hasAlredyPressed)
                     {
-                        hasAlredyPressed = true;
-                        PressedAt = Position;
-                        isFilling = true;
-                        holdFld = Game1.Instance.HitHolderFilling.CreateInstance();
-                        holdFld.Volume = Game1.Instance.player.Volume;
-                        holdFld.IsLooped = true;
-                        holdFld.Play();
+                        if (Position > StartTime - BeatmapContainer.Timing50)
+                        {
+                            hasAlredyPressed = true;
+                            PressedAt = Position;
+                            isFilling = true;
+                            holdFld = Game1.Instance.HitHolderFilling.CreateInstance();
+                            holdFld.Volume = Game1.Instance.player.Volume;
+                            holdFld.IsLooped = true;
+                            holdFld.Play();
+                        }
                         return;
                     }
                     if (Keyboard.GetState().IsKeyUp((Microsoft.Xna.Framework.Input.Keys)Location) && hasAlredyPressed)
@@ -149,18 +172,20 @@ namespace ubeat.UIObjs
         {
             if (Died)
             {
-                if (apo != null)
-                {
-                    apo.Died = true;
-                    Grid.Instance.objs.Remove(apo);
-                    apo = null;
-                }
+                
                 return;
             }
             
             
             if (!isActive)
             {
+                if (apo != null)
+                {
+                    apo.Died = true;
+                    Grid.Instance.objs.Remove(apo);
+                    apo = null;
+                }
+
                 if (holdFld != null)
                     holdFld.Stop();
 
@@ -233,27 +258,29 @@ namespace ubeat.UIObjs
         public float GetAccuracyPercentage()
         {
             float acc = 0;
-            if (PressedAt > StartTime)
-                acc = (float)((float)StartTime / (float)PressedAt) * 100f;
-            else
-                acc = (float)((float)PressedAt / (float)StartTime) * 100f;
-            
 
-            //But wait...
-            float accF = 0;
-            if (LeaveAt > EndTime)
-                accF = ((float)EndTime / (float)LeaveAt) * 100f;
-            else
-                accF = ((float)LeaveAt / (float)EndTime) * 100f;
-
-            acc = (float)((float)acc + (float)accF) / 2f;
+            switch (GetScore())
+            {
+                case Score.ScoreType.Perfect:
+                    acc = 100;
+                    break;
+                case Score.ScoreType.Excellent:
+                    acc = 75;
+                    break;
+                case Score.ScoreType.Good:
+                    acc = 35.2f;
+                    break;
+                case Score.ScoreType.Miss:
+                    acc = 0;
+                    break;
+            }
 
             return acc;
 
         }
         public Score.ScoreType GetScore()
         {
-            if (LeaveAt > EndTime)
+            if (LeaveAt > EndTime - BeatmapContainer.Timing50)
             {
                 if (PressedAt >= StartTime - BeatmapContainer.Timing300 && PressedAt <= StartTime + BeatmapContainer.Timing300)
                 {

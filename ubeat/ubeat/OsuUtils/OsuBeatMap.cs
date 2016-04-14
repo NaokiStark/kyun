@@ -42,8 +42,19 @@ namespace ubeat.OsuUtils
 
                 int lasN = 0;
                 List<IHitObj> hitObjs = new List<Beatmap.IHitObj>();
+
+                TimingPoint tm = osbm.TimingPoints[0];
+                int tmCount = 0;
                 foreach (osuBMParser.HitObject ho in osbm.HitObjects)
                 {
+                    if(tmCount < osbm.TimingPoints.Count){
+                        if (ho.Time < osbm.TimingPoints[tmCount].Offset)
+                        {
+                            tmCount++;
+                            tm = osbm.TimingPoints[tmCount];                            
+                        }
+                    }
+
                     if (ho is osuBMParser.HitCircle)
                     {
                         IHitObj obj = new HitButton()
@@ -56,9 +67,13 @@ namespace ubeat.OsuUtils
                     }
                     else if (ho is osuBMParser.HitSlider)
                     {
-                        TimingPoint tmpO = GetTimingPointFor(osbm, (HitSlider)ho, true);
-
+                        //TimingPoint tmpO = GetTimingPointFor(osbm, (HitSlider)ho, true);
+                        TimingPoint tmpO = tm;
+                        decimal totalLength = 0;
+                        /*
                         decimal totalLength = (decimal)Math.Abs((decimal)tmpO.MsPerBeat) * (decimal)((decimal)((osuBMParser.HitSlider)ho).PixelLength / (decimal)osbm.SliderMultiplier) / (decimal)100;
+                        totalLength = totalLength * (decimal)((osuBMParser.HitSlider)ho).Repeat;*/
+                        totalLength = (decimal)getSliderTime(osbm.SliderMultiplier, tmpO.MsPerBeat, ((osuBMParser.HitSlider)ho).PixelLength);
                         totalLength = totalLength * (decimal)((osuBMParser.HitSlider)ho).Repeat;
                         IHitObj obj = new HitHolder()
                         {
@@ -103,6 +118,10 @@ namespace ubeat.OsuUtils
             while ((rnddd = rnd.Next(min, max)) == last) ;
 
             return rnddd;
+        }
+        public static float getSliderTime(float sliderMultiplier, float beatLength,float pixelLength)
+        {
+            return beatLength * (pixelLength / sliderMultiplier) / 100f;
         }
         public static TimingPoint GetTimingPointFor(osuBMParser.Beatmap bm, osuBMParser.HitSlider obj,bool inherit =false)
         {

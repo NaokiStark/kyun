@@ -213,28 +213,29 @@ namespace ubeat.GameScreen
 
 
             //IHitObj
-            if (!Paused)
+            
+            for (int a = 0; a < grid.Count; a++)
             {
-                for (int a = 0; a < grid.Count; a++)
+                for (int c = 0; c < grid[a].Count; c++)
                 {
-                    for (int c = 0; c < grid[a].Count; c++)
+                    if (c == 0)
                     {
-                        if (c == 0)
-                        {
-                            grid[a][c].Update(pos);
+                        grid[a][c].Update(pos);
 
-                        }
-                        if (grid[a][c].Died)
-                        {
-                            grid[a].Remove(grid[a][c]);
-                        }
+                    }
+                    if (grid[a][c].Died)
+                    {
+                        grid[a].Remove(grid[a][c]);
                     }
                 }
+            }
+
+            if (!Paused)
+            {
                 //IUIObject
                 for (int b = 0; b < objs.Count; b++)
                     objs[b].Update();
-            }
-            
+            }   
 
 
             if (Paused)

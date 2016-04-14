@@ -11,6 +11,7 @@ using ubeat.GameScreen;
 using Troschuetz.Random;
 using Troschuetz.Random.Generators;
 using Microsoft.Xna.Framework.Audio;
+using ubeat.OsuUtils;
 namespace ubeat.UIObjs
 {
     public class HitButton : IHitObj
@@ -77,14 +78,14 @@ namespace ubeat.UIObjs
                 }
                 if (Grid.Instance.autoMode)
                 {
-                    if (Position > StartTime+0)
+                    if (Position > StartTime + OsuBeatMap.rnd.Next(-(BeatmapContainer.Timing300), BeatmapContainer.Timing300))
                     {
                         hasAlredyPressed = true;
                         isActive = false;
                         SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
                         ins.Volume = Game1.Instance.player.Volume;
                         ins.Play();
-                        PressedAt = Position;
+                        PressedAt = (long)StartTime;
                     }
                 }
                 else
@@ -96,9 +97,12 @@ namespace ubeat.UIObjs
                     }
                     if (Keyboard.GetState().IsKeyDown((Microsoft.Xna.Framework.Input.Keys)Location) && !hasAlredyPressed)
                     {
-                        hasAlredyPressed = true;
-                        PressedAt = Position;
-                        isActive = false;
+                        if (Position > StartTime - BeatmapContainer.Timing50)
+                        {
+                            hasAlredyPressed = true;
+                            PressedAt = Position;
+                            isActive = false;
+                        }
                         return;
                     }
                     if (Keyboard.GetState().IsKeyUp((Microsoft.Xna.Framework.Input.Keys)Location) && hasAlredyPressed)
@@ -115,18 +119,18 @@ namespace ubeat.UIObjs
         {
             if (Died)
             {
+               
+                return;
+            }
+                        
+            if (!isActive)
+            {
                 if (apo != null)
                 {
                     apo.Died = true;
                     Grid.Instance.objs.Remove(apo);
                     apo = null;
                 }
-                return;
-            }
-                        
-            if (!isActive)
-            {
-
                 Score.ScoreValue getScore = GetScoreValue();
                 if ((int)getScore > (int)Score.ScoreValue.Miss)
                 {
@@ -176,10 +180,22 @@ namespace ubeat.UIObjs
         public float GetAccuracyPercentage()
         {
             float acc = 0;
-            if (PressedAt > StartTime)
-                acc = (float)((float)StartTime / (float)PressedAt) * 100f;
-            else
-                acc = (float)((float)PressedAt / (float)StartTime) * 100f;
+
+            switch (GetScore())
+            {
+                case Score.ScoreType.Perfect:
+                    acc = 100;
+                    break;
+                case Score.ScoreType.Excellent:
+                    acc = 75;
+                    break;
+                case Score.ScoreType.Good:
+                    acc = 35.2f;
+                    break;
+                case Score.ScoreType.Miss:
+                    acc = 0;
+                    break;
+            }
 
             return acc;
 

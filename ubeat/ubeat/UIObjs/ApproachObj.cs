@@ -77,10 +77,7 @@ namespace ubeat.UIObjs
 
         public void Update()
         {
-            if (Died)
-            {
-                Grid.Instance.objs.Remove(this);
-            }
+            
             RotationAngle += Game1.Instance.elapsed;
             float circle = MathHelper.Pi * 2;
             RotationAngle = RotationAngle % circle;
