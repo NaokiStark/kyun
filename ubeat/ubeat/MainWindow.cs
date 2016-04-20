@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using ubeat.Audio;
@@ -16,6 +17,18 @@ namespace ubeat
     {
         public static MainWindow Instance = null;
         public BeatmapSelector bmselector;
+
+        [DllImport("user32.dll")]
+        public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        [DllImport("user32.dll")]
+        public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+
+        public static int GWL_STYLE = -16;
+        public static int WS_CHILD = 0x40000000; 
 
         public MainWindow()
         {
@@ -29,14 +42,35 @@ namespace ubeat
         {
             playRandomSong();
 
-            label2.Visible = false;
+            //label2.Visible = false;
 
             //// DEBUG ////
             Timer tm = new Timer();
             tm.Tick += (s, se) => {
-                label2.Text = string.Format("==Player Debug==\r\nCurrent File: {0}\r\nCurrent Length: {1}\r\nCurrent Position: {2}\r\nPlayer State: {3}",player.ActualSong,player.SoundLength,player.Position,player.soundOut.PlaybackState.ToString());
+                label2.Text = string.Format("==Player Debug==\r\nCurrent File: {0}\r\nCurrent Length: {1}\r\nCurrent Position: {2}\r\nCurrent counter Position: {3} \r\nCurrent Difference (Raw - Counter): {4}\r\nPlayer State: {5}",
+                    player.ActualSong,
+                    player.SoundLength,
+                    player.RawPosition,
+                    player.Position,
+                    player.RawPosition - player.Position,
+                    player.soundOut.PlaybackState.ToString()
+                    );
             };
+            tm.Start();
             //// EOF DEBUG ///
+
+            this.Hide();
+            IntPtr hostHandle = Game1.Instance.Window.Handle;
+            IntPtr guestHandle = this.Handle;
+            
+            this.Width = Screen.PrimaryScreen.Bounds.Width;
+            this.Height = Screen.PrimaryScreen.Bounds.Height;
+            this.Top = 0;
+            this.Left = 0;
+
+            SetWindowLong(guestHandle, GWL_STYLE, GetWindowLong(guestHandle, GWL_STYLE) | WS_CHILD);
+            SetParent(guestHandle, hostHandle);
+            this.Show();
         }
 
         public void ShowAsync()
@@ -111,10 +145,7 @@ namespace ubeat
             catch
             {
                 Logger.Instance.Warn("BACKGROUND NOT FOUND!!");
-            }
-            
-           
-            
+            }          
          }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -124,6 +155,7 @@ namespace ubeat
 
         private void button3_Click(object sender, EventArgs e)
         {
+            /*
             foreach (Control cc in this.Controls)
             {
                 if (cc is Button || cc is Panel || cc is Label)
@@ -147,11 +179,12 @@ namespace ubeat
                 {
                     timer.Stop();
                     timer.Dispose();
-                    this.Close();
+             * */
+                    this.Close();/*
                 }
             };
 
-            timer.Start();
+            timer.Start();*/
         }
 
         private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -162,7 +195,7 @@ namespace ubeat
         {
             string songpath = bm.SongPath;
             player.Play(songpath);
-            player.Volume = .1f;
+            player.Volume = .34f;
             player.onEnd += player_onEnd;
             try
             {
@@ -180,6 +213,11 @@ namespace ubeat
             if(bmselector==null)
                 bmselector = new BeatmapSelector();
             bmselector.Show();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Game1.Instance.player.Paused = !Game1.Instance.player.Paused;
         }
     }
 }

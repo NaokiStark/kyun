@@ -31,7 +31,8 @@ namespace ubeat.GameScreen
 
         public HealthBar Health { get; set; }
         public ScoreDisplay ScoreDispl;
-
+        Video.VideoPlayer videoplayer;
+        Combo combo;
         public Grid(Beatmap.ubeatBeatMap beatmap)
         {
             Instance = this;
@@ -45,6 +46,8 @@ namespace ubeat.GameScreen
             Health = new HealthBar();
             Health.OnFail += Health_OnFail;
             ScoreDispl = new ScoreDisplay();
+            videoplayer = new Video.VideoPlayer();
+            combo = new Combo();
         }
 
         void Health_OnFail()
@@ -87,6 +90,7 @@ namespace ubeat.GameScreen
         {
             ScoreDispl.Reset();
             ScoreDispl.isActive = true;
+            combo.ResetAll();
             actualIndex = 0;
             failed = false;
             autoMode = BeatmapSelector.Instance.checkBox1.Checked;
@@ -115,18 +119,22 @@ namespace ubeat.GameScreen
 
 
                     Logger.Instance.Info("Audio LeadIn: " + bemap.SleepTime);
-                }/*
+                }
                 else
                 {
                     var sttime = bemap.HitObjects[0].StartTime;
                     var differ = sttime - (long)(1950 - bemap.ApproachRate * 150);
                     if (differ < 500)
                         System.Threading.Thread.Sleep(3000);
-                }*/
-
+                }
+                
                 Game1.Instance.player.Play(bemap.SongPath, bemap.SleepTime);
                 Game1.Instance.player.Volume = .34f;
-              
+                
+                if(bemap.Video!=null)
+                    if(bemap.Video!="")
+                        videoplayer.Play(bemap.Video);
+
                 ResetSongGameTime();
                 inGame = true;
             }));
@@ -159,8 +167,9 @@ namespace ubeat.GameScreen
             objs.Clear();
         }
         bool started { get; set; }
-        public void Update()
+        public void Update(GameTime tm)
         {
+            videoplayer.Update(tm);
             if (!inGame)
                 return;
 
@@ -252,7 +261,9 @@ namespace ubeat.GameScreen
                         Game1.Instance.player.Paused = false;
                         Paused = false;
                         MainWindow.Instance.Show();
-                        MainWindow.Instance.ShowControls();
+                        BeatmapSelector.Instance.Show();
+                        
+                        //MainWindow.Instance.ShowControls();
                     }
                     else if (Keyboard.GetState().IsKeyDown(Keys.F2))
                     {
@@ -283,7 +294,10 @@ namespace ubeat.GameScreen
                         Game1.Instance.player.Paused = false;
                         Paused = false;
                         MainWindow.Instance.Show();
-                        MainWindow.Instance.ShowControls();
+                        BeatmapSelector.Instance.Show();
+
+                        //MainWindow.Instance.Show();
+                       // MainWindow.Instance.ShowControls();
                     }
                 }
             }
@@ -307,7 +321,13 @@ namespace ubeat.GameScreen
             {
                 return;
             }
-
+            if (videoplayer.FrameVideo != null)
+            {
+                int screenWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
+                int screenHeight = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+                Rectangle screenRectangle = new Rectangle(0, 0, screenWidth, screenHeight);
+                Game1.Instance.spriteBatch.Draw(videoplayer.FrameVideo, screenRectangle, Color.White);
+            }
 
             //IN GAME
 

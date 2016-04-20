@@ -19,7 +19,7 @@ namespace ubeat.Score
 
         ulong score=0;
 
-        public void Add(ScoreValue Score)
+        public void Add(long Score)
         {
             this.score += (ulong)Score;
         }

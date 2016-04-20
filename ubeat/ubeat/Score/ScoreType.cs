@@ -14,9 +14,9 @@ namespace ubeat.Score
     }
     public enum ScoreValue
     {
-        Perfect = 200,
-        Excellent = 150,
-        Good = 100,
+        Perfect = 21,
+        Excellent = 11,
+        Good = 7,
         Miss = 0
     }
 }

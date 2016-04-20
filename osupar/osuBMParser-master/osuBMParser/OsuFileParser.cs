@@ -102,6 +102,7 @@ namespace osuBMParser
                     break;
                case "[events]":
                     parseBG(line);
+                    parseVideo(line);
                     break;
                case "[timingpoints]":
                     timingPointParse(line);
@@ -168,6 +169,23 @@ namespace osuBMParser
                 beatmap.Background = bgParsed;
             }
         }
+        
+        void parseVideo(string data)
+        {
+            string[] gd = data.Trim().Split(',');
+
+            if (gd.Length < 3)
+                return;
+
+            if (gd[0] != "Video")
+                return;
+
+            string bgParsed = Regex.Replace(gd[2], "\"", "");
+            
+                beatmap.Video = bgParsed;
+            
+        }
+
         #region parseMethods
         private void normalParse(string data)
         {

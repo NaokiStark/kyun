@@ -1,6 +1,7 @@
 ﻿using CSCore;
 using CSCore.Codecs;
 using CSCore.SoundOut;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,6 +23,7 @@ namespace ubeat.Audio
         public ISoundOut soundOut;
         public string ActualSong = "";
         float vol { get; set; }
+        long positionAt=0;
 
         public bool Paused
         {
@@ -36,24 +38,23 @@ namespace ubeat.Audio
                 {
                     if (soundOut.PlaybackState == PlaybackState.Paused)
                     {
-                        Stopwatch ffs = new Stopwatch();
-                        ffs.Start();
-                        
+                        DateTime nau = DateTime.Now;
+                        DateTime naunau = new DateTime().AddMilliseconds((DateTime.Now - new DateTime().AddMilliseconds(soundOut.WaveSource.GetPosition().TotalMilliseconds)).TotalMilliseconds);
+                        startTime = naunau;
+                        PositionTimer.Start();
                         soundOut.Play();
-                        long elapsd = ffs.ElapsedMilliseconds;
-                        stp.Start();
-                        offset = 0;
-                        offset -= elapsd;
-                        ffs.Stop();
+                        
+                                                                     
                     }
                     else if (soundOut.PlaybackState == PlaybackState.Playing)
-                    {
+                    {                
                         soundOut.Pause();
-                        stp.Stop();
+                        PositionTimer.Stop();
                     }
                 }
             }
         }
+
         public float Volume { get {
             if (soundOut != null)
                 return soundOut.Volume;
@@ -76,7 +77,7 @@ namespace ubeat.Audio
             {
                 if (soundOut != null)
                     if (soundOut.WaveSource != null)
-                        return (long)soundOut.WaveSource.GetLength().TotalMilliseconds;
+                        return (long)soundOut.WaveSource.GetLength().TotalMilliseconds ;
                     else
                         return 0;
                 else
@@ -92,8 +93,7 @@ namespace ubeat.Audio
             {
                 if (soundOut != null && stp!=null)
                 {
-                    return (long)soundOut.WaveSource.GetPosition().TotalMilliseconds-105;
-                   
+                    return positionAt; /*+ ((long)soundOut.WaveSource.GetPosition().TotalMilliseconds - stp.ElapsedMilliseconds)*/;
                 } 
                 else
                     return 0;
@@ -103,6 +103,14 @@ namespace ubeat.Audio
                 if (soundOut != null)
                     soundOut.WaveSource.Position = value;
             }
+        }
+        public long RawPosition { 
+            get {
+                if (soundOut != null)
+                    return (long)soundOut.WaveSource.GetPosition().TotalMilliseconds;
+                else
+                    return 0;
+            } 
         }
         long offset=0;
         public long PositionV2
@@ -133,18 +141,40 @@ namespace ubeat.Audio
             }
         }
 
+        System.Timers.Timer PositionTimer;
         public Player()
         {
+
+            PositionTimer = new System.Timers.Timer() { Interval = .1 };
+            PositionTimer.Elapsed += PositionTimer_Elapsed;
+            PositionTimer.Start();
+
             stp = new Stopwatch();
             tmC = new System.Windows.Forms.Timer();
-            
+
             tmC.Tick += tmC_Tick;
             tmC.Interval = 1;
             tmC.Start();
         }
 
+        // 
+        DateTime lastUpdate;
+        DateTime startTime;
+        //
+        void PositionTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (soundOut == null)
+                return;
+            if (soundOut.PlaybackState != PlaybackState.Playing)
+                return;
+            lastUpdate = DateTime.Now;
+
+            positionAt = (int)(lastUpdate - startTime).TotalMilliseconds - 20;
+        }
+
         void tmC_Tick(object sender, EventArgs e)
         {
+            
             if (soundOut == null)
                 return;
             if (soundOut.WaveSource == null)
@@ -158,11 +188,11 @@ namespace ubeat.Audio
                // soundOut.Dispose();
             }
         }
+
+        
+
         public void Play(string path=null,long leadIn=0)
         {
-            //offsets
-            Stopwatch ffs = new Stopwatch();
-
 
             if (soundOut != null)
             {
@@ -191,16 +221,12 @@ namespace ubeat.Audio
             
              soundOut.Initialize(soundSource);
              soundOut.Volume = vol;
-             stp.Stop();
-             stp.Reset();
-             ffs.Start();
+             
              offset = 0;
-            soundOut.Play();
-            long elapsd = ffs.ElapsedMilliseconds;
-            stp.Start();
-            offset -= elapsd;
-            offset += leadIn;
-            ffs.Stop();
+             positionAt = 0;
+             startTime = DateTime.Now;
+             soundOut.Play();
+  
         }
 
         private void soundOut_Stopped(object sender, PlaybackStoppedEventArgs e)
@@ -245,5 +271,7 @@ namespace ubeat.Audio
         {
             return CodecFactory.Instance.GetCodec(path);
         }
+
+        
     }
 }

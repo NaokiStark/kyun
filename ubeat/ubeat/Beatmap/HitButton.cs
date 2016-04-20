@@ -12,6 +12,7 @@ using Troschuetz.Random;
 using Troschuetz.Random.Generators;
 using Microsoft.Xna.Framework.Audio;
 using ubeat.OsuUtils;
+using ubeat.Score;
 namespace ubeat.UIObjs
 {
     public class HitButton : IHitObj
@@ -78,7 +79,7 @@ namespace ubeat.UIObjs
                 }
                 if (Grid.Instance.autoMode)
                 {
-                    if (Position > StartTime + OsuBeatMap.rnd.Next(-(BeatmapContainer.Timing300), BeatmapContainer.Timing300))
+                    if (Position > StartTime /*+ OsuBeatMap.rnd.Next(-(BeatmapContainer.Timing300), BeatmapContainer.Timing300)*/)
                     {
                         hasAlredyPressed = true;
                         isActive = false;
@@ -134,16 +135,18 @@ namespace ubeat.UIObjs
                 Score.ScoreValue getScore = GetScoreValue();
                 if ((int)getScore > (int)Score.ScoreValue.Miss)
                 {
-                    Grid.Instance.Health.Add(2f);
+                    Grid.Instance.Health.Add(2f * (float)(((decimal)GetScoreValue() - (decimal)BeatmapContainer.OverallDifficulty)*100));
                     SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
                     ins.Volume = Game1.Instance.player.Volume;
                     ins.Play();
+                    Combo.Instance.Add();
                 }
                 else
                 {
-                    Grid.Instance.Health.Substract(2);
+                    Combo.Instance.Miss();
+                    Grid.Instance.Health.Substract(2 * BeatmapContainer.OverallDifficulty);
                 }
-                Grid.Instance.ScoreDispl.Add(getScore);
+                Grid.Instance.ScoreDispl.Add(((long)getScore * ((Combo.Instance.ActualMultiplier > 0) ? Combo.Instance.ActualMultiplier : 1))/2);
                 Grid.Instance.objs.Add(new ScoreObj(GetScore(), new Vector2(position.X + (Texture.Bounds.Width / 2), position.Y + (Texture.Bounds.Height / 2))));
 
                 Stop(ccc);

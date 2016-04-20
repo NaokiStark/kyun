@@ -154,6 +154,15 @@
       <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\HolderTick.xnb</Output>
       <Time>2016-04-13T19:54:37.5666116-03:00</Time>
     </Item>
+    <Item>
+      <Source>wait2.png</Source>
+      <Name>wait2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\wait2.xnb</Output>
+      <Time>2016-04-17T22:05:31.6160268-03:00</Time>
+    </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <ContentProjectGUID>{D012B013-AEEE-43E3-91B5-FBA62DB3D510}</ContentProjectGUID>

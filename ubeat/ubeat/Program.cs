@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace ubeat
 {
@@ -10,6 +11,14 @@ namespace ubeat
         /// </summary>
         static void Main(string[] args)
         {
+            Version vr = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            Logger.Instance.Info("");
+            Logger.Instance.Info("");
+            Logger.Instance.Info("╔═══════════════════════════════╗");
+            Logger.Instance.Info("║                               ║");
+            Logger.Instance.Info("║        Build " + string.Format("{0}.{1}.{2}", vr.Major, vr.Minor, vr.Revision.ToString("0000")) + "         ║");
+            Logger.Instance.Info("║                               ║");
+            Logger.Instance.Info("╚═══════════════════════════════╝");
             Logger.Instance.Info("");
             Logger.Instance.Info("=====================================");
             Logger.Instance.Info("=                                   =");
@@ -18,18 +27,21 @@ namespace ubeat
             Logger.Instance.Info("=                                   =");
             Logger.Instance.Info("=====================================");
             Logger.Instance.Info("");
+
             try
             {
                 using (Game1 game = new Game1())
                 {
                     game.Run();
+                   
                 }
             }
             catch(Exception e)
             {
-                Logger.Instance.Severe("System.NiceMemeException");
+                Logger.Instance.Severe("System.NiceMeme.Exception");
                 Logger.Instance.Severe(e.Message);
                 Logger.Instance.Severe(e.StackTrace);
+                Console.WriteLine("Press any key to exit");
                 Console.Read();
             }
            

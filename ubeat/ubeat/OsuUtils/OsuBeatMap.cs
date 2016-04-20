@@ -30,7 +30,8 @@ namespace ubeat.OsuUtils
                     Title = osbm.Title,
                     Version = osbm.Version,
                     Background = relPath + @"\" + osbm.Background,
-                    SleepTime  = osbm.AudioLeadIn
+                    SleepTime  = osbm.AudioLeadIn,
+                    Video = relPath + @"\" + osbm.Video
                 };
 
                 List<string> tgs = new List<string>();

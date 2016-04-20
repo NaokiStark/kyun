@@ -19,7 +19,7 @@ namespace ubeat.Beatmap
         void AddTexture(Texture2D texture);
          decimal EndTime { get; set; }
          Texture2D Texture { get; set; }
-         
+         long PressedAt { get; set; }
         Score.ScoreValue GetScoreValue();
         Score.ScoreType GetScore();
         float GetAccuracyPercentage();

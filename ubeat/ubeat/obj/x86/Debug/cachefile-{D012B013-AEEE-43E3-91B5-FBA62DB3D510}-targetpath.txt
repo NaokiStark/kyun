@@ -15,3 +15,4 @@ Content\normal-hitnormal2.xnb
 Content\failsplash.xnb
 Content\HolderFilling.xnb
 Content\HolderTick.xnb
+Content\wait2.xnb

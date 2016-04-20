@@ -3,19 +3,35 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using ubeat.Beatmap;
 using ubeat.GameScreen;
+using ubeat.Score;
 
 namespace ubeat
 {
     public partial class ScoreScreen : Form
     {
+        [DllImport("user32.dll")]
+        public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        [DllImport("user32.dll")]
+        public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+
+        public static int GWL_STYLE = -16;
+        public static int WS_CHILD = 0x40000000; 
+
         public ScoreScreen()
         {
             InitializeComponent();
+
         }
 
         private void ScoreScreen_Load(object sender, EventArgs e)
@@ -45,23 +61,51 @@ namespace ubeat
                         miss++;
                         break;
                 }
-                total += (ulong)ho.GetScoreValue();
+                //total += (ulong)((long)ho.GetScoreValue() * Combo.Instance.ActualMultiplier);
                 acc += ho.GetAccuracyPercentage();
             }
 
             label7.Text = perfect.ToString();
             label8.Text = excellent.ToString();
             label9.Text = good.ToString();
+            lCombo.Text = Combo.Instance.MaxMultiplier.ToString();
             label12.Text = miss.ToString();
             label13.Text = Math.Round((float)acc / (float)Grid.Instance.bemap.HitObjects.Count,2).ToString() + "%" ;
             label10.Text = Grid.Instance.ScoreDispl.TotalScore.ToString();
+
+            try
+            {
+                //bg
+                FileStream filestream = new FileStream(Grid.Instance.bemap.Background, FileMode.Open, FileAccess.Read);
+                var img = Bitmap.FromStream(filestream);
+
+                pictureBox1.Image = img;
+
+                filestream.Close();
+                filestream.Dispose();
+            }
+            catch
+            {
+                Logger.Instance.Warn("Nopenope");
+            }
+
+            //Paste Window
+            IntPtr hostHandle = MainWindow.Instance.Handle;
+            IntPtr guestHandle = this.Handle;
+
+            SetWindowLong(guestHandle, GWL_STYLE, GetWindowLong(guestHandle, GWL_STYLE) | WS_CHILD);
+            SetParent(guestHandle, hostHandle);
+            this.Show();
+
+            this.Opacity = .8f;
         }
 
         private void ScoreScreen_FormClosing(object sender, FormClosingEventArgs e)
         {
 
-            MainWindow.Instance.playRandomSong();
-            MainWindow.Instance.ShowControls();
+            BeatmapSelector.Instance.Show();
+            Game1.Instance.player.Play(Grid.Instance.bemap.SongPath);
+            //BeatmapSelector.Instance.ShowControls();
         }
 
         private void ScoreScreen_KeyPress(object sender, KeyPressEventArgs e)

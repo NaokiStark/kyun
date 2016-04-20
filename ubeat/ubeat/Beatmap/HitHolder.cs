@@ -11,6 +11,7 @@ using Troschuetz.Random.Generators;
 using ubeat.Beatmap;
 using ubeat.GameScreen;
 using ubeat.OsuUtils;
+using ubeat.Score;
 
 namespace ubeat.UIObjs
 {
@@ -100,7 +101,7 @@ namespace ubeat.UIObjs
                 }
                 if (Grid.Instance.autoMode)
                 {
-                    if (Position > StartTime + OsuBeatMap.rnd.Next(-(BeatmapContainer.Timing300), BeatmapContainer.Timing300) && !hasAlredyPressed)
+                    if (Position > StartTime /*+ OsuBeatMap.rnd.Next(-(BeatmapContainer.Timing300), BeatmapContainer.Timing300) */&& !hasAlredyPressed)
                     {
                         PressedAt = (long)StartTime;
                         SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
@@ -188,20 +189,23 @@ namespace ubeat.UIObjs
 
                 if (holdFld != null)
                     holdFld.Stop();
-
-                if ((int)GetScoreValue() > (int)Score.ScoreValue.Miss)
+                Score.ScoreValue score=GetScoreValue();
+                if ((int)score > (int)Score.ScoreValue.Miss)
                 {
-                    Grid.Instance.Health.Add(2* (float)(this.Length/100));
+                    float healthToAdd = (BeatmapContainer.OverallDifficulty/2)+Math.Abs(this.LeaveAt-PressedAt)/100; 
+                    Grid.Instance.Health.Add(healthToAdd);
                     SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
                     ins.Volume = Game1.Instance.player.Volume;
                     ins.Play();
+                    Combo.Instance.Add();
                 }
                 else
                 {
-                    Grid.Instance.Health.Substract(4);                    
+                    Combo.Instance.Miss();
+                    Grid.Instance.Health.Substract(4 * BeatmapContainer.OverallDifficulty);                    
                 }
 
-                Grid.Instance.ScoreDispl.Add(GetScoreValue());
+                Grid.Instance.ScoreDispl.Add(((long)score * ((Combo.Instance.ActualMultiplier>0)?Combo.Instance.ActualMultiplier:1))/2);
 
                 Grid.Instance.objs.Add(new ScoreObj(GetScore(), new Vector2(position.X + (Texture.Bounds.Width / 2), position.Y + (Texture.Bounds.Height / 2))));
 
