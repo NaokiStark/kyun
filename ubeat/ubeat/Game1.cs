@@ -86,49 +86,52 @@ namespace ubeat
             AllBeatmaps = new List<Beatmap.Mapset>();
 
             DirectoryInfo osuDirPath = new DirectoryInfo(@"C:\Program Files (x86)\osu!\Songs");
-            DirectoryInfo[] osuMapsDirs = osuDirPath.GetDirectories();
-            int flieCnt = 0;
-
-
-            int fCount = osuMapsDirs.Length;
-            int dCount = 0;
-
-            foreach (DirectoryInfo odir in osuMapsDirs)
+            if (osuDirPath.Exists)
             {
-                dCount++;
-                FileInfo[] fils = odir.GetFiles();
-                // Mapset
-                Beatmap.Mapset bmms = null;
-                foreach (FileInfo fff in fils)
-                {
-                    
-                    if (fff.Extension.ToLower() == ".osu")
-                    {
-                        
-                        flieCnt++;
-                        OsuUtils.OsuBeatMap bmp = OsuUtils.OsuBeatMap.FromFile(fff.FullName);
-                        if (bmp != null)
-                        {
-                            
-                            //Beatmaps.Add(bmp);
-                            if (bmms == null)
-                                bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator);
-                            bmms.Add(bmp);
+                DirectoryInfo[] osuMapsDirs = osuDirPath.GetDirectories();
+                int flieCnt = 0;
 
-                            
-                        }
-                        
-                        Debug.WriteLine("File: {0}s",flieCnt);
-                    }
-                   
-                }
-                if (bmms != null)
+
+                int fCount = osuMapsDirs.Length;
+                int dCount = 0;
+
+                foreach (DirectoryInfo odir in osuMapsDirs)
                 {
-                    AllBeatmaps.Add(bmms);
+                    dCount++;
+                    FileInfo[] fils = odir.GetFiles();
+                    // Mapset
+                    Beatmap.Mapset bmms = null;
+                    foreach (FileInfo fff in fils)
+                    {
+
+                        if (fff.Extension.ToLower() == ".osu")
+                        {
+
+                            flieCnt++;
+                            OsuUtils.OsuBeatMap bmp = OsuUtils.OsuBeatMap.FromFile(fff.FullName);
+                            if (bmp != null)
+                            {
+
+                                //Beatmaps.Add(bmp);
+                                if (bmms == null)
+                                    bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator);
+                                bmms.Add(bmp);
+
+
+                            }
+
+                            Debug.WriteLine("File: {0}s", flieCnt);
+                        }
+
+                    }
+                    if (bmms != null)
+                    {
+                        AllBeatmaps.Add(bmms);
+                    }
+                    float pctg = (float)dCount / (float)fCount * 100f;
+                    if (pctg % 20 == 0)
+                        Logger.Instance.Info("-> {0}%", pctg);
                 }
-                float pctg = (float)dCount / (float)fCount * 100f;
-                if (pctg % 20 == 0)
-                    Logger.Instance.Info("-> {0}%", pctg);
             }
             loadLocalMaps();
             Logger.Instance.Info("");
