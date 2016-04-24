@@ -1,0 +1,65 @@
+07:18:43 [INFO] Log File: C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\logs\log-1461223123.log
+07:18:43 [INFO] 
+07:18:43 [INFO] 
+07:18:43 [INFO] ╔═══════════════════════════════╗
+07:18:43 [INFO] ║                               ║
+07:18:43 [INFO] ║        Build 1.0.0000         ║
+07:18:43 [INFO] ║                               ║
+07:18:43 [INFO] ╚═══════════════════════════════╝
+07:18:43 [INFO] 
+07:18:43 [INFO] =====================================
+07:18:43 [INFO] =                                   =
+07:18:43 [INFO] =          Welcome to ubeat!        =
+07:18:43 [INFO] =       Developed by Fabi With ♥    =
+07:18:43 [INFO] =                                   =
+07:18:43 [INFO] =====================================
+07:18:43 [INFO] 
+07:18:44 [INFO] Loading textures
+07:18:44 [INFO] 
+07:18:44 [INFO] Done.
+07:18:44 [INFO] 
+07:18:44 [INFO] ----------------
+07:18:44 [INFO] 
+07:18:44 [INFO] Loading beatmaps.
+07:18:44 [INFO] 
+07:18:51 [INFO] -> 100%
+07:18:51 [INFO] Loading local
+07:18:51 [INFO] -> 100%
+07:18:51 [INFO] 
+07:18:51 [INFO] Done.
+07:18:51 [INFO] 
+07:18:51 [INFO] ----------------
+07:18:51 [INFO] 
+07:18:51 [INFO] Loading enviroment
+07:18:51 [INFO] 
+07:18:51 [INFO] Kansei shimashita (/^-^)/!
+07:18:51 [INFO] 
+07:18:51 [INFO] ----------------
+07:19:55 [INFO] Game Started: loos - Starlight Disco(feat. Meramipop) [BASIC]
+07:20:16 [INFO] Game Failed
+07:20:16 [INFO] Game Paused
+07:20:18 [INFO] Retry performed
+07:20:18 [INFO] Game unpaused
+07:20:18 [INFO] Game Started: loos - Starlight Disco(feat. Meramipop) [BASIC]
+07:20:21 [INFO] Game Failed
+07:20:21 [INFO] Game Paused
+07:20:23 [INFO] Exit Game
+07:20:47 [INFO] Game Started: Miyuki Hashimoto - Gensou Roukaku [Easy]
+07:22:50 [INFO] Game End: Miyuki Hashimoto - Gensou Roukaku [Easy]
+07:23:54 [INFO] Game Started: Nanahira - Frightfully-insane Flan-chan's frightful song [Insane]
+07:23:56 [INFO] Audio LeadIn: 2000
+07:26:50 [INFO] Game Paused
+07:26:51 [INFO] Game unpaused
+07:26:57 [INFO] Game Paused
+07:26:58 [INFO] Exit Game
+07:27:05 [INFO] Game Started: Nanahira - Tobidase! Sweet Sweet Magic* [KS's Taiko]
+07:27:07 [INFO] Audio LeadIn: 2000
+07:29:54 [INFO] Game End: Nanahira - Tobidase! Sweet Sweet Magic* [KS's Taiko]
+07:30:18 [INFO] Game Started: Nanamori-chu*Goraku-bu - Yuru Yurinrinrinrinrin [Insane]
+07:32:01 [INFO] Game End: Nanamori-chu*Goraku-bu - Yuru Yurinrinrinrinrin [Insane]
+07:32:26 [INFO] Game Started: Nanamori-chu * Goraku-bu - My Pace de Ikimashou [Mirakuru]
+07:33:54 [INFO] Game End: Nanamori-chu * Goraku-bu - My Pace de Ikimashou [Mirakuru]
+07:34:29 [INFO] Game Started: P*Light - FUNKY SUMMER BEACH [Ultra]
+07:34:30 [INFO] Audio LeadIn: 1000
+07:36:13 [INFO] Game End: P*Light - FUNKY SUMMER BEACH [Ultra]
+07:38:26 [INFO]  Bye! 

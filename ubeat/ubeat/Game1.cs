@@ -286,6 +286,7 @@ namespace ubeat
         public Texture2D MissTx;
         public SoundEffect HitHolderFilling;
         public SoundEffect HolderTick;
+        public SoundEffect HolderHit;
 
         protected override void LoadContent()
         {
@@ -311,6 +312,7 @@ namespace ubeat
             soundEffect = Content.Load<SoundEffect>("normal-hitnormal2");
             HitHolderFilling = Content.Load<SoundEffect>("HolderFilling");
             HolderTick = Content.Load<SoundEffect>("HolderTick");
+            HolderHit = Content.Load<SoundEffect>("soft-hitclap2");
             // TODO: use this.Content to load your game content here
 
             Logger.Instance.Info("");

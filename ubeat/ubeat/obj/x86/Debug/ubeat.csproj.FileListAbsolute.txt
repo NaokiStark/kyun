@@ -40,3 +40,4 @@ C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\
 C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\HolderFilling.xnb
 C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\HolderTick.xnb
 C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\wait2.xnb
+C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\soft-hitclap2.xnb

@@ -1,0 +1,53 @@
+17:30:19 [INFO] Log File: C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\logs\log-1461519019.log
+17:30:19 [INFO] 
+17:30:19 [INFO] 
+17:30:19 [INFO] ╔═══════════════════════════════╗
+17:30:19 [INFO] ║                               ║
+17:30:19 [INFO] ║        Build 1.0.0000         ║
+17:30:19 [INFO] ║                               ║
+17:30:19 [INFO] ╚═══════════════════════════════╝
+17:30:19 [INFO] 
+17:30:19 [INFO] =====================================
+17:30:19 [INFO] =                                   =
+17:30:19 [INFO] =          Welcome to ubeat!        =
+17:30:19 [INFO] =       Developed by Fabi With ♥    =
+17:30:19 [INFO] =                                   =
+17:30:19 [INFO] =====================================
+17:30:19 [INFO] 
+17:30:20 [INFO] Loading textures
+17:30:20 [INFO] 
+17:30:20 [INFO] Done.
+17:30:20 [INFO] 
+17:30:20 [INFO] ----------------
+17:30:20 [INFO] 
+17:30:20 [INFO] Loading beatmaps.
+17:30:20 [INFO] 
+17:30:26 [INFO] -> 100%
+17:30:26 [INFO] Loading local
+17:30:26 [INFO] -> 100%
+17:30:26 [INFO] 
+17:30:26 [INFO] Done.
+17:30:26 [INFO] 
+17:30:26 [INFO] ----------------
+17:30:26 [INFO] 
+17:30:26 [INFO] Loading enviroment
+17:30:27 [INFO] 
+17:30:27 [INFO] Kansei shimashita (/^-^)/!
+17:30:27 [INFO] 
+17:30:27 [INFO] ----------------
+17:30:33 [INFO] Game Started: Anamanaguchi - Prom Night [Insane]
+17:31:12 [INFO] Game Paused
+17:31:13 [INFO] Game unpaused
+17:34:19 [INFO] Game End: Anamanaguchi - Prom Night [Insane]
+18:18:18 [INFO] Game Started: KOTOKO - Leaf ticket [Parfait]
+18:18:19 [INFO] Audio LeadIn: 1000
+18:18:48 [INFO] Game Paused
+18:18:48 [INFO] Exit Game
+18:19:10 [INFO] Game Started: Hanazawa Kana - Meiwaku Spectacle (TV Size) [Yamete]
+18:19:11 [INFO] Audio LeadIn: 1500
+18:19:53 [INFO] Game End: Hanazawa Kana - Meiwaku Spectacle (TV Size) [Yamete]
+18:20:05 [INFO] Game Started: Hatsune Miku - Sabamiso! [Sabamiso!]
+18:22:17 [INFO] Game End: Hatsune Miku - Sabamiso! [Sabamiso!]
+18:22:37 [INFO] Game Started: Tsunamaru - Daidai Genome [Insane]
+18:25:37 [INFO] Game End: Tsunamaru - Daidai Genome [Insane]
+18:25:50 [INFO]  Bye! 

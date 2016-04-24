@@ -42,7 +42,7 @@ namespace ubeat
         {
             playRandomSong();
 
-            //label2.Visible = false;
+            label2.Visible = false;
 
             //// DEBUG ////
             Timer tm = new Timer();

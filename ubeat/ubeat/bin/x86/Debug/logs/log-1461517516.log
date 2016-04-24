@@ -1,0 +1,57 @@
+17:05:16 [INFO] Log File: C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\logs\log-1461517516.log
+17:05:16 [INFO] 
+17:05:16 [INFO] 
+17:05:16 [INFO] ╔═══════════════════════════════╗
+17:05:16 [INFO] ║                               ║
+17:05:16 [INFO] ║        Build 1.0.0000         ║
+17:05:16 [INFO] ║                               ║
+17:05:16 [INFO] ╚═══════════════════════════════╝
+17:05:16 [INFO] 
+17:05:16 [INFO] =====================================
+17:05:16 [INFO] =                                   =
+17:05:16 [INFO] =          Welcome to ubeat!        =
+17:05:16 [INFO] =       Developed by Fabi With ♥    =
+17:05:16 [INFO] =                                   =
+17:05:16 [INFO] =====================================
+17:05:16 [INFO] 
+17:05:16 [INFO] Loading textures
+17:05:16 [INFO] 
+17:05:16 [INFO] Done.
+17:05:16 [INFO] 
+17:05:16 [INFO] ----------------
+17:05:16 [INFO] 
+17:05:16 [INFO] Loading beatmaps.
+17:05:16 [INFO] 
+17:05:26 [INFO] -> 100%
+17:05:26 [INFO] Loading local
+17:05:26 [INFO] -> 100%
+17:05:26 [INFO] 
+17:05:26 [INFO] Done.
+17:05:26 [INFO] 
+17:05:26 [INFO] ----------------
+17:05:26 [INFO] 
+17:05:26 [INFO] Loading enviroment
+17:05:26 [INFO] 
+17:05:26 [INFO] Kansei shimashita (/^-^)/!
+17:05:26 [INFO] 
+17:05:26 [INFO] ----------------
+17:05:45 [INFO] Game Started: Anamanaguchi - Prom Night [Insane]
+17:07:15 [INFO] Game Paused
+17:07:17 [INFO] Game unpaused
+17:09:32 [INFO] Game End: Anamanaguchi - Prom Night [Insane]
+17:09:59 [INFO] Game Started: Giga-P - -BWW SCREAM- [Extra]
+17:11:19 [INFO] Game End: Giga-P - -BWW SCREAM- [Extra]
+17:11:50 [INFO] Game Started: Reol - Minazoko Yuuhodou [walking in the drowned light with everlasting silence]
+17:11:52 [INFO] Audio LeadIn: 1314
+17:16:55 [INFO] Game End: Reol - Minazoko Yuuhodou [walking in the drowned light with everlasting silence]
+17:17:14 [INFO] Game Started: Renard - PIZZZZZZZZ [Advanced]
+17:17:28 [INFO] Game Paused
+17:17:29 [INFO] Exit Game
+17:17:32 [INFO] Game Started: Renard - PIZZZZZZZZ [Insane]
+17:18:50 [INFO] Game End: Renard - PIZZZZZZZZ [Insane]
+17:19:08 [INFO] Game Started: Reol - Echo [Drop]
+17:22:24 [INFO] Game End: Reol - Echo [Drop]
+17:22:53 [INFO] Game Started: Reol - Minazoko Yuuhodou [walking in the drowned light with everlasting silence]
+17:22:55 [INFO] Audio LeadIn: 1314
+17:27:58 [INFO] Game End: Reol - Minazoko Yuuhodou [walking in the drowned light with everlasting silence]
+17:28:04 [INFO]  Bye! 

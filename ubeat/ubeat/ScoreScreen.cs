@@ -96,8 +96,6 @@ namespace ubeat
             SetWindowLong(guestHandle, GWL_STYLE, GetWindowLong(guestHandle, GWL_STYLE) | WS_CHILD);
             SetParent(guestHandle, hostHandle);
             this.Show();
-
-            this.Opacity = .8f;
         }
 
         private void ScoreScreen_FormClosing(object sender, FormClosingEventArgs e)

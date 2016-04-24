@@ -135,7 +135,8 @@ namespace ubeat.UIObjs
                 Score.ScoreValue getScore = GetScoreValue();
                 if ((int)getScore > (int)Score.ScoreValue.Miss)
                 {
-                    Grid.Instance.Health.Add(2f * (float)(((decimal)GetScoreValue() - (decimal)BeatmapContainer.OverallDifficulty)*100));
+                    float healthToAdd = (BeatmapContainer.OverallDifficulty / 2) + Math.Abs(PressedAt) / 100;
+                    Grid.Instance.Health.Add(healthToAdd);
                     SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
                     ins.Volume = Game1.Instance.player.Volume;
                     ins.Play();

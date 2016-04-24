@@ -104,7 +104,7 @@ namespace ubeat.UIObjs
                     if (Position > StartTime /*+ OsuBeatMap.rnd.Next(-(BeatmapContainer.Timing300), BeatmapContainer.Timing300) */&& !hasAlredyPressed)
                     {
                         PressedAt = (long)StartTime;
-                        SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
+                        SoundEffectInstance ins = Game1.Instance.HolderHit.CreateInstance();
                         ins.Volume = Game1.Instance.player.Volume;
                         ins.Play();
                         hasAlredyPressed = true;
@@ -119,7 +119,7 @@ namespace ubeat.UIObjs
                         LeaveAt = Position;
 
                         isActive = false;
-                        SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
+                        SoundEffectInstance ins = Game1.Instance.HolderHit.CreateInstance();
                         ins.Volume = Game1.Instance.player.Volume;
                         ins.Play();
                     }
@@ -163,6 +163,8 @@ namespace ubeat.UIObjs
                 {
                     ticked = true;
                     SoundEffectInstance TickSnd = Game1.Instance.HolderTick.CreateInstance();
+                    Grid.Instance.Health.Add(.5f);
+                    Combo.Instance.Add();
                     TickSnd.Volume = Game1.Instance.player.Volume;
                     TickSnd.Play();
                 }
@@ -194,7 +196,7 @@ namespace ubeat.UIObjs
                 {
                     float healthToAdd = (BeatmapContainer.OverallDifficulty/2)+Math.Abs(this.LeaveAt-PressedAt)/100; 
                     Grid.Instance.Health.Add(healthToAdd);
-                    SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
+                    SoundEffectInstance ins = Game1.Instance.HolderHit.CreateInstance();
                     ins.Volume = Game1.Instance.player.Volume;
                     ins.Play();
                     Combo.Instance.Add();
