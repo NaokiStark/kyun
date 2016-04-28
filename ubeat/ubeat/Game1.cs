@@ -29,34 +29,47 @@ namespace ubeat
         //Beatmaps
         public SoundEffect soundEffect;
         public List<Beatmap.ubeatBeatMap> Beatmaps = new List<Beatmap.ubeatBeatMap>();
-
+        public float elapsed = 0;
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hwnd, int nCmdShow);
-        
-        public void HideThis()
-        {
-            
-            //FormGame.Opacity = 0;
 
+        private float vol=0;
+
+        public float GeneralVolume
+        {
+            get
+            {
+                return vol;
+            }
+            set
+            {
+                float val = value;
+                if (val < 0) val = 0;
+                if (val > 1) val = 1;
+                
+                if (player != null)
+                    player.soundOut.Volume = val;
+                vol = val;
+                Settings1.Default.Volume = val;
+                Settings1.Default.Save();
+            }
         }
 
-        public void ShoutThis()
-        {
-            //ShowWindow(Window.Handle, 1);
-            ShowWindow(graphics.GraphicsDevice.Adapter.MonitorHandle, 1);
-        }
 
         public Game1()
         {
-            //AllocConsole();
+           
             Instance = this;
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
-            //this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 100.0f);
+            /*
+            this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 100.0f);
 
-            //this.IsFixedTimeStep = false;
-            //graphics.SynchronizeWithVerticalRetrace = false;
+            this.IsFixedTimeStep = false;
+            graphics.SynchronizeWithVerticalRetrace = false;
+    */
+
             
         }
 
@@ -80,7 +93,6 @@ namespace ubeat
 
             //Loads Beatmaps
             Logger.Instance.Info("");
-            //Logger.Instance.Info("----------------");
             Logger.Instance.Info("Loading beatmaps.");
             Logger.Instance.Info("");
             AllBeatmaps = new List<Beatmap.Mapset>();
@@ -223,57 +235,27 @@ namespace ubeat
             FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             FormGame.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 
-            //HAHA NOPE, DE NINGUNA PUÑETERA FORMA
-            //FormGame.Visible = false;
-           // FormGame.Hide();
-
             
-            //Así sí chaval :cool:
-            //this.HideThis();
-
-           
-            //FormGame.ShowInTaskbar = false;
             mainWindow = new MainWindow();
             mainWindow.FormClosed += mainWindow_FormClosed;
-            //Show main 
-            showMain();
-            //ToDo: add setting
             
-            //mainWindow.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            showMain();
+           
         }
-        public float elapsed = 0;
+        
         void showMain()
         {
-            
-            //mainWindow.Opacity = 0;
+                    
             mainWindow.Show();
+            GeneralVolume = Settings1.Default.Volume;
             Logger.Instance.Info("");
             Logger.Instance.Info("Kansei shimashita (/^-^)/!");
             Logger.Instance.Info("");
             Logger.Instance.Info("----------------");
-            
-            /*
-            mainWindow.Focus();
-            int duration = 101;//in milliseconds
-            int steps = 100;
-            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
-            timer.Interval = duration / steps;
-
-            int currentStep = 0;
-            timer.Tick += (arg1, arg2) =>
-            {
-                mainWindow.Opacity = ((double)currentStep) / steps;
-                currentStep++;
-
-                if (currentStep >= steps)
-                {
-                    timer.Stop();
-                    timer.Dispose();
-                }
-            };
-
-            timer.Start();*/
+           
         }
+
+        #region TEXTURES
         public Texture2D buttonDefault;
         public Texture2D buttonHolder;
         public Texture2D waitDefault;
@@ -287,12 +269,14 @@ namespace ubeat
         public SoundEffect HitHolderFilling;
         public SoundEffect HolderTick;
         public SoundEffect HolderHit;
-
+        public SoundEffect ComboBreak;
+        public Texture2D FailSplash;
+        
         protected override void LoadContent()
         {
            
             Logger.Instance.Info("Loading textures");
-            // Create a new SpriteBatch, which can be used to draw textures.
+
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             buttonDefault = Content.Load<Texture2D>("button");
@@ -313,8 +297,7 @@ namespace ubeat
             HitHolderFilling = Content.Load<SoundEffect>("HolderFilling");
             HolderTick = Content.Load<SoundEffect>("HolderTick");
             HolderHit = Content.Load<SoundEffect>("soft-hitclap2");
-            // TODO: use this.Content to load your game content here
-
+            ComboBreak = Content.Load<SoundEffect>("combobreak");
             Logger.Instance.Info("");
             Logger.Instance.Info("Done.");
             Logger.Instance.Info("");
@@ -330,37 +313,32 @@ namespace ubeat
             Logger.Instance.Info(" Bye! ");
         }
 
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+#endregion
+
+        #region GameUpdates
         protected override void Update(GameTime gameTime)
         {
-            elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (Keyboard.GetState().IsKeyDown(Keys.Add))
+                GeneralVolume += .02f;
 
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
+            if (Keyboard.GetState().IsKeyDown(Keys.Subtract))
+                GeneralVolume -= .02f;
+
+            elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if (grid != null)
             {
                 grid.Update(gameTime);
             }
-            // TODO: Add your update logic here
+
 
             base.Update(gameTime);
         }
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
             if (grid != null)
@@ -373,7 +351,7 @@ namespace ubeat
             base.Draw(gameTime);
         }
 
-        public Texture2D FailSplash { get; set; }
+        #endregion
 
         //console
         [DllImport("kernel32.dll", SetLastError = true)]

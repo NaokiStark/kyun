@@ -31,11 +31,12 @@ namespace ubeat.Score
         Timer HltTmr;
         public HealthBar()
         {
-            /*
-            int width = 600;
-            int height = 40;*/
-            int width = 40;
-            int height = -(((int)Grid.GetPositionFor(1).Y ) - ((int)Grid.GetPositionFor(7).Y) - Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight) +35;
+
+            int width = Game1.Instance.GraphicsDevice.Viewport.Width / 2;
+            width = width - (width / 3);
+            int height = 40;
+            //int width = 40;
+            //int height = -(((int)Grid.GetPositionFor(1).Y ) - ((int)Grid.GetPositionFor(7).Y) - Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight) +35;
             this.Texture = new Texture2D(Game1.Instance.GraphicsDevice, width, height);
             Color[] data = new Color[width * height];
             for (int i = 0; i < data.Length; ++i) data[i] = Color.White;
@@ -109,13 +110,15 @@ namespace ubeat.Score
         public void Render()
         {
 
-            float res = (float)Value * (float)this.Texture.Height / 100;
+            float res = (float)Value * (float)this.Texture.Width / 100;
 
             //Rect
-            Rectangle size = new Rectangle((int)Grid.GetPositionFor(1).X-40-10, (int)Grid.GetPositionFor(1).Y+ Game1.Instance.buttonDefault.Height+30, this.Texture.Bounds.Width, (int)res);
-            Rectangle sizeBar = new Rectangle((int)Grid.GetPositionFor(7).X - 100, (int)Grid.GetPositionFor(7).Y - 40, BgBar.Bounds.Width, BgBar.Bounds.Height);
+            //Rectangle size = new Rectangle((int)Grid.GetPositionFor(1).X-40-10, (int)Grid.GetPositionFor(1).Y+ Game1.Instance.buttonDefault.Height+30, this.Texture.Bounds.Width, (int)res);
+            //Rectangle sizeBar = new Rectangle((int)Grid.GetPositionFor(7).X - 100, (int)Grid.GetPositionFor(7).Y - 40, BgBar.Bounds.Width, BgBar.Bounds.Height);
             //Draw 
 
+            Rectangle size = new Rectangle(10, 10, (int)res, Texture.Height);
+            Rectangle sizeBar = new Rectangle(0, 0, this.BgBar.Width, this.BgBar.Height);
             //bg          
             
 
@@ -132,9 +135,9 @@ namespace ubeat.Score
             //bar
             Game1.Instance.spriteBatch.Draw(this.Texture,
                 size,
-                new Rectangle(0, 0, this.Texture.Width, (int)res),
+                null,
                 Color.White,
-                angle,
+                0f,
                 new Vector2(0),
                 Microsoft.Xna.Framework.Graphics.SpriteEffects.None,
                 0);

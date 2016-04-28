@@ -104,14 +104,23 @@ namespace ubeat.Audio
                     soundOut.WaveSource.Position = value;
             }
         }
+
         public long RawPosition { 
             get {
-                if (soundOut != null)
-                    return (long)soundOut.WaveSource.GetPosition().TotalMilliseconds;
-                else
+                try
+                {
+                    if (soundOut != null)
+                        return (long)soundOut.WaveSource.GetPosition().TotalMilliseconds;
+                    else
+                        return 0;
+                }
+                catch
+                {
                     return 0;
+                }
             } 
         }
+
         long offset=0;
         public long PositionV2
         {
@@ -225,8 +234,9 @@ namespace ubeat.Audio
              offset = 0;
              positionAt = 0;
              startTime = DateTime.Now;
+
              soundOut.Play();
-  
+             PositionTimer.Start();
         }
 
         private void soundOut_Stopped(object sender, PlaybackStoppedEventArgs e)

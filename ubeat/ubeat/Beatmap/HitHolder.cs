@@ -17,6 +17,7 @@ namespace ubeat.UIObjs
 {
     public class HitHolder : IHitObj
     {
+        #region PublicVars
         public Texture2D Texture { get; set; }
         public long PressedAt { get; set; }
         public long LeaveAt { get; set; }
@@ -25,15 +26,29 @@ namespace ubeat.UIObjs
         public bool Died { get; set; }
         public int Y = 0;
         public int X = 0;
+        public bool hasAlredyPressed { get; set; }
+        public decimal Length { get; set; }
+        public System.Windows.Forms.Timer tmrApproachOpacity { get; set; }
+        public float opacity { get; set; }
+        public ApproachObj apo { get; set; }
+        public decimal StartTime { get; set; }
+        public ubeatBeatMap BeatmapContainer { get; set; }
+        public int Location { get; set; }
+        public decimal EndTime { get; set; }
+        #endregion
 
-
+        #region PrivateVars
+        SoundEffectInstance holdFld;
         bool ticked;
         bool isFilling;
-        
+        #endregion
+
+        #region Texture
         public void AddTexture(Texture2D texture)
         {
             this.Texture = texture;
         }
+        #endregion  
 
         #region GameEvents
         public void Start(long Position)
@@ -56,6 +71,18 @@ namespace ubeat.UIObjs
 
         }
 
+        public void Reset()
+        {
+            isActive = false;
+            Died = true;
+            isFilling = false;
+            ActualPos = 0;
+            PressedAt = 0;
+            LeaveAt = 0;
+            hasAlredyPressed = false;
+            apo = null;
+        }
+
         private void tmrApproachOpacity_Tick(object sender, EventArgs e)
         {
             int appr = (int)(1950 - BeatmapContainer.ApproachRate * 150);
@@ -70,8 +97,8 @@ namespace ubeat.UIObjs
 
             this.opacity = opacity + percentg;
         }
-        SoundEffectInstance holdFld;
-        public void Update(long Position)
+
+        public void Update(long Position,Vector2 p)
         {
             if (holdFld != null)
             {
@@ -96,7 +123,7 @@ namespace ubeat.UIObjs
             {
                 if (apo == null)
                 {
-                    apo = new ApproachObj(Grid.GetPositionFor(this.Location - 96), BeatmapContainer.ApproachRate,this.StartTime);
+                    apo = new ApproachObj(Grid.GetPositionFor(this.Location - 96), BeatmapContainer.ApproachRate, this.StartTime);
                     Grid.Instance.objs.Add(apo);
                 }
                 if (Grid.Instance.autoMode)
@@ -105,12 +132,12 @@ namespace ubeat.UIObjs
                     {
                         PressedAt = (long)StartTime;
                         SoundEffectInstance ins = Game1.Instance.HolderHit.CreateInstance();
-                        ins.Volume = Game1.Instance.player.Volume;
+                        ins.Volume = Game1.Instance.GeneralVolume;
                         ins.Play();
                         hasAlredyPressed = true;
                         isFilling = true;
                         holdFld = Game1.Instance.HitHolderFilling.CreateInstance();
-                        holdFld.Volume = Game1.Instance.player.Volume;
+                        holdFld.Volume = Game1.Instance.GeneralVolume;
                         holdFld.IsLooped = true;
                         holdFld.Play();
                     }
@@ -120,7 +147,7 @@ namespace ubeat.UIObjs
 
                         isActive = false;
                         SoundEffectInstance ins = Game1.Instance.HolderHit.CreateInstance();
-                        ins.Volume = Game1.Instance.player.Volume;
+                        ins.Volume = Game1.Instance.GeneralVolume;
                         ins.Play();
                     }
                 }
@@ -140,7 +167,7 @@ namespace ubeat.UIObjs
                             PressedAt = Position;
                             isFilling = true;
                             holdFld = Game1.Instance.HitHolderFilling.CreateInstance();
-                            holdFld.Volume = Game1.Instance.player.Volume;
+                            holdFld.Volume = Game1.Instance.GeneralVolume;
                             holdFld.IsLooped = true;
                             holdFld.Play();
                         }
@@ -151,25 +178,66 @@ namespace ubeat.UIObjs
                         isFilling = false;
                         LeaveAt = Position;
                         isActive = false;
-                        
+
                     }
-                    if(Position> EndTime){
+                    if (Position > EndTime)
+                    {
                         isFilling = false;
                         LeaveAt = (long)EndTime; //Easy Easy Easy Easy Easy Easy Easy Easy Easy
                         isActive = false;
                     }
                 }
-                if (Position > (this.Length/2+StartTime) && !ticked)
+                if (Position > (this.Length / 2 + StartTime) && !ticked)
                 {
                     ticked = true;
                     SoundEffectInstance TickSnd = Game1.Instance.HolderTick.CreateInstance();
                     Grid.Instance.Health.Add(.5f);
                     Combo.Instance.Add();
-                    TickSnd.Volume = Game1.Instance.player.Volume;
+                    TickSnd.Volume = Game1.Instance.GeneralVolume;
                     TickSnd.Play();
                 }
             }
+            else
+            {
+                if (apo != null)
+                {
+                    apo.Died = true;
+                    Grid.Instance.objs.Remove(apo);
+                    apo = null;
+                }
 
+                if (holdFld != null)
+                    holdFld.Stop();
+                Score.ScoreValue score = GetScoreValue();
+                if ((int)score > (int)Score.ScoreValue.Miss)
+                {
+                    Grid.Instance.FailsCount = 0;
+                    float healthToAdd = (BeatmapContainer.OverallDifficulty / 2) + Math.Abs(this.LeaveAt - PressedAt) / 100;
+                    Grid.Instance.Health.Add(healthToAdd);
+                    SoundEffectInstance ins = Game1.Instance.HolderHit.CreateInstance();
+                    ins.Volume = Game1.Instance.GeneralVolume;
+                    ins.Play();
+                    Combo.Instance.Add();
+                }
+                else
+                {
+                    Grid.Instance.FailsCount++;
+                    if (Combo.Instance.ActualMultiplier > 10)
+                    {
+                        SoundEffectInstance ins = Game1.Instance.ComboBreak.CreateInstance();
+                        ins.Volume = Game1.Instance.GeneralVolume;
+                        ins.Play();
+                    }
+                    Combo.Instance.Miss();
+                    Grid.Instance.Health.Substract((4 * BeatmapContainer.OverallDifficulty) * Grid.Instance.FailsCount);
+                }
+
+                Grid.Instance.ScoreDispl.Add(((long)score * ((Combo.Instance.ActualMultiplier > 0) ? Combo.Instance.ActualMultiplier : 1)) / 2);
+
+                Grid.Instance.objs.Add(new ScoreObj(GetScore(), new Vector2(p.X + (Texture.Bounds.Width / 2), p.Y + (Texture.Bounds.Height / 2))));
+
+                Stop(Position);
+            }
         }
         public void Render(long ccc,Vector2 position)
         {
@@ -182,36 +250,7 @@ namespace ubeat.UIObjs
             
             if (!isActive)
             {
-                if (apo != null)
-                {
-                    apo.Died = true;
-                    Grid.Instance.objs.Remove(apo);
-                    apo = null;
-                }
-
-                if (holdFld != null)
-                    holdFld.Stop();
-                Score.ScoreValue score=GetScoreValue();
-                if ((int)score > (int)Score.ScoreValue.Miss)
-                {
-                    float healthToAdd = (BeatmapContainer.OverallDifficulty/2)+Math.Abs(this.LeaveAt-PressedAt)/100; 
-                    Grid.Instance.Health.Add(healthToAdd);
-                    SoundEffectInstance ins = Game1.Instance.HolderHit.CreateInstance();
-                    ins.Volume = Game1.Instance.player.Volume;
-                    ins.Play();
-                    Combo.Instance.Add();
-                }
-                else
-                {
-                    Combo.Instance.Miss();
-                    Grid.Instance.Health.Substract(4 * BeatmapContainer.OverallDifficulty);                    
-                }
-
-                Grid.Instance.ScoreDispl.Add(((long)score * ((Combo.Instance.ActualMultiplier>0)?Combo.Instance.ActualMultiplier:1))/2);
-
-                Grid.Instance.objs.Add(new ScoreObj(GetScore(), new Vector2(position.X + (Texture.Bounds.Width / 2), position.Y + (Texture.Bounds.Height / 2))));
-
-                Stop(ccc);
+                
             }
             else
             {
@@ -353,45 +392,6 @@ namespace ubeat.UIObjs
             }
             return sscv;
         }
-        #endregion
-
-        public bool hasAlredyPressed { get; set; }
-
-        public decimal StartTime
-        {
-            get;
-            set;
-        }
-
-        public ubeatBeatMap BeatmapContainer
-        {
-            get;
-            set;
-        }
-
-        public int Location
-        {
-            get;
-            set;
-        }
-
-
-        public decimal EndTime
-        {
-            get;
-            set;
-        }
-        
-
-        public decimal Length { get; set; }
-
-        public System.Windows.Forms.Timer tmrApproachOpacity { get; set; }
-
-        public float opacity { get; set; }
-
-
-
-
-        public ApproachObj apo { get; set; }
+        #endregion        
     }
 }

@@ -45,6 +45,7 @@ namespace ubeat
             label2.Visible = false;
 
             //// DEBUG ////
+            /*
             Timer tm = new Timer();
             tm.Tick += (s, se) => {
                 label2.Text = string.Format("==Player Debug==\r\nCurrent File: {0}\r\nCurrent Length: {1}\r\nCurrent Position: {2}\r\nCurrent counter Position: {3} \r\nCurrent Difference (Raw - Counter): {4}\r\nPlayer State: {5}",
@@ -56,7 +57,7 @@ namespace ubeat
                     player.soundOut.PlaybackState.ToString()
                     );
             };
-            tm.Start();
+            tm.Start();*/
             //// EOF DEBUG ///
 
             this.Hide();
@@ -78,8 +79,6 @@ namespace ubeat
            
             if (InvokeRequired)
             {
-                // Dispatch to correct thread, use BeginInvoke if you don't need
-                // caller thread until operation completes
                 Invoke(new MethodInvoker(ShowAsync));
             }
             else
@@ -130,8 +129,8 @@ namespace ubeat
             Beatmap.ubeatBeatMap ubm = bsel[c.Next(0, bsel.Count - 1)];
             string songpath = ubm.SongPath;
             player.Play(songpath);
-            player.Volume = .5f;
-            player.onEnd += player_onEnd;
+            player.Volume = Game1.Instance.GeneralVolume;
+            //player.onEnd += player_onEnd;
 
             Image img;
             try
@@ -155,48 +154,20 @@ namespace ubeat
 
         private void button3_Click(object sender, EventArgs e)
         {
-            /*
-            foreach (Control cc in this.Controls)
-            {
-                if (cc is Button || cc is Panel || cc is Label)
-                    cc.Visible = false;
-
-            }
-            int duration = 101;//in milliseconds
-            int steps = 100;
-            Timer timer = new Timer();
-            timer.Interval = duration / steps;
-
-            int currentStep = 100;
-            timer.Tick += (arg1, arg2) =>
-            {
-                if (player.Volume - 0.001f > 0f)
-                    player.Volume = player.Volume -0.001f;
-                Opacity = ((double)currentStep) / steps;
-                currentStep--;
-
-                if (currentStep < 1)
-                {
-                    timer.Stop();
-                    timer.Dispose();
-             * */
-                    this.Close();/*
-                }
-            };
-
-            timer.Start();*/
+           this.Close();
         }
 
         private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             
         }
+
         public void ChangeBeatmap(Beatmap.ubeatBeatMap bm)
         {
             string songpath = bm.SongPath;
             player.Play(songpath);
-            player.Volume = .34f;
-            player.onEnd += player_onEnd;
+            player.Volume = Game1.Instance.GeneralVolume;
+            //player.onEnd += player_onEnd;
             try
             {
                 this.BackgroundImage = Image.FromFile(bm.Background);

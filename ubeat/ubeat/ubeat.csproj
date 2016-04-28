@@ -63,6 +63,9 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CSCore">
       <HintPath>..\..\packages\CSCore.1.0.0.0\lib\net35-client\CSCore.dll</HintPath>
@@ -136,11 +139,18 @@
     <Compile Include="Score\ScoreType.cs" />
     <Compile Include="Beatmap\HitButton.cs" />
     <Compile Include="Beatmap\HitHolder.cs" />
+    <Compile Include="Settings1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings1.settings</DependentUpon>
+    </Compile>
     <Compile Include="UIObjs\ApproachObj.cs" />
     <Compile Include="UIObjs\IUIObject.cs" />
     <Compile Include="UIObjs\ScoreObj.cs" />
     <Compile Include="Utils\ListBeatmapItem.cs" />
     <Compile Include="Utils\ReplayBuilder.cs" />
+    <Compile Include="Video\FFmpeg.cs" />
+    <Compile Include="Video\VideoDecoder.cs" />
     <Compile Include="Video\VideoPlayer.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -199,6 +209,10 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Settings1.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings1.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

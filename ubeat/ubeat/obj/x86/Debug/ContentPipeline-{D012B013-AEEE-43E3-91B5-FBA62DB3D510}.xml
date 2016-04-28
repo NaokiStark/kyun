@@ -172,6 +172,15 @@
       <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\soft-hitclap2.xnb</Output>
       <Time>2016-04-21T08:47:34.1817635-03:00</Time>
     </Item>
+    <Item>
+      <Source>combobreak.wav</Source>
+      <Name>combobreak</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\combobreak.xnb</Output>
+      <Time>2016-04-25T11:45:03.9238457-03:00</Time>
+    </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <ContentProjectGUID>{D012B013-AEEE-43E3-91B5-FBA62DB3D510}</ContentProjectGUID>
