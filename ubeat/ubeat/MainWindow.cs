@@ -37,12 +37,12 @@ namespace ubeat
             player = Game1.Instance.player;
             InitializeComponent();
         }
-        Player player;
+        NPlayer player;
         private void MainWindow_Load(object sender, EventArgs e)
         {
             playRandomSong();
 
-            label2.Visible = false;
+            label2.Visible = true;
 
             //// DEBUG ////
             /*
@@ -50,11 +50,11 @@ namespace ubeat
             tm.Tick += (s, se) => {
                 label2.Text = string.Format("==Player Debug==\r\nCurrent File: {0}\r\nCurrent Length: {1}\r\nCurrent Position: {2}\r\nCurrent counter Position: {3} \r\nCurrent Difference (Raw - Counter): {4}\r\nPlayer State: {5}",
                     player.ActualSong,
-                    player.SoundLength,
+                    "",
                     player.RawPosition,
                     player.Position,
                     player.RawPosition - player.Position,
-                    player.soundOut.PlaybackState.ToString()
+                    player.PlayState.ToString()
                     );
             };
             tm.Start();*/
@@ -129,7 +129,7 @@ namespace ubeat
             Beatmap.ubeatBeatMap ubm = bsel[c.Next(0, bsel.Count - 1)];
             string songpath = ubm.SongPath;
             player.Play(songpath);
-            player.Volume = Game1.Instance.GeneralVolume;
+            player.soundOut.Volume = Game1.Instance.GeneralVolume;
             //player.onEnd += player_onEnd;
 
             Image img;

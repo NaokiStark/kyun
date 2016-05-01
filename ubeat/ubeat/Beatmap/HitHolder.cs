@@ -128,9 +128,10 @@ namespace ubeat.UIObjs
                 }
                 if (Grid.Instance.autoMode)
                 {
-                    if (Position > StartTime /*+ OsuBeatMap.rnd.Next(-(BeatmapContainer.Timing300), BeatmapContainer.Timing300) */&& !hasAlredyPressed)
+                    if (Position >= StartTime /*+ OsuBeatMap.rnd.Next(-(BeatmapContainer.Timing300), BeatmapContainer.Timing300) */&& !hasAlredyPressed)
                     {
                         PressedAt = (long)StartTime;
+                        
                         SoundEffectInstance ins = Game1.Instance.HolderHit.CreateInstance();
                         ins.Volume = Game1.Instance.GeneralVolume;
                         ins.Play();
@@ -141,14 +142,15 @@ namespace ubeat.UIObjs
                         holdFld.IsLooped = true;
                         holdFld.Play();
                     }
-                    else if (Position > EndTime)
+                    else if (Position >= EndTime)
                     {
                         LeaveAt = Position;
 
                         isActive = false;
+                        /*
                         SoundEffectInstance ins = Game1.Instance.HolderHit.CreateInstance();
                         ins.Volume = Game1.Instance.GeneralVolume;
-                        ins.Play();
+                        ins.Play();*/
                     }
                 }
                 else

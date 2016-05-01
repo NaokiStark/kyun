@@ -106,10 +106,10 @@ namespace ubeat.UIObjs
                     if (Position > StartTime)
                     {
                         hasAlredyPressed = true;
-                        isActive = false;
+                        isActive = false;/*
                         SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
                         ins.Volume = Game1.Instance.GeneralVolume;
-                        ins.Play();
+                        ins.Play();*/
                         PressedAt = (long)StartTime;
                     }
                 }
@@ -148,12 +148,15 @@ namespace ubeat.UIObjs
                 Score.ScoreValue getScore = GetScoreValue();
                 if ((int)getScore > (int)Score.ScoreValue.Miss)
                 {
+                    
                     Grid.Instance.FailsCount = 0;
                     float healthToAdd = (BeatmapContainer.OverallDifficulty / 2) + Math.Abs(PressedAt - (long)this.StartTime) / 100;
                     Grid.Instance.Health.Add(healthToAdd);
-                    SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
-                    ins.Volume = Game1.Instance.GeneralVolume;
-                    ins.Play();
+
+                        SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
+                        ins.Volume = Game1.Instance.GeneralVolume;
+                        ins.Play();
+    
                     Combo.Instance.Add();
                 }
                 else

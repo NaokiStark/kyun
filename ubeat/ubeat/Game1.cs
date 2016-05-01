@@ -24,7 +24,7 @@ namespace ubeat
         GraphicsDeviceManager graphics;
         public SpriteBatch spriteBatch;
         public MainWindow mainWindow;
-        public Player player;
+        public NPlayer player;
         public static Game1 Instance = null;
         //Beatmaps
         public SoundEffect soundEffect;
@@ -89,7 +89,7 @@ namespace ubeat
         {
 
             base.Initialize();
-            player = new Player();
+            player = new NPlayer();
 
             //Loads Beatmaps
             Logger.Instance.Info("");
@@ -307,8 +307,8 @@ namespace ubeat
         
         protected override void UnloadContent()
         {
-            if (player.soundOut != null)
-                player.soundOut.Dispose();
+            if (player != null)
+                player.Dispose();
 
             Logger.Instance.Info(" Bye! ");
         }

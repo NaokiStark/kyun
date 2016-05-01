@@ -57,11 +57,13 @@ namespace ubeat.Score
 
             int screenWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
 
-            Rectangle rect = new Rectangle(screenWidth - this.Texture.Width, 0, this.Texture.Width, this.Texture.Height);
+            Vector2 fSize = Game1.Instance.fontDefault.MeasureString(score.ToString("00000000")) * 1.5f;
+
+            Rectangle rect = new Rectangle(screenWidth - (int)fSize.X-30, 0, (int)fSize.X+30, (int)fSize.Y);
             Game1.Instance.spriteBatch.Draw(this.Texture, rect, Color.White * .75f);
 
             //Draw score
-            Game1.Instance.spriteBatch.DrawString(Game1.Instance.fontDefault, score.ToString(), new Vector2(rect.X + 10, 0), Color.White,0,new Vector2(0),1.5f,SpriteEffects.None,0);
+            Game1.Instance.spriteBatch.DrawString(Game1.Instance.fontDefault, score.ToString("00000000"), new Vector2(rect.X + 15, 0), Color.WhiteSmoke, 0, new Vector2(0), 1.5f, SpriteEffects.None, 0);
         }
     }
 }

@@ -103,6 +103,7 @@ namespace ubeat
 
             BeatmapSelector.Instance.Show();
             Game1.Instance.player.Play(Grid.Instance.bemap.SongPath);
+            Game1.Instance.player.Volume = Game1.Instance.GeneralVolume;
             //BeatmapSelector.Instance.ShowControls();
         }
 

@@ -28,7 +28,7 @@ namespace ubeat.GameScreen
         public Texture2D bg;
         public HealthBar Health { get; set; }
         public ScoreDisplay ScoreDispl;
-
+        public ComboDisplay ComboDspl;
         public int FailsCount = 0;
 
         #endregion
@@ -68,6 +68,7 @@ namespace ubeat.GameScreen
             Health = new HealthBar();
             Health.OnFail += Health_OnFail;
             ScoreDispl = new ScoreDisplay();
+            ComboDspl = new ComboDisplay();
             videoplayer = new Video.VideoPlayer();
             combo = new Combo();
         }
@@ -105,6 +106,7 @@ namespace ubeat.GameScreen
             Logger.Instance.Info("Game Failed");
             failed = true;
             ScoreDispl.isActive = false;
+            ComboDspl.isActive = false;
             Pause();
         }
 
@@ -115,7 +117,7 @@ namespace ubeat.GameScreen
             bg = new Texture2D(Game1.Instance.GraphicsDevice, wid, hei);
 
             Color[] data = new Color[wid * hei];
-            for (int i = 0; i < data.Length; ++i) data[i] = new Color(0,0,0,150);
+            for (int i = 0; i < data.Length; ++i) data[i] = Color.Black;
             bg.SetData(data);
                         
         }
@@ -189,6 +191,7 @@ namespace ubeat.GameScreen
         {
             ScoreDispl.Reset();
             ScoreDispl.isActive = true;
+            ComboDspl.isActive = true;
             combo.ResetAll();
             actualIndex = 0;
             failed = false;
@@ -228,7 +231,7 @@ namespace ubeat.GameScreen
                 }
 
                 Game1.Instance.player.Play(bemap.SongPath/*, bemap.SleepTime*/);
-                Game1.Instance.player.Volume =Game1.Instance.GeneralVolume;
+                Game1.Instance.player.soundOut.Volume =Game1.Instance.GeneralVolume;
                 
                 if(bemap.Video!=null)
                     if(bemap.Video!="")
@@ -257,7 +260,7 @@ namespace ubeat.GameScreen
 
             Health.Update();
             ScoreDispl.Update();
-
+            ComboDspl.Update();
             long pos = (long)Game1.Instance.player.Position;
             if(!Paused){
                 
@@ -393,11 +396,8 @@ namespace ubeat.GameScreen
             {
                 return;
             }
-            /*
-            if (lastFrameOfVid != null)
-            {
-                Game1.Instance.spriteBatch.Draw(lastFrameOfVid, screenRectangle, Color.White);
-            }*/
+            
+            
 
             if (!videoplayer.Stopped)
             {
@@ -405,12 +405,18 @@ namespace ubeat.GameScreen
                 if (frame != null)
                 {
 
-                    using (Texture2D texture = new Texture2D(Game1.Instance.GraphicsDevice, videoplayer.vdc.width, videoplayer.vdc.height))
+                    Texture2D texture = new Texture2D(Game1.Instance.GraphicsDevice, videoplayer.vdc.width, videoplayer.vdc.height);
+
+                    texture.SetData(frame);
+                    lastFrameOfVid = texture;
+                    Game1.Instance.spriteBatch.Draw(texture, screenRectangle, Color.White);
+
+                }
+                else
+                {
+                    if (lastFrameOfVid != null)
                     {
-
-
-                        texture.SetData(frame);
-                        Game1.Instance.spriteBatch.Draw(texture, screenRectangle, Color.White);
+                        Game1.Instance.spriteBatch.Draw(lastFrameOfVid, screenRectangle, Color.White);
                     }
                 }
             }
@@ -420,7 +426,7 @@ namespace ubeat.GameScreen
 
             Health.Render();
             ScoreDispl.Render();
-
+            ComboDspl.Render();
             long pos = (long)Game1.Instance.player.Position;            
             //draw square
             int sWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
@@ -431,7 +437,7 @@ namespace ubeat.GameScreen
 
             xi = xi - (Game1.Instance.buttonDefault.Bounds.Width + 40) * 2 - (Game1.Instance.buttonDefault.Bounds.Width / 2);
             yi = yi - (Game1.Instance.buttonDefault.Bounds.Height + 40) * 2 - (Game1.Instance.buttonDefault.Bounds.Height / 2);
-            Game1.Instance.spriteBatch.Draw(bg, new Vector2(xi,yi), Color.White);
+            Game1.Instance.spriteBatch.Draw(bg, new Vector2(xi,yi), Color.White*.75f);
            
             int objectsCount = 0;
             for (int a = 0; a < grid.Count; a++)

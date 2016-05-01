@@ -39,13 +39,13 @@ namespace ubeat.Score
             //int height = -(((int)Grid.GetPositionFor(1).Y ) - ((int)Grid.GetPositionFor(7).Y) - Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight) +35;
             this.Texture = new Texture2D(Game1.Instance.GraphicsDevice, width, height);
             Color[] data = new Color[width * height];
-            for (int i = 0; i < data.Length; ++i) data[i] = Color.White;
+            for (int i = 0; i < data.Length; ++i) data[i] = Color.WhiteSmoke;
             this.Texture.SetData(data);
 
-            float op = .5f;
+
             BgBar = new Texture2D(Game1.Instance.GraphicsDevice, width + 20, height + 20);
             Color[] dataBar = new Color[(width+20) * (height+20)];
-            for (int i = 0; i < dataBar.Length; ++i) dataBar[i] = Color.Black * op;
+            for (int i = 0; i < dataBar.Length; ++i) dataBar[i] = Color.Black;
             this.BgBar.SetData(dataBar);
 
             HltTmr = new Timer() { Interval = 1 };
@@ -125,13 +125,12 @@ namespace ubeat.Score
             Game1.Instance.spriteBatch.Draw(this.BgBar,
                 sizeBar,
                 null,
-                Color.White,
+                Color.White*0.75f,
                 0f,
                 new Vector2(0),
                 Microsoft.Xna.Framework.Graphics.SpriteEffects.None,
                 0);
 
-            var angle = (float)Math.PI;
             //bar
             Game1.Instance.spriteBatch.Draw(this.Texture,
                 size,
