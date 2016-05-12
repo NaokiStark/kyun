@@ -137,6 +137,11 @@ namespace ubeat.UIObjs
                         ins.Play();
                         hasAlredyPressed = true;
                         isFilling = true;
+
+                        float healthToAdd = (BeatmapContainer.OverallDifficulty / 2) + Math.Abs((float)this.StartTime - PressedAt) / 100;
+                        Grid.Instance.Health.Add(healthToAdd);
+                        Combo.Instance.Add();
+
                         holdFld = Game1.Instance.HitHolderFilling.CreateInstance();
                         holdFld.Volume = Game1.Instance.GeneralVolume;
                         holdFld.IsLooped = true;
@@ -165,9 +170,17 @@ namespace ubeat.UIObjs
                     {
                         if (Position > StartTime - BeatmapContainer.Timing50)
                         {
+                            SoundEffectInstance ins = Game1.Instance.HolderHit.CreateInstance();
+                            ins.Volume = Game1.Instance.GeneralVolume;
+                            ins.Play();
                             hasAlredyPressed = true;
                             PressedAt = Position;
                             isFilling = true;
+
+                            float healthToAdd = (BeatmapContainer.OverallDifficulty / 2) + Math.Abs((float)this.StartTime - PressedAt) / 100;
+                            Grid.Instance.Health.Add(healthToAdd);
+                            Combo.Instance.Add();
+
                             holdFld = Game1.Instance.HitHolderFilling.CreateInstance();
                             holdFld.Volume = Game1.Instance.GeneralVolume;
                             holdFld.IsLooped = true;
@@ -189,11 +202,12 @@ namespace ubeat.UIObjs
                         isActive = false;
                     }
                 }
+
                 if (Position > (this.Length / 2 + StartTime) && !ticked)
                 {
                     ticked = true;
                     SoundEffectInstance TickSnd = Game1.Instance.HolderTick.CreateInstance();
-                    Grid.Instance.Health.Add(.5f);
+                    Grid.Instance.Health.Add(1f*BeatmapContainer.OverallDifficulty);
                     Combo.Instance.Add();
                     TickSnd.Volume = Game1.Instance.GeneralVolume;
                     TickSnd.Play();
@@ -273,6 +287,12 @@ namespace ubeat.UIObjs
 
                 }
                 Game1.Instance.spriteBatch.Draw(this.Texture, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
+                if (ccc >= StartTime - BeatmapContainer.Timing50 && !isFilling)
+                {
+                    float perct = (float)(ccc / (StartTime - BeatmapContainer.Timing300)) * 1f;
+
+                    Game1.Instance.spriteBatch.Draw(Game1.Instance.Hold, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Game1.Instance.Hold.Bounds.Width, Game1.Instance.Hold.Bounds.Height), Color.White * perct);
+                }
                 //Game1.Instance.spriteBatch.DrawString(Game1.Instance.fontDefault, (Location - 96).ToString(), new Vector2(position.X + (Texture.Bounds.Width / 2), position.Y + (Texture.Bounds.Height / 2)), Color.Black * opacity);
                 if (isFilling)
                 {
@@ -289,7 +309,19 @@ namespace ubeat.UIObjs
                         new Vector2(0, 0),
                         Microsoft.Xna.Framework.Graphics.SpriteEffects.None,
                         0);
+                  
+                    string secondsTo = ((EndTime - ccc)/100).ToString("0");
+                    Vector2 measureSize = Game1.Instance.fontDefault.MeasureString(secondsTo);
+
+                    Vector2 bgS = measureSize * 1.1f;
+
+
+                    Game1.Instance.spriteBatch.DrawString(Game1.Instance.fontDefault, secondsTo, new Vector2((position.X + Texture.Width / 2)+1, (position.Y + Texture.Height / 2)+1), Color.Black, 0, bgS / 2, 1.1f, SpriteEffects.None, 0);
+                    Game1.Instance.spriteBatch.DrawString(Game1.Instance.fontDefault, secondsTo, new Vector2(position.X + Texture.Width / 2, position.Y + Texture.Height / 2), Color.White, 0, measureSize / 2, 1f, SpriteEffects.None, 0);
+
+
                 }
+
                
             }
         }

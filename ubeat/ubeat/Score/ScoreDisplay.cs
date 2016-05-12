@@ -19,6 +19,8 @@ namespace ubeat.Score
 
         ulong score=0;
 
+        Queue<int> lastAdds = new Queue<int>();
+
         public void Add(long Score)
         {
             this.score += (ulong)Score;

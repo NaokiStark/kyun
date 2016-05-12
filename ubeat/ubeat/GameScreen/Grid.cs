@@ -112,8 +112,8 @@ namespace ubeat.GameScreen
 
         void addTextureG()
         {
-            int wid = (Game1.Instance.buttonDefault.Bounds.Width+40)*3;
-            int hei = (Game1.Instance.buttonDefault.Bounds.Height + 40) * 3;
+            int wid = (Game1.Instance.buttonDefault.Bounds.Width+20)*3;
+            int hei = (Game1.Instance.buttonDefault.Bounds.Height + 20) * 3;
             bg = new Texture2D(Game1.Instance.GraphicsDevice, wid, hei);
 
             Color[] data = new Color[wid * hei];
@@ -233,9 +233,10 @@ namespace ubeat.GameScreen
                 Game1.Instance.player.Play(bemap.SongPath/*, bemap.SleepTime*/);
                 Game1.Instance.player.soundOut.Volume =Game1.Instance.GeneralVolume;
                 
-                if(bemap.Video!=null)
-                    if(bemap.Video!="")
-                        videoplayer.Play(bemap.Video);
+                if(Game1.Instance.VideoEnabled)
+                    if(bemap.Video!=null)
+                        if(bemap.Video!="")
+                            videoplayer.Play(bemap.Video);
 
                 ResetSongGameTime();
                 inGame = true;
@@ -304,12 +305,16 @@ namespace ubeat.GameScreen
             {
                 for (int c = 0; c < grid[a].Count; c++)
                 {
-                    if (c == 0)
-                    {
+                    
+                    //if (c == 0)
+                   // {
                         Vector2 poss = GetPositionFor(a + 1);
+                        if (grid[a][c].apo != null)
+                            grid[a][c].apo.Apdeit(poss);
+
                         grid[a][c].Update(pos, poss);
 
-                    }
+                   // }
                     if (grid[a][c].Died)
                     {
                         grid[a].Remove(grid[a][c]);
@@ -321,7 +326,12 @@ namespace ubeat.GameScreen
             {
                 //IUIObject
                 for (int b = 0; b < objs.Count; b++)
+                {
+                    if (objs[b] is ApproachObj)
+                        continue;
+
                     objs[b].Update();
+                }
             }   
 
 
@@ -340,6 +350,7 @@ namespace ubeat.GameScreen
                         Paused = false;
                         MainWindow.Instance.Show();
                         BeatmapSelector.Instance.Show();
+                        BeatmapSelector.Instance.Enabled = true;
                         videoplayer.Stop();
                     }
                     else if (Keyboard.GetState().IsKeyDown(Keys.F2))
@@ -370,8 +381,24 @@ namespace ubeat.GameScreen
                         Game1.Instance.player.Paused = false;
                         Paused = false;
                         MainWindow.Instance.Show();
-                        BeatmapSelector.Instance.Show();
+                        if (BeatmapSelector.Instance != null)
+                        {
+                            BeatmapSelector.Instance.Show();
+                            BeatmapSelector.Instance.Enabled = true;
+                        }
+                        else
+                        {
+                            new BeatmapSelector().Show();
+                        }
                         videoplayer.Stop();
+                    }
+                    else if (Keyboard.GetState().IsKeyDown(Keys.F3))
+                    {
+                        System.Threading.Thread.Sleep(100);
+                        if (ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas.Settings.Instance == null)
+                        {
+                            new ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas.Settings().Show();
+                        }
                     }
                 }
             }
@@ -386,40 +413,59 @@ namespace ubeat.GameScreen
         {
             int screenWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
             int screenHeight = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
-            Rectangle screenRectangle = new Rectangle(0, 0, screenWidth, screenHeight);
+
+            //Rectangle screenRectangle = new Rectangle(0, 0, screenWidth, screenHeight);
+
 
             if (Background != null)
-            {              
-                Game1.Instance.spriteBatch.Draw(Background, screenRectangle, Color.White);
+            {
+                Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, (int)(((float)Background.Height / (float)Background.Width) * (float)screenWidth));
+
+                //Game1.Instance.spriteBatch.Draw(Background, screenRectangle, Color.White);
+                Game1.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+
             }
             else if(!inGame)
             {
                 return;
             }
-            
-            
 
-            if (!videoplayer.Stopped)
+
+            if (Game1.Instance.VideoEnabled)
             {
-                byte[] frame = videoplayer.GetFrame();
-                if (frame != null)
+                Rectangle screenVideoRectangle = new Rectangle();
+                if (!videoplayer.Stopped)
                 {
 
-                    Texture2D texture = new Texture2D(Game1.Instance.GraphicsDevice, videoplayer.vdc.width, videoplayer.vdc.height);
+                    byte[] frame = videoplayer.GetFrame();
+                    if (frame != null)
+                    {
 
-                    texture.SetData(frame);
-                    lastFrameOfVid = texture;
-                    Game1.Instance.spriteBatch.Draw(texture, screenRectangle, Color.White);
+                        Game1.Instance.spriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
 
-                }
+
+                        Texture2D texture = new Texture2D(Game1.Instance.GraphicsDevice, videoplayer.vdc.width, videoplayer.vdc.height);
+                        screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, (int)(((float)texture.Height / (float)texture.Width) * (float)screenWidth));
+                        texture.SetData(frame);
+                        //lastFrameOfVid = texture;
+                        Game1.Instance.spriteBatch.Draw(texture, screenVideoRectangle, null, Color.White, 0, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 0);
+                        texture.Dispose();
+
+                    }/*
                 else
                 {
                     if (lastFrameOfVid != null)
                     {
-                        Game1.Instance.spriteBatch.Draw(lastFrameOfVid, screenRectangle, Color.White);
+                        Game1.Instance.spriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
+
+
+                        screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, (int)(((float)lastFrameOfVid.Height / (float)lastFrameOfVid.Width) * (float)screenWidth));
+                        Game1.Instance.spriteBatch.Draw(lastFrameOfVid, screenVideoRectangle, null, Color.White, 0, new Vector2(lastFrameOfVid.Width / 2, lastFrameOfVid.Height / 2), SpriteEffects.None, 0);
                     }
+                }*/
                 }
             }
+
 
 
             //IN GAME
@@ -431,12 +477,12 @@ namespace ubeat.GameScreen
             //draw square
             int sWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
             int sHeight = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
-            int xi = (sWidth / 2) + (Game1.Instance.buttonDefault.Bounds.Width + 20) * 1;
-            int yi = (sHeight / 2) + (Game1.Instance.buttonDefault.Bounds.Height + 20) * 1;
+            int xi = (sWidth / 2) + (Game1.Instance.buttonDefault.Bounds.Width + 10) * 1;
+            int yi = (sHeight / 2) + (Game1.Instance.buttonDefault.Bounds.Height + 10) * 1;
 
 
-            xi = xi - (Game1.Instance.buttonDefault.Bounds.Width + 40) * 2 - (Game1.Instance.buttonDefault.Bounds.Width / 2);
-            yi = yi - (Game1.Instance.buttonDefault.Bounds.Height + 40) * 2 - (Game1.Instance.buttonDefault.Bounds.Height / 2);
+            xi = xi - (Game1.Instance.buttonDefault.Bounds.Width + 20) * 2 - (Game1.Instance.buttonDefault.Bounds.Width / 2);
+            yi = yi - (Game1.Instance.buttonDefault.Bounds.Height + 20) * 2 - (Game1.Instance.buttonDefault.Bounds.Height / 2);
             Game1.Instance.spriteBatch.Draw(bg, new Vector2(xi,yi), Color.White*.75f);
            
             int objectsCount = 0;
@@ -446,7 +492,12 @@ namespace ubeat.GameScreen
                 {
                     objectsCount++;
                     Vector2 poss = GetPositionFor(a+1);
+                    poss = new Vector2(poss.X,poss.Y +(c*5));
+                    
                     grid[a][c].Render(pos,poss);
+                    if (grid[a][c].apo != null)
+                        grid[a][c].apo.Render();
+
                     if (grid[a][c].Died)
                     {
                         grid[a].Remove(grid[a][c]);
@@ -458,10 +509,11 @@ namespace ubeat.GameScreen
                 }
             }
 
-            
-
             for (int b = 0; b < objs.Count; b++)
+            {
+                if (objs[b] is ApproachObj) continue;
                 objs[b].Render();
+            }
 
             if (nomoreobjectsplsm8 && inGame)
             {
@@ -471,7 +523,7 @@ namespace ubeat.GameScreen
                     ScoreDispl.isActive = false;
                     Health.Stop();
                     System.Threading.Thread thr = new System.Threading.Thread(new System.Threading.ThreadStart(() => {
-                        System.Threading.Thread.Sleep(1200);
+                        System.Threading.Thread.Sleep(2000);
                         Background = null;
                         MainWindow.Instance.ShowAsync();
                         videoplayer.Stop();

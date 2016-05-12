@@ -15,6 +15,8 @@ namespace ubeat
 {
     public partial class BeatmapSelector : Form
     {
+        [DllImport("user32.dll")]
+        static extern bool SetForegroundWindow(IntPtr hWnd);
 
         [DllImport("user32.dll")]
         public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
@@ -34,14 +36,15 @@ namespace ubeat
         {
             Instance = this;
             InitializeComponent();
-            beatmapList = Game1.Instance.AllBeatmaps;
+
+            beatmapList = Game1.Instance.AllBeatmaps.OrderBy(x => x.Artist).ToList<Beatmap.Mapset>();
             treeView1.BeforeSelect+=treeView1_BeforeSelect;
         }
 
         private void BeatmapSelector_Load(object sender, EventArgs e)
         {
+
             
-          
             for (int a = 0; a < beatmapList.Count; a++)
             {
                 TreeNode lvi = new TreeNode() { Text = string.Format("{0} - {1}", beatmapList[a].Artist, beatmapList[a].Title) };
@@ -59,13 +62,36 @@ namespace ubeat
                 treeView1.Nodes.Add(lvi);
                 
             }
-            treeView1.Sort();
-            
-            
+            //treeView1.Sort();
+
+            this.Height = 601;
             treeView1.MouseDoubleClick += treeView1_DoubleClick;
             treeView1.KeyPress += treeView1_DoubleClick;
 
-            
+            if (this.Width > Game1.Instance.wSize.X)
+            {
+                this.Width = (int)Game1.Instance.wSize.X;
+                
+            }
+            if (Game1.Instance.wSize.X < 801)
+            {
+                this.Left = 0;
+            }
+            else
+            {
+                this.Left = (int)(Game1.Instance.wSize.X/2) - (this.Width / 2);
+            }
+
+            if (this.Height > Game1.Instance.wSize.Y)
+            {
+                this.Height = (int)Game1.Instance.wSize.Y;
+                
+            }
+            if (Game1.Instance.wSize.Y < 601)
+            {
+                this.Top = 0;
+            }
+
 
                 IntPtr hostHandle = MainWindow.Instance.Handle;
                 IntPtr guestHandle = this.Handle;
@@ -74,14 +100,22 @@ namespace ubeat
                 SetParent(guestHandle, hostHandle);
                 this.Show();
 
-                this.Opacity = .8f;
+               
+
         }
 
         void treeView1_DoubleClick(object sender, EventArgs e)
         {
+           
             if (e is KeyPressEventArgs)
             {
                 KeyPressEventArgs ev = (KeyPressEventArgs)e;
+
+                if (!this.Visible)
+                {
+                    ev.Handled = true;
+                    return;
+                }
 
                 if (ev.KeyChar == 13)
                 {
@@ -92,7 +126,10 @@ namespace ubeat
             }
             else if(e is MouseEventArgs)
             {
-                
+                if (!this.Visible)
+                {
+                   return;
+                }
                 play();
             }
         }
@@ -194,6 +231,8 @@ namespace ubeat
 
             MainWindow.Instance.Visible = false;
             this.Visible = false;
+            this.Enabled = false;
+            SetForegroundWindow(Game1.Instance.Window.Handle);
             Game1.Instance.GameStart(((ListBeatmapItem)((TreeView)treeView1).SelectedNode).Beatmap);
         }
 
@@ -205,6 +244,17 @@ namespace ubeat
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
 
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            play();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            MainWindow.Instance.ShowControls();
+            this.Visible = false;
         }
     }
 }

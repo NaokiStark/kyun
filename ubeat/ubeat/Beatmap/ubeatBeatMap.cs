@@ -48,6 +48,7 @@ namespace ubeat.Beatmap
                 return (int)((float)Score.ScoreType.Good - this.OverallDifficulty * 6f);
             }
         }
+        
         public static ubeatBeatMap FromFile(string path)
         {
             StreamReader ubeatFile = new StreamReader(path);
@@ -103,10 +104,8 @@ namespace ubeat.Beatmap
                 }
                 tmoHitObjs.Add(tmpHitObj);
             }
+
             tmpmap.HitObjects = tmoHitObjs;
-
-            
-
 
             return tmpmap;
         }

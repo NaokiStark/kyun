@@ -89,8 +89,14 @@ namespace osuBMParser
                 ActualSection = line.ToLower();
                 return;
             }
+            else if(line.StartsWith("osu file"))
+            {
+                ActualSection = "osu";
+            }
+
            switch(ActualSection)
             {
+               case "osu":
                case "[general]":
                     normalParse(line);
                     break;
@@ -133,9 +139,8 @@ namespace osuBMParser
         {
             switch (section)
             {
+
                 case OsuFileSection.FORMAT:
-                    beatmap.FormatVersion = data;
-                    break;
                 case OsuFileSection.GENERAL:
                 case OsuFileSection.EDITOR:
                 case OsuFileSection.METADATA:
@@ -189,12 +194,20 @@ namespace osuBMParser
         #region parseMethods
         private void normalParse(string data)
         {
+            if (data.ToLower().StartsWith("osu file"))
+            {
+                beatmap.FormatVersion = data.Split(' ')[3].Replace("v","");
+                return;
+            }
             string[] tokens = data.Split(':');
             tokens[1] = tokens[1].Trim();
             switch (tokens[0].ToLower().Trim())
             {
                 case "audiofilename":
                     beatmap.AudioFileName = tokens[1];
+                    break;
+                case "mode":
+                    beatmap.Mode = toInt(tokens[1]);
                     break;
                 case "audioleadin":
                     beatmap.AudioLeadIn = toInt(tokens[1]);
@@ -225,6 +238,9 @@ namespace osuBMParser
                     break;
                 case "slidertickrate":
                     beatmap.SliderTickRate = SafeParse(tokens[1]);
+                    break;
+                case "source":
+                    beatmap.Source = tokens[1];
                     break;
                     /*
                 case "slidermultiplier":
@@ -354,7 +370,7 @@ namespace osuBMParser
             //Parse all information for the hitObject
 
             //Global stuff first
-            //hitObject.Position = new Vector2(toFloat(tokens[0]), toFloat(tokens[1]));
+            hitObject.Position = new Vector2(toFloat(tokens[0]), toFloat(tokens[1]));
             hitObject.Time = toInt(tokens[2]);
             //hitObject.HitSound = toInt(tokens[4]);
             hitObject.IsNewCombo = typeBits[2];

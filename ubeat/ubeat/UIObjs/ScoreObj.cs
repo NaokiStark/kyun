@@ -60,15 +60,12 @@ namespace ubeat.UIObjs
                         Game1.Instance.spriteBatch.Draw(Game1.Instance.MissTx, tcR, Color.White * Opacity);
                         break;
                     case Score.ScoreType.Perfect:
-                        //Game1.Instance.spriteBatch.DrawString(Game1.Instance.fontDefault, "Perfect", Position, new Color(255,0,0,Opacity),0f,new Vector2(0),1f,SpriteEffects.None,0f);
                         Game1.Instance.spriteBatch.Draw(Game1.Instance.PerfectTx, tcR, Color.White * Opacity);
                         break;
                     case Score.ScoreType.Excellent:
-                        //Game1.Instance.spriteBatch.DrawString(Game1.Instance.fontDefault, "Excellent", Position, new Color(255,0,0,Opacity),0f,new Vector2(0),1f,SpriteEffects.None,0f);
                         Game1.Instance.spriteBatch.Draw(Game1.Instance.ExcellentTx, tcR, Color.White * Opacity);
                         break;
                     case Score.ScoreType.Good:
-                        //Game1.Instance.spriteBatch.DrawString(Game1.Instance.fontDefault, "Good", Position, new Color(255,0,0,Opacity),0f,new Vector2(0),1f,SpriteEffects.None,0f);
                         Game1.Instance.spriteBatch.Draw(Game1.Instance.GoodTx, tcR, Color.White * Opacity);
                         break;
                     

@@ -18,5 +18,15 @@ namespace ubeat.Beatmap
             this.Artist = artist;
             this.Creator = creator;
         }
+        public static Mapset OrderByDiff(Mapset mp)
+        {
+            var ss = mp.OrderBy(x => x.OverallDifficulty).ToList();
+            mp.Clear();
+            foreach (ubeatBeatMap gg in ss)
+            {
+                mp.Add(gg);
+            }
+            return mp;
+        }
     }
 }

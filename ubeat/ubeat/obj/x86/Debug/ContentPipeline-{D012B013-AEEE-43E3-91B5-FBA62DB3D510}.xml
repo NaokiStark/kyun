@@ -181,6 +181,51 @@
       <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\combobreak.xnb</Output>
       <Time>2016-04-25T11:45:03.9238457-03:00</Time>
     </Item>
+    <Item>
+      <Source>button_0.png</Source>
+      <Name>button_0</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\button_0.xnb</Output>
+      <Time>2016-05-09T20:20:05.2484894-03:00</Time>
+    </Item>
+    <Item>
+      <Source>holder_0.png</Source>
+      <Name>holder_0</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\holder_0.xnb</Output>
+      <Time>2016-05-09T20:20:05.2294883-03:00</Time>
+    </Item>
+    <Item>
+      <Source>approach.png</Source>
+      <Name>approach</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\approach.xnb</Output>
+      <Time>2016-05-09T21:49:10.092197-03:00</Time>
+    </Item>
+    <Item>
+      <Source>hold.png</Source>
+      <Name>hold</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\hold.xnb</Output>
+      <Time>2016-05-09T23:56:17.9594861-03:00</Time>
+    </Item>
+    <Item>
+      <Source>push.png</Source>
+      <Name>push</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\push.xnb</Output>
+      <Time>2016-05-09T23:56:17.9614862-03:00</Time>
+    </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <ContentProjectGUID>{D012B013-AEEE-43E3-91B5-FBA62DB3D510}</ContentProjectGUID>

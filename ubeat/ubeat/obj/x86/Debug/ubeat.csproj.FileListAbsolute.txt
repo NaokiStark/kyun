@@ -44,3 +44,10 @@ C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\
 C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\combobreak.xnb
 C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\NAudio.dll
 C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\NAudio.xml
+C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\obj\x86\Debug\ubeat.ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas.Settings.resources
+C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\obj\x86\Debug\ubeat.VolumeDlg.resources
+C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\button_0.xnb
+C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\holder_0.xnb
+C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\approach.xnb
+C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\hold.xnb
+C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\push.xnb

@@ -87,6 +87,7 @@
             this.button2.TabIndex = 3;
             this.button2.Text = "Settings";
             this.button2.UseVisualStyleBackColor = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button3
             // 
@@ -137,6 +138,7 @@
             this.button4.TabIndex = 7;
             this.button4.Text = "pause";
             this.button4.UseVisualStyleBackColor = true;
+            this.button4.Visible = false;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // label3
@@ -150,6 +152,7 @@
             this.label3.Size = new System.Drawing.Size(219, 38);
             this.label3.TabIndex = 8;
             this.label3.Text = "Beta build, for test only";
+            this.label3.Visible = false;
             // 
             // MainWindow
             // 

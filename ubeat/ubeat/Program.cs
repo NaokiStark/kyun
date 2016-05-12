@@ -9,6 +9,8 @@ namespace ubeat
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
+        /// 
+        [STAThread]
         static void Main(string[] args)
         {
             Version vr = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
@@ -27,7 +29,7 @@ namespace ubeat
             Logger.Instance.Info("=                                   =");
             Logger.Instance.Info("=====================================");
             Logger.Instance.Info("");
-
+            
             try
             {
                 using (Game1 game = new Game1())

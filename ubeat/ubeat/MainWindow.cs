@@ -42,7 +42,7 @@ namespace ubeat
         {
             playRandomSong();
 
-            label2.Visible = true;
+            label2.Visible = false;
 
             //// DEBUG ////
             /*
@@ -63,11 +63,11 @@ namespace ubeat
             this.Hide();
             IntPtr hostHandle = Game1.Instance.Window.Handle;
             IntPtr guestHandle = this.Handle;
+
             
-            this.Width = Screen.PrimaryScreen.Bounds.Width;
-            this.Height = Screen.PrimaryScreen.Bounds.Height;
             this.Top = 0;
             this.Left = 0;
+            
 
             SetWindowLong(guestHandle, GWL_STYLE, GetWindowLong(guestHandle, GWL_STYLE) | WS_CHILD);
             SetParent(guestHandle, hostHandle);
@@ -125,6 +125,9 @@ namespace ubeat
             Random c = new Random(DateTime.Now.Millisecond);
 
             List<Beatmap.Mapset> bms = Game1.Instance.AllBeatmaps;
+
+            if (bms.Count < 1) return;
+
             Beatmap.Mapset bsel = bms[c.Next(0, bms.Count - 1)];
             Beatmap.ubeatBeatMap ubm = bsel[c.Next(0, bsel.Count - 1)];
             string songpath = ubm.SongPath;
@@ -181,14 +184,17 @@ namespace ubeat
         {
            
             this.HideControls();
-            if(bmselector==null)
-                bmselector = new BeatmapSelector();
-            bmselector.Show();
+            new BeatmapSelector().Show();
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
             Game1.Instance.player.Paused = !Game1.Instance.player.Paused;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            new ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas.Settings().Show();
         }
     }
 }

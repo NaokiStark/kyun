@@ -30,13 +30,13 @@ namespace ubeat.UIObjs
         public ubeatBeatMap BeatmapContainer { get; set; }
         public int Location { get; set; }
         public decimal EndTime { get; set; }
+        public ApproachObj apo { get; set; }
+
         #endregion
 
         #region PrivateVars
         Timer tmrApproachOpacity;
         float opacity=0;
-        ApproachObj apo;
-
 
         #endregion
 
@@ -208,7 +208,11 @@ namespace ubeat.UIObjs
 
                 }
                 Game1.Instance.spriteBatch.Draw(this.Texture, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
-
+                if (ccc >= StartTime - BeatmapContainer.Timing50)
+                {
+                    float perct = (float)(ccc / (StartTime - BeatmapContainer.Timing300)) * 1f;
+                    Game1.Instance.spriteBatch.Draw(Game1.Instance.Push, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Game1.Instance.Push.Bounds.Width, Game1.Instance.Push.Bounds.Height), Color.White * perct);
+                }
             }
         }
         public void Stop(long Position)
@@ -290,5 +294,7 @@ namespace ubeat.UIObjs
             return sscv;
         }
         #endregion
+
+       
     }
 }

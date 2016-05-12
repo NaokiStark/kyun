@@ -18,3 +18,8 @@ Content\HolderTick.xnb
 Content\wait2.xnb
 Content\soft-hitclap2.xnb
 Content\combobreak.xnb
+Content\button_0.xnb
+Content\holder_0.xnb
+Content\approach.xnb
+Content\hold.xnb
+Content\push.xnb

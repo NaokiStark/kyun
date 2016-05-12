@@ -54,7 +54,11 @@ namespace ubeat
             }
             else if (queue[0].Contains("[WARN]"))
             {
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine(log(queue[0]));
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.Gray;
             }
             else if (queue[0].Contains(" [SEVERE] "))
             {

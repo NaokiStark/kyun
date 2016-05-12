@@ -27,11 +27,12 @@ namespace ubeat
 
         public static int GWL_STYLE = -16;
         public static int WS_CHILD = 0x40000000; 
-
+        
         public ScoreScreen()
         {
             InitializeComponent();
-
+            for(int a =0;a< this.Controls.Count;a++)
+                this.Controls[a].Click +=ScoreScreen_Click;
         }
 
         private void ScoreScreen_Load(object sender, EventArgs e)
@@ -89,6 +90,24 @@ namespace ubeat
                 Logger.Instance.Warn("Nopenope");
             }
 
+            /*
+            if (Game1.Instance.wSize.X < 801)
+            {
+                this.Left = 0;
+            }
+            else
+            {*/
+                this.Left = (int)(Game1.Instance.wSize.X / 2) - (this.Width / 2);
+            /*}
+            if (Game1.Instance.wSize.Y < 601)
+            {
+                this.Top = 0;
+            }
+            else
+            {*/
+                this.Top = (int)(Game1.Instance.wSize.Y / 2) - (this.Height / 2);
+            //}
+
             //Paste Window
             IntPtr hostHandle = MainWindow.Instance.Handle;
             IntPtr guestHandle = this.Handle;
@@ -100,8 +119,15 @@ namespace ubeat
 
         private void ScoreScreen_FormClosing(object sender, FormClosingEventArgs e)
         {
-
-            BeatmapSelector.Instance.Show();
+            if (BeatmapSelector.Instance == null)
+            {
+                new BeatmapSelector().Show();
+            }
+            else
+            {
+                BeatmapSelector.Instance.Show();
+                BeatmapSelector.Instance.Enabled = true;
+            }
             Game1.Instance.player.Play(Grid.Instance.bemap.SongPath);
             Game1.Instance.player.Volume = Game1.Instance.GeneralVolume;
             //BeatmapSelector.Instance.ShowControls();
@@ -109,7 +135,8 @@ namespace ubeat
 
         private void ScoreScreen_KeyPress(object sender, KeyPressEventArgs e)
         {
-            //this.Close();
+            
+           
         }
 
         private void ScoreScreen_Click(object sender, EventArgs e)
@@ -125,6 +152,15 @@ namespace ubeat
         private void label4_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void ScoreScreen_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode== Keys.Escape)
+            {
+                e.Handled = true;
+                this.Close();
+            }
         }
 
         

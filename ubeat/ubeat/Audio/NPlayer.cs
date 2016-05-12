@@ -33,7 +33,7 @@ namespace ubeat.Audio
                     {
                         try
                         {
-                            return (long)audioFile.CurrentTime.TotalMilliseconds  - 52;
+                            return (long)audioFile.CurrentTime.TotalMilliseconds;
                         }
                         catch { return 0; }
                     }

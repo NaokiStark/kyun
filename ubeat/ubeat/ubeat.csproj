@@ -104,7 +104,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Audio\NPlayer.cs" />
-    <Compile Include="Audio\Player.cs" />
     <Compile Include="BeatmapSelector.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -115,6 +114,12 @@
     <Compile Include="Beatmap\IHitObj.cs" />
     <Compile Include="Beatmap\Mapset.cs" />
     <Compile Include="Beatmap\ubeatBeatMap.cs" />
+    <Compile Include="ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas\Settings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas\Settings.Designer.cs">
+      <DependentUpon>Settings.cs</DependentUpon>
+    </Compile>
     <Compile Include="GameScreen\Grid.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MainWindow.cs">
@@ -145,6 +150,8 @@
     <Compile Include="Score\ScoreType.cs" />
     <Compile Include="Beatmap\HitButton.cs" />
     <Compile Include="Beatmap\HitHolder.cs" />
+    <Compile Include="Screen\ScreenMode.cs" />
+    <Compile Include="Screen\ScreenModeManager.cs" />
     <Compile Include="Settings1.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -155,9 +162,18 @@
     <Compile Include="UIObjs\ScoreObj.cs" />
     <Compile Include="Utils\ListBeatmapItem.cs" />
     <Compile Include="Utils\ReplayBuilder.cs" />
+    <Compile Include="Utils\VerticalProgressBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Video\FFmpeg.cs" />
     <Compile Include="Video\VideoDecoder.cs" />
     <Compile Include="Video\VideoPlayer.cs" />
+    <Compile Include="VolumeDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VolumeDlg.Designer.cs">
+      <DependentUpon>VolumeDlg.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
@@ -201,6 +217,9 @@
     <EmbeddedResource Include="BeatmapSelector.resx">
       <DependentUpon>BeatmapSelector.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas\Settings.resx">
+      <DependentUpon>Settings.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -210,6 +229,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ScoreScreen.resx">
       <DependentUpon>ScoreScreen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VolumeDlg.resx">
+      <DependentUpon>VolumeDlg.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

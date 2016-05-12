@@ -8,6 +8,7 @@ namespace ubeat.Utils
 {
     public class ListBeatmapItem : TreeNode
     {
-        public Beatmap.ubeatBeatMap Beatmap { get; set; } 
+        public Beatmap.ubeatBeatMap Beatmap { get; set; }
+
     }
 }

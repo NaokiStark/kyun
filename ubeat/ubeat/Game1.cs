@@ -30,6 +30,9 @@ namespace ubeat
         public SoundEffect soundEffect;
         public List<Beatmap.ubeatBeatMap> Beatmaps = new List<Beatmap.ubeatBeatMap>();
         public float elapsed = 0;
+        public bool VideoEnabled { get; set; }
+        public Vector2 wSize = new Vector2(800,600);
+        public GameTime GameTimeP { get; set; }
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hwnd, int nCmdShow);
 
@@ -48,10 +51,14 @@ namespace ubeat
                 if (val > 1) val = 1;
                 
                 if (player != null)
-                    player.soundOut.Volume = val;
+                    if(player.soundOut!=null)
+                        player.soundOut.Volume = val;
+
                 vol = val;
+                
                 Settings1.Default.Volume = val;
                 Settings1.Default.Save();
+                VolDlg.VolShow();
             }
         }
 
@@ -61,16 +68,17 @@ namespace ubeat
            
             Instance = this;
             graphics = new GraphicsDeviceManager(this);
+            GameTimeP = new GameTime();
+
             Content.RootDirectory = "Content";
 
-            /*
-            this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 100.0f);
-
-            this.IsFixedTimeStep = false;
-            graphics.SynchronizeWithVerticalRetrace = false;
-    */
-
             
+            this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 60.0f);
+
+            //this.IsFixedTimeStep = false;
+            graphics.SynchronizeWithVerticalRetrace = false;
+
+            VideoEnabled = Settings1.Default.Video;
         }
 
         Grid grid;
@@ -88,6 +96,8 @@ namespace ubeat
         protected override void Initialize()
         {
 
+            VolDlg = new VolumeDlg();
+
             base.Initialize();
             player = new NPlayer();
 
@@ -97,54 +107,69 @@ namespace ubeat
             Logger.Instance.Info("");
             AllBeatmaps = new List<Beatmap.Mapset>();
 
-            DirectoryInfo osuDirPath = new DirectoryInfo(@"C:\Program Files (x86)\osu!\Songs");
-            if (osuDirPath.Exists)
+            if (Settings1.Default.osuBeatmaps != "")
             {
-                DirectoryInfo[] osuMapsDirs = osuDirPath.GetDirectories();
-                int flieCnt = 0;
 
-
-                int fCount = osuMapsDirs.Length;
-                int dCount = 0;
-
-                foreach (DirectoryInfo odir in osuMapsDirs)
+                DirectoryInfo osuDirPath = new DirectoryInfo(Settings1.Default.osuBeatmaps);
+                if (osuDirPath.Exists)
                 {
-                    dCount++;
-                    FileInfo[] fils = odir.GetFiles();
-                    // Mapset
-                    Beatmap.Mapset bmms = null;
-                    foreach (FileInfo fff in fils)
-                    {
+                    DirectoryInfo[] osuMapsDirs = osuDirPath.GetDirectories();
+                    int flieCnt = 0;
 
-                        if (fff.Extension.ToLower() == ".osu")
+
+                    int fCount = osuMapsDirs.Length;
+                    int dCount = 0;
+
+                    foreach (DirectoryInfo odir in osuMapsDirs)
+                    {
+                        dCount++;
+                        FileInfo[] fils = odir.GetFiles();
+                        // Mapset
+                        Beatmap.Mapset bmms = null;
+                        foreach (FileInfo fff in fils)
                         {
 
-                            flieCnt++;
-                            OsuUtils.OsuBeatMap bmp = OsuUtils.OsuBeatMap.FromFile(fff.FullName);
-                            if (bmp != null)
+                            if (fff.Extension.ToLower() == ".osu")
                             {
 
-                                //Beatmaps.Add(bmp);
-                                if (bmms == null)
-                                    bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator);
-                                bmms.Add(bmp);
+                                flieCnt++;
+                                OsuUtils.OsuBeatMap bmp = OsuUtils.OsuBeatMap.FromFile(fff.FullName);
+                                if (bmp != null)
+                                {
+
+                                    //Beatmaps.Add(bmp);
+                                    if (bmms == null)
+                                        bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator);
+                                    bmms.Add(bmp);
 
 
+                                }
+
+                                Debug.WriteLine("File: {0}s", flieCnt);
                             }
 
-                            Debug.WriteLine("File: {0}s", flieCnt);
                         }
+                        if (bmms != null)
+                        {
+                            Beatmap.Mapset mapst = Beatmap.Mapset.OrderByDiff(bmms);
 
+                            AllBeatmaps.Add(mapst);
+                        }
+                        float pctg = (float)dCount / (float)fCount * 100f;
+                        if (pctg % 20 == 0)
+                            Logger.Instance.Info("-> {0}%", pctg);
                     }
-                    if (bmms != null)
-                    {
-                        AllBeatmaps.Add(bmms);
-                    }
-                    float pctg = (float)dCount / (float)fCount * 100f;
-                    if (pctg % 20 == 0)
-                        Logger.Instance.Info("-> {0}%", pctg);
+                }
+                else
+                {
+                    Logger.Instance.Warn("Could not find Osu! beatmaps folder, please, make sure that if exist.");
                 }
             }
+            else
+            {
+                Logger.Instance.Warn("osu! beatmaps is not setted, if you have osu beatmaps, set folder in config and restart ubeat.");
+            }
+
             loadLocalMaps();
             Logger.Instance.Info("");
             Logger.Instance.Info("Done.");
@@ -206,7 +231,9 @@ namespace ubeat
                 }
                 if (bmms != null)
                 {
-                    AllBeatmaps.Add(bmms);
+                    Beatmap.Mapset mapst = Beatmap.Mapset.OrderByDiff(bmms);
+
+                    AllBeatmaps.Add(mapst);
                 }
                 float pctg = (float)dCount / (float)fCount * 100f;
                 if (pctg % 20 == 0)
@@ -225,16 +252,32 @@ namespace ubeat
         void hideGameWindow()
         {
             Logger.Instance.Info("Loading enviroment");
-            this.graphics.PreferredBackBufferWidth = this.GraphicsDevice.Adapter.CurrentDisplayMode.Width;
-            this.graphics.PreferredBackBufferHeight = this.GraphicsDevice.Adapter.CurrentDisplayMode.Height;
-            
+
+            List<Screen.ScreenMode> srcm = Screen.ScreenModeManager.GetSupportedModes();
+
+            wSize.X = srcm[Settings1.Default.ScreenMode].Width;
+            wSize.Y = srcm[Settings1.Default.ScreenMode].Height;
+
+            this.graphics.PreferredBackBufferWidth = (int)wSize.X;
+            this.graphics.PreferredBackBufferHeight = (int)wSize.Y;
+
             this.graphics.ApplyChanges();
 
-            System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Form.FromHandle(Window.Handle);
-            
-            FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            FormGame.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 
+            /*
+            this.graphics.PreferredBackBufferWidth = this.GraphicsDevice.Adapter.CurrentDisplayMode.Width;
+            this.graphics.PreferredBackBufferHeight = this.GraphicsDevice.Adapter.CurrentDisplayMode.Height;
+
+            */
+
+            if(srcm[Settings1.Default.ScreenMode].WindowMode != Screen.WindowDisposition.Windowed){
+                
+                System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Form.FromHandle(Window.Handle);
+            
+                FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+                FormGame.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            }
+           
             
             mainWindow = new MainWindow();
             mainWindow.FormClosed += mainWindow_FormClosed;
@@ -245,7 +288,9 @@ namespace ubeat
         
         void showMain()
         {
-                    
+            mainWindow.WindowState = System.Windows.Forms.FormWindowState.Normal;
+            mainWindow.Width = (int)wSize.X;
+            mainWindow.Height = (int)wSize.Y; 
             mainWindow.Show();
             GeneralVolume = Settings1.Default.Volume;
             Logger.Instance.Info("");
@@ -271,6 +316,8 @@ namespace ubeat
         public SoundEffect HolderHit;
         public SoundEffect ComboBreak;
         public Texture2D FailSplash;
+        public Texture2D Push;
+        public Texture2D Hold;
         
         protected override void LoadContent()
         {
@@ -279,9 +326,9 @@ namespace ubeat
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            buttonDefault = Content.Load<Texture2D>("button");
-            buttonHolder = Content.Load<Texture2D>("holder");
-            waitDefault = Content.Load<Texture2D>("wait2");
+            buttonDefault = Content.Load<Texture2D>("button_0");
+            buttonHolder = Content.Load<Texture2D>("holder_0");
+            waitDefault = Content.Load<Texture2D>("approach");
             HolderFillDeff = Content.Load<Texture2D>("HolderFill");
             radiance = Content.Load<Texture2D>("radiance");
             PauseSplash = Content.Load<Texture2D>("pausesplash");
@@ -290,6 +337,9 @@ namespace ubeat
             GoodTx = Content.Load<Texture2D>("Good");
             MissTx = Content.Load<Texture2D>("Miss");
             FailSplash = Content.Load<Texture2D>("failsplash");
+            Push = Content.Load<Texture2D>("push");
+            Hold = Content.Load<Texture2D>("hold");
+
 
             fontDefault = Content.Load<SpriteFont>("SpriteFont1");
 
@@ -298,6 +348,7 @@ namespace ubeat
             HolderTick = Content.Load<SoundEffect>("HolderTick");
             HolderHit = Content.Load<SoundEffect>("soft-hitclap2");
             ComboBreak = Content.Load<SoundEffect>("combobreak");
+
             Logger.Instance.Info("");
             Logger.Instance.Info("Done.");
             Logger.Instance.Info("");
@@ -318,6 +369,9 @@ namespace ubeat
         #region GameUpdates
         protected override void Update(GameTime gameTime)
         {
+            //Update Gametime FIRST
+            GameTimeP = gameTime;
+
             if (Keyboard.GetState().IsKeyDown(Keys.Add))
                 GeneralVolume += .02f;
 
@@ -357,5 +411,53 @@ namespace ubeat
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool AllocConsole();
+
+        public void ChangeResolution(Screen.ScreenMode screenMode)
+        {
+            this.SuppressDraw();
+
+            mainWindow.SuspendLayout();
+            System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Form.FromHandle(Window.Handle);
+
+            if (screenMode.WindowMode != Screen.WindowDisposition.Windowed)
+            {
+                FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+                FormGame.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+                mainWindow.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            }
+            else
+            {
+                FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+                FormGame.WindowState = System.Windows.Forms.FormWindowState.Normal;
+                mainWindow.WindowState = System.Windows.Forms.FormWindowState.Normal;
+
+            }
+
+            this.wSize.X = screenMode.Width;
+            this.wSize.Y = screenMode.Height;
+
+            this.graphics.PreferredBackBufferWidth = (int)wSize.X;
+            this.graphics.PreferredBackBufferHeight = (int)wSize.Y;
+
+
+            this.graphics.ApplyChanges();
+
+            mainWindow.Width = (int)wSize.X;
+            mainWindow.Height = (int)wSize.Y;
+          
+            if (BeatmapSelector.Instance != null)
+            {
+                MainWindow.Instance.ShowControls();
+                BeatmapSelector.Instance.Close();
+            }
+            mainWindow.ResumeLayout();
+        }
+
+        public void ChangeFrameRate(float fps)
+        {
+            this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / fps);
+        }
+
+        public VolumeDlg VolDlg { get; set; }
     }
 }

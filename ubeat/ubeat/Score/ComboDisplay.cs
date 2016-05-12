@@ -53,7 +53,7 @@ namespace ubeat.Score
         {
             float newWidth = size.X / 1.01f;
 
-            if (newWidth > 200)
+            if (newWidth > 300)
             {                
                 float newHeight = (60f / 200f) * newWidth;
                 size = new Vector2(newWidth, newHeight);

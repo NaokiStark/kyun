@@ -75,12 +75,12 @@ namespace ubeat.UIObjs
             }
         }
 
-        public void Update()
+        public void Apdeit(Vector2 position)
         {
-            
-            RotationAngle += Game1.Instance.elapsed;
-            float circle = MathHelper.Pi * 2;
-            RotationAngle = RotationAngle % circle;
+            Position = position;
+//            RotationAngle += Game1.Instance.elapsed;
+            //float circle = MathHelper.Pi * 2;
+            //RotationAngle = RotationAngle % circle;
         }
         float RotationAngle=0;
         public void Render()
@@ -92,9 +92,10 @@ namespace ubeat.UIObjs
            
 
                 Game1.Instance.spriteBatch.Draw(this.Texture,
-                    new Rectangle((int)Position.X + (int)Texture.Bounds.Width / 2,(int)Position.Y + (int)Texture.Bounds.Height / 2, (int)width, (int)height),
+                    new Rectangle((int)Position.X + (int)135 / 2,(int)Position.Y + (int)135 / 2, (int)width, (int)height),
                     null, Color.White * opacity,
-                    RotationAngle,
+                    //RotationAngle,
+                    0,
                     new Vector2(Texture.Bounds.Width / 2, Texture.Bounds.Height / 2),
                     Microsoft.Xna.Framework.Graphics.SpriteEffects.None,
                     0);
@@ -102,6 +103,9 @@ namespace ubeat.UIObjs
               //  Game1.Instance.spriteBatch.Draw(this.Texture, new Rectangle((int)Position.X + (int)Texture.Bounds.Width / 2, (int)Position.Y + (int)Texture.Bounds.Height / 2, (int)Texture.Bounds.Width, (int)Texture.Bounds.Height), null, Color.White * opacity, 0, new Vector2(Texture.Bounds.Width / 2, Texture.Bounds.Height / 2), Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0);
         }
 
-
+        public void Update()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

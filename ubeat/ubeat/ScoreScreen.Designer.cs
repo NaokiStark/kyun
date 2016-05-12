@@ -154,11 +154,11 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Exo 2", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(212, 426);
+            this.label4.Location = new System.Drawing.Point(206, 426);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(93, 18);
+            this.label4.Size = new System.Drawing.Size(103, 18);
             this.label4.TabIndex = 13;
-            this.label4.Text = "Click to Back";
+            this.label4.Text = "[Click] to Back";
             this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // label10
@@ -234,6 +234,7 @@
             this.Font = new System.Drawing.Font("Exo 2 Semi Bold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.White;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.Name = "ScoreScreen";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -241,6 +242,7 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScoreScreen_FormClosing);
             this.Load += new System.EventHandler(this.ScoreScreen_Load);
             this.Click += new System.EventHandler(this.ScoreScreen_Click);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ScoreScreen_KeyDown);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ScoreScreen_KeyPress);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);

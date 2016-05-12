@@ -132,12 +132,14 @@ namespace ubeat.Video
             this.frameFinished = 0;
             try
             {
-                ubeat.Video.FFmpeg.avcodec_close(this.pCodecCtx);
-                ubeat.Video.FFmpeg.av_close_input_file(this.pFormatCtx);
+                if (this.pCodecCtx != IntPtr.Zero)
+                {
+                    ubeat.Video.FFmpeg.avcodec_close(this.pCodecCtx);
+                    ubeat.Video.FFmpeg.av_close_input_file(this.pFormatCtx);
+                }
             }
-            catch
-            {
-                Console.WriteLine("");
+            catch(System.AccessViolationException ex){
+                Console.WriteLine(ex.Message);
             }
             GC.Collect();
         }
