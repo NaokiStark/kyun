@@ -196,7 +196,12 @@ namespace osuBMParser
         {
             if (data.ToLower().StartsWith("osu file"))
             {
-                beatmap.FormatVersion = data.Split(' ')[3].Replace("v","");
+                Regex rg = new Regex(@"osu file format v(\d+)", RegexOptions.IgnoreCase);
+                Match mtc = rg.Match(data);
+                if (mtc.Groups[1].Value != null)
+                {
+                    beatmap.FormatVersion = mtc.Groups[1].Value;
+                }
                 return;
             }
             string[] tokens = data.Split(':');
@@ -241,6 +246,11 @@ namespace osuBMParser
                     break;
                 case "source":
                     beatmap.Source = tokens[1];
+                    break;
+                case "tags":
+                    List<string> tnks = tokens[1].Split(' ').ToList<string>();
+                    tnks.ForEach(x => x = x.ToLower());
+                    beatmap.Tags = tnks;
                     break;
                     /*
                 case "slidermultiplier":

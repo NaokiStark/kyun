@@ -2,15 +2,6 @@
 <XnaContent xmlns:Pipeline="Microsoft.Xna.Framework.Content.Pipeline">
   <Asset Type="Pipeline:BuildItemCollection">
     <Item>
-      <Source>button.png</Source>
-      <Name>button</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\button.xnb</Output>
-      <Time>2016-03-21T16:47:36.9122746-03:00</Time>
-    </Item>
-    <Item>
       <Source>SpriteFont1.spritefont</Source>
       <Name>SpriteFont1</Name>
       <Importer>FontDescriptionImporter</Importer>
@@ -20,22 +11,31 @@
       <Time>2016-03-01T03:29:11.8030502-03:00</Time>
     </Item>
     <Item>
-      <Source>hitsound.wav</Source>
-      <Name>hitsound</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
+      <Source>General.spritefont</Source>
+      <Name>General</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\hitsound.xnb</Output>
-      <Time>2016-03-06T04:39:39.6030294-03:00</Time>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\General.xnb</Output>
+      <Time>2016-07-12T02:56:32.2468888-03:00</Time>
     </Item>
     <Item>
-      <Source>holder.png</Source>
-      <Name>holder</Name>
+      <Source>Listbox.spritefont</Source>
+      <Name>Listbox</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\Listbox.xnb</Output>
+      <Time>2016-07-17T06:09:18.1499402-03:00</Time>
+    </Item>
+    <Item>
+      <Source>button.png</Source>
+      <Name>button</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\holder.xnb</Output>
-      <Time>2016-03-21T16:47:36.1762325-03:00</Time>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\button.xnb</Output>
+      <Time>2016-03-21T16:47:36.9122746-03:00</Time>
     </Item>
     <Item>
       <Source>wait.png</Source>
@@ -45,6 +45,15 @@
       <Options>None</Options>
       <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\wait.xnb</Output>
       <Time>2016-03-21T17:01:57.6845201-03:00</Time>
+    </Item>
+    <Item>
+      <Source>holder.png</Source>
+      <Name>holder</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\holder.xnb</Output>
+      <Time>2016-03-21T16:47:36.1762325-03:00</Time>
     </Item>
     <Item>
       <Source>HolderFill.png</Source>
@@ -61,7 +70,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\button2.xnb</Output>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\button2.xnb</Output>
       <Time>2016-03-21T04:42:07.563843-03:00</Time>
     </Item>
     <Item>
@@ -70,7 +79,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\radiance.xnb</Output>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\radiance.xnb</Output>
       <Time>2016-03-21T17:43:44.312912-03:00</Time>
     </Item>
     <Item>
@@ -79,7 +88,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\pausesplash.xnb</Output>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\pausesplash.xnb</Output>
       <Time>2016-03-21T23:45:30.1259698-03:00</Time>
     </Item>
     <Item>
@@ -119,15 +128,6 @@
       <Time>2016-03-24T02:48:52.696772-03:00</Time>
     </Item>
     <Item>
-      <Source>normal-hitnormal2.wav</Source>
-      <Name>normal-hitnormal2</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\normal-hitnormal2.xnb</Output>
-      <Time>2016-03-24T03:57:12.0472414-03:00</Time>
-    </Item>
-    <Item>
       <Source>failsplash.png</Source>
       <Name>failsplash</Name>
       <Importer>TextureImporter</Importer>
@@ -135,24 +135,6 @@
       <Options>None</Options>
       <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\failsplash.xnb</Output>
       <Time>2016-03-25T00:16:02.412059-03:00</Time>
-    </Item>
-    <Item>
-      <Source>HolderFilling.wav</Source>
-      <Name>HolderFilling</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\HolderFilling.xnb</Output>
-      <Time>2016-04-13T18:21:14.6471429-03:00</Time>
-    </Item>
-    <Item>
-      <Source>HolderTick.wav</Source>
-      <Name>HolderTick</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\HolderTick.xnb</Output>
-      <Time>2016-04-13T19:54:37.5666116-03:00</Time>
     </Item>
     <Item>
       <Source>wait2.png</Source>
@@ -164,30 +146,12 @@
       <Time>2016-04-17T22:05:31.6160268-03:00</Time>
     </Item>
     <Item>
-      <Source>soft-hitclap2.wav</Source>
-      <Name>soft-hitclap2</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\soft-hitclap2.xnb</Output>
-      <Time>2016-04-21T08:47:34.1817635-03:00</Time>
-    </Item>
-    <Item>
-      <Source>combobreak.wav</Source>
-      <Name>combobreak</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\combobreak.xnb</Output>
-      <Time>2016-04-25T11:45:03.9238457-03:00</Time>
-    </Item>
-    <Item>
       <Source>button_0.png</Source>
       <Name>button_0</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\button_0.xnb</Output>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\button_0.xnb</Output>
       <Time>2016-05-09T20:20:05.2484894-03:00</Time>
     </Item>
     <Item>
@@ -196,7 +160,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\holder_0.xnb</Output>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\holder_0.xnb</Output>
       <Time>2016-05-09T20:20:05.2294883-03:00</Time>
     </Item>
     <Item>
@@ -205,7 +169,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\approach.xnb</Output>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\approach.xnb</Output>
       <Time>2016-05-09T21:49:10.092197-03:00</Time>
     </Item>
     <Item>
@@ -214,7 +178,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\hold.xnb</Output>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\hold.xnb</Output>
       <Time>2016-05-09T23:56:17.9594861-03:00</Time>
     </Item>
     <Item>
@@ -223,8 +187,71 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\push.xnb</Output>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\push.xnb</Output>
       <Time>2016-05-09T23:56:17.9614862-03:00</Time>
+    </Item>
+    <Item>
+      <Source>ConfigMain.png</Source>
+      <Name>ConfigMain</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\ConfigMain.xnb</Output>
+      <Time>2016-06-23T00:41:36.9410853-03:00</Time>
+    </Item>
+    <Item>
+      <Source>ExitMain.png</Source>
+      <Name>ExitMain</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\ExitMain.xnb</Output>
+      <Time>2016-06-23T00:41:36.9430854-03:00</Time>
+    </Item>
+    <Item>
+      <Source>PlayMain.png</Source>
+      <Name>PlayMain</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\PlayMain.xnb</Output>
+      <Time>2016-06-23T00:41:36.9440855-03:00</Time>
+    </Item>
+    <Item>
+      <Source>logo.png</Source>
+      <Name>logo</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\logo.xnb</Output>
+      <Time>2016-06-23T06:44:36.4828038-03:00</Time>
+    </Item>
+    <Item>
+      <Source>autoBtn.png</Source>
+      <Name>autoBtn</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\autoBtn.xnb</Output>
+      <Time>2016-07-21T03:26:19.443011-03:00</Time>
+    </Item>
+    <Item>
+      <Source>autoBtnSel.png</Source>
+      <Name>autoBtnSel</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\autoBtnSel.xnb</Output>
+      <Time>2016-07-21T03:30:38.409552-03:00</Time>
+    </Item>
+    <Item>
+      <Source>SpaceSkip.png</Source>
+      <Name>SpaceSkip</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\SpaceSkip.xnb</Output>
+      <Time>2016-08-21T21:12:05.2600613-03:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
@@ -233,10 +260,10 @@
       <TargetProfile>Reach</TargetProfile>
       <BuildConfiguration>Debug</BuildConfiguration>
       <CompressContent>false</CompressContent>
-      <RootDirectory>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeatContent\</RootDirectory>
-      <LoggerRootDirectory>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\</LoggerRootDirectory>
-      <IntermediateDirectory>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\obj\x86\Debug\</IntermediateDirectory>
-      <OutputDirectory>C:\Users\Tellez\Documents\Visual Studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\</OutputDirectory>
+      <RootDirectory>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeatContent\</RootDirectory>
+      <LoggerRootDirectory>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\</LoggerRootDirectory>
+      <IntermediateDirectory>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\obj\x86\Debug\</IntermediateDirectory>
+      <OutputDirectory>C:\Users\Tellez\documents\visual studio 2012\Projects\ubeat\ubeat\ubeat\bin\x86\Debug\Content\</OutputDirectory>
     </Settings>
     <Assemblies>
       <Assembly>
@@ -264,8 +291,8 @@
         <Value>2011-09-01T16:22:30-03:00</Value>
       </Assembly>
       <Assembly>
-        <Key>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
-        <Value>2016-02-28T21:44:13.639939-03:00</Value>
+        <Key>C:\WINDOWS\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
+        <Value>2016-08-05T05:36:39.4962231-03:00</Value>
       </Assembly>
     </Assemblies>
   </Asset>

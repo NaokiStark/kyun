@@ -13,6 +13,7 @@ using Troschuetz.Random.Generators;
 using Microsoft.Xna.Framework.Audio;
 using ubeat.OsuUtils;
 using ubeat.Score;
+using ubeat.Audio;
 namespace ubeat.UIObjs
 {
     public class HitButton : IHitObj
@@ -59,7 +60,6 @@ namespace ubeat.UIObjs
             tmrApproachOpacity.Tick += tmrApproachOpacity_Tick;
             ActualPos = Position;
             tmrApproachOpacity.Start();
-            ActualPos = Position;
             PressedAt = 0;
             apo = null;
             hasAlredyPressed = false;
@@ -152,11 +152,12 @@ namespace ubeat.UIObjs
                     Grid.Instance.FailsCount = 0;
                     float healthToAdd = (BeatmapContainer.OverallDifficulty / 2) + Math.Abs(PressedAt - (long)this.StartTime) / 100;
                     Grid.Instance.Health.Add(healthToAdd);
-
+                    /*
                         SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
                         ins.Volume = Game1.Instance.GeneralVolume;
-                        ins.Play();
-    
+                        ins.Play();*/
+                    AudioPlaybackEngine.Instance.PlaySound(Game1.Instance.HitButton);
+
                     Combo.Instance.Add();
                 }
                 else
@@ -165,9 +166,11 @@ namespace ubeat.UIObjs
                     Grid.Instance.FailsCount++;
                     if (Combo.Instance.ActualMultiplier > 10)
                     {
+                        AudioPlaybackEngine.Instance.PlaySound(Game1.Instance.ComboBreak);
+                        /*
                         SoundEffectInstance ins = Game1.Instance.ComboBreak.CreateInstance();
                         ins.Volume = Game1.Instance.GeneralVolume;
-                        ins.Play();
+                        ins.Play();*/
                     }
                     Combo.Instance.Miss();
                     Grid.Instance.Health.Substract((2 * BeatmapContainer.OverallDifficulty) * Grid.Instance.FailsCount);
@@ -236,7 +239,7 @@ namespace ubeat.UIObjs
                     acc = 75;
                     break;
                 case Score.ScoreType.Good:
-                    acc = 35.2f;
+                    acc = 50f;
                     break;
                 case Score.ScoreType.Miss:
                     acc = 0;

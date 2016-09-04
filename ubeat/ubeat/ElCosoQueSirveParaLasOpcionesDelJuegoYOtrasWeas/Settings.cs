@@ -45,13 +45,40 @@ namespace ubeat.ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas
             comboLang.Items.Add("English (default)");
 
             comboFrameRate.Text = Settings1.Default.FrameRate.ToString();
+            comboFrameRate.Items.Add("25");
+            comboFrameRate.Items.Add("30");
             comboFrameRate.Items.Add("60");
             comboFrameRate.Items.Add("100");
+            comboFrameRate.Items.Add("250");
+            comboFrameRate.Items.Add("1000");
             comboFrameRate.SelectedIndexChanged += comboFrameRate_SelectedIndexChanged;
+
+            VSyncChk.Checked = Settings1.Default.VSync;
+            comboFrameRate.Enabled = !VSyncChk.Checked;
+            VSyncChk.CheckStateChanged += VSyncChk_CheckStateChanged;
 
             checkVideo.Checked = Settings1.Default.Video;
             checkVideo.CheckStateChanged += checkVideo_CheckStateChanged;
             textOsu.Text = Settings1.Default.osuBeatmaps;
+
+            chkFullScreen.Checked = Settings1.Default.FullScreen;
+            chkFullScreen.CheckStateChanged += chkFullScreen_CheckStateChanged;
+        }
+
+        void chkFullScreen_CheckStateChanged(object sender, EventArgs e)
+        {
+            Game1.Instance.ToggleFullscreen(chkFullScreen.Checked);
+            Settings1.Default.FullScreen = chkFullScreen.Checked;
+            Settings1.Default.Save();
+        }
+
+        void VSyncChk_CheckStateChanged(object sender, EventArgs e)
+        {
+            comboFrameRate.Enabled = !((CheckBox)sender).Checked;
+            Game1.Instance.ToggleVSync(((CheckBox)sender).Checked);
+            Logger.Instance.Info("Setting VSync: " + ((CheckBox)sender).Checked.ToString());
+            Settings1.Default.VSync = ((CheckBox)sender).Checked;
+            Settings1.Default.Save();
         }
 
         void checkVideo_CheckStateChanged(object sender, EventArgs e)
@@ -121,6 +148,18 @@ namespace ubeat.ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas
                 MessageBox.Show("Done.\n\rRestart ubeat to apply changes.", "ubeat", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.Close();
             }
-        }        
+        }
+
+        private void sss_Click(object sender, EventArgs e)
+        {
+            new SuperSecretSettings().Show();
+        }
+
+        private void chkFullScreen_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        
     }
 }

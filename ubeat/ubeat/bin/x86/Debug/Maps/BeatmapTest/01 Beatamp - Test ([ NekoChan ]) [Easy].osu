@@ -18,11 +18,11 @@ GridSize: 16
 TimelineZoom: 1
 
 [Metadata]
-Title:Test
-TitleUnicode:Test
-Artist:01 Beatamp
-ArtistUnicode:01 Beatamp
-Creator:[ NekoChan ]
+Title:Pinko Stick Luv
+TitleUnicode:Pinko Stick Luv
+Artist:01 test
+ArtistUnicode:Reol
+Creator:Fabi
 Version:Easy
 Source:ubeat
 Tags:
@@ -40,6 +40,7 @@ SliderTickRate:1
 [Events]
 //Background and Video events
 0,0,"maxresdefault (1).jpg",0,0
+Video,0,"video.avi"
 //Break Periods
 2,76328,88900
 //Storyboard Layer 0 (Background)

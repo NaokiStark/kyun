@@ -14,6 +14,9 @@ using System.Diagnostics;
 using ubeat.Audio;
 using ubeat.GameScreen;
 using System.Runtime.InteropServices;
+using ubeat.Utils;
+using NAudio.Wave;
+using Redux.Utilities.Managers;
 
 
 namespace ubeat
@@ -21,20 +24,29 @@ namespace ubeat
 
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+
+        LoadingWindow lwnd;
         GraphicsDeviceManager graphics;
         public SpriteBatch spriteBatch;
-        public MainWindow mainWindow;
         public NPlayer player;
         public static Game1 Instance = null;
+        public KeyboardManager kbmgr;
         //Beatmaps
         public SoundEffect soundEffect;
         public List<Beatmap.ubeatBeatMap> Beatmaps = new List<Beatmap.ubeatBeatMap>();
+
+        public Beatmap.ubeatBeatMap SelectedBeatmap { get; set; }
+
         public float elapsed = 0;
         public bool VideoEnabled { get; set; }
         public Vector2 wSize = new Vector2(800,600);
         public GameTime GameTimeP { get; set; }
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hwnd, int nCmdShow);
+
+        //4 mainscreen
+
+        public bool FistLoad;
 
         private float vol=0;
 
@@ -61,11 +73,11 @@ namespace ubeat
                 VolDlg.VolShow();
             }
         }
-
+        public FrameCounter frameCounter;
 
         public Game1()
         {
-           
+            frameCounter = new FrameCounter();
             Instance = this;
             graphics = new GraphicsDeviceManager(this);
             GameTimeP = new GameTime();
@@ -75,17 +87,16 @@ namespace ubeat
             
             this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 60.0f);
 
-            //this.IsFixedTimeStep = false;
-            graphics.SynchronizeWithVerticalRetrace = false;
-
+            kbmgr = new KeyboardManager(this);
             VideoEnabled = Settings1.Default.Video;
         }
 
         Grid grid;
-        public void GameStart(Beatmap.ubeatBeatMap bm)
+        public void GameStart(Beatmap.ubeatBeatMap bm,bool automode=false)
         {
             grid = new Grid(bm);
-            grid.Play();
+            ScreenManager.ChangeTo(grid);
+            grid.Play(null, automode);
         }
         public SpriteFont fontDefault;
         public void GameStop()
@@ -95,6 +106,10 @@ namespace ubeat
         public List<Beatmap.Mapset> AllBeatmaps { get; set; }
         protected override void Initialize()
         {
+            lwnd = new LoadingWindow();
+            lwnd.Show();
+            System.Windows.Forms.Application.DoEvents();
+
 
             VolDlg = new VolumeDlg();
 
@@ -122,6 +137,8 @@ namespace ubeat
 
                     foreach (DirectoryInfo odir in osuMapsDirs)
                     {
+                        System.Windows.Forms.Application.DoEvents();
+
                         dCount++;
                         FileInfo[] fils = odir.GetFiles();
                         // Mapset
@@ -139,13 +156,13 @@ namespace ubeat
 
                                     //Beatmaps.Add(bmp);
                                     if (bmms == null)
-                                        bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator);
+                                        bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator,bmp.Tags);
                                     bmms.Add(bmp);
 
 
                                 }
 
-                                Debug.WriteLine("File: {0}s", flieCnt);
+                               // Debug.WriteLine("File: {0}s", flieCnt);
                             }
 
                         }
@@ -171,6 +188,9 @@ namespace ubeat
             }
 
             loadLocalMaps();
+
+
+            lwnd.Close();
             Logger.Instance.Info("");
             Logger.Instance.Info("Done.");
             Logger.Instance.Info("");
@@ -183,6 +203,18 @@ namespace ubeat
             
 
             hideGameWindow();
+        }
+
+        public void ToggleVSync(bool b)
+        {
+            //
+            graphics.SynchronizeWithVerticalRetrace = b;
+
+            if (b)
+                ChangeFrameRate(60f);
+            else
+                ChangeFrameRate(Settings1.Default.FrameRate);
+            
         }
 
         void loadLocalMaps()
@@ -202,6 +234,8 @@ namespace ubeat
 
             foreach (DirectoryInfo odir in osuMapsDirs)
             {
+                System.Windows.Forms.Application.DoEvents();
+
                 dCount++;
                 FileInfo[] fils = odir.GetFiles();
                 // Mapset
@@ -219,13 +253,13 @@ namespace ubeat
 
                             //Beatmaps.Add(bmp);
                             if (bmms == null)
-                                bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator);
+                                bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator,bmp.Tags);
                             bmms.Add(bmp);
 
 
                         }
 
-                        Debug.WriteLine("File: {0}s", flieCnt);
+                       // Debug.WriteLine("File: {0}s", flieCnt);
                     }
 
                 }
@@ -239,6 +273,8 @@ namespace ubeat
                 if (pctg % 20 == 0)
                     Logger.Instance.Info("-> {0}%", pctg);
             }
+
+            AllBeatmaps = AllBeatmaps.OrderBy(x => x.Artist).ToList<Beatmap.Mapset>();
 
         }
 
@@ -261,6 +297,19 @@ namespace ubeat
             this.graphics.PreferredBackBufferWidth = (int)wSize.X;
             this.graphics.PreferredBackBufferHeight = (int)wSize.Y;
 
+            try
+            {
+                this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / Settings1.Default.FrameRate);
+            }
+            catch
+            {
+                this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 60f);
+                Settings1.Default.FrameRate = 60;
+                Settings1.Default.Save();
+            }
+
+            ToggleVSync(Settings1.Default.VSync);
+
             this.graphics.ApplyChanges();
 
 
@@ -278,21 +327,28 @@ namespace ubeat
                 FormGame.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             }
            
-            
+
+            //Old
+
+            /*
             mainWindow = new MainWindow();
             mainWindow.FormClosed += mainWindow_FormClosed;
             
-            showMain();
+            showMain();*/
            
+            //New
+
+
+           
+
+            GeneralVolume = Settings1.Default.Volume;
+            this.FistLoad = true;
+            ScreenManager.ChangeTo(new MainScreen());
         }
         
         void showMain()
         {
-            mainWindow.WindowState = System.Windows.Forms.FormWindowState.Normal;
-            mainWindow.Width = (int)wSize.X;
-            mainWindow.Height = (int)wSize.Y; 
-            mainWindow.Show();
-            GeneralVolume = Settings1.Default.Volume;
+           
             Logger.Instance.Info("");
             Logger.Instance.Info("Kansei shimashita (/^-^)/!");
             Logger.Instance.Info("");
@@ -312,13 +368,38 @@ namespace ubeat
         public Texture2D GoodTx;
         public Texture2D MissTx;
         public SoundEffect HitHolderFilling;
-        public SoundEffect HolderTick;
+       // public SoundEffect HolderTick;
         public SoundEffect HolderHit;
-        public SoundEffect ComboBreak;
+        //public SoundEffect ComboBreak;
+        //public SoundEffect ButtonHit;
         public Texture2D FailSplash;
         public Texture2D Push;
         public Texture2D Hold;
+        public Texture2D StartButton;
+        public Texture2D ExitButton;
+        public Texture2D ConfigButton;
+        public Texture2D AutoModeButton;
+        public Texture2D AutoModeButtonSel;
+        public Texture2D Logo;
+        public Texture2D SpaceSkip;
+        //public SoundEffect ButtonOver;
+        public SpriteFont GeneralBig;
+        public SpriteFont ListboxFont;
+        /*update NAudio*/
+
+        public CachedSound ButtonHit;
+        public CachedSound ComboBreak;
+        public CachedSound ButtonOver;
+        public CachedSound HitButton;
+        public CachedSound HitHolder;
+        public CachedSound HolderFilling;
+        public CachedSound HolderTick;
+        public CachedSound SelectorHit;
+        public CachedSound ScrollHit;
         
+
+        List<CachedSound> SoundsEff = new List<CachedSound>();
+
         protected override void LoadContent()
         {
            
@@ -326,6 +407,7 @@ namespace ubeat
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+        
             buttonDefault = Content.Load<Texture2D>("button_0");
             buttonHolder = Content.Load<Texture2D>("holder_0");
             waitDefault = Content.Load<Texture2D>("approach");
@@ -339,15 +421,40 @@ namespace ubeat
             FailSplash = Content.Load<Texture2D>("failsplash");
             Push = Content.Load<Texture2D>("push");
             Hold = Content.Load<Texture2D>("hold");
+            Logo = Content.Load<Texture2D>("logo");
+            AutoModeButton = Content.Load<Texture2D>("autoBtn");
+            AutoModeButtonSel = Content.Load<Texture2D>("autoBtnSel");
+            SpaceSkip = Content.Load<Texture2D>("SpaceSkip");
 
+
+            //test
+            StartButton = Content.Load<Texture2D>("PlayMain");
+            ExitButton = Content.Load<Texture2D>("ExitMain");
+            ConfigButton = Content.Load<Texture2D>("ConfigMain");
 
             fontDefault = Content.Load<SpriteFont>("SpriteFont1");
+            GeneralBig = Content.Load<SpriteFont>("General");
+            ListboxFont = Content.Load<SpriteFont>("Listbox");
 
-            soundEffect = Content.Load<SoundEffect>("normal-hitnormal2");
-            HitHolderFilling = Content.Load<SoundEffect>("HolderFilling");
-            HolderTick = Content.Load<SoundEffect>("HolderTick");
-            HolderHit = Content.Load<SoundEffect>("soft-hitclap2");
-            ComboBreak = Content.Load<SoundEffect>("combobreak");
+
+            HolderFilling = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\HolderFilling.wav");
+            HitButton = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\HitButton.wav");
+            HitHolder = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\HitHolder.wav");
+            HolderTick = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\HolderTick.wav");
+            ComboBreak = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\ComboBreak.wav");
+            ButtonOver = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\ButtonOver.wav");
+            ButtonHit = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\ButtonHit.wav");
+            SelectorHit = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\SelectorHit.wav");
+            ScrollHit = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\Scroll.wav");
+
+            SoundsEff.Add(HolderFilling);
+            SoundsEff.Add(HitButton);
+            SoundsEff.Add(HitHolder);
+            SoundsEff.Add(HolderTick);
+            SoundsEff.Add(ComboBreak);
+            SoundsEff.Add(ButtonOver);
+            SoundsEff.Add(ButtonHit);
+
 
             Logger.Instance.Info("");
             Logger.Instance.Info("Done.");
@@ -360,6 +467,12 @@ namespace ubeat
         {
             if (player != null)
                 player.Dispose();
+            /*
+            foreach (CachedSound ndi in SoundsEff)
+                ndi.Dispose();
+            */
+            AudioPlaybackEngine.Instance.Dispose();
+            //_UI.Shutdown();
 
             Logger.Instance.Info(" Bye! ");
         }
@@ -379,12 +492,13 @@ namespace ubeat
                 GeneralVolume -= .02f;
 
             elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            
+            float frameTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (grid != null)
-            {
-                grid.Update(gameTime);
-            }
-
+            kbmgr.Update(gameTime);
+            ScreenManager.Update(gameTime);
+            
+            
 
             base.Update(gameTime);
         }
@@ -393,16 +507,19 @@ namespace ubeat
         {
             GraphicsDevice.Clear(Color.Black);
 
+            
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
-            if (grid != null)
-            {
-                grid.Render();
-            }
+            ScreenManager.Render();
 
             spriteBatch.End();
 
             base.Draw(gameTime);
+
+
+            var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            frameCounter.Update(deltaTime);
         }
 
         #endregion
@@ -416,20 +533,17 @@ namespace ubeat
         {
             this.SuppressDraw();
 
-            mainWindow.SuspendLayout();
             System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Form.FromHandle(Window.Handle);
 
             if (screenMode.WindowMode != Screen.WindowDisposition.Windowed)
             {
                 FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
                 FormGame.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-                mainWindow.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             }
             else
             {
                 FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
                 FormGame.WindowState = System.Windows.Forms.FormWindowState.Normal;
-                mainWindow.WindowState = System.Windows.Forms.FormWindowState.Normal;
 
             }
 
@@ -442,20 +556,46 @@ namespace ubeat
 
             this.graphics.ApplyChanges();
 
-            mainWindow.Width = (int)wSize.X;
-            mainWindow.Height = (int)wSize.Y;
-          
-            if (BeatmapSelector.Instance != null)
-            {
-                MainWindow.Instance.ShowControls();
-                BeatmapSelector.Instance.Close();
+            if(ScreenManager.ActualScreen!=null)
+                ScreenManager.ActualScreen.Redraw();            
+
+        }
+
+        public void ToggleFullscreen(bool enabled=false)
+        {
+            System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Form.FromHandle(Window.Handle);
+            if (enabled)
+            {  
+                FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+                FormGame.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             }
-            mainWindow.ResumeLayout();
+            else
+            {
+                if (Screen.ScreenModeManager.GetSupportedModes()[Settings1.Default.VideoMode].WindowMode == Screen.WindowDisposition.Windowed)
+                {
+                    FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+                    FormGame.WindowState = System.Windows.Forms.FormWindowState.Normal;
+                }
+                else
+                {
+                    FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+                    FormGame.WindowState = System.Windows.Forms.FormWindowState.Normal;
+                }
+            }
+
+            this.graphics.IsFullScreen=enabled;
+            this.graphics.ApplyChanges();
         }
 
         public void ChangeFrameRate(float fps)
         {
-            this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / fps);
+            if (fps > 250)
+                this.IsFixedTimeStep = false;
+            else
+            {
+                this.IsFixedTimeStep = true;
+                this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / fps);
+            }
         }
 
         public VolumeDlg VolDlg { get; set; }

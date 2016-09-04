@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NAudio;
 using NAudio.Wave;
+using System.IO;
 
 namespace ubeat.Audio
 {
@@ -10,6 +11,9 @@ namespace ubeat.Audio
     {
         IWavePlayer waveOut;
         AudioFileReader audioFile;
+
+        public delegate void PlayerEvents();
+        public event PlayerEvents OnStopped;
 
         /// <summary>
         /// Adapt to old code
@@ -21,6 +25,8 @@ namespace ubeat.Audio
                 return audioFile;
             }
         }
+
+        public IWavePlayer WaveOut { get { return waveOut; } }
 
         public static NPlayer Instance = null;
 
@@ -103,7 +109,7 @@ namespace ubeat.Audio
                     return audioFile.Volume;
                 }
                 else
-                    return 0;
+                    return vol;
             }
             set
             {
@@ -111,8 +117,11 @@ namespace ubeat.Audio
                 {
                     audioFile.Volume = value;
                 }
+                vol = value;
             }
         }
+
+        float vol = 0;
 
         public string ActualSong { get; private set; }
 
@@ -128,9 +137,30 @@ namespace ubeat.Audio
         }
 
 
+        public bool Loop { get; set; }
+
         public NPlayer()
         {
             Instance = this;
+        }
+
+
+        public void Play(AudioFileReader fromStream)
+        {
+            fromStream.Position = 0;
+            if (waveOut != null)
+            {
+                Stop();
+            }            
+
+            waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 2);
+            audioFile = fromStream;
+
+            audioFile.Volume = vol;
+            waveOut.Init(audioFile);
+            /*if (Loop)
+                waveOut.PlaybackStopped += waveOut_PlaybackStopped;*/
+            waveOut.Play();
         }
 
         public void Play(string fileName=null)
@@ -149,14 +179,25 @@ namespace ubeat.Audio
             if (fileName != null)
                 ActualSong = fileName;
 
-            waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared,10);      
+            waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared,2);      
             audioFile = new AudioFileReader(ActualSong);
+            
+            audioFile.Volume = vol;
             waveOut.Init(audioFile);
+            waveOut.PlaybackStopped += waveOut_PlaybackStopped;
             waveOut.Play();
+        }
+
+        void waveOut_PlaybackStopped(object sender, StoppedEventArgs e)
+        {
+
+            if (OnStopped != null)
+                OnStopped();
         }
 
         public void Stop()
         {
+            Loop = false;
             if (waveOut == null)
             {
                 throw new Exception("WaveOut is null ???");
@@ -170,11 +211,12 @@ namespace ubeat.Audio
                     waveOut.Dispose();
                 }
             }
-
-            if (audioFile != null)
+            /*
+            lock (audioFile)
             {
-                lock (audioFile)
+                if (audioFile != null)
                 {
+                
                     try
                     {
                         audioFile.Dispose();
@@ -183,7 +225,7 @@ namespace ubeat.Audio
                     {
                     }
                 }
-            }           
+            } */          
         }
 
         public void Dispose()
@@ -199,6 +241,7 @@ namespace ubeat.Audio
                     catch { }
                 }
             }
+            /*
             if (audioFile != null)
             {
                 lock (audioFile)
@@ -209,7 +252,7 @@ namespace ubeat.Audio
                     }
                     catch { }
                 }
-            }
+            }*/
         }
     }
 }

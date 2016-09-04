@@ -12,6 +12,8 @@ namespace ubeat.Score
     public class HealthBar:IUIObject
     {
 
+        public bool Enabled { get; set; }
+
         public Microsoft.Xna.Framework.Vector2 Position { get; set; }
 
         public Microsoft.Xna.Framework.Graphics.Texture2D Texture { get; set; }
@@ -69,6 +71,7 @@ namespace ubeat.Score
         {
             this.Value = 100;
             isActive = true;
+            Enabled = true;
             this.overallDiff = OverallDiff;
         }
 
@@ -101,6 +104,7 @@ namespace ubeat.Score
 
         public void Update()
         {
+
             if(Grid.Instance.inGame && !Grid.Instance.Paused && isActive)
                 if (Value < 1)
                     if (OnFail != null)
@@ -110,7 +114,12 @@ namespace ubeat.Score
         public void Render()
         {
 
+            if (!Enabled) return;
             float res = (float)Value * (float)this.Texture.Width / 100;
+
+            int colorBar = (int)(Value * 255f / 100f);
+            Color colbr = Color.FromNonPremultiplied(255, colorBar, colorBar, 255);
+
 
             //Rect
             //Rectangle size = new Rectangle((int)Grid.GetPositionFor(1).X-40-10, (int)Grid.GetPositionFor(1).Y+ Game1.Instance.buttonDefault.Height+30, this.Texture.Bounds.Width, (int)res);
@@ -135,7 +144,7 @@ namespace ubeat.Score
             Game1.Instance.spriteBatch.Draw(this.Texture,
                 size,
                 null,
-                Color.White,
+                colbr,
                 0f,
                 new Vector2(0),
                 Microsoft.Xna.Framework.Graphics.SpriteEffects.None,

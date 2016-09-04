@@ -68,42 +68,9 @@ namespace ubeat.Video
 
             byte[] frame = vdc.GetFrame((int)Game1.Instance.player.Position);
             if (frame == null) return null;
-
-            byte[] fr = new byte[frame.Length];
-
-            int cnt = 0;
-            
-            for (int a = 0; a < fr.Length; a++)
-            {
-                if (cnt == 3) //Alpha
-                {
-                    cnt++;
-                    fr[a] = 255;
-                }
-                else
-                {
-                    switch (cnt)
-                    {
-                        case 0: //Red
-                            fr[a] = frame[a + 2];
-                            break;
-                        case 1: //Green
-                            fr[a] = frame[a];
-                            break;
-                        case 2: //Blue
-                            fr[a] = frame[a - 2];
-                            break;
-                    }
-                }
-
-                if (cnt >= 3)
-                    cnt = 0;
-                else
-                    cnt++;
-            }
-
-            return fr;
+            return frame;
         }
 
+        
     }    
 }

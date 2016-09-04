@@ -50,11 +50,18 @@ namespace ubeat.UIObjs
 
 
 
-            float stime = (float)starttime - (float)Game1.Instance.player.Position;
+            float stime = (float)starttime - (float)Grid.Instance.GameTimeTotal;
 
 
-            float gtime = stime / appr;
-            float percentgg = gtime*(Texture.Bounds.Width+20);
+
+            float gtime = (stime / appr);
+            float percen = gtime*(((float)Texture.Bounds.Width));
+
+            float pcrt = percen / Texture.Bounds.Width * 100;
+
+            float percentgg = percen * 2f;
+
+
             float percentg = gtime * 1/*/100f*/;
             
             if (opacity > -1)

@@ -9,13 +9,20 @@ using System.Text;
 using ubeat.Beatmap;
 using ubeat.UIObjs;
 using ubeat.Score;
+using ubeat.GameScreen.UI;
+using ubeat.Screen;
+using System.Globalization;
+using System.Diagnostics;
 namespace ubeat.GameScreen
 {
     
-    public class Grid
+    public class Grid:Screen
     {
 
         #region PublicVars
+
+        public List<ScreenUIObject> Controls { get; set; } //Dummy
+        public Screen ScreenInstance { get; set; }
 
         public bool autoMode = false;
         public bool inGame;
@@ -30,6 +37,13 @@ namespace ubeat.GameScreen
         public ScoreDisplay ScoreDispl;
         public ComboDisplay ComboDspl;
         public int FailsCount = 0;
+        public long GameTimeTotal = 0;
+        public bool Visible { get; set; }
+        bool cooldown { get; set; }
+
+
+        // TODO: TEST ONLY
+        private int offset=0;
 
         #endregion
 
@@ -51,13 +65,18 @@ namespace ubeat.GameScreen
         public GameTime songGameTime { get; set; }
         public TimeSpan timePosition { get; set; }
         public DateTime? lastUpdate { get; set; }
-        
+        Label FPSMetter;
+
+        public delegate void onend();
+        public event onend endedd;
         #endregion
 
-        #region Constructor 
+        #region Constructor
         public Grid(Beatmap.ubeatBeatMap beatmap)
         {
             Instance = this;
+            ScreenInstance = this;
+
             bemap = beatmap;
         
             for (int a = 0; a < 9; a++)
@@ -71,6 +90,17 @@ namespace ubeat.GameScreen
             ComboDspl = new ComboDisplay();
             videoplayer = new Video.VideoPlayer();
             combo = new Combo();
+
+            List<ScreenMode> scmL = ScreenModeManager.GetSupportedModes();
+
+            ScreenMode ActualMode = scmL[Settings1.Default.ScreenMode];
+
+            Vector2 meas = Game1.Instance.fontDefault.MeasureString("ubeat") * .85f;
+
+            FPSMetter = new Label();
+            FPSMetter.Text = "fps";
+            FPSMetter.Scale = .75f;
+            FPSMetter.Position = new Vector2(0, ActualMode.Height - meas.Y);
         }
         #endregion  
 
@@ -187,15 +217,19 @@ namespace ubeat.GameScreen
             }
         }
 
-        public void Play(Beatmap.ubeatBeatMap beatmap = null)
+        public void Play(Beatmap.ubeatBeatMap beatmap = null, bool automode = false)
         {
+            endedd += Grid_endedd;
+            Game1.Instance.IsMouseVisible=false;
             ScoreDispl.Reset();
             ScoreDispl.isActive = true;
             ComboDspl.isActive = true;
             combo.ResetAll();
             actualIndex = 0;
+            GameTimeTotal = 0;
             failed = false;
-            autoMode = BeatmapSelector.Instance.checkBox1.Checked;
+            cooldown = true;
+            autoMode = automode;
             addTextureG();
             Game1.Instance.player.Stop();
             if(beatmap!=null)
@@ -214,7 +248,7 @@ namespace ubeat.GameScreen
             
             System.Threading.Thread th = new System.Threading.Thread(new System.Threading.ThreadStart(()=>
             {
-                
+                /*
                 if (bemap.SleepTime > 0)
                 {
                     System.Threading.Thread.Sleep(bemap.SleepTime);
@@ -228,15 +262,11 @@ namespace ubeat.GameScreen
                     var differ = sttime - (long)(1950 - bemap.ApproachRate * 150);
                     if (differ < 500)
                         System.Threading.Thread.Sleep(3000);
-                }
+                }*/
 
-                Game1.Instance.player.Play(bemap.SongPath/*, bemap.SleepTime*/);
-                Game1.Instance.player.soundOut.Volume =Game1.Instance.GeneralVolume;
+
                 
-                if(Game1.Instance.VideoEnabled)
-                    if(bemap.Video!=null)
-                        if(bemap.Video!="")
-                            videoplayer.Play(bemap.Video);
+               
 
                 ResetSongGameTime();
                 inGame = true;
@@ -244,14 +274,83 @@ namespace ubeat.GameScreen
             Logger.Instance.Info("Game Started: {0} - {1} [{2}]", bemap.Artist, bemap.Title, bemap.Version);
             th.Start();
         }
+
+        void Grid_endedd()
+        {
+            Game1.Instance.IsMouseVisible = false;
+
+        }
         #endregion
+
+        void skip()
+        {
+            endedd();
+            if (Waiting)
+            {
+                Waiting = false;
+                Background = null;
+                ScreenManager.ChangeTo(new ScoreScreen());
+                videoplayer.Stop();
+            }
+        }
+
+        //TEST ONLY
+
+        void changeOffset(bool ter)
+        {
+            if (ter)
+                offset--;
+            else
+                offset++;
+            Console.WriteLine("ACTUAL OFFSET: "+offset);
+            long pos=Game1.Instance.player.Position;
+            Console.WriteLine("pos - OFFSETTED/PLAYER: " + (pos+offset)+"/" +pos );
+            Console.WriteLine("DIFF: " + (pos + offset-pos));
+        }
 
         #region GameEvents
         public void Update(GameTime tm)
         {
-           
+            if (!Visible)
+                return;
+
+            int fpsm = (int)Math.Round((double)Game1.Instance.frameCounter.AverageFramesPerSecond,0);
+            FPSMetter.Text = fpsm.ToString("0", CultureInfo.InvariantCulture) + " FPS";
+            FPSMetter.Update();
+
+            if (Waiting)
+            {
+                if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                {
+                    SpaceAlredyPressed = true;
+                }
+                if (Keyboard.GetState().IsKeyUp(Keys.Space))
+                {
+                    if (SpaceAlredyPressed)
+                    {
+                        SpaceAlredyPressed = false;
+                        skip();
+                    }
+                }
+            }
+
             if (!inGame)
                 return;
+
+           
+
+            if (inGame && GameTimeTotal > bemap.SleepTime && Game1.Instance.player.PlayState == NAudio.Wave.PlaybackState.Stopped)
+            {
+                Game1.Instance.player.Play(bemap.SongPath);
+                Game1.Instance.player.soundOut.Volume = Game1.Instance.GeneralVolume;
+
+                //GameTimeTotal = Game1.Instance.player.Position+bemap.SleepTime;
+
+                if (Game1.Instance.VideoEnabled)
+                    if (bemap.Video != null)
+                        if (bemap.Video != "")
+                            videoplayer.Play(bemap.Video);
+            }
 
             if (started)
             {
@@ -262,9 +361,61 @@ namespace ubeat.GameScreen
             Health.Update();
             ScoreDispl.Update();
             ComboDspl.Update();
-            long pos = (long)Game1.Instance.player.Position;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+                EscapeAlredyPressed = true;
+            }
+            if (Keyboard.GetState().IsKeyUp(Keys.Escape))
+            {
+                if (EscapeAlredyPressed)
+                {
+                    EscapeAlredyPressed = false;
+                    backPressed();
+                }
+            }
+
+           
+            // TEST
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            {
+                UpAlredyPressed = true;
+            }
+
+            if (Keyboard.GetState().IsKeyUp(Keys.Up))
+            {
+                if (UpAlredyPressed)
+                {
+                    UpAlredyPressed = false;
+                    changeOffset(true);
+                }
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                DownAlredyPressed = true;
+            }
+            if (Keyboard.GetState().IsKeyUp(Keys.Down))
+            {
+                if (DownAlredyPressed)
+                {
+                    DownAlredyPressed = false;
+                    changeOffset(false);
+                }
+            }
+
+            //long pos = (long)Game1.Instance.player.Position;
+            if (!Paused)
+            {
+                if(Game1.Instance.player.PlayState == NAudio.Wave.PlaybackState.Stopped)
+                    GameTimeTotal += (long)tm.ElapsedGameTime.TotalMilliseconds;
+                else
+                    GameTimeTotal = Game1.Instance.player.Position + bemap.SleepTime;
+            }
+
+
+            long pos=GameTimeTotal+offset;
             if(!Paused){
-                
+                pos = GameTimeTotal;
                 if (actualIndex <= bemap.HitObjects.Count - 1)
                 {
                     long startTime = (long)bemap.HitObjects[actualIndex].StartTime - (long)(1950 - bemap.ApproachRate * 150);
@@ -339,21 +490,7 @@ namespace ubeat.GameScreen
             {
                 if (failed)
                 {
-                    if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-                    {
-                        Logger.Instance.Info("Exit Game");
-                        Health.Stop();
-                        nomoreobjectsplsm8 = true;
-                        inGame = false;
-                        Background = null;
-                        Game1.Instance.player.Paused = false;
-                        Paused = false;
-                        MainWindow.Instance.Show();
-                        BeatmapSelector.Instance.Show();
-                        BeatmapSelector.Instance.Enabled = true;
-                        videoplayer.Stop();
-                    }
-                    else if (Keyboard.GetState().IsKeyDown(Keys.F2))
+                    if (Keyboard.GetState().IsKeyDown(Keys.F2))
                     {
                         for (int a = 0; a < bemap.HitObjects.Count; a++)
                         {
@@ -365,13 +502,7 @@ namespace ubeat.GameScreen
                 }
                 else
                 {
-                    if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-                    {
-                        System.Threading.Thread.Sleep(200);
-                        Pause();
-                        
-                    }
-                    else if (Keyboard.GetState().IsKeyDown(Keys.F2))
+                    if (Keyboard.GetState().IsKeyDown(Keys.F2))
                     {
                         Logger.Instance.Info("Exit Game");
                         Health.Stop();
@@ -380,16 +511,8 @@ namespace ubeat.GameScreen
                         Background = null;
                         Game1.Instance.player.Paused = false;
                         Paused = false;
-                        MainWindow.Instance.Show();
-                        if (BeatmapSelector.Instance != null)
-                        {
-                            BeatmapSelector.Instance.Show();
-                            BeatmapSelector.Instance.Enabled = true;
-                        }
-                        else
-                        {
-                            new BeatmapSelector().Show();
-                        }
+                        ScreenManager.ChangeTo(new BeatmapScreen());
+                        
                         videoplayer.Stop();
                     }
                     else if (Keyboard.GetState().IsKeyDown(Keys.F3))
@@ -402,15 +525,51 @@ namespace ubeat.GameScreen
                     }
                 }
             }
-            else if (Keyboard.GetState().IsKeyDown(Keys.Escape) && !Paused)
-            {
-                Pause();
-                System.Threading.Thread.Sleep(200);
-            }           
+           
+
+            
+            
         }
+
+        private void backPressed()
+        {
+            if (!Paused)
+                Pause();
+            else if (failed)
+            {
+                Logger.Instance.Info("Exit Game");
+                Health.Stop();
+                nomoreobjectsplsm8 = true;
+                inGame = false;
+                Background = null;
+                Game1.Instance.player.Paused = false;
+                Paused = false;
+                ScreenManager.ChangeTo(new BeatmapScreen());
+
+                videoplayer.Stop();
+            }
+            else {
+                Pause();
+            }
+        }
+
+        int VidFrame = 0;
+        bool Waiting;
+
 
         public void Render()
         {
+            
+
+            if (!Visible)
+                return;
+
+            if (Waiting)
+            {
+                RenderWaiting();
+                return;
+            }
+
             int screenWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
             int screenHeight = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
@@ -419,7 +578,9 @@ namespace ubeat.GameScreen
 
             if (Background != null)
             {
-                Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, (int)(((float)Background.Height / (float)Background.Width) * (float)screenWidth));
+               // Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, (int)(((float)Background.Height / (float)Background.Width) * (float)screenWidth));
+                
+                Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
 
                 //Game1.Instance.spriteBatch.Draw(Background, screenRectangle, Color.White);
                 Game1.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
@@ -430,50 +591,20 @@ namespace ubeat.GameScreen
                 return;
             }
 
-
-            if (Game1.Instance.VideoEnabled)
-            {
-                Rectangle screenVideoRectangle = new Rectangle();
-                if (!videoplayer.Stopped)
-                {
-
-                    byte[] frame = videoplayer.GetFrame();
-                    if (frame != null)
-                    {
-
-                        Game1.Instance.spriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
-
-
-                        Texture2D texture = new Texture2D(Game1.Instance.GraphicsDevice, videoplayer.vdc.width, videoplayer.vdc.height);
-                        screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, (int)(((float)texture.Height / (float)texture.Width) * (float)screenWidth));
-                        texture.SetData(frame);
-                        //lastFrameOfVid = texture;
-                        Game1.Instance.spriteBatch.Draw(texture, screenVideoRectangle, null, Color.White, 0, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 0);
-                        texture.Dispose();
-
-                    }/*
-                else
-                {
-                    if (lastFrameOfVid != null)
-                    {
-                        Game1.Instance.spriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
-
-
-                        screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, (int)(((float)lastFrameOfVid.Height / (float)lastFrameOfVid.Width) * (float)screenWidth));
-                        Game1.Instance.spriteBatch.Draw(lastFrameOfVid, screenVideoRectangle, null, Color.White, 0, new Vector2(lastFrameOfVid.Width / 2, lastFrameOfVid.Height / 2), SpriteEffects.None, 0);
-                    }
-                }*/
-                }
-            }
-
-
+            RenderVideoFrame();
 
             //IN GAME
-
+            FPSMetter.Render();
             Health.Render();
-            ScoreDispl.Render();
-            ComboDspl.Render();
-            long pos = (long)Game1.Instance.player.Position;            
+
+            if (Health.Enabled)
+            {
+                ScoreDispl.Render();
+                ComboDspl.Render();
+            }
+
+            long pos = GameTimeTotal + offset;   
+            
             //draw square
             int sWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
             int sHeight = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
@@ -483,7 +614,9 @@ namespace ubeat.GameScreen
 
             xi = xi - (Game1.Instance.buttonDefault.Bounds.Width + 20) * 2 - (Game1.Instance.buttonDefault.Bounds.Width / 2);
             yi = yi - (Game1.Instance.buttonDefault.Bounds.Height + 20) * 2 - (Game1.Instance.buttonDefault.Bounds.Height / 2);
-            Game1.Instance.spriteBatch.Draw(bg, new Vector2(xi,yi), Color.White*.75f);
+
+            if(Health.Enabled || cooldown)
+                Game1.Instance.spriteBatch.Draw(bg, new Vector2(xi,yi), Color.White*.75f);
            
             int objectsCount = 0;
             for (int a = 0; a < grid.Count; a++)
@@ -522,15 +655,14 @@ namespace ubeat.GameScreen
                     inGame = false;
                     ScoreDispl.isActive = false;
                     Health.Stop();
-                    System.Threading.Thread thr = new System.Threading.Thread(new System.Threading.ThreadStart(() => {
-                        System.Threading.Thread.Sleep(2000);
-                        Background = null;
-                        MainWindow.Instance.ShowAsync();
-                        videoplayer.Stop();
-                    }));
+                        cooldown = false;
+                        Health.Enabled = false;
+                        Waiting = true;
+                       
+                    
+                   
                     Logger.Instance.Info("Game End: {0} - {1} [{2}]", bemap.Artist, bemap.Title, bemap.Version);
-
-                    thr.Start();                 
+               
                 }
             }
 
@@ -545,6 +677,136 @@ namespace ubeat.GameScreen
             }
         }
 
+        void RenderVideoFrame()
+        {
+            int screenWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
+            int screenHeight = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+
+            if (Game1.Instance.VideoEnabled)
+            {
+                Rectangle screenVideoRectangle = new Rectangle();
+                if (!videoplayer.Stopped)
+                {
+                    if (VidFrame % Settings1.Default.VideoFrameSkip != 0 || Settings1.Default.VideoMode == 0)
+                    {
+                        byte[] frame = videoplayer.GetFrame();
+                        if (frame != null)
+                        {
+
+                            Game1.Instance.spriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
+
+                            Texture2D texture = new Texture2D(Game1.Instance.GraphicsDevice, videoplayer.vdc.width, videoplayer.vdc.height);
+                            screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)texture.Width / (float)texture.Height) * (float)screenHeight), screenHeight);
+                            texture.SetData(frame);
+                            lastFrameOfVid = texture;
+                            Game1.Instance.spriteBatch.Draw(texture, screenVideoRectangle, null, Color.White, 0, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 0);
+                            if (Settings1.Default.VideoMode > 0)
+                                VidFrame++;
+                            if (Settings1.Default.VideoMode == 0)
+                                texture.Dispose();
+                        }
+
+                    }
+                    else
+                    {
+                        VidFrame = 1;
+                        if (lastFrameOfVid != null)
+                        {
+                            try
+                            {
+                                Game1.Instance.spriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
+                                screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)lastFrameOfVid.Width / (float)lastFrameOfVid.Height) * (float)screenHeight), screenHeight);
+                                Game1.Instance.spriteBatch.Draw(lastFrameOfVid, screenVideoRectangle, null, Color.White, 0, new Vector2(lastFrameOfVid.Width / 2, lastFrameOfVid.Height / 2), SpriteEffects.None, 0);
+                                lastFrameOfVid.Dispose();
+                            }
+                            catch
+                            {
+                                ///???
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        int wait4End=0;
+        bool gEn;
+        void RenderWaiting()
+        {
+
+            if (wait4End >= 0)
+            {
+                wait4End -= (int)Game1.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds;
+            
+
+                int screenWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
+                int screenHeight = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+
+                if (Background != null)
+                {
+                    Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
+                    Game1.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                }
+
+                RenderVideoFrame();
+                FPSMetter.Render();
+
+                Game1.Instance.spriteBatch.Draw(Game1.Instance.SpaceSkip,
+                    new Rectangle(screenWidth - (Game1.Instance.SpaceSkip.Width/2),
+                        screenHeight - (Game1.Instance.SpaceSkip.Height/2),
+                        Game1.Instance.SpaceSkip.Width/2,
+                        Game1.Instance.SpaceSkip.Height/2),
+                    null,
+                    Color.White,
+                    0,
+                    Vector2.Zero,
+                    SpriteEffects.None,
+                    0);
+
+
+                for (int b = 0; b < objs.Count; b++)
+                {
+                    if (objs[b] is ApproachObj) continue;
+                    objs[b].Render();
+                }
+                if(!gEn)
+                {
+                    int diff = (int)(Game1.Instance.player.soundOut.TotalTime.TotalMilliseconds - Game1.Instance.player.Position);
+                    if (diff > 2000 && diff < 60000)
+                    {
+                        gEn = true;
+                        wait4End = diff;
+                    }
+                    else
+                    {
+                        gEn = true;
+                        wait4End = 2000;
+                    }
+                }
+            }else if (wait4End < 0)
+            {
+                gEn = false;
+                endedd();
+                Waiting = false;
+                Background = null;
+                ScreenManager.ChangeTo(new ScoreScreen());
+                videoplayer.Stop();
+            }
+        }
+
+        public void Redraw()
+        {
+            //Magic things
+        }
+
         #endregion
+
+        public bool SpaceAlredyPressed { get; set; }
+
+        public bool EscapeAlredyPressed { get; set; }
+
+        public bool UpAlredyPressed { get; set; }
+
+        public bool DownAlredyPressed { get; set; }
     }
 }

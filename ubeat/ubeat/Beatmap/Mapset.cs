@@ -10,13 +10,17 @@ namespace ubeat.Beatmap
         public string Title { get; set; }
         public string Artist { get; set; }
         public string Creator { get; set; }
-
-        public Mapset(string title, string artist, string creator)
+        public string[] Tags { get; set; }
+        public Mapset(string title, string artist, string creator,List<string> tags)
             : base()
         {
             this.Title = title;
             this.Artist = artist;
             this.Creator = creator;
+            if (tags == null)
+                this.Tags = new string[]{""};
+            else
+                this.Tags = tags.ToArray<string>();
         }
         public static Mapset OrderByDiff(Mapset mp)
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace ubeat
@@ -6,10 +7,6 @@ namespace ubeat
 #if WINDOWS || XBOX
     static class Program
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        /// 
         [STAThread]
         static void Main(string[] args)
         {
@@ -29,7 +26,7 @@ namespace ubeat
             Logger.Instance.Info("=                                   =");
             Logger.Instance.Info("=====================================");
             Logger.Instance.Info("");
-            
+
             try
             {
                 using (Game1 game = new Game1())

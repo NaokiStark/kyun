@@ -51,7 +51,8 @@ namespace ubeat.Score
 
         void reduce()
         {
-            float newWidth = size.X / 1.01f;
+            //float newWidth = size.X / 1.01f;
+            float newWidth = size.X - (float)Game1.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * .2f;
 
             if (newWidth > 300)
             {                

@@ -233,10 +233,17 @@ namespace ubeat.Video
                                         ubeat.Video.FFmpeg.avcodec_decode_video(this.pCodecCtx, this.pFrame, ref this.frameFinished, Marshal.ReadIntPtr(this.packet, 16), Marshal.ReadInt32(this.packet, 20));
                                         if (this.frameFinished != 0 && Marshal.ReadIntPtr(this.packet, 16) != IntPtr.Zero && ubeat.Video.FFmpeg.img_convert(this.pFrameRGB, (int)FFmpeg.PixelFormat.PIX_FMT_RGB32, this.pFrame, (int)this.codecCtx.pix_fmt, this.codecCtx.width, this.codecCtx.height) == 0)
                                         {
-                                            Marshal.Copy(Marshal.ReadIntPtr(this.pFrameRGB), this.FrameBuffer[this.writeCursor % this.BufferSize], 0, this.FrameBuffer[this.writeCursor % this.BufferSize].Length);
+                                            byte[] frameData = this.FrameBuffer[this.writeCursor % this.BufferSize];
+                                            Marshal.Copy(Marshal.ReadIntPtr(this.pFrameRGB), frameData, 0, frameData.Length);
                                             this.FrameBufferTimes[this.writeCursor % this.BufferSize] = (local_1 - (double)this.stream.start_time) * this.FrameDelay * 1000.0;
+                                           
+                                            bgraToRgba(frameData, frameData.Length);
                                             ++this.writeCursor;
+                                            
                                             this.lastPts = local_1;
+
+                                            
+
                                             flag = true;
                                         }
                                     }
@@ -274,7 +281,22 @@ namespace ubeat.Video
             if (this.readCursor >= this.writeCursor)
                 return (byte[])null;
             this.currentDisplayTime = this.FrameBufferTimes[this.readCursor % this.BufferSize];
-            return this.FrameBuffer[this.readCursor % this.BufferSize];
+           
+            return this.FrameBuffer[this.readCursor % this.BufferSize];;
+        }
+        private static unsafe void bgraToRgba(byte[] data, int length)
+        {
+            fixed (byte* dPtr = &data[0])
+            {
+                byte* sp = dPtr;
+                byte* ep = dPtr + length;
+
+                while (sp < ep)
+                {
+                    *(uint*)sp = (uint)(*(sp + 2) | *(sp + 1) << 8 | *sp << 16 | *(sp + 3) << 24);
+                    sp += 4;
+                }
+            }
         }
 
         public void Seek(int time)

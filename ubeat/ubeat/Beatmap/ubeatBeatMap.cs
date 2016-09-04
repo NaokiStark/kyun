@@ -15,7 +15,7 @@ namespace ubeat.Beatmap
         public string Creator { get;  set; }
         public string Version { get;  set; }
         public List<string> Tags { get;  set; }
-        public int BPM { get;  set; }
+        public float BPM { get;  set; }
         public long MSPB { get;  set; }
         public List<IHitObj> HitObjects { get; set; }
         public string SongPath { get;  set; }
