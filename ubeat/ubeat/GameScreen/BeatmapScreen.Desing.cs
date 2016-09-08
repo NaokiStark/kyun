@@ -13,10 +13,10 @@ using ubeat.GameScreen.SUI.Buttons;
 
 namespace ubeat.GameScreen
 {
-    public partial class BeatmapScreen : GameScreen.Screen
+    public partial class BeatmapScreen : GameScreen.IScreen
     {
 
-        public Screen ScreenInstance { get; set; }
+        public IScreen ScreenInstance { get; set; }
 
         public List<ScreenUIObject> Controls { get; set; }
         public event EventHandler OnLoad;

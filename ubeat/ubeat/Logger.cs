@@ -38,7 +38,10 @@ namespace ubeat
             }
             catch (Exception)
             {
-                // idk, no logger available, terminate program?
+                /* idk, no logger available, terminate program using Application.Exit() ?
+                   seems weird since its a logger, it should be terminated from the main app
+                   also a logger shouldn't be able to use the System.Windows.Forms namespace imo, i'd use an argument in the constructor
+                */
                 throw;
             }
         }

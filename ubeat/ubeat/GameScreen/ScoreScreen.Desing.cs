@@ -11,9 +11,9 @@ using ubeat.Screen;
 
 namespace ubeat.GameScreen
 {
-    public partial class ScoreScreen:Screen
+    public partial class ScoreScreen:IScreen
     {
-        public Screen ScreenInstance { get; set; }
+        public IScreen ScreenInstance { get; set; }
 
         public List<ScreenUIObject> Controls { get; set; }
 

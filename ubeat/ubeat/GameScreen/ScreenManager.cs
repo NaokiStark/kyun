@@ -8,9 +8,9 @@ namespace ubeat.GameScreen
 {
     public class ScreenManager
     {
-        public static Screen ActualScreen{get;set;}
+        public static IScreen ActualScreen{get;set;}
 
-        public static void ChangeTo(Screen ToScreen)
+        public static void ChangeTo(IScreen ToScreen)
         {
             ToScreen.Visible = true;
             if (ActualScreen != null)

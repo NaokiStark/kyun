@@ -2,16 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Troschuetz.Random.Generators;
 using ubeat.Beatmap;
 
 namespace ubeat.GameScreen
 {
-    public partial class MainScreen:Screen
+    public partial class MainScreen:IScreen
     {
-        public Screen ScreenInstance { get; set; }
+        public IScreen ScreenInstance { get; set; }
 
         bool noLoadRnd = false;
         bool playingInit;

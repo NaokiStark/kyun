@@ -10,7 +10,7 @@ using ubeat.Utils;
 
 namespace ubeat.GameScreen
 {
-    public partial class BeatmapScreen : GameScreen.Screen
+    public partial class BeatmapScreen : GameScreen.IScreen
     {
         string lastStr = "";
         public BeatmapScreen()

@@ -4,25 +4,23 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using ubeat.Beatmap;
 using ubeat.UIObjs;
 using ubeat.Score;
 using ubeat.GameScreen.UI;
 using ubeat.Screen;
 using System.Globalization;
-using System.Diagnostics;
+
 namespace ubeat.GameScreen
 {
     
-    public class Grid:Screen
+    public class Grid:IScreen
     {
 
         #region PublicVars
 
         public List<ScreenUIObject> Controls { get; set; } //Dummy
-        public Screen ScreenInstance { get; set; }
+        public IScreen ScreenInstance { get; set; }
 
         public bool autoMode = false;
         public bool inGame;
@@ -302,8 +300,8 @@ namespace ubeat.GameScreen
                 offset--;
             else
                 offset++;
-            Console.WriteLine("ACTUAL OFFSET: "+offset);
-            long pos=Game1.Instance.player.Position;
+            Console.WriteLine("ACTUAL OFFSET: " + offset);
+            long pos = Game1.Instance.player.Position;
             Console.WriteLine("pos - OFFSETTED/PLAYER: " + (pos+offset)+"/" +pos );
             Console.WriteLine("DIFF: " + (pos + offset-pos));
         }

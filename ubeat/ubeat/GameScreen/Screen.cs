@@ -1,14 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ubeat.GameScreen
 {
-    public interface Screen
+    public interface IScreen
     {
-        Screen ScreenInstance { get; set; }
+        IScreen ScreenInstance { get; set; }
         List<ScreenUIObject> Controls { get; set; }
         void Update(GameTime tm);
         void Render();

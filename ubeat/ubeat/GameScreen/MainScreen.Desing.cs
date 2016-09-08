@@ -11,7 +11,7 @@ using ubeat.Screen;
 namespace ubeat.GameScreen
 {
 	//Here goes Desing
-    public partial class MainScreen:Screen
+    public partial class MainScreen:IScreen
     {
 
 		//Events
