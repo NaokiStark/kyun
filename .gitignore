@@ -11,9 +11,23 @@
 *.userprefs
 
 # Build results
-[Dd]ebug/
+
+[Dd]ebug/*
+[Rr]elease/*
+
+# Ubeat
+
+![Dd]ebug/Assets/
+![Dd]ebug/Maps/
+![Dd]ebug/*.wmv
+
+![Rr]elease/Assets/
+![Rr]elease/Maps/
+![Rr]elease/*.wmv
+
+# Continue build results
+
 [Dd]ebugPublic/
-[Rr]elease/
 [Rr]eleases/
 x64/
 x86/
