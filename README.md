@@ -1,3 +1,5 @@
 # ubeat
 
-![](logo.png)
+<p align="center">
+    ![](logo.png)
+</p>
