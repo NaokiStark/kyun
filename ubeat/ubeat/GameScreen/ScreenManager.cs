@@ -1,22 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ubeat.GameScreen
 {
     public class ScreenManager
     {
-        public static IScreen ActualScreen{get;set;}
-
         public static void ChangeTo(IScreen ToScreen)
         {
             ToScreen.Visible = true;
+
             if (ActualScreen != null)
-            {
-                ActualScreen.Visible = false;                
-            }
+                ActualScreen.Visible = false;
+
             ActualScreen = ToScreen;
         }
 
@@ -34,7 +28,8 @@ namespace ubeat.GameScreen
                 return;
 
             ActualScreen.Render();
-
         }
+
+        public static IScreen ActualScreen { get; set; }
     }
 }

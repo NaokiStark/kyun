@@ -37,7 +37,7 @@ namespace ubeat.GameScreen.UI
             //base.Render(); //Nope
             Vector2 messStr;
             if(Font==null)
-                messStr = Game1.Instance.fontDefault.MeasureString(this.Text) * Scale;
+                messStr = Game1.Instance.defaultFont.MeasureString(this.Text) * Scale;
             else
                 messStr = Font.MeasureString(this.Text) * Scale;
 
@@ -59,7 +59,7 @@ namespace ubeat.GameScreen.UI
                 Game1.Instance.spriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(Size.X), (int)(Size.Y)), Color.White);
             }
 
-            Game1.Instance.spriteBatch.DrawString((Font == null) ? Game1.Instance.fontDefault : Font, this.Text, new Vector2(pos.X + 5, pos.Y + 5), Color.White, 0,
+            Game1.Instance.spriteBatch.DrawString((Font == null) ? Game1.Instance.defaultFont : Font, this.Text, new Vector2(pos.X + 5, pos.Y + 5), Color.White, 0,
                 Vector2.Zero,this.Scale,SpriteEffects.None,0);
         }
 

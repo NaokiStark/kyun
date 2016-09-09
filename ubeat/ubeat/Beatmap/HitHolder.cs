@@ -348,13 +348,13 @@ namespace ubeat.UIObjs
                         0);
                   
                     string secondsTo = ((EndTime - ccc)/100).ToString("0");
-                    Vector2 measureSize = Game1.Instance.fontDefault.MeasureString(secondsTo);
+                    Vector2 measureSize = Game1.Instance.defaultFont.MeasureString(secondsTo);
 
                     Vector2 bgS = measureSize * 1.1f;
 
 
-                    Game1.Instance.spriteBatch.DrawString(Game1.Instance.fontDefault, secondsTo, new Vector2((position.X + Texture.Width / 2)+1, (position.Y + Texture.Height / 2)+1), Color.Black, 0, bgS / 2, 1.1f, SpriteEffects.None, 0);
-                    Game1.Instance.spriteBatch.DrawString(Game1.Instance.fontDefault, secondsTo, new Vector2(position.X + Texture.Width / 2, position.Y + Texture.Height / 2), Color.White, 0, measureSize / 2, 1f, SpriteEffects.None, 0);
+                    Game1.Instance.spriteBatch.DrawString(Game1.Instance.defaultFont, secondsTo, new Vector2((position.X + Texture.Width / 2)+1, (position.Y + Texture.Height / 2)+1), Color.Black, 0, bgS / 2, 1.1f, SpriteEffects.None, 0);
+                    Game1.Instance.spriteBatch.DrawString(Game1.Instance.defaultFont, secondsTo, new Vector2(position.X + Texture.Width / 2, position.Y + Texture.Height / 2), Color.White, 0, measureSize / 2, 1f, SpriteEffects.None, 0);
 
 
                 }

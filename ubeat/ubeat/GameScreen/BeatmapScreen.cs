@@ -2,15 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using ubeat.Audio;
 using ubeat.Beatmap;
 using ubeat.Utils;
 
 namespace ubeat.GameScreen
 {
-    public partial class BeatmapScreen : GameScreen.IScreen
+    public partial class BeatmapScreen : IScreen
     {
         string lastStr = "";
         public BeatmapScreen()

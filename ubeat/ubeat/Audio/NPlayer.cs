@@ -166,9 +166,7 @@ namespace ubeat.Audio
         public void Play(string fileName=null)
         {
             if (waveOut != null)
-            {
                 Stop();
-            }
 
             if (fileName == null && ActualSong == "")
             {
@@ -190,9 +188,7 @@ namespace ubeat.Audio
 
         void waveOut_PlaybackStopped(object sender, StoppedEventArgs e)
         {
-
-            if (OnStopped != null)
-                OnStopped();
+            OnStopped?.Invoke();
         }
 
         public void Stop()

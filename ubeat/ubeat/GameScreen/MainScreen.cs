@@ -7,7 +7,7 @@ using ubeat.Beatmap;
 
 namespace ubeat.GameScreen
 {
-    public partial class MainScreen:IScreen
+    public partial class MainScreen : IScreen
     {
         public IScreen ScreenInstance { get; set; }
 
@@ -47,22 +47,18 @@ namespace ubeat.GameScreen
 
         void CnfBtn_Click(object sender, EventArgs e)
         {
-            new ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas.Settings().Show();
+            /*new ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas.Settings().Show();*/
+            ScreenManager.ChangeTo(new SettingsScreen());
+        }
+
+        void StrBtn_Click(object sender, EventArgs e)
+        {
+            ScreenManager.ChangeTo(new BeatmapScreen());
         }
 
         void ExtBtn_Click(object sender, EventArgs e)
         {
             Game1.Instance.Exit();
-        }
-
-        void StrBtn_Click(object sender, EventArgs e)
-        {
-            //Aca habrimoz el cozo para elejir mapaz
-            //new BeatmapSelector().Show();
-            ScreenManager.ChangeTo(new BeatmapScreen());
-           
-           
-            this.Visible = false;
         }
 
         public void PlayUbeatMain()

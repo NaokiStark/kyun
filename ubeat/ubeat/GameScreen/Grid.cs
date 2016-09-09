@@ -1,20 +1,20 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Globalization;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using ubeat.Beatmap;
 using ubeat.UIObjs;
 using ubeat.Score;
 using ubeat.GameScreen.UI;
 using ubeat.Screen;
-using System.Globalization;
 
 namespace ubeat.GameScreen
 {
     
-    public class Grid:IScreen
+    public class Grid : IScreen
     {
 
         #region PublicVars
@@ -93,7 +93,7 @@ namespace ubeat.GameScreen
 
             ScreenMode ActualMode = scmL[Settings1.Default.ScreenMode];
 
-            Vector2 meas = Game1.Instance.fontDefault.MeasureString("ubeat") * .85f;
+            Vector2 meas = Game1.Instance.defaultFont.MeasureString("ubeat") * .85f;
 
             FPSMetter = new Label();
             FPSMetter.Text = "fps";

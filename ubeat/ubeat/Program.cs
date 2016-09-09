@@ -32,7 +32,6 @@ namespace ubeat
                 using (Game1 game = new Game1())
                 {
                     game.Run();
-                   
                 }
             }
             catch(Exception e)

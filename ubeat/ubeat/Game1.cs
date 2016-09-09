@@ -3,21 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
-using System.Threading;
 using System.IO;
-using System.Diagnostics;
 using ubeat.Audio;
 using ubeat.GameScreen;
 using System.Runtime.InteropServices;
 using ubeat.Utils;
-using NAudio.Wave;
 using Redux.Utilities.Managers;
-
 
 namespace ubeat
 {
@@ -98,7 +91,9 @@ namespace ubeat
             ScreenManager.ChangeTo(grid);
             grid.Play(null, automode);
         }
-        public SpriteFont fontDefault;
+
+        public SpriteFont defaultFont;
+
         public void GameStop()
         {
             
@@ -432,7 +427,7 @@ namespace ubeat
             ExitButton = Content.Load<Texture2D>("ExitMain");
             ConfigButton = Content.Load<Texture2D>("ConfigMain");
 
-            fontDefault = Content.Load<SpriteFont>("SpriteFont1");
+            defaultFont = Content.Load<SpriteFont>("SpriteFont1");
             GeneralBig = Content.Load<SpriteFont>("General");
             ListboxFont = Content.Load<SpriteFont>("Listbox");
 

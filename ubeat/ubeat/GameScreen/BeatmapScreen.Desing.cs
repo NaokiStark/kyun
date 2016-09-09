@@ -1,11 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ubeat.Screen;
 using ubeat.GameScreen.SUI;
-using ubeat.Beatmap;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ubeat.GameScreen.UI;
@@ -13,7 +10,7 @@ using ubeat.GameScreen.SUI.Buttons;
 
 namespace ubeat.GameScreen
 {
-    public partial class BeatmapScreen : GameScreen.IScreen
+    public partial class BeatmapScreen : IScreen
     {
 
         public IScreen ScreenInstance { get; set; }
@@ -28,7 +25,7 @@ namespace ubeat.GameScreen
 
         bool AMode = false;
 
-        public Texture2D Background;
+        public Texture2D Background { get; set; }
 
         public void LoadInterface()
         {
@@ -80,8 +77,8 @@ namespace ubeat.GameScreen
             Controls.Add(lblSearch);
 
             OnLoad += BeatmapScreen_OnLoad;
-            if (OnLoad != null)
-                OnLoad(this,new EventArgs());
+
+            OnLoad?.Invoke(this, new EventArgs());
         }
 
         void autoBtn_Click(object sender, EventArgs e)
