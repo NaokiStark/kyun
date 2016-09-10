@@ -15,9 +15,7 @@ namespace ubeat.GameScreen
         {
             Controls = new List<ScreenUIObject>();
 
-            List<ScreenMode> scmL = ScreenModeManager.GetSupportedModes();
-
-            ScreenMode ActualMode = scmL[Settings1.Default.ScreenMode];
+            ScreenMode ActualMode = ScreenModeManager.GetActualMode();
 
             Vector2 center = new Vector2(ActualMode.Width / 2, ActualMode.Height / 2);
 
@@ -99,9 +97,7 @@ namespace ubeat.GameScreen
 
         public void Redraw()
         {
-            List<ScreenMode> scmL = ScreenModeManager.GetSupportedModes();
-
-            ScreenMode ActualMode = scmL[Settings1.Default.ScreenMode];
+            ScreenMode ActualMode = ScreenModeManager.GetActualMode();
 
             Vector2 center = new Vector2(ActualMode.Width / 2, ActualMode.Height / 2);
 

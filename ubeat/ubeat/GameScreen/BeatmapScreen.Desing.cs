@@ -31,38 +31,37 @@ namespace ubeat.GameScreen
         {
             Game1.Instance.IsMouseVisible = true;
             Controls = new List<ScreenUIObject>();
-            List<ScreenMode> scmL = ScreenModeManager.GetSupportedModes();
 
-            ScreenMode ActualMode = scmL[Settings1.Default.ScreenMode];
-            
+            ScreenMode actualMode = ScreenModeManager.GetActualMode();
+
             Vector2 lPos = new Vector2(0, 100);
 
-            lbox = new Listbox(lPos, ActualMode.Width / 2, ActualMode.Height - 100, Game1.Instance.ListboxFont);
+            lbox = new Listbox(lPos, actualMode.Width / 2, actualMode.Height - 100, Game1.Instance.ListboxFont);
             
             lbox.IndexChanged += lbox_IndexChanged;
             
             lBDff = new ListboxDiff(new Vector2(lbox.width, lbox.Position.Y), 200, 500, Game1.Instance.ListboxFont);
 
-            filledRect1 = new FilledRectangle(new Vector2(ActualMode.Width, 4), Color.SpringGreen);
+            filledRect1 = new FilledRectangle(new Vector2(actualMode.Width, 4), Color.SpringGreen);
             filledRect1.Position = new Vector2(0, 96);
 
             lblTitleDesc = new Label(.98f) { 
                 Scale=1.2f,
                 Text="",
                 Position = new Vector2(0,0),
-                Size = new Vector2(ActualMode.Width, 96)
+                Size = new Vector2(actualMode.Width, 96)
             };
 
             lblSearch = new Label(.98f)
             {
                 Scale = .8f,
                 Text = "",
-                Position = new Vector2(ActualMode.Width/2, 48), 
+                Position = new Vector2(actualMode.Width/2, 48), 
                 Centered=true
             };
 
             autoBtn = new AutoModeButton() {
-                Position = new Vector2(ActualMode.Width - Game1.Instance.AutoModeButton.Width-20, ActualMode.Height - Game1.Instance.AutoModeButton.Height-20),
+                Position = new Vector2(actualMode.Width - Game1.Instance.AutoModeButton.Width-20, actualMode.Height - Game1.Instance.AutoModeButton.Height-20),
                 Scale=.85f,
                 PlayHit=true
             };
@@ -99,7 +98,7 @@ namespace ubeat.GameScreen
 
         bool EscapeAlredyPressed = false;
 
-        public void Update(Microsoft.Xna.Framework.GameTime tm)
+        public void Update(GameTime tm)
         {
 
             if (!Visible) return;

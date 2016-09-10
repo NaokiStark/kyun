@@ -38,7 +38,7 @@ namespace ubeat.GameScreen
         {
 
             Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, (int)this.Texture.Width, (int)this.Texture.Height);
-            Rectangle cursor = new Rectangle((int)Microsoft.Xna.Framework.Input.Mouse.GetState().X, (int)Microsoft.Xna.Framework.Input.Mouse.GetState().Y, 1, 1);
+            Rectangle cursor = new Rectangle((int)Mouse.GetState().X, (int)Mouse.GetState().Y, 1, 1);
 
             if (System.Windows.Forms.Form.ActiveForm != (System.Windows.Forms.Control.FromHandle(Game1.Instance.Window.Handle) as System.Windows.Forms.Form)) return;
 
@@ -51,24 +51,22 @@ namespace ubeat.GameScreen
 
             if (cursor.Intersects(rg))
             {
-                if (Over != null)
-                    Over(this, new EventArgs());
+                Over?.Invoke(this, new EventArgs());
 
-                if (Microsoft.Xna.Framework.Input.Mouse.GetState().LeftButton == ButtonState.Pressed)
+                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                 {
                     if (!alredyPressed)
                     {
                         //Launch MouseDown
-                        if (MouseDown != null)
-                            MouseDown(this, new EventArgs());
+                        MouseDown?.Invoke(this, new EventArgs());
 
-                        
+
                         alredyPressed = true;
                     }
                 }                
             }
 
-            if (Microsoft.Xna.Framework.Input.Mouse.GetState().LeftButton == ButtonState.Released)
+            if (Mouse.GetState().LeftButton == ButtonState.Released)
             {
                 if (alredyPressed)
                 {
@@ -86,8 +84,7 @@ namespace ubeat.GameScreen
 
                     if (clickCount > 1)
                     {
-                        if (MouseDoubleClick != null)
-                            MouseDoubleClick(this, new EventArgs());
+                        MouseDoubleClick?.Invoke(this, new EventArgs());
                         clickCount = clickC = 0;
                     }
 
@@ -97,15 +94,12 @@ namespace ubeat.GameScreen
 
             if (this is Listbox || this is ListboxDiff)
             {
-                int actualScrollVal = Microsoft.Xna.Framework.Input.Mouse.GetState().ScrollWheelValue;
+                int actualScrollVal = Mouse.GetState().ScrollWheelValue;
                 if (actualScrollVal > lastScrollVal)
                 {
                     if (cursor.Intersects(rg))
                     {
-                        if (OnScroll != null)
-                        {
-                            OnScroll(this, true);
-                        }
+                        OnScroll?.Invoke(this, true);
                     }
 
                 }
@@ -113,8 +107,8 @@ namespace ubeat.GameScreen
                 {
                     if (cursor.Intersects(rg))
                     {
-                        
-                        OnScroll(this, false);
+
+                        OnScroll?.Invoke(this, false);
 
                     }
                 }

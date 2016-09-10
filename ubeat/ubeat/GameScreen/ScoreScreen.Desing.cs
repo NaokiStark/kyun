@@ -24,8 +24,9 @@ namespace ubeat.GameScreen
         {
             Game1.Instance.IsMouseVisible = true;
             Controls = new List<ScreenUIObject>();
-            List<ScreenMode> scmL = ScreenModeManager.GetSupportedModes();
-            ScreenMode ActualMode = scmL[Settings1.Default.ScreenMode];
+
+            ScreenMode ActualMode = ScreenModeManager.GetActualMode();
+
 
             filledRect1 = new FilledRectangle(new Vector2(ActualMode.Width, 4), Color.SpringGreen);
             filledRect1.Position = new Vector2(0, 96);

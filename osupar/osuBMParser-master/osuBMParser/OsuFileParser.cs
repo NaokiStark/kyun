@@ -10,26 +10,6 @@ namespace osuBMParser
 {
     public class OsuFileParser
     {
-
-        [Flags]
-        public enum OsuFileSection
-        {
-            NONE = 0,
-            FORMAT = 1 << 0,
-            GENERAL = 1 << 1,
-            EDITOR = 1 << 2,
-            METADATA = 1 << 3,
-            DIFFICULTY = 1 << 4,
-            EVENTS = 1 << 5,
-            TIMINGPOINTS = 1 << 6,
-            COLOURS = 1 << 7,
-            HITOBJECTS = 1 << 8
-        }
-
-        public OsuFileSection entireFile = OsuFileSection.FORMAT | OsuFileSection.GENERAL |
-            OsuFileSection.EDITOR | OsuFileSection.METADATA | OsuFileSection.DIFFICULTY | OsuFileSection.EVENTS |
-            OsuFileSection.TIMINGPOINTS | OsuFileSection.COLOURS | OsuFileSection.HITOBJECTS;
-
         #region fields
         private Beatmap beatmap;
         private string path;
@@ -44,12 +24,8 @@ namespace osuBMParser
         #endregion
 
         #region methods
+        
         internal void parse()
-        {
-            parse(entireFile);
-        }
-
-        internal void parse(OsuFileSection sections)
         {
 
             //Read in file. Exceptions here are to be handled by the devs who use this library.
@@ -117,45 +93,14 @@ namespace osuBMParser
                     hitObjectParse(line);
                     break;
                case "[editor]":
-                   return;
+                   
                    break;
                default:
-                   return;
+                  
                    break;                   
             }
         }
 
-        private OsuFileSection testNewSection(string data)
-        {
-            OsuFileSection sectionEnum;
-            return Enum.TryParse(data.Substring(1, data.Length - 2), true, out sectionEnum) ? sectionEnum : OsuFileSection.NONE;
-
-        }
-
-        //Send line data to the right parse method
-        private void parseLine(OsuFileSection section, string data)
-        {
-            switch (section)
-            {
-
-                case OsuFileSection.FORMAT:
-                case OsuFileSection.GENERAL:
-                case OsuFileSection.EDITOR:
-                case OsuFileSection.METADATA:
-                case OsuFileSection.DIFFICULTY:
-                    normalParse(data);
-                    break;
-                case OsuFileSection.TIMINGPOINTS:
-                    timingPointParse(data);
-                    break;
-                case OsuFileSection.COLOURS:
-                    colourParse(data);
-                    break;
-                case OsuFileSection.HITOBJECTS:
-                    hitObjectParse(data);
-                    break;
-            }
-        }
         void parseBG(string data)
         {
             string[] gd = data.Trim().Split(',');
@@ -250,64 +195,15 @@ namespace osuBMParser
                     tnks.ForEach(x => x = x.ToLower());
                     beatmap.Tags = tnks;
                     break;
-                    /*
-                case "slidermultiplier":
-
-                    break;
-                case "slidermultiplier":
-
-                    break;*/
-                /*
-                case "bookmarks":
-                case "editorbookmarks": //From old file format (v5)
-                    beatmap.Bookmarks.AddRange(Array.ConvertAll(tokens[1].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries), int.Parse));
-                    break;
-
-                case "tags":
-                    if (tokens[1] != null) beatmap.Tags.AddRange(tokens[1].Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries));
-                    break;
-
-                case "editordistancespacing": //From old file format (v5)
-                    beatmap.DistanceSpacing = toFloat(tokens[1]);
-                    break;
-
-                default:
-                    //Use reflection to set property values
-                    PropertyInfo property = beatmap.GetType().GetProperty(tokens[0], BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-                    if (property != null)
-                    {
-                        //Convert.ChangeType() does not do string to boolean conversion
-                        if (property.PropertyType == typeof(Boolean))
-                        {
-                            
-                            //property.SetValue(beatmap, toBool(tokens[1].Trim()));
-                        }
-                        else
-                        {
-                            //property.SetValue(beatmap, Convert.ChangeType(tokens[1].Trim(), property.PropertyType));
-                        }
-                    }
-                    else
-                    {
-                        //Debug.WriteLine("osuBMParser: Undefined property: " + tokens[0]);
-                    }
-                    break;*/
+                   
             }
 
         }
-
-
         private void timingPointParse(string data)
         {
 
             string[] tokens = data.Split(',');
 
-            /*
-            if (tokens.Length < 8)
-            {
-                //Debug.WriteLine("osuBMParser: Invalid TimingPoint line, no further information available");
-                return;
-            }*/
 
             TimingPoint timingPoint = new TimingPoint();
 
@@ -494,7 +390,7 @@ namespace osuBMParser
         #endregion
         float SafeParse(string input)
         {
-            if (String.IsNullOrEmpty(input)) { throw new ArgumentNullException("input"); }
+            if (String.IsNullOrEmpty(input)) { return 0f; } // old throw
 
             float res;
             if (Single.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out res))

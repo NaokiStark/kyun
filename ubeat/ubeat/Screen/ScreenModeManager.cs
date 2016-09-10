@@ -26,5 +26,10 @@ namespace ubeat.Screen
             }
             return screenMode;
         }
+        public static ScreenMode GetActualMode()
+        {
+            var modes = ScreenModeManager.GetSupportedModes();
+            return modes[Settings1.Default.ScreenMode];
+        }
     }
 }

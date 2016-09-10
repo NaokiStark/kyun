@@ -13,8 +13,8 @@ namespace ubeat.GameScreen
         {
             Controls = new List<ScreenUIObject>();
 
-            var modes = ScreenModeManager.GetSupportedModes();
-            var actualMode = modes[Settings1.Default.ScreenMode];
+            //ñam ñam
+            ScreenMode actualMode = ScreenModeManager.GetActualMode();
 
             var center = new Vector2(actualMode.Width / 2, actualMode.Height / 2);
 
