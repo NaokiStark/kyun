@@ -9,11 +9,6 @@ namespace ubeat.GameScreen
 {
     public partial class MainScreen : IScreen
     {
-        public IScreen ScreenInstance { get; set; }
-
-        bool noLoadRnd = false;
-        bool playingInit;
-
         public MainScreen(bool LoadRandom=true)
         {
             Game1.Instance.IsMouseVisible=true;
@@ -63,7 +58,7 @@ namespace ubeat.GameScreen
 
         public void PlayUbeatMain()
         {
-            playingInit = true;
+            PlayingInit = true;
             string[] songs = { "Shiawase no Sakura Namiki.mp3", "Sakura no THEME II.mp3" };
             string[] bgs = { "bg2.png", "bg.png" };
             float[] mspb = {483.90999274135f,428f};
@@ -101,9 +96,9 @@ namespace ubeat.GameScreen
 
         void player_OnStopped()
         {
-            if (this.Visible == false) return;
+            if (!Visible) return;
 
-            if (playingInit)
+            if (PlayingInit)
                 Game1.Instance.player.Play(Game1.Instance.SelectedBeatmap.SongPath);
             else
                 playRandomSong();
@@ -189,6 +184,15 @@ namespace ubeat.GameScreen
                 Logger.Instance.Warn("BACKGROUND NOT FOUND!!");
             }
         }
+
+        #region Properties
+
+        public IScreen ScreenInstance { get; set; }
+        bool noLoadRnd = false;
+        bool PlayingInit { get; set; }
+
+        #endregion
+
     }
 }
 

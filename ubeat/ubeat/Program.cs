@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Reflection;
 
 namespace ubeat
@@ -10,12 +9,15 @@ namespace ubeat
         [STAThread]
         static void Main(string[] args)
         {
-            Version vr = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Version vr = Assembly.GetExecutingAssembly().GetName().Version;
+
             Logger.Instance.Info("");
             Logger.Instance.Info("");
             Logger.Instance.Info("╔═══════════════════════════════╗");
             Logger.Instance.Info("║                               ║");
-            Logger.Instance.Info("║        Build " + string.Format("{0}.{1}.{2}", vr.Major, vr.Minor, vr.Revision.ToString("0000")) + "         ║");
+            Logger.Instance.Info(
+                                $"║        Build {vr.Major}.{vr.Minor}.{vr.Revision.ToString("0000")}         ║");
             Logger.Instance.Info("║                               ║");
             Logger.Instance.Info("╚═══════════════════════════════╝");
             Logger.Instance.Info("");
@@ -29,18 +31,18 @@ namespace ubeat
 
             try
             {
-                using (Game1 game = new Game1())
+                using (var game = new Game1())
                 {
                     game.Run();
                 }
             }
             catch(Exception e)
             {
-                Logger.Instance.Severe("System.NiceMeme.Exception");
                 Logger.Instance.Severe(e.Message);
                 Logger.Instance.Severe(e.StackTrace);
-                Console.WriteLine("Press any key to exit");
+                Logger.Instance.Info("Press any key to exit");
                 Console.Read();
+                return;
             }
            
         }

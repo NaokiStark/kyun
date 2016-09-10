@@ -282,7 +282,7 @@ namespace ubeat
 
         void hideGameWindow()
         {
-            Logger.Instance.Info("Loading enviroment");
+            Logger.Instance.Info("Loading environment");
 
             List<Screen.ScreenMode> srcm = Screen.ScreenModeManager.GetSupportedModes();
 
@@ -469,7 +469,7 @@ namespace ubeat
             AudioPlaybackEngine.Instance.Dispose();
             //_UI.Shutdown();
 
-            Logger.Instance.Info(" Bye! ");
+            Logger.Instance.Info("Bye!");
         }
 
 #endregion
@@ -528,7 +528,7 @@ namespace ubeat
         {
             this.SuppressDraw();
 
-            System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Form.FromHandle(Window.Handle);
+            System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(Window.Handle);
 
             if (screenMode.WindowMode != Screen.WindowDisposition.Windowed)
             {

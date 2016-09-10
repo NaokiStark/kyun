@@ -1,9 +1,7 @@
 ﻿using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ubeat.Audio
 {
@@ -17,17 +15,18 @@ namespace ubeat.Audio
             {
                 mfr = new WdlResamplingSampleProvider(audioFileReader, 44100);
 
-                
                 this.WaveFormat = mfr.WaveFormat;
 
                 var wholeFile = new List<float>((int)(audioFileReader.Length / 4));
 
                 var readBuffer = new float[mfr.WaveFormat.SampleRate * mfr.WaveFormat.Channels];
                 int samplesRead;
+
                 while ((samplesRead = mfr.Read(readBuffer, 0, readBuffer.Length)) > 0)
                 {
                     wholeFile.AddRange(readBuffer.Take(samplesRead));
                 }
+
                 AudioData = wholeFile.ToArray();
             }
         }

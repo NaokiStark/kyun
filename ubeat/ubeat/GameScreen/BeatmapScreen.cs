@@ -41,16 +41,14 @@ namespace ubeat.GameScreen
             Game1.Instance.kbmgr.Enabled = true;
             if (Game1.Instance.AllBeatmaps.Count < 1)
             {
-                Mapset mpset = new Mapset("", "You have not beatmaps","Fabi",new List<string>());
+                var mpset = new Mapset();
                 lbox.Items.Add(mpset);
 
             }
             else
             {
                 foreach (Mapset mps in Game1.Instance.AllBeatmaps)
-                {
                     lbox.Items.Add(mps);
-                }
             }
             
             lbox.IndexChanged+=lbox_IndexChanged;
