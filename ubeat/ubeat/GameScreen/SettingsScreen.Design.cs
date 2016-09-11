@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using ubeat.GameScreen.SUI;
 using ubeat.Screen;
 
 namespace ubeat.GameScreen
@@ -25,6 +26,17 @@ namespace ubeat.GameScreen
                         center.X - (Logo.Texture.Width / 2),
                         center.Y - (Logo.Texture.Height / 2) - Logo.Texture.Height + 15);
 
+            var filledRect1 = new FilledRectangle(new Vector2(actualMode.Width, actualMode.Height), Color.Black * 0.5f);
+            filledRect1.Position = new Vector2(0, 0);
+
+            /*
+             * Here I'd add inputs, comboboxes, etc
+             * https://simplegui.codeplex.com/
+             * https://github.com/NeoforceControls/XNA
+             * 
+             */
+
+            Controls.Add(filledRect1);
             Controls.Add(Logo);
 
             Game1.Instance.IsMouseVisible = true;
@@ -75,6 +87,8 @@ namespace ubeat.GameScreen
             foreach (var ctr in Controls)
                 ctr.Update();
         }
+
+
 
         public IScreen ScreenInstance { get; set; }
         public List<ScreenUIObject> Controls { get; set; }

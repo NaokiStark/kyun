@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using osuBMParser;
 using System.IO;
 using ubeat.Beatmap;
 using ubeat.UIObjs;
-using Troschuetz;
 using Troschuetz.Random.Generators;
+
 namespace ubeat.OsuUtils
 {
-    public class OsuBeatMap:ubeat.Beatmap.ubeatBeatMap
+    public class OsuBeatMap : ubeatBeatMap
     {
 
-        public static OsuBeatMap FromFile(string path)
+        public static new OsuBeatMap FromFile(string path)
         {
             try
             {

@@ -196,10 +196,7 @@ namespace ubeat.GameScreen.SUI
 
         public void LaunchEvent()
         {
-            if (this.IndexChanged != null)
-            {
-                this.IndexChanged(this, new EventArgs());
-            }
+            IndexChanged?.Invoke(this, new EventArgs());
         }
 
         public override void Update()

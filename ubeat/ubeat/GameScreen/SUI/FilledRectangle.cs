@@ -1,9 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ubeat.GameScreen.SUI
 {
@@ -18,7 +14,5 @@ namespace ubeat.GameScreen.SUI
             this.Texture.SetData(dataBar);
             Scale = 1;            
         }
-
-
     }
 }

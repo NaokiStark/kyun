@@ -5,12 +5,12 @@ using ubeat.GameScreen.SUI;
 
 namespace ubeat.GameScreen
 {
-    public class ScreenUIObject:UIObjs.IUIObject
+    public class ScreenUIObject : UIObjs.IUIObject
     {
 
         public float Scale = 1;
 
-        public Microsoft.Xna.Framework.Vector2 Position { get; set; }
+        public Vector2 Position { get; set; }
 
         public Microsoft.Xna.Framework.Graphics.Texture2D Texture { get; set; }
 
@@ -121,7 +121,7 @@ namespace ubeat.GameScreen
         public virtual void Render()
         {
             Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, (int)(this.Texture.Width*Scale), (int)(this.Texture.Height*Scale));
-            Game1.Instance.spriteBatch.Draw(this.Texture,rg,Color.White);
+            Game1.Instance.spriteBatch.Draw(this.Texture, rg, Color.White);
         }
     }
 }

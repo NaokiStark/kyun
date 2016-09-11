@@ -82,11 +82,6 @@ namespace osuBMParser
             parser.parse();
         }
 
-        public Beatmap(string path, OsuFileParser.OsuFileSection sections) : this()
-        {
-            OsuFileParser parser = new OsuFileParser(path, this);
-            parser.parse(sections);
-        }
         #endregion
 
         #region methods
