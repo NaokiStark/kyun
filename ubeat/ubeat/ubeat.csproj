@@ -127,6 +127,7 @@
     <Compile Include="ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas\SuperSecretSettings.Designer.cs">
       <DependentUpon>SuperSecretSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\IScreenExtensions.cs" />
     <Compile Include="GameScreen\BeatmapScreen.cs" />
     <Compile Include="GameScreen\BeatmapScreen.Desing.cs" />
     <Compile Include="GameScreen\Grid.cs" />

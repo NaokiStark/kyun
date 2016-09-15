@@ -1,10 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ubeat.GameScreen.SUI;
 using ubeat.GameScreen.UI;
 using ubeat.Screen;
@@ -107,11 +105,11 @@ namespace ubeat.GameScreen
 
 
             OnLoad += ScoreScreen_OnLoad;
-            if (OnLoad != null)
-                OnLoad(this, new EventArgs());
+
+            OnLoad?.Invoke(this, new EventArgs());
         }
 
-        public void Update(Microsoft.Xna.Framework.GameTime tm)
+        public void Update(GameTime tm)
         {
             if (!Visible) return;
 

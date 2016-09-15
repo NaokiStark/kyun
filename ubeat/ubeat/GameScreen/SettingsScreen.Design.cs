@@ -96,7 +96,7 @@ namespace ubeat.GameScreen
 
         #region UI
 
-        public Texture2D Background;
+        public Texture2D Background { get; set; }
         public UI.Image Logo;
 
         #endregion

@@ -29,7 +29,7 @@ namespace ubeat.GameScreen
         public static Grid Instance = null;
 
         public List<IUIObject> objs = new List<IUIObject>();
-        public Beatmap.ubeatBeatMap bemap;
+        public ubeatBeatMap bemap;
         public Texture2D bg;
         public HealthBar Health { get; set; }
         public ScoreDisplay ScoreDispl;
@@ -54,7 +54,7 @@ namespace ubeat.GameScreen
 
         List<IHitObj> hitObjects = new List<IHitObj>();
         List<List<IHitObj>> grid = new List<List<IHitObj>>();        
-        Texture2D Background;       
+        public Texture2D Background { get; set; }   
         Video.VideoPlayer videoplayer;
         Combo combo;
 

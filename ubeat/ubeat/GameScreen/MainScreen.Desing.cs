@@ -126,7 +126,7 @@ namespace ubeat.GameScreen
         public ConfigButton CnfBtn;
         public StartButton StrBtn;
         public ExitButton ExtBtn;
-        public Texture2D Background;
+        public Texture2D Background { get; set; }
         public UI.Image Logo;
         public UI.Label Label1;
         public UI.Label FPSMetter;

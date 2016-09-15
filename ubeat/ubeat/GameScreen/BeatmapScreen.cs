@@ -1,10 +1,8 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System;
 using ubeat.Audio;
 using ubeat.Beatmap;
 using ubeat.Utils;
+using ubeat.Extensions;
 
 namespace ubeat.GameScreen
 {
@@ -93,18 +91,7 @@ namespace ubeat.GameScreen
                 Game1.Instance.player.soundOut.Volume = Game1.Instance.GeneralVolume;
             }
 
-            Game1.Instance.SelectedBeatmap = bm;
-
-            try
-            {
-                FileStream bgFstr = new FileStream(bm.Background, FileMode.Open);
-                Background = Texture2D.FromStream(Game1.Instance.GraphicsDevice, bgFstr);
-                bgFstr.Close();
-            }
-            catch
-            {
-                Logger.Instance.Warn("BACKGROUND NOT FOUND!!");
-            }
+            ScreenInstance.LoadCurrentGameInstanceBackground();
         }
     }
 }
