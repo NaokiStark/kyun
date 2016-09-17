@@ -11,6 +11,7 @@ namespace ubeat.GameScreen
         string lastStr = "";
         public BeatmapScreen()
         {
+            ScreenInstance = this;
             LoadInterface();
             Game1.Instance.kbmgr.OnKeyPress += kbmgr_OnKeyPress;
         }
@@ -52,6 +53,7 @@ namespace ubeat.GameScreen
             lbox.IndexChanged+=lbox_IndexChanged;
             lBDff.IndexChanged += lBDff_IndexChanged;
             lBDff.MouseDoubleClick += lBDff_MouseDoubleClick;
+
             ChangeBeatmapDisplay(Game1.Instance.SelectedBeatmap);
         }
 
@@ -61,7 +63,7 @@ namespace ubeat.GameScreen
             
             Game1.Instance.kbmgr.Enabled = false;
 
-            Game1.Instance.GameStart(lBDff.Items[lBDff.selectedIndex],this.AMode);
+            Game1.Instance.GameStart(lBDff.Items[lBDff.selectedIndex], this.AMode);
 
         }
 
@@ -70,7 +72,7 @@ namespace ubeat.GameScreen
             if (lBDff.selectedIndex < 0 || lBDff.selectedIndex > lBDff.Items.Count-1) return;
             AudioPlaybackEngine.Instance.PlaySound(Game1.Instance.SelectorHit);
             lblTitleDesc.Text = lBDff.Items[lBDff.selectedIndex].Artist + " - " + lBDff.Items[lBDff.selectedIndex].Title;
-            ChangeBeatmapDisplay(lBDff.Items[lBDff.selectedIndex]);
+            //ChangeBeatmapDisplay(lBDff.Items[lBDff.selectedIndex]);
         }
 
         void lbox_IndexChanged(object sender, EventArgs e)
@@ -83,15 +85,15 @@ namespace ubeat.GameScreen
             lBDff.Items = Mapset.OrderByDiff(lbox.Items[lbox.selectedIndex]);
         }
 
-        void ChangeBeatmapDisplay(ubeatBeatMap bm)
+        void ChangeBeatmapDisplay(ubeatBeatMap beatMap)
         {
-            if (Game1.Instance.SelectedBeatmap.SongPath != bm.SongPath)
+            if (Game1.Instance.SelectedBeatmap.SongPath != beatMap.SongPath)
             {
-                Game1.Instance.player.Play(bm.SongPath);
-                Game1.Instance.player.soundOut.Volume = Game1.Instance.GeneralVolume;
+                Game1.Instance.Player.Play(beatMap.SongPath);
+                Game1.Instance.Player.soundOut.Volume = Game1.Instance.GeneralVolume;
             }
 
-            ScreenInstance.LoadCurrentGameInstanceBackground();
+            ScreenInstance.ChangeBackground(beatMap.Background);
         }
     }
 }

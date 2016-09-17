@@ -1,9 +1,10 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
 using Troschuetz.Random.Generators;
 using ubeat.Beatmap;
+using ubeat.Extensions;
 
 namespace ubeat.GameScreen
 {
@@ -36,7 +37,7 @@ namespace ubeat.GameScreen
             else
                 ChangeBeatmapDisplay(Game1.Instance.SelectedBeatmap);
 
-            Game1.Instance.player.OnStopped += player_OnStopped;
+            Game1.Instance.Player.OnStopped += player_OnStopped;
 
         }
 
@@ -63,7 +64,8 @@ namespace ubeat.GameScreen
             string[] bgs = { "bg2.png", "bg.png" };
             float[] mspb = {483.90999274135f,428f};
             int song = getRndNotRepeated(0, songs.Length - 1);
-            Beatmap.ubeatBeatMap mainBm = new Beatmap.ubeatBeatMap()
+
+            ubeatBeatMap mainBm = new ubeatBeatMap()
             {
                 Artist = "",
                 BPM = mspb[song],
@@ -78,20 +80,13 @@ namespace ubeat.GameScreen
                 
             };
 
-            Game1.Instance.player.Play(mainBm.SongPath);
-            Game1.Instance.player.soundOut.Volume = Game1.Instance.GeneralVolume;
+            Game1.Instance.Player.Play(mainBm.SongPath);
+            Game1.Instance.Player.soundOut.Volume = Game1.Instance.GeneralVolume;
             Game1.Instance.SelectedBeatmap = mainBm;
-            Label1.Text = mainBm.Artist + " - " + mainBm.Title;
-            try
-            {
-                FileStream bgFstr = new FileStream(mainBm.Background, FileMode.Open);
-                Background = Texture2D.FromStream(Game1.Instance.GraphicsDevice, bgFstr);
-                bgFstr.Close();
-            }
-            catch
-            {
-                Logger.Instance.Warn("BACKGROUND NOT FOUND!!");
-            }
+
+            Label1.Text = string.Join(" - ", Game1.Instance.SelectedBeatmap.Artist, Game1.Instance.SelectedBeatmap.Title);
+
+            ScreenInstance.LoadCurrentGameInstanceBackground();
         }
 
         void player_OnStopped()
@@ -99,7 +94,7 @@ namespace ubeat.GameScreen
             if (!Visible) return;
 
             if (PlayingInit)
-                Game1.Instance.player.Play(Game1.Instance.SelectedBeatmap.SongPath);
+                Game1.Instance.Player.Play(Game1.Instance.SelectedBeatmap.SongPath);
             else
                 playRandomSong();
         }
@@ -146,43 +141,27 @@ namespace ubeat.GameScreen
                 ubm = bsel[OsuUtils.OsuBeatMap.rnd.Next(0, bsel.Count - 1)];
 
             string songpath = ubm.SongPath;
-            Game1.Instance.player.Play(songpath);
-            Game1.Instance.player.soundOut.Volume = Game1.Instance.GeneralVolume;
+            Game1.Instance.Player.Play(songpath);
+            Game1.Instance.Player.soundOut.Volume = Game1.Instance.GeneralVolume;
             Game1.Instance.SelectedBeatmap = ubm;
-            Label1.Text = ubm.Artist +" - "+ ubm.Title;
-            try
-            {
-                FileStream bgFstr = new FileStream(ubm.Background, FileMode.Open);
-                Background = Texture2D.FromStream(Game1.Instance.GraphicsDevice, bgFstr);
-                bgFstr.Close();
-            }
-            catch
-            {
-                Logger.Instance.Warn("BACKGROUND NOT FOUND!!");
-            }
+
+            Label1.Text = ubm.Artist + " - "+ ubm.Title;
+
+            ScreenInstance.LoadCurrentGameInstanceBackground();
         }
 
         void ChangeBeatmapDisplay(ubeatBeatMap bm)
         {
             if (Game1.Instance.SelectedBeatmap.SongPath != bm.SongPath)
             {
-                Game1.Instance.player.Play(bm.SongPath);
-                Game1.Instance.player.soundOut.Volume = Game1.Instance.GeneralVolume;
+                Game1.Instance.Player.Play(bm.SongPath);
+                Game1.Instance.Player.soundOut.Volume = Game1.Instance.GeneralVolume;
             }
 
             Game1.Instance.SelectedBeatmap = bm;
             Label1.Text = bm.Artist + " - " + bm.Title;
 
-            try
-            {
-                FileStream bgFstr = new FileStream(bm.Background, FileMode.Open);
-                Background = Texture2D.FromStream(Game1.Instance.GraphicsDevice, bgFstr);
-                bgFstr.Close();
-            }
-            catch
-            {
-                Logger.Instance.Warn("BACKGROUND NOT FOUND!!");
-            }
+            ScreenInstance.LoadCurrentGameInstanceBackground();
         }
 
         #region Properties

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ubeat.Utils
 {
@@ -9,18 +7,10 @@ namespace ubeat.Utils
     {
         public FrameCounter()
         {
+
         }
 
-        public long TotalFrames { get; private set; }
-        public float TotalSeconds { get; private set; }
-        public float AverageFramesPerSecond { get; private set; }
-        public float CurrentFramesPerSecond { get; private set; }
-
-        public const int MAXIMUM_SAMPLES = 100;
-
-        private Queue<float> _sampleBuffer = new Queue<float>();
-
-        public bool Update(float deltaTime)
+        public void Update(float deltaTime)
         {
             CurrentFramesPerSecond = 1.0f / deltaTime;
 
@@ -38,7 +28,27 @@ namespace ubeat.Utils
 
             TotalFrames++;
             TotalSeconds += deltaTime;
-            return true;
         }
+
+        #region Constants
+
+        public const int MAXIMUM_SAMPLES = 100;
+
+        #endregion
+
+        #region Private fields
+
+        private Queue<float> _sampleBuffer = new Queue<float>();
+
+        #endregion
+
+        #region Properties
+
+        public long TotalFrames { get; private set; }
+        public float TotalSeconds { get; private set; }
+        public float AverageFramesPerSecond { get; private set; }
+        public float CurrentFramesPerSecond { get; private set; }
+
+        #endregion
     }
 }

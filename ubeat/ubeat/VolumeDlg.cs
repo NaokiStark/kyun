@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace ubeat
@@ -38,8 +32,8 @@ namespace ubeat
             label1.Text = vol.ToString();
             progressBar1.Value = vol;
             this.Width = 55;
-            this.Top = ((Form)Form.FromHandle(Game1.Instance.Window.Handle)).Top + 300;
-            this.Left = ((Form)Form.FromHandle(Game1.Instance.Window.Handle)).Left+5;
+            this.Top = ((Form)FromHandle(Game1.Instance.Window.Handle)).Top + 300;
+            this.Left = ((Form)FromHandle(Game1.Instance.Window.Handle)).Left + 5;
             this.TopMost = true;
             this.Visible = true;
             this.Width = 55;

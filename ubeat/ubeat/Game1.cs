@@ -21,7 +21,7 @@ namespace ubeat
         LoadingWindow lwnd;
         GraphicsDeviceManager graphics;
         public SpriteBatch spriteBatch;
-        public NPlayer player;
+        public NPlayer Player;
         public static Game1 Instance = null;
         public KeyboardManager kbmgr;
         //Beatmaps
@@ -41,13 +41,13 @@ namespace ubeat
 
         public bool FistLoad;
 
-        private float vol=0;
+        private float _vol = 0;
 
         public float GeneralVolume
         {
             get
             {
-                return vol;
+                return _vol;
             }
             set
             {
@@ -55,11 +55,11 @@ namespace ubeat
                 if (val < 0) val = 0;
                 if (val > 1) val = 1;
                 
-                if (player != null)
-                    if(player.soundOut!=null)
-                        player.soundOut.Volume = val;
+                if (Player != null)
+                    if(Player.soundOut != null)
+                        Player.soundOut.Volume = val;
 
-                vol = val;
+                _vol = val;
                 
                 Settings1.Default.Volume = val;
                 Settings1.Default.Save();
@@ -109,7 +109,7 @@ namespace ubeat
             VolDlg = new VolumeDlg();
 
             base.Initialize();
-            player = new NPlayer();
+            Player = new NPlayer();
 
             //Loads Beatmaps
             Logger.Instance.Info("");
@@ -275,8 +275,8 @@ namespace ubeat
 
         void mainWindow_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
         {
-            if(player.soundOut!=null)
-                player.soundOut.Dispose();
+            if(Player.soundOut!=null)
+                Player.soundOut.Dispose();
             this.Exit();
         }
 
@@ -460,8 +460,8 @@ namespace ubeat
         
         protected override void UnloadContent()
         {
-            if (player != null)
-                player.Dispose();
+            if (Player != null)
+                Player.Dispose();
             /*
             foreach (CachedSound ndi in SoundsEff)
                 ndi.Dispose();

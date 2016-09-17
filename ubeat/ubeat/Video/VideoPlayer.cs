@@ -66,7 +66,7 @@ namespace ubeat.Video
             if (vdc == null) return null;
             if (Buffer.Count > 2) return null;
 
-            byte[] frame = vdc.GetFrame((int)Game1.Instance.player.Position);
+            byte[] frame = vdc.GetFrame((int)Game1.Instance.Player.Position);
             if (frame == null) return null;
             return frame;
         }

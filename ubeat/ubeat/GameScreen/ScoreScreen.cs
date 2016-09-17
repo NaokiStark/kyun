@@ -66,8 +66,8 @@ namespace ubeat.GameScreen
         {
             if (Game1.Instance.SelectedBeatmap.SongPath != bm.SongPath)
             {
-                Game1.Instance.player.Play(bm.SongPath);
-                Game1.Instance.player.soundOut.Volume = Game1.Instance.GeneralVolume;
+                Game1.Instance.Player.Play(bm.SongPath);
+                Game1.Instance.Player.soundOut.Volume = Game1.Instance.GeneralVolume;
             }
 
             Game1.Instance.SelectedBeatmap = bm;

@@ -14,7 +14,7 @@ namespace ubeat.GameScreen.UI
         public Image(Texture2D texture)
         {
             this.Texture = texture;
-            Game1.Instance.player.OnStopped += () => {
+            Game1.Instance.Player.OnStopped += () => {
                 nextBeat = 0;
             };
         }
@@ -27,13 +27,13 @@ namespace ubeat.GameScreen.UI
 
            
 
-            if (Game1.Instance.player.PlayState == NAudio.Wave.PlaybackState.Playing)
+            if (Game1.Instance.Player.PlayState == NAudio.Wave.PlaybackState.Playing)
             {
                 if (Game1.Instance.SelectedBeatmap != null)
                 {
                     if (nextBeat == 0) nextBeat += (long)Game1.Instance.SelectedBeatmap.BPM;
 
-                    if (Game1.Instance.player.Position > nextBeat)
+                    if (Game1.Instance.Player.Position > nextBeat)
                     {
                         Scale = 1.1f;
                         nextBeat += (long)Game1.Instance.SelectedBeatmap.BPM;

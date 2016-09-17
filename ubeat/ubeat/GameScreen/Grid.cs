@@ -204,13 +204,13 @@ namespace ubeat.GameScreen
             if (!Paused)
             {
                 Logger.Instance.Info("Game Paused");
-                Game1.Instance.player.Paused = true;
+                Game1.Instance.Player.Paused = true;
                 Paused = !Paused;
             }
             else
             {
                 Logger.Instance.Info("Game unpaused");
-                Game1.Instance.player.Paused = false;
+                Game1.Instance.Player.Paused = false;
                 Paused = !Paused;
             }
         }
@@ -229,7 +229,7 @@ namespace ubeat.GameScreen
             cooldown = true;
             autoMode = automode;
             addTextureG();
-            Game1.Instance.player.Stop();
+            Game1.Instance.Player.Stop();
             if(beatmap!=null)
                 bemap = beatmap;
             //Start
@@ -301,7 +301,7 @@ namespace ubeat.GameScreen
             else
                 offset++;
             Console.WriteLine("ACTUAL OFFSET: " + offset);
-            long pos = Game1.Instance.player.Position;
+            long pos = Game1.Instance.Player.Position;
             Console.WriteLine("pos - OFFSETTED/PLAYER: " + (pos+offset)+"/" +pos );
             Console.WriteLine("DIFF: " + (pos + offset-pos));
         }
@@ -337,10 +337,10 @@ namespace ubeat.GameScreen
 
            
 
-            if (inGame && GameTimeTotal > bemap.SleepTime && Game1.Instance.player.PlayState == NAudio.Wave.PlaybackState.Stopped)
+            if (inGame && GameTimeTotal > bemap.SleepTime && Game1.Instance.Player.PlayState == NAudio.Wave.PlaybackState.Stopped)
             {
-                Game1.Instance.player.Play(bemap.SongPath);
-                Game1.Instance.player.soundOut.Volume = Game1.Instance.GeneralVolume;
+                Game1.Instance.Player.Play(bemap.SongPath);
+                Game1.Instance.Player.soundOut.Volume = Game1.Instance.GeneralVolume;
 
                 //GameTimeTotal = Game1.Instance.player.Position+bemap.SleepTime;
 
@@ -404,10 +404,10 @@ namespace ubeat.GameScreen
             //long pos = (long)Game1.Instance.player.Position;
             if (!Paused)
             {
-                if(Game1.Instance.player.PlayState == NAudio.Wave.PlaybackState.Stopped)
+                if(Game1.Instance.Player.PlayState == NAudio.Wave.PlaybackState.Stopped)
                     GameTimeTotal += (long)tm.ElapsedGameTime.TotalMilliseconds;
                 else
-                    GameTimeTotal = Game1.Instance.player.Position + bemap.SleepTime;
+                    GameTimeTotal = Game1.Instance.Player.Position + bemap.SleepTime;
             }
 
 
@@ -507,7 +507,7 @@ namespace ubeat.GameScreen
                         nomoreobjectsplsm8 = true;
                         inGame = false;
                         Background = null;
-                        Game1.Instance.player.Paused = false;
+                        Game1.Instance.Player.Paused = false;
                         Paused = false;
                         ScreenManager.ChangeTo(new BeatmapScreen());
                         
@@ -540,7 +540,7 @@ namespace ubeat.GameScreen
                 nomoreobjectsplsm8 = true;
                 inGame = false;
                 Background = null;
-                Game1.Instance.player.Paused = false;
+                Game1.Instance.Player.Paused = false;
                 Paused = false;
                 ScreenManager.ChangeTo(new BeatmapScreen());
 
@@ -769,7 +769,7 @@ namespace ubeat.GameScreen
                 }
                 if(!gEn)
                 {
-                    int diff = (int)(Game1.Instance.player.soundOut.TotalTime.TotalMilliseconds - Game1.Instance.player.Position);
+                    int diff = (int)(Game1.Instance.Player.soundOut.TotalTime.TotalMilliseconds - Game1.Instance.Player.Position);
                     if (diff > 2000 && diff < 60000)
                     {
                         gEn = true;

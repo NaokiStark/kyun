@@ -21,8 +21,12 @@ namespace ubeat.Extensions
             }
             catch (Exception ex)
             {
+#if DEBUG
                 Logger.Instance.Warn("There was a problem loading the background: {0}", ex.Message);
                 Logger.Instance.Warn("StackTrace: {0}", ex.StackTrace);
+#else
+                Logger.Instance.Warn("There was a problem loading the background");
+#endif
             }
         }
 
