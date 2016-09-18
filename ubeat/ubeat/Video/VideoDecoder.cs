@@ -10,10 +10,10 @@ namespace ubeat.Video
         private const int PIXEL_FORMAT = 6;
         private IntPtr buffer;
         public int BufferSize;
-        private ubeat.Video.FFmpeg.AVCodecContext codecCtx;
+        private FFmpeg.AVCodecContext codecCtx;
         private double currentDisplayTime;
         private Thread decodingThread;
-        private ubeat.Video.FFmpeg.AVFormatContext formatContext;
+        private FFmpeg.AVFormatContext formatContext;
         public double FrameDelay;
         private int frameFinished;
         private bool isDisposed;

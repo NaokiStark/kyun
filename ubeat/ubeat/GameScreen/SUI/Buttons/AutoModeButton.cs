@@ -9,7 +9,7 @@ namespace ubeat.GameScreen.SUI.Buttons
     public class AutoModeButton : Button
     {
         public AutoModeButton()
-            : base(Game1.Instance.AutoModeButton)
+            : base(UbeatGame.Instance.AutoModeButton)
         {
         }
     }

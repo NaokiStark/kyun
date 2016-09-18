@@ -1,18 +1,16 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Windows.Forms;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using ubeat.GameScreen;
+
 namespace ubeat.UIObjs
 {
     public class ScoreObj:IUIObject
     {
         public Vector2 Position { get; set; }
         public Texture2D Texture { get; set; }
-        public bool isActive { get; set; }
+        public bool IsActive { get; set; }
         public bool Died { get; set; }
         float Opacity = 1f;
         Timer tickOpacity;
@@ -53,20 +51,20 @@ namespace ubeat.UIObjs
             if (Died)
                 return;
 
-            Rectangle tcR = new Rectangle((int)Position.X + (int)(Game1.Instance.MissTx.Bounds.Width / 2), (int)Position.Y + (int)(Game1.Instance.MissTx.Bounds.Height / 2), (int)(Game1.Instance.MissTx.Bounds.Width / 2), (int)(Game1.Instance.MissTx.Bounds.Height / 2));
+            Rectangle tcR = new Rectangle((int)Position.X + (int)(UbeatGame.Instance.MissTx.Bounds.Width / 2), (int)Position.Y + (int)(UbeatGame.Instance.MissTx.Bounds.Height / 2), (int)(UbeatGame.Instance.MissTx.Bounds.Width / 2), (int)(UbeatGame.Instance.MissTx.Bounds.Height / 2));
             switch (this.scoreType)
                 {
                     case Score.ScoreType.Miss:
-                        Game1.Instance.spriteBatch.Draw(Game1.Instance.MissTx, tcR, Color.White * Opacity);
+                        UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.MissTx, tcR, Color.White * Opacity);
                         break;
                     case Score.ScoreType.Perfect:
-                        Game1.Instance.spriteBatch.Draw(Game1.Instance.PerfectTx, tcR, Color.White * Opacity);
+                        UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.PerfectTx, tcR, Color.White * Opacity);
                         break;
                     case Score.ScoreType.Excellent:
-                        Game1.Instance.spriteBatch.Draw(Game1.Instance.ExcellentTx, tcR, Color.White * Opacity);
+                        UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.ExcellentTx, tcR, Color.White * Opacity);
                         break;
                     case Score.ScoreType.Good:
-                        Game1.Instance.spriteBatch.Draw(Game1.Instance.GoodTx, tcR, Color.White * Opacity);
+                        UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.GoodTx, tcR, Color.White * Opacity);
                         break;
                     
                 }

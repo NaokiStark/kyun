@@ -1,28 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System.IO;
+using Redux.Utilities.Managers;
 using ubeat.Audio;
 using ubeat.GameScreen;
-using System.Runtime.InteropServices;
 using ubeat.Utils;
-using Redux.Utilities.Managers;
 
 namespace ubeat
 {
-
-    public class Game1 : Microsoft.Xna.Framework.Game
+    public class UbeatGame : Game
     {
 
         LoadingWindow lwnd;
         GraphicsDeviceManager graphics;
         public SpriteBatch spriteBatch;
         public NPlayer Player;
-        public static Game1 Instance = null;
+        public static UbeatGame Instance = null;
         public KeyboardManager kbmgr;
         //Beatmaps
         public SoundEffect soundEffect;
@@ -68,7 +67,7 @@ namespace ubeat
         }
         public FrameCounter frameCounter;
 
-        public Game1()
+        public UbeatGame()
         {
             frameCounter = new FrameCounter();
             Instance = this;

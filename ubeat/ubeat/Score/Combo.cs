@@ -1,27 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace ubeat.Score
+﻿namespace ubeat.Score
 {
     public class Combo
     {
+        public Combo()
+        {
+            instance = this;
+        }
 
-        public static Combo Instance { 
-            get {
+        private static Combo instance = null;
+        public static Combo Instance
+        {
+            get
+            {
                 if (instance == null)
                     return new Combo();
                 else
                     return instance;
             }
-        }
-
-        static Combo instance = null;
-
-        public Combo()
-        {
-            instance = this;
         }
 
         public long MaxMultiplier { get; private set; }

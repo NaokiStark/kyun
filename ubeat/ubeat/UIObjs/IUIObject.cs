@@ -7,7 +7,7 @@ namespace ubeat.UIObjs
     {
         Vector2 Position { get; set; }
         Texture2D Texture { get; set; }
-        bool isActive { get; set; }
+        bool IsActive { get; set; }
         bool Died { get; set; }
 
         //methods

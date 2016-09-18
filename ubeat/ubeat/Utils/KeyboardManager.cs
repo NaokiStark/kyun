@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Design;
 using Microsoft.Xna.Framework.Content;
+
 namespace Redux.Utilities.Managers
 {
     public class KeyboardManager : GameComponent

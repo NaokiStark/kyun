@@ -73,7 +73,7 @@ namespace ubeat.GameScreen.SUI
 
             int pwidth = (int)width;
             int pheight = (int)height;
-            this.Texture = new Texture2D(Game1.Instance.GraphicsDevice, pwidth, pheight);
+            this.Texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, pwidth, pheight);
             Color[] dataBar = new Color[pwidth * pheight];
             for (int i = 0; i < dataBar.Length; ++i) dataBar[i] = Color.Black * .8f;
             this.Texture.SetData(dataBar);
@@ -81,7 +81,7 @@ namespace ubeat.GameScreen.SUI
         
         void Listbox_OnScroll(object sender, bool Up)
         {
-            AudioPlaybackEngine.Instance.PlaySound(Game1.Instance.ScrollHit);
+            AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.ScrollHit);
             if (!Up)
             {
                 vertOffset++;
@@ -165,7 +165,7 @@ namespace ubeat.GameScreen.SUI
             horizontalOffset = 0;
 
             Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, Texture.Width, Texture.Height);
-            Game1.Instance.spriteBatch.Draw(this.Texture, rg, Color.White);
+            UbeatGame.Instance.spriteBatch.Draw(this.Texture, rg, Color.White);
 
             for (int i = 0; i < maxCanHold && i + vertOffset < Items.Count; i++)
             {
@@ -188,7 +188,7 @@ namespace ubeat.GameScreen.SUI
                 }
 
 
-                Game1.Instance.spriteBatch.DrawString(textFont, o, drawTextPos, textColor, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0);
+                UbeatGame.Instance.spriteBatch.DrawString(textFont, o, drawTextPos, textColor, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0);
 
                 startBoxPos.Y += perEntryHeight;
                 drawTextPos.Y += perEntryHeight;

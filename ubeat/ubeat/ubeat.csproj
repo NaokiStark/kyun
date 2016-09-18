@@ -68,10 +68,6 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CSCore, Version=1.1.5992.18249, Culture=neutral, PublicKeyToken=5a08f2b6f4415dea, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\CSCore.1.1.0\lib\net35-client\CSCore.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
@@ -118,10 +114,8 @@
     <Compile Include="Audio\AutoDisposeFileReader.cs" />
     <Compile Include="Audio\CachedSound.cs" />
     <Compile Include="Audio\CachedSoundSampleProvider.cs" />
-    <Compile Include="Audio\EffectsPlayer.cs" />
     <Compile Include="Audio\NoDisposeFileReader.cs" />
     <Compile Include="Audio\NPlayer.cs" />
-    <Compile Include="Beatmap\GridLocation.cs" />
     <Compile Include="Beatmap\IHitObj.cs" />
     <Compile Include="Beatmap\Mapset.cs" />
     <Compile Include="Beatmap\ubeatBeatMap.cs" />
@@ -169,7 +163,7 @@
     <Compile Include="OsuUtils\OsuBeatMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Game1.cs" />
+    <Compile Include="UbeatGame.cs" />
     <Compile Include="Resource1.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -195,7 +189,6 @@
     <Compile Include="Utils\BeatmapSearchEngine.cs" />
     <Compile Include="Utils\FrameCounter.cs" />
     <Compile Include="Utils\KeyboardManager.cs" />
-    <Compile Include="Utils\ListBeatmapItem.cs" />
     <Compile Include="Utils\ReplayBuilder.cs" />
     <Compile Include="Utils\VerticalProgressBar.cs">
       <SubType>Component</SubType>

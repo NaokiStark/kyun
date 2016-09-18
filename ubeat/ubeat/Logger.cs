@@ -81,7 +81,7 @@ namespace ubeat
         }
 
         /// <summary>
-        /// Writes the text in the log file
+        /// Writes the message in the log file
         /// </summary>
         /// <param name="msg">The message to log</param>
         /// <returns></returns>

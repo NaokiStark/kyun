@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using ubeat.GameScreen;
 
 namespace ubeat.Extensions
@@ -16,7 +14,7 @@ namespace ubeat.Extensions
             {
                 using (var fs = new FileStream(backgroundPath, FileMode.Open))
                 {
-                    s.Background = Texture2D.FromStream(Game1.Instance.GraphicsDevice, fs);
+                    s.Background = Texture2D.FromStream(UbeatGame.Instance.GraphicsDevice, fs);
                 }
             }
             catch (Exception ex)
@@ -32,7 +30,7 @@ namespace ubeat.Extensions
 
         public static void LoadCurrentGameInstanceBackground(this IScreen s)
         {
-            ChangeBackground(s, Game1.Instance.SelectedBeatmap.Background);
+            ChangeBackground(s, UbeatGame.Instance.SelectedBeatmap.Background);
         }
     }
 }

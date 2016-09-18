@@ -7,7 +7,7 @@ using System.IO;
 
 namespace ubeat.Audio
 {
-    public class NPlayer:IDisposable
+    public class NPlayer : IDisposable
     {
         IWavePlayer waveOut;
         AudioFileReader audioFile;
@@ -30,7 +30,8 @@ namespace ubeat.Audio
 
         public static NPlayer Instance = null;
 
-        public long Position {
+        public long Position
+        {
             get
             {
                 if (waveOut != null)
@@ -72,7 +73,8 @@ namespace ubeat.Audio
             }
         }
 
-        public bool Paused {
+        public bool Paused
+        {
             get
             {
                 if (waveOut != null)
@@ -163,14 +165,14 @@ namespace ubeat.Audio
             waveOut.Play();
         }
 
-        public void Play(string fileName=null)
+        public void Play(string fileName = null)
         {
             if (waveOut != null)
                 Stop();
 
             if (fileName == null && ActualSong == "")
             {
-                throw new Exception("No song to play");
+                Logger.Instance.Severe("No song to play");
                 return;
             }
 
@@ -194,9 +196,12 @@ namespace ubeat.Audio
         public void Stop()
         {
             Loop = false;
+
             if (waveOut == null)
             {
-                throw new Exception("WaveOut is null ???");
+#if DEBUG
+                Logger.Instance.Warn("Waveout is null");
+#endif
                 return;
             }
             else
@@ -206,22 +211,7 @@ namespace ubeat.Audio
                     waveOut.Stop();
                     waveOut.Dispose();
                 }
-            }
-            /*
-            lock (audioFile)
-            {
-                if (audioFile != null)
-                {
-                
-                    try
-                    {
-                        audioFile.Dispose();
-                    }
-                    catch
-                    {
-                    }
-                }
-            } */          
+            }         
         }
 
         public void Dispose()
@@ -237,18 +227,6 @@ namespace ubeat.Audio
                     catch { }
                 }
             }
-            /*
-            if (audioFile != null)
-            {
-                lock (audioFile)
-                {
-                    try
-                    {
-                        audioFile.Dispose();
-                    }
-                    catch { }
-                }
-            }*/
         }
     }
 }

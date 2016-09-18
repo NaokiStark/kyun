@@ -14,7 +14,7 @@ namespace ubeat.GameScreen
 
         public Microsoft.Xna.Framework.Graphics.Texture2D Texture { get; set; }
 
-        public bool isActive { get; set; }
+        public bool IsActive { get; set; }
 
         public bool Died { get; set; }
 
@@ -40,9 +40,9 @@ namespace ubeat.GameScreen
             Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, (int)this.Texture.Width, (int)this.Texture.Height);
             Rectangle cursor = new Rectangle((int)Mouse.GetState().X, (int)Mouse.GetState().Y, 1, 1);
 
-            if (System.Windows.Forms.Form.ActiveForm != (System.Windows.Forms.Control.FromHandle(Game1.Instance.Window.Handle) as System.Windows.Forms.Form)) return;
+            if (System.Windows.Forms.Form.ActiveForm != (System.Windows.Forms.Control.FromHandle(UbeatGame.Instance.Window.Handle) as System.Windows.Forms.Form)) return;
 
-            if (!Game1.Instance.IsActive) return; //Fix events
+            if (!UbeatGame.Instance.IsActive) return; //Fix events
 
             if (clickC > dClick)
             {
@@ -115,13 +115,13 @@ namespace ubeat.GameScreen
                 lastScrollVal = actualScrollVal;
 
             }
-            clickC += (int)Game1.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds;
+            clickC += (int)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds;
         }
 
         public virtual void Render()
         {
             Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, (int)(this.Texture.Width*Scale), (int)(this.Texture.Height*Scale));
-            Game1.Instance.spriteBatch.Draw(this.Texture, rg, Color.White);
+            UbeatGame.Instance.spriteBatch.Draw(this.Texture, rg, Color.White);
         }
     }
 }

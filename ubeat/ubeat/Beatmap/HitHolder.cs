@@ -150,7 +150,7 @@ namespace ubeat.UIObjs
                         ins.Volume = Game1.Instance.GeneralVolume;
                         ins.Play();
                          */
-                        AudioPlaybackEngine.Instance.PlaySound(Game1.Instance.HitHolder);
+                        AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.HitHolder);
 
                         hasAlredyPressed = true;
                         isFilling = true;
@@ -199,7 +199,7 @@ namespace ubeat.UIObjs
                             ins.Play();
                              * 
                              */
-                            AudioPlaybackEngine.Instance.PlaySound(Game1.Instance.HitHolder);
+                            AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.HitHolder);
 
                             hasAlredyPressed = true;
                             PressedAt = Position;
@@ -233,7 +233,7 @@ namespace ubeat.UIObjs
                 {
                     ticked = true;
 
-                    AudioPlaybackEngine.Instance.PlaySound(Game1.Instance.HolderTick);
+                    AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.HolderTick);
 
                     //SoundEffectInstance TickSnd = Game1.Instance.HolderTick.CreateInstance();
                     Grid.Instance.Health.Add(1f*BeatmapContainer.OverallDifficulty);
@@ -256,7 +256,7 @@ namespace ubeat.UIObjs
                 Score.ScoreValue score = GetScoreValue();
                 if ((int)score > (int)Score.ScoreValue.Miss)
                 {
-                    AudioPlaybackEngine.Instance.PlaySound(Game1.Instance.HitHolder);
+                    AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.HitHolder);
                     Grid.Instance.FailsCount = 0;
                     float healthToAdd = (BeatmapContainer.OverallDifficulty / 2) + Math.Abs(this.LeaveAt - PressedAt) / 100;
                     Grid.Instance.Health.Add(healthToAdd);
@@ -278,7 +278,7 @@ namespace ubeat.UIObjs
                         SoundEffectInstance ins = Game1.Instance.ComboBreak.CreateInstance();
                         ins.Volume = Game1.Instance.GeneralVolume;
                         ins.Play();*/
-                        AudioPlaybackEngine.Instance.PlaySound(Game1.Instance.ComboBreak);
+                        AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.ComboBreak);
 
                     }
                     Combo.Instance.Miss();
@@ -320,27 +320,27 @@ namespace ubeat.UIObjs
                     {
                         opac = .6f;
                     }
-                    Game1.Instance.spriteBatch.Draw(Game1.Instance.radiance, new Microsoft.Xna.Framework.Rectangle((int)position.X - 4, (int)position.Y - 4, Game1.Instance.radiance.Bounds.Width + 4, Game1.Instance.radiance.Bounds.Height + 4), Color.White * opac);
+                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.radiance, new Microsoft.Xna.Framework.Rectangle((int)position.X - 4, (int)position.Y - 4, UbeatGame.Instance.radiance.Bounds.Width + 4, UbeatGame.Instance.radiance.Bounds.Height + 4), Color.White * opac);
 
                 }
-                Game1.Instance.spriteBatch.Draw(this.Texture, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
+                UbeatGame.Instance.spriteBatch.Draw(this.Texture, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
                 if (ccc >= StartTime - BeatmapContainer.Timing50 && !isFilling)
                 {
                     float perct = (float)(ccc / (StartTime - BeatmapContainer.Timing300)) * 1f;
 
-                    Game1.Instance.spriteBatch.Draw(Game1.Instance.Hold, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Game1.Instance.Hold.Bounds.Width, Game1.Instance.Hold.Bounds.Height), Color.White * perct);
+                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.Hold, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, UbeatGame.Instance.Hold.Bounds.Width, UbeatGame.Instance.Hold.Bounds.Height), Color.White * perct);
                 }
                 //Game1.Instance.spriteBatch.DrawString(Game1.Instance.fontDefault, (Location - 96).ToString(), new Vector2(position.X + (Texture.Bounds.Width / 2), position.Y + (Texture.Bounds.Height / 2)), Color.Black * opacity);
                 if (isFilling)
                 {
                     float stime = ccc - (float)StartTime;
                     float gtime = stime / (float)Length;
-                    float percentgg = gtime * Game1.Instance.HolderFillDeff.Bounds.Height;
+                    float percentgg = gtime * UbeatGame.Instance.HolderFillDeff.Bounds.Height;
 
                     var angle = (float)Math.PI;
-                    Game1.Instance.spriteBatch.Draw(Game1.Instance.HolderFillDeff,
-                        new Microsoft.Xna.Framework.Rectangle((int)position.X + Game1.Instance.HolderFillDeff.Bounds.Height + 1, (int)position.Y + (Game1.Instance.HolderFillDeff.Bounds.Height), Game1.Instance.HolderFillDeff.Bounds.Width, (int)percentgg),
-                        new Rectangle(0, 0, Game1.Instance.HolderFillDeff.Bounds.Width, (int)percentgg),
+                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.HolderFillDeff,
+                        new Microsoft.Xna.Framework.Rectangle((int)position.X + UbeatGame.Instance.HolderFillDeff.Bounds.Height + 1, (int)position.Y + (UbeatGame.Instance.HolderFillDeff.Bounds.Height), UbeatGame.Instance.HolderFillDeff.Bounds.Width, (int)percentgg),
+                        new Rectangle(0, 0, UbeatGame.Instance.HolderFillDeff.Bounds.Width, (int)percentgg),
                         Color.White,
                         angle,
                         new Vector2(0, 0),
@@ -348,13 +348,13 @@ namespace ubeat.UIObjs
                         0);
                   
                     string secondsTo = ((EndTime - ccc)/100).ToString("0");
-                    Vector2 measureSize = Game1.Instance.defaultFont.MeasureString(secondsTo);
+                    Vector2 measureSize = UbeatGame.Instance.defaultFont.MeasureString(secondsTo);
 
                     Vector2 bgS = measureSize * 1.1f;
 
 
-                    Game1.Instance.spriteBatch.DrawString(Game1.Instance.defaultFont, secondsTo, new Vector2((position.X + Texture.Width / 2)+1, (position.Y + Texture.Height / 2)+1), Color.Black, 0, bgS / 2, 1.1f, SpriteEffects.None, 0);
-                    Game1.Instance.spriteBatch.DrawString(Game1.Instance.defaultFont, secondsTo, new Vector2(position.X + Texture.Width / 2, position.Y + Texture.Height / 2), Color.White, 0, measureSize / 2, 1f, SpriteEffects.None, 0);
+                    UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, secondsTo, new Vector2((position.X + Texture.Width / 2)+1, (position.Y + Texture.Height / 2)+1), Color.Black, 0, bgS / 2, 1.1f, SpriteEffects.None, 0);
+                    UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, secondsTo, new Vector2(position.X + Texture.Width / 2, position.Y + Texture.Height / 2), Color.White, 0, measureSize / 2, 1f, SpriteEffects.None, 0);
 
 
                 }

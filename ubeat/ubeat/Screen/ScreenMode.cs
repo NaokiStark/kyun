@@ -4,10 +4,9 @@
     {
         public int Width { get; set; }
         public int Height { get; set; }
-
         public WindowDisposition WindowMode { get; set; }
-
     }
+
     public enum WindowDisposition
     {
         Borderless = 0,

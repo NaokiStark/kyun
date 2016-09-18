@@ -37,7 +37,7 @@ namespace ubeat.GameScreen.UI
                 ins.Volume = Game1.Instance.GeneralVolume;
                 ins.Play();*/
 
-                AudioPlaybackEngine.Instance.PlaySound(Game1.Instance.ButtonHit);
+                AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.ButtonHit);
             }
 
         }
@@ -47,13 +47,13 @@ namespace ubeat.GameScreen.UI
             
             if (Uping && Scale < 1.1f)
             {
-                Scale += (float)(Game1.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f);
+                Scale += (float)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f);
             }
             else if (!Uping && Scale > 1f)
             {
-                Scale -= (float)(Game1.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f);
+                Scale -= (float)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f);
             }
-            else if (Uping && Scale + (float)(Game1.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f) > 1.1f)
+            else if (Uping && Scale + (float)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f) > 1.1f)
             {
                 Scale = 1.1f;
             }
@@ -73,9 +73,9 @@ namespace ubeat.GameScreen.UI
             Rectangle cursor = new Rectangle((int)Mouse.GetState().X, (int)Mouse.GetState().Y, 1, 1);
 
             //oie
-            if (System.Windows.Forms.Form.ActiveForm != (System.Windows.Forms.Control.FromHandle(Game1.Instance.Window.Handle) as System.Windows.Forms.Form)) return;
+            if (System.Windows.Forms.Form.ActiveForm != (System.Windows.Forms.Control.FromHandle(UbeatGame.Instance.Window.Handle) as System.Windows.Forms.Form)) return;
 
-            if (!Game1.Instance.IsActive) return; //Fix events
+            if (!UbeatGame.Instance.IsActive) return; //Fix events
 
             if (cursor.Intersects(rg))
             {
@@ -84,7 +84,7 @@ namespace ubeat.GameScreen.UI
 
                 if (!alredyIntersecs)
                 {
-                    AudioPlaybackEngine.Instance.PlaySound(Game1.Instance.ButtonOver);
+                    AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.ButtonOver);
                 }
 
                 alredyIntersecs = true;

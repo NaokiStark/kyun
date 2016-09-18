@@ -12,7 +12,7 @@ namespace ubeat.GameScreen
     {
         public MainScreen(bool LoadRandom=true)
         {
-            Game1.Instance.IsMouseVisible=true;
+            UbeatGame.Instance.IsMouseVisible=true;
 
             ScreenInstance = this;
 
@@ -27,17 +27,17 @@ namespace ubeat.GameScreen
 
         void MainScreen_OnLoad(object sender, EventArgs e)
         {
-            if (!noLoadRnd && !Game1.Instance.FistLoad)
+            if (!noLoadRnd && !UbeatGame.Instance.FistLoad)
                 playRandomSong();
-            else if (Game1.Instance.FistLoad)
+            else if (UbeatGame.Instance.FistLoad)
             {
                 PlayUbeatMain();
-                Game1.Instance.FistLoad = false;
+                UbeatGame.Instance.FistLoad = false;
             }
             else
-                ChangeBeatmapDisplay(Game1.Instance.SelectedBeatmap);
+                ChangeBeatmapDisplay(UbeatGame.Instance.SelectedBeatmap);
 
-            Game1.Instance.Player.OnStopped += player_OnStopped;
+            UbeatGame.Instance.Player.OnStopped += player_OnStopped;
 
         }
 
@@ -54,7 +54,7 @@ namespace ubeat.GameScreen
 
         void ExtBtn_Click(object sender, EventArgs e)
         {
-            Game1.Instance.Exit();
+            UbeatGame.Instance.Exit();
         }
 
         public void PlayUbeatMain()
@@ -80,11 +80,11 @@ namespace ubeat.GameScreen
                 
             };
 
-            Game1.Instance.Player.Play(mainBm.SongPath);
-            Game1.Instance.Player.soundOut.Volume = Game1.Instance.GeneralVolume;
-            Game1.Instance.SelectedBeatmap = mainBm;
+            UbeatGame.Instance.Player.Play(mainBm.SongPath);
+            UbeatGame.Instance.Player.soundOut.Volume = UbeatGame.Instance.GeneralVolume;
+            UbeatGame.Instance.SelectedBeatmap = mainBm;
 
-            Label1.Text = string.Join(" - ", Game1.Instance.SelectedBeatmap.Artist, Game1.Instance.SelectedBeatmap.Title);
+            Label1.Text = string.Join(" - ", UbeatGame.Instance.SelectedBeatmap.Artist, UbeatGame.Instance.SelectedBeatmap.Title);
 
             ScreenInstance.LoadCurrentGameInstanceBackground();
         }
@@ -94,7 +94,7 @@ namespace ubeat.GameScreen
             if (!Visible) return;
 
             if (PlayingInit)
-                Game1.Instance.Player.Play(Game1.Instance.SelectedBeatmap.SongPath);
+                UbeatGame.Instance.Player.Play(UbeatGame.Instance.SelectedBeatmap.SongPath);
             else
                 playRandomSong();
         }
@@ -123,7 +123,7 @@ namespace ubeat.GameScreen
         {
             Random c = new Random(DateTime.Now.Millisecond);
 
-            List<Beatmap.Mapset> bms = Game1.Instance.AllBeatmaps;
+            List<Beatmap.Mapset> bms = UbeatGame.Instance.AllBeatmaps;
 
             if (bms.Count < 1) return;
             Beatmap.Mapset bsel;
@@ -141,9 +141,9 @@ namespace ubeat.GameScreen
                 ubm = bsel[OsuUtils.OsuBeatMap.rnd.Next(0, bsel.Count - 1)];
 
             string songpath = ubm.SongPath;
-            Game1.Instance.Player.Play(songpath);
-            Game1.Instance.Player.soundOut.Volume = Game1.Instance.GeneralVolume;
-            Game1.Instance.SelectedBeatmap = ubm;
+            UbeatGame.Instance.Player.Play(songpath);
+            UbeatGame.Instance.Player.soundOut.Volume = UbeatGame.Instance.GeneralVolume;
+            UbeatGame.Instance.SelectedBeatmap = ubm;
 
             Label1.Text = ubm.Artist + " - "+ ubm.Title;
 
@@ -152,13 +152,13 @@ namespace ubeat.GameScreen
 
         void ChangeBeatmapDisplay(ubeatBeatMap bm)
         {
-            if (Game1.Instance.SelectedBeatmap.SongPath != bm.SongPath)
+            if (UbeatGame.Instance.SelectedBeatmap.SongPath != bm.SongPath)
             {
-                Game1.Instance.Player.Play(bm.SongPath);
-                Game1.Instance.Player.soundOut.Volume = Game1.Instance.GeneralVolume;
+                UbeatGame.Instance.Player.Play(bm.SongPath);
+                UbeatGame.Instance.Player.soundOut.Volume = UbeatGame.Instance.GeneralVolume;
             }
 
-            Game1.Instance.SelectedBeatmap = bm;
+            UbeatGame.Instance.SelectedBeatmap = bm;
             Label1.Text = bm.Artist + " - " + bm.Title;
 
             ScreenInstance.LoadCurrentGameInstanceBackground();

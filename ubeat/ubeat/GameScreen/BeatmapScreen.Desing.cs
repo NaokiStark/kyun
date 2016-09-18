@@ -29,18 +29,18 @@ namespace ubeat.GameScreen
 
         public void LoadInterface()
         {
-            Game1.Instance.IsMouseVisible = true;
+            UbeatGame.Instance.IsMouseVisible = true;
             Controls = new List<ScreenUIObject>();
 
             ScreenMode actualMode = ScreenModeManager.GetActualMode();
 
             Vector2 lPos = new Vector2(0, 100);
 
-            lbox = new Listbox(lPos, actualMode.Width / 2, actualMode.Height - 100, Game1.Instance.ListboxFont);
+            lbox = new Listbox(lPos, actualMode.Width / 2, actualMode.Height - 100, UbeatGame.Instance.ListboxFont);
             
             lbox.IndexChanged += lbox_IndexChanged;
             
-            lBDff = new ListboxDiff(new Vector2(lbox.width, lbox.Position.Y), 200, 500, Game1.Instance.ListboxFont);
+            lBDff = new ListboxDiff(new Vector2(lbox.width, lbox.Position.Y), 200, 500, UbeatGame.Instance.ListboxFont);
 
             filledRect1 = new FilledRectangle(new Vector2(actualMode.Width, 4), Color.SpringGreen);
             filledRect1.Position = new Vector2(0, 96);
@@ -61,7 +61,7 @@ namespace ubeat.GameScreen
             };
 
             autoBtn = new AutoModeButton() {
-                Position = new Vector2(actualMode.Width - Game1.Instance.AutoModeButton.Width-20, actualMode.Height - Game1.Instance.AutoModeButton.Height-20),
+                Position = new Vector2(actualMode.Width - UbeatGame.Instance.AutoModeButton.Width-20, actualMode.Height - UbeatGame.Instance.AutoModeButton.Height-20),
                 Scale=.85f,
                 PlayHit=true
             };
@@ -85,12 +85,12 @@ namespace ubeat.GameScreen
             if (AMode)
             {
                 AMode = false;
-                autoBtn.Texture = Game1.Instance.AutoModeButton;
+                autoBtn.Texture = UbeatGame.Instance.AutoModeButton;
             }
             else
             {
                 AMode = true;
-                autoBtn.Texture = Game1.Instance.AutoModeButtonSel;
+                autoBtn.Texture = UbeatGame.Instance.AutoModeButtonSel;
             }
         }
 
@@ -131,13 +131,13 @@ namespace ubeat.GameScreen
 
             if (Background != null)
             {
-                int screenWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-                int screenHeight = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+                int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
+                int screenHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
                 //Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, (int)(((float)Background.Height / (float)Background.Width) * (float)screenWidth));
                 Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
 
-                Game1.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                UbeatGame.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
             }
             
             foreach (ScreenUIObject ctr in Controls)

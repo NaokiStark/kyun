@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using ubeat.GameScreen.SUI;
 using ubeat.Screen;
+using Squid;
 
 namespace ubeat.GameScreen
 {
@@ -19,7 +20,7 @@ namespace ubeat.GameScreen
 
             var center = new Vector2(actualMode.Width / 2, actualMode.Height / 2);
 
-            Logo = new UI.Image(Game1.Instance.Logo) { BeatReact = true };
+            Logo = new UI.Image(UbeatGame.Instance.Logo) { BeatReact = true };
 
             Logo.Position = 
                     new Vector2(
@@ -29,17 +30,25 @@ namespace ubeat.GameScreen
             var filledRect1 = new FilledRectangle(new Vector2(actualMode.Width, actualMode.Height), Color.Black * 0.5f);
             filledRect1.Position = new Vector2(0, 0);
 
-            /*
-             * Here I'd add inputs, comboboxes, etc
-             * https://simplegui.codeplex.com/
-             * https://github.com/NeoforceControls/XNA
-             * 
-             */
+            // SQUID :o
+
+            var languageCombo = new DropDownList();
+            languageCombo.Size = new Squid.Point(222, 35);
+            languageCombo.Position = new Squid.Point(180, 180);
+
+            ListBoxItem englishItem = new ListBoxItem();
+            englishItem.Text = "English";
+            englishItem.Size = new Squid.Point(100, 35);
+            englishItem.Margin = new Margin(0, 0, 0, 4);
+            englishItem.Style = "item";
+
+            languageCombo.Items.Add(englishItem);
 
             Controls.Add(filledRect1);
             Controls.Add(Logo);
+            //Controls.Add(languageCombo); RIP
 
-            Game1.Instance.IsMouseVisible = true;
+            UbeatGame.Instance.IsMouseVisible = true;
 
             OnLoad?.Invoke(this, new EventArgs());
         }
@@ -61,13 +70,13 @@ namespace ubeat.GameScreen
 
             if (Background != null)
             {
-                int screenWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-                int screenHeight = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+                int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
+                int screenHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
                 //Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, (int)(((float)Background.Height / (float)Background.Width) * (float)screenWidth));
-                Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
+                var screenRectangle = new Microsoft.Xna.Framework.Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
 
-                Game1.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                UbeatGame.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
             }
 
             foreach (var ctr in Controls)
@@ -81,14 +90,12 @@ namespace ubeat.GameScreen
             var keyboardState = Keyboard.GetState();
             var newMouseState = Mouse.GetState();
 
-            if (keyboardState.IsKeyDown(Keys.Back) || keyboardState.IsKeyDown(Keys.Escape))
+            if (keyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Back) || keyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
                 onBackspacePressed();
 
             foreach (var ctr in Controls)
                 ctr.Update();
         }
-
-
 
         public IScreen ScreenInstance { get; set; }
         public List<ScreenUIObject> Controls { get; set; }

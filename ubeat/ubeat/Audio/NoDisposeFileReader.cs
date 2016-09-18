@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace ubeat.Audio
 {
-    public class NoDisposeFileReader : ISampleProvider,IDisposable
+    public class NoDisposeFileReader : ISampleProvider, IDisposable
     {
         private readonly AudioFileReader reader;
 

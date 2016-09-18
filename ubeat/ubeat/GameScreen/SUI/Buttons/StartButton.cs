@@ -8,7 +8,7 @@ namespace ubeat.GameScreen.UI.Buttons
     public class StartButton:Button
     {
         public StartButton()
-            : base(Game1.Instance.StartButton)
+            : base(UbeatGame.Instance.StartButton)
         {
         }
 

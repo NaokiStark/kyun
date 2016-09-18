@@ -19,7 +19,7 @@ namespace ubeat.GameScreen.UI
             BackgroundOpacity = backgroundOpacity;
             int width = 5;
             int height = 5;
-            this.Texture = new Texture2D(Game1.Instance.GraphicsDevice, width, height);
+            this.Texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, width, height);
             Color[] dataBar = new Color[width * height];
             for (int i = 0; i < dataBar.Length; ++i) dataBar[i] = Color.Black * BackgroundOpacity;
             this.Texture.SetData(dataBar);
@@ -37,7 +37,7 @@ namespace ubeat.GameScreen.UI
             //base.Render(); //Nope
             Vector2 messStr;
             if(Font==null)
-                messStr = Game1.Instance.defaultFont.MeasureString(this.Text) * Scale;
+                messStr = UbeatGame.Instance.defaultFont.MeasureString(this.Text) * Scale;
             else
                 messStr = Font.MeasureString(this.Text) * Scale;
 
@@ -52,14 +52,14 @@ namespace ubeat.GameScreen.UI
 
             if (Size == null || Size == Vector2.Zero)
             {
-                Game1.Instance.spriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(messStr.X), (int)(messStr.Y)), Color.White);
+                UbeatGame.Instance.spriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(messStr.X), (int)(messStr.Y)), Color.White);
             }
             else
             {
-                Game1.Instance.spriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(Size.X), (int)(Size.Y)), Color.White);
+                UbeatGame.Instance.spriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(Size.X), (int)(Size.Y)), Color.White);
             }
 
-            Game1.Instance.spriteBatch.DrawString((Font == null) ? Game1.Instance.defaultFont : Font, this.Text, new Vector2(pos.X + 5, pos.Y + 5), Color.White, 0,
+            UbeatGame.Instance.spriteBatch.DrawString((Font == null) ? UbeatGame.Instance.defaultFont : Font, this.Text, new Vector2(pos.X + 5, pos.Y + 5), Color.White, 0,
                 Vector2.Zero,this.Scale,SpriteEffects.None,0);
         }
 

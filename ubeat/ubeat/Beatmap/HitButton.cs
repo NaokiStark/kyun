@@ -156,7 +156,7 @@ namespace ubeat.UIObjs
                         SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
                         ins.Volume = Game1.Instance.GeneralVolume;
                         ins.Play();*/
-                    AudioPlaybackEngine.Instance.PlaySound(Game1.Instance.HitButton);
+                    AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.HitButton);
 
                     Combo.Instance.Add();
                 }
@@ -166,7 +166,7 @@ namespace ubeat.UIObjs
                     Grid.Instance.FailsCount++;
                     if (Combo.Instance.ActualMultiplier > 10)
                     {
-                        AudioPlaybackEngine.Instance.PlaySound(Game1.Instance.ComboBreak);
+                        AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.ComboBreak);
                         /*
                         SoundEffectInstance ins = Game1.Instance.ComboBreak.CreateInstance();
                         ins.Volume = Game1.Instance.GeneralVolume;
@@ -207,14 +207,14 @@ namespace ubeat.UIObjs
                     {
                         opac = .6f;
                     }
-                    Game1.Instance.spriteBatch.Draw(Game1.Instance.radiance, new Microsoft.Xna.Framework.Rectangle((int)position.X-2, (int)position.Y-2, Game1.Instance.radiance.Bounds.Width+2, Game1.Instance.radiance.Bounds.Height+2), Color.White * opac);
+                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.radiance, new Microsoft.Xna.Framework.Rectangle((int)position.X-2, (int)position.Y-2, UbeatGame.Instance.radiance.Bounds.Width+2, UbeatGame.Instance.radiance.Bounds.Height+2), Color.White * opac);
 
                 }
-                Game1.Instance.spriteBatch.Draw(this.Texture, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
+                UbeatGame.Instance.spriteBatch.Draw(this.Texture, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
                 if (ccc >= StartTime - BeatmapContainer.Timing50)
                 {
                     float perct = (float)(ccc / (StartTime - BeatmapContainer.Timing300)) * 1f;
-                    Game1.Instance.spriteBatch.Draw(Game1.Instance.Push, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Game1.Instance.Push.Bounds.Width, Game1.Instance.Push.Bounds.Height), Color.White * perct);
+                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.Push, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, UbeatGame.Instance.Push.Bounds.Width, UbeatGame.Instance.Push.Bounds.Height), Color.White * perct);
                 }
             }
         }

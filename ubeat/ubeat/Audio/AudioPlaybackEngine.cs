@@ -24,7 +24,7 @@ namespace ubeat.Audio
         public void PlaySound(string fileName)
         {
             var input = new AudioFileReader(fileName);
-            input.Volume = Game1.Instance.GeneralVolume;
+            input.Volume = UbeatGame.Instance.GeneralVolume;
             AddMixerInput(new AutoDisposeFileReader(input));
         }
 
@@ -69,7 +69,7 @@ namespace ubeat.Audio
         {
             try
             {
-                vsp.Volume = 60f*Game1.Instance.GeneralVolume/100f;
+                vsp.Volume = 60f*UbeatGame.Instance.GeneralVolume/100f;
                 mixer.AddMixerInput(ConvertToRightChannelCount(input));
                 
             }

@@ -27,13 +27,13 @@ namespace ubeat
         }
         public void VolShow()
         {
-            int vol = (int)(Game1.Instance.GeneralVolume * 100f);
+            int vol = (int)(UbeatGame.Instance.GeneralVolume * 100f);
 
             label1.Text = vol.ToString();
             progressBar1.Value = vol;
             this.Width = 55;
-            this.Top = ((Form)FromHandle(Game1.Instance.Window.Handle)).Top + 300;
-            this.Left = ((Form)FromHandle(Game1.Instance.Window.Handle)).Left + 5;
+            this.Top = ((Form)FromHandle(UbeatGame.Instance.Window.Handle)).Top + 300;
+            this.Left = ((Form)FromHandle(UbeatGame.Instance.Window.Handle)).Left + 5;
             this.TopMost = true;
             this.Visible = true;
             this.Width = 55;

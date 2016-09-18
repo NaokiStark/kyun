@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using osuBMParser;
 using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using Troschuetz.Random.Generators;
 using ubeat.Beatmap;
 using ubeat.UIObjs;
-using Troschuetz.Random.Generators;
+using osuBMParser;
 
 namespace ubeat.OsuUtils
 {
@@ -296,12 +296,7 @@ namespace ubeat.OsuUtils
                 if (bm.TimingPoints[a].Offset <= Time && (!inherit == (bm.TimingPoints[a].MsPerBeat>0)))
                 {
                     return bm.TimingPoints[a];
-                }/*
-                else if (bm.TimingPoints[a].Offset <= obj.Time && ((inherit == bm.TimingPoints[a].Inherited))||a==0)
-                {
-                    return bm.TimingPoints[a];
-                }*/
-
+                }
             }
 
             return bm.TimingPoints[0];

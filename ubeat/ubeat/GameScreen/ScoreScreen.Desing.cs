@@ -20,7 +20,7 @@ namespace ubeat.GameScreen
 
         public void LoadInterface()
         {
-            Game1.Instance.IsMouseVisible = true;
+            UbeatGame.Instance.IsMouseVisible = true;
             Controls = new List<ScreenUIObject>();
 
             ScreenMode ActualMode = ScreenModeManager.GetActualMode();
@@ -44,7 +44,7 @@ namespace ubeat.GameScreen
                 Scale = 1.1f,
                 Text = "",
                 Position = new Vector2(center.X, 120),
-                Font = Game1.Instance.GeneralBig,
+                Font = UbeatGame.Instance.GeneralBig,
                 Centered = true
             };
 
@@ -52,7 +52,7 @@ namespace ubeat.GameScreen
                 Scale = .95f,
                 Text = "",
                 Position = new Vector2(center.X, (lblScore.Position.Y + spaced) + 5f),
-                Font = Game1.Instance.GeneralBig,
+                Font = UbeatGame.Instance.GeneralBig,
                 Centered = true
             };
 
@@ -60,7 +60,7 @@ namespace ubeat.GameScreen
                 Scale = .95f,
                 Text = "",
                 Position = new Vector2(center.X, (lblPerfect.Position.Y + spaced) + 5f),
-                Font = Game1.Instance.GeneralBig,
+                Font = UbeatGame.Instance.GeneralBig,
                 Centered = true
             };
 
@@ -68,28 +68,28 @@ namespace ubeat.GameScreen
                 Scale = .95f,
                 Text = "",
                 Position = new Vector2(center.X, (lblExcellent.Position.Y + spaced) + 5f),
-                Font = Game1.Instance.GeneralBig,
+                Font = UbeatGame.Instance.GeneralBig,
                 Centered = true
             };
             lblMiss = new Label() {
                 Scale = .95f,
                 Text = "",
                 Position = new Vector2(center.X, (lblGood.Position.Y + spaced) + 5f),
-                Font = Game1.Instance.GeneralBig,
+                Font = UbeatGame.Instance.GeneralBig,
                 Centered = true
             };
             lblAccuracy = new Label() {
                 Scale = .95f,
                 Text = "",
                 Position = new Vector2(center.X, (lblMiss.Position.Y + spaced) + 5f),
-                Font = Game1.Instance.GeneralBig,
+                Font = UbeatGame.Instance.GeneralBig,
                 Centered = true
             };
             lblCombo = new Label() {
                 Scale = .95f,
                 Text = "",
                 Position = new Vector2(center.X, (lblAccuracy.Position.Y + spaced) + 5f),
-                Font = Game1.Instance.GeneralBig,
+                Font = UbeatGame.Instance.GeneralBig,
                 Centered = true
             };
             
@@ -141,13 +141,13 @@ namespace ubeat.GameScreen
 
             if (Background != null)
             {
-                int screenWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-                int screenHeight = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+                int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
+                int screenHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
                 //Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, (int)(((float)Background.Height / (float)Background.Width) * (float)screenWidth));
                 Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
 
-                Game1.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                UbeatGame.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
             }
 
             foreach (ScreenUIObject ctr in Controls)

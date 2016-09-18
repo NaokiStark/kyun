@@ -19,7 +19,7 @@ namespace ubeat.GameScreen
 
             Vector2 center = new Vector2(ActualMode.Width / 2, ActualMode.Height / 2);
 
-            Logo = new UI.Image(Game1.Instance.Logo) { BeatReact = true };
+            Logo = new UI.Image(UbeatGame.Instance.Logo) { BeatReact = true };
             Logo.Position = new Vector2(center.X - (Logo.Texture.Width / 2),
                 center.Y - (Logo.Texture.Height / 2) - Logo.Texture.Height + 15);
 
@@ -35,7 +35,7 @@ namespace ubeat.GameScreen
             ExtBtn.Position = new Vector2(center.X - (ExtBtn.Texture.Width / 2),
                 center.Y - (ExtBtn.Texture.Height / 2) + ExtBtn.Texture.Height + 2 + Logo.Texture.Height / 2);
 
-            Vector2 meas = Game1.Instance.defaultFont.MeasureString("ubeat") * .85f;
+            Vector2 meas = UbeatGame.Instance.defaultFont.MeasureString("ubeat") * .85f;
 
             Label1 = new UI.Label();
             Label1.Text = "Hello world";
@@ -55,7 +55,7 @@ namespace ubeat.GameScreen
             Controls.Add(Label1);
             Controls.Add(FPSMetter);
 
-            Game1.Instance.IsMouseVisible = true;
+            UbeatGame.Instance.IsMouseVisible = true;
             OnLoad += MainScreen_OnLoad;
 
             OnLoad?.Invoke(this, new EventArgs());
@@ -67,9 +67,9 @@ namespace ubeat.GameScreen
 
             //FPSMetter.Text = Game1.Instance.frameCounter.AverageFramesPerSecond.ToString("0", CultureInfo.InvariantCulture) +" FPS";
 
-            int fps = (int)Math.Round(Game1.Instance.frameCounter.AverageFramesPerSecond, 0);
+            int fps = (int)Math.Round(UbeatGame.Instance.frameCounter.AverageFramesPerSecond, 0);
 
-            FPSMetter.Text = string.Join(" ", fps.ToString("0", CultureInfo.InvariantCulture), "FPS");
+            FPSMetter.Text = fps.ToString("0", CultureInfo.InvariantCulture) + " FPS";
 
             if (Visible)
                 foreach (ScreenUIObject ctr in Controls)
@@ -82,13 +82,13 @@ namespace ubeat.GameScreen
 
             if (Background != null)
             {
-                int screenWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-                int screenHeight = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+                int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
+                int screenHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
                 //Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, (int)(((float)Background.Height / (float)Background.Width) * (float)screenWidth));
                 Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
 
-                Game1.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                UbeatGame.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
             }
 
             foreach (var ctr in Controls)

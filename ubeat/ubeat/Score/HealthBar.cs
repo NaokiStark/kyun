@@ -1,29 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ubeat.UIObjs;
+using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Windows.Forms;
 using ubeat.GameScreen;
+using ubeat.UIObjs;
+
 namespace ubeat.Score
 {
-    public class HealthBar:IUIObject
+    public class HealthBar : IUIObject
     {
-
-        public bool Enabled { get; set; }
-
-        public Microsoft.Xna.Framework.Vector2 Position { get; set; }
-
-        public Microsoft.Xna.Framework.Graphics.Texture2D Texture { get; set; }
-
-        public bool isActive { get; set; }
-
-        public bool Died { get; set; }
-
-        public float Value { get; private set; }
-
         public delegate void GmEv();
         public event GmEv OnFail;
 
@@ -34,18 +19,18 @@ namespace ubeat.Score
         public HealthBar()
         {
 
-            int width = Game1.Instance.GraphicsDevice.Viewport.Width / 2;
+            int width = UbeatGame.Instance.GraphicsDevice.Viewport.Width / 2;
             width = width - (width / 3);
             int height = 40;
             //int width = 40;
             //int height = -(((int)Grid.GetPositionFor(1).Y ) - ((int)Grid.GetPositionFor(7).Y) - Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight) +35;
-            this.Texture = new Texture2D(Game1.Instance.GraphicsDevice, width, height);
+            this.Texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, width, height);
             Color[] data = new Color[width * height];
             for (int i = 0; i < data.Length; ++i) data[i] = Color.WhiteSmoke;
             this.Texture.SetData(data);
 
 
-            BgBar = new Texture2D(Game1.Instance.GraphicsDevice, width + 20, height + 20);
+            BgBar = new Texture2D(UbeatGame.Instance.GraphicsDevice, width + 20, height + 20);
             Color[] dataBar = new Color[(width+20) * (height+20)];
             for (int i = 0; i < dataBar.Length; ++i) dataBar[i] = Color.Black;
             this.BgBar.SetData(dataBar);
@@ -56,12 +41,12 @@ namespace ubeat.Score
             //Later
             HltTmr.Start();
             
-            this.isActive = false;
+            this.IsActive = false;
         }
 
         void HltTmr_Tick(object sender, EventArgs e)
         {
-            if (!isActive || !Grid.Instance.inGame || Grid.Instance.Paused) return;
+            if (!IsActive || !Grid.Instance.inGame || Grid.Instance.Paused) return;
 
             this.Value -= ((overallDiff / 10) + .5f)/20; //Test if is hard c:
 
@@ -70,14 +55,14 @@ namespace ubeat.Score
         public void Start(float OverallDiff)
         {
             this.Value = 100;
-            isActive = true;
+            IsActive = true;
             Enabled = true;
             this.overallDiff = OverallDiff;
         }
 
         public void Stop()
         {
-            isActive = false;
+            IsActive = false;
         }
         
         public void Reset()
@@ -86,16 +71,18 @@ namespace ubeat.Score
 
         }
 
-        public void Add(float value) {
-            value = value - (overallDiff/10);
+        public void Add(float value)
+        {
+            value -= overallDiff / 10;
             if (value + this.Value > 100)
                 this.Value = 100;
             else
                 this.Value += value;
         }
         
-        public void Substract(float value) {
-            value = value + (overallDiff / 10);
+        public void Substract(float value)
+        {
+            value += overallDiff / 10;
             if ((this.Value - value) < 0)
                 this.Value = 0;
             else
@@ -105,10 +92,9 @@ namespace ubeat.Score
         public void Update()
         {
 
-            if(Grid.Instance.inGame && !Grid.Instance.Paused && isActive)
+            if(Grid.Instance.inGame && !Grid.Instance.Paused && IsActive)
                 if (Value < 1)
-                    if (OnFail != null)
-                        OnFail();
+                    OnFail?.Invoke();
         }
 
         public void Render()
@@ -131,7 +117,7 @@ namespace ubeat.Score
             //bg          
             
 
-            Game1.Instance.spriteBatch.Draw(this.BgBar,
+            UbeatGame.Instance.spriteBatch.Draw(this.BgBar,
                 sizeBar,
                 null,
                 Color.White*0.75f,
@@ -141,7 +127,7 @@ namespace ubeat.Score
                 0);
 
             //bar
-            Game1.Instance.spriteBatch.Draw(this.Texture,
+            UbeatGame.Instance.spriteBatch.Draw(this.Texture,
                 size,
                 null,
                 colbr,
@@ -151,5 +137,12 @@ namespace ubeat.Score
                 0);
 
         }
+
+        public bool Enabled { get; set; }
+        public Vector2 Position { get; set; }
+        public Texture2D Texture { get; set; }
+        public bool IsActive { get; set; }
+        public bool Died { get; set; }
+        public float Value { get; private set; }
     }
 }

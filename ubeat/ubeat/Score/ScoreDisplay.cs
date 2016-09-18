@@ -5,15 +5,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ubeat.UIObjs;
+
 namespace ubeat.Score
 {
-    public class ScoreDisplay:IUIObject
+    public class ScoreDisplay : IUIObject
     {
         public Microsoft.Xna.Framework.Vector2 Position { get; set; }
 
         public Microsoft.Xna.Framework.Graphics.Texture2D Texture { get; set; }
 
-        public bool isActive { get; set; }
+        public bool IsActive { get; set; }
 
         public bool Died { get; set; }
 
@@ -35,7 +36,7 @@ namespace ubeat.Score
         {
             int width = 400;
             int height = 60;
-            this.Texture = new Texture2D(Game1.Instance.GraphicsDevice, width, height);
+            this.Texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, width, height);
             Color[] data = new Color[width * height];
             for (int i = 0; i < data.Length; ++i) data[i] = Color.Black;
             this.Texture.SetData(data);
@@ -50,22 +51,22 @@ namespace ubeat.Score
         }
         public void Update()
         {
-            if (!isActive) return;
+            if (!IsActive) return;
         }
 
         public void Render()
         {
-            if (!isActive) return;
+            if (!IsActive) return;
 
-            int screenWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
+            int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
 
-            Vector2 fSize = Game1.Instance.defaultFont.MeasureString(score.ToString("00000000")) * 1.5f;
+            Vector2 fSize = UbeatGame.Instance.defaultFont.MeasureString(score.ToString("00000000")) * 1.5f;
 
             Rectangle rect = new Rectangle(screenWidth - (int)fSize.X-30, 0, (int)fSize.X+30, (int)fSize.Y);
-            Game1.Instance.spriteBatch.Draw(this.Texture, rect, Color.White * .75f);
+            UbeatGame.Instance.spriteBatch.Draw(this.Texture, rect, Color.White * .75f);
 
             //Draw score
-            Game1.Instance.spriteBatch.DrawString(Game1.Instance.defaultFont, score.ToString("00000000"), new Vector2(rect.X + 15, 0), Color.WhiteSmoke, 0, new Vector2(0), 1.5f, SpriteEffects.None, 0);
+            UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, score.ToString("00000000"), new Vector2(rect.X + 15, 0), Color.WhiteSmoke, 0, new Vector2(0), 1.5f, SpriteEffects.None, 0);
         }
     }
 }

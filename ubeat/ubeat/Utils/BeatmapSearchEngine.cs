@@ -9,7 +9,7 @@ namespace ubeat.Utils
         public static List<Beatmap.Mapset> SearchBeatmaps(string keyword)
         {
             if (keyword == null)
-                return Game1.Instance.AllBeatmaps;
+                return UbeatGame.Instance.AllBeatmaps;
 
             Logger.Instance.Info("Keyword: {0}", keyword);
 
@@ -24,7 +24,7 @@ namespace ubeat.Utils
                 {
                     var maps = new List<Beatmap.Mapset>();
 
-                    Beatmap.Mapset[] mapsetArr = Game1.Instance.AllBeatmaps.ToArray<ubeat.Beatmap.Mapset>();
+                    Beatmap.Mapset[] mapsetArr = UbeatGame.Instance.AllBeatmaps.ToArray<ubeat.Beatmap.Mapset>();
 
                     var searchedMaps = from Mapset in mapsetArr
                                        where Mapset.Title.ToLower().Contains(keyword)
@@ -50,7 +50,7 @@ namespace ubeat.Utils
             }
             else
             {
-                return Game1.Instance.AllBeatmaps; //genius c:
+                return UbeatGame.Instance.AllBeatmaps; //genius c:
             }
         }
     }

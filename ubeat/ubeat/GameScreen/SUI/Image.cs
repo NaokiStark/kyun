@@ -14,7 +14,7 @@ namespace ubeat.GameScreen.UI
         public Image(Texture2D texture)
         {
             this.Texture = texture;
-            Game1.Instance.Player.OnStopped += () => {
+            UbeatGame.Instance.Player.OnStopped += () => {
                 nextBeat = 0;
             };
         }
@@ -27,16 +27,16 @@ namespace ubeat.GameScreen.UI
 
            
 
-            if (Game1.Instance.Player.PlayState == NAudio.Wave.PlaybackState.Playing)
+            if (UbeatGame.Instance.Player.PlayState == NAudio.Wave.PlaybackState.Playing)
             {
-                if (Game1.Instance.SelectedBeatmap != null)
+                if (UbeatGame.Instance.SelectedBeatmap != null)
                 {
-                    if (nextBeat == 0) nextBeat += (long)Game1.Instance.SelectedBeatmap.BPM;
+                    if (nextBeat == 0) nextBeat += (long)UbeatGame.Instance.SelectedBeatmap.BPM;
 
-                    if (Game1.Instance.Player.Position > nextBeat)
+                    if (UbeatGame.Instance.Player.Position > nextBeat)
                     {
                         Scale = 1.1f;
-                        nextBeat += (long)Game1.Instance.SelectedBeatmap.BPM;
+                        nextBeat += (long)UbeatGame.Instance.SelectedBeatmap.BPM;
                     }
                 }
 
@@ -44,7 +44,7 @@ namespace ubeat.GameScreen.UI
             
             if (Scale > 1f)
             {
-                Scale -= (float)(Game1.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.0001f);
+                Scale -= (float)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.0001f);
             }
 
         }
@@ -59,7 +59,7 @@ namespace ubeat.GameScreen.UI
         public override void Render()
         {
             Rectangle rg = new Rectangle((int)this.Position.X + (this.Texture.Width/2), (int)this.Position.Y + (this.Texture.Height/2), (int)(this.Texture.Width * Scale), (int)(this.Texture.Height * Scale));
-            Game1.Instance.spriteBatch.Draw(this.Texture, rg, null, Color.White, 0, new Vector2((this.Texture.Width / 2), (this.Texture.Height / 2)), SpriteEffects.None, 0);
+            UbeatGame.Instance.spriteBatch.Draw(this.Texture, rg, null, Color.White, 0, new Vector2((this.Texture.Width / 2), (this.Texture.Height / 2)), SpriteEffects.None, 0);
         }
     }
 }

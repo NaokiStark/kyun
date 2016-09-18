@@ -1,21 +1,18 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Windows.Forms;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 using ubeat.GameScreen;
 
 namespace ubeat.UIObjs
 {
     public class ApproachObj : IUIObject
     {
+        public Vector2 Position { get; set; }
 
-        public Microsoft.Xna.Framework.Vector2 Position { get; set; }
+        public Texture2D Texture { get; set; }
 
-        public Microsoft.Xna.Framework.Graphics.Texture2D Texture { get; set; }
-
-        public bool isActive { get; set; }
+        public bool IsActive { get; set; }
 
         public bool Died { get; set; }
 
@@ -31,7 +28,7 @@ namespace ubeat.UIObjs
         {
             this.starttime = startTime;
             this.Position = position;
-            this.Texture = Game1.Instance.waitDefault;
+            this.Texture = UbeatGame.Instance.waitDefault;
             this.approachrate = approachRate;
             this.width = Texture.Bounds.Width;
             this.height = Texture.Bounds.Height;
@@ -98,7 +95,7 @@ namespace ubeat.UIObjs
 
            
 
-                Game1.Instance.spriteBatch.Draw(this.Texture,
+                UbeatGame.Instance.spriteBatch.Draw(this.Texture,
                     new Rectangle((int)Position.X + (int)135 / 2,(int)Position.Y + (int)135 / 2, (int)width, (int)height),
                     null, Color.White * opacity,
                     //RotationAngle,

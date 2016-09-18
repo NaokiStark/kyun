@@ -13,12 +13,12 @@ namespace ubeat.GameScreen
         {
             ScreenInstance = this;
             LoadInterface();
-            Game1.Instance.kbmgr.OnKeyPress += kbmgr_OnKeyPress;
+            UbeatGame.Instance.kbmgr.OnKeyPress += kbmgr_OnKeyPress;
         }
 
         void kbmgr_OnKeyPress()
         {
-            string ActualText = Game1.Instance.kbmgr.Text;
+            string ActualText = UbeatGame.Instance.kbmgr.Text;
             if (ActualText != lastStr)
             {
                 lastStr = ActualText;
@@ -37,8 +37,8 @@ namespace ubeat.GameScreen
 
         void BeatmapScreen_OnLoad(object sender, EventArgs e)
         {
-            Game1.Instance.kbmgr.Enabled = true;
-            if (Game1.Instance.AllBeatmaps.Count < 1)
+            UbeatGame.Instance.kbmgr.Enabled = true;
+            if (UbeatGame.Instance.AllBeatmaps.Count < 1)
             {
                 var mpset = new Mapset();
                 lbox.Items.Add(mpset);
@@ -46,7 +46,7 @@ namespace ubeat.GameScreen
             }
             else
             {
-                foreach (Mapset mps in Game1.Instance.AllBeatmaps)
+                foreach (Mapset mps in UbeatGame.Instance.AllBeatmaps)
                     lbox.Items.Add(mps);
             }
             
@@ -54,23 +54,23 @@ namespace ubeat.GameScreen
             lBDff.IndexChanged += lBDff_IndexChanged;
             lBDff.MouseDoubleClick += lBDff_MouseDoubleClick;
 
-            ChangeBeatmapDisplay(Game1.Instance.SelectedBeatmap);
+            ChangeBeatmapDisplay(UbeatGame.Instance.SelectedBeatmap);
         }
 
         void lBDff_MouseDoubleClick(object sender, EventArgs e)
         {
             if (lBDff.selectedIndex < 0 || lBDff.selectedIndex > lBDff.Items.Count - 1) return;
             
-            Game1.Instance.kbmgr.Enabled = false;
+            UbeatGame.Instance.kbmgr.Enabled = false;
 
-            Game1.Instance.GameStart(lBDff.Items[lBDff.selectedIndex], this.AMode);
+            UbeatGame.Instance.GameStart(lBDff.Items[lBDff.selectedIndex], this.AMode);
 
         }
 
         void lBDff_IndexChanged(object sender, EventArgs e)
         {
             if (lBDff.selectedIndex < 0 || lBDff.selectedIndex > lBDff.Items.Count-1) return;
-            AudioPlaybackEngine.Instance.PlaySound(Game1.Instance.SelectorHit);
+            AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.SelectorHit);
             lblTitleDesc.Text = lBDff.Items[lBDff.selectedIndex].Artist + " - " + lBDff.Items[lBDff.selectedIndex].Title;
             //ChangeBeatmapDisplay(lBDff.Items[lBDff.selectedIndex]);
         }
@@ -78,7 +78,7 @@ namespace ubeat.GameScreen
         void lbox_IndexChanged(object sender, EventArgs e)
         {
             if (lbox.selectedIndex < 0 || lbox.selectedIndex > lbox.Items.Count - 1) return;
-            AudioPlaybackEngine.Instance.PlaySound(Game1.Instance.SelectorHit);
+            AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.SelectorHit);
             lblTitleDesc.Text = lbox.Items[lbox.selectedIndex][0].Artist + " - " + lbox.Items[lbox.selectedIndex][0].Title;
 
             ChangeBeatmapDisplay(lbox.Items[lbox.selectedIndex][0]);
@@ -87,10 +87,10 @@ namespace ubeat.GameScreen
 
         void ChangeBeatmapDisplay(ubeatBeatMap beatMap)
         {
-            if (Game1.Instance.SelectedBeatmap.SongPath != beatMap.SongPath)
+            if (UbeatGame.Instance.SelectedBeatmap.SongPath != beatMap.SongPath)
             {
-                Game1.Instance.Player.Play(beatMap.SongPath);
-                Game1.Instance.Player.soundOut.Volume = Game1.Instance.GeneralVolume;
+                UbeatGame.Instance.Player.Play(beatMap.SongPath);
+                UbeatGame.Instance.Player.soundOut.Volume = UbeatGame.Instance.GeneralVolume;
             }
 
             ScreenInstance.ChangeBackground(beatMap.Background);

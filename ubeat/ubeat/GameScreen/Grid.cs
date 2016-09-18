@@ -93,7 +93,7 @@ namespace ubeat.GameScreen
 
             ScreenMode ActualMode = scmL[Settings1.Default.ScreenMode];
 
-            Vector2 meas = Game1.Instance.defaultFont.MeasureString("ubeat") * .85f;
+            Vector2 meas = UbeatGame.Instance.defaultFont.MeasureString("ubeat") * .85f;
 
             FPSMetter = new Label();
             FPSMetter.Text = "fps";
@@ -133,16 +133,16 @@ namespace ubeat.GameScreen
 
             Logger.Instance.Info("Game Failed");
             failed = true;
-            ScoreDispl.isActive = false;
-            ComboDspl.isActive = false;
+            ScoreDispl.IsActive = false;
+            ComboDspl.IsActive = false;
             Pause();
         }
 
         void addTextureG()
         {
-            int wid = (Game1.Instance.buttonDefault.Bounds.Width+20)*3;
-            int hei = (Game1.Instance.buttonDefault.Bounds.Height + 20) * 3;
-            bg = new Texture2D(Game1.Instance.GraphicsDevice, wid, hei);
+            int wid = (UbeatGame.Instance.buttonDefault.Bounds.Width+20)*3;
+            int hei = (UbeatGame.Instance.buttonDefault.Bounds.Height + 20) * 3;
+            bg = new Texture2D(UbeatGame.Instance.GraphicsDevice, wid, hei);
 
             Color[] data = new Color[wid * hei];
             for (int i = 0; i < data.Length; ++i) data[i] = Color.Black;
@@ -159,8 +159,8 @@ namespace ubeat.GameScreen
             int posYY = 0;
             int posXX = index;
 
-            int sWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-            int sHeight = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+            int sWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
+            int sHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
             if (index > 6)
             {
@@ -190,12 +190,12 @@ namespace ubeat.GameScreen
 
 
 
-            int x = (sWidth / 2) + (Game1.Instance.buttonDefault.Bounds.Width + 20) * posXX;
-            int y = (sHeight / 2) + (Game1.Instance.buttonDefault.Bounds.Height + 20) * posYY;
+            int x = (sWidth / 2) + (UbeatGame.Instance.buttonDefault.Bounds.Width + 20) * posXX;
+            int y = (sHeight / 2) + (UbeatGame.Instance.buttonDefault.Bounds.Height + 20) * posYY;
 
 
-            x = x - (Game1.Instance.buttonDefault.Bounds.Width + 20) * 2 - (Game1.Instance.buttonDefault.Bounds.Width / 2);
-            y = y - (Game1.Instance.buttonDefault.Bounds.Height + 20) * 2 - (Game1.Instance.buttonDefault.Bounds.Height / 2);
+            x = x - (UbeatGame.Instance.buttonDefault.Bounds.Width + 20) * 2 - (UbeatGame.Instance.buttonDefault.Bounds.Width / 2);
+            y = y - (UbeatGame.Instance.buttonDefault.Bounds.Height + 20) * 2 - (UbeatGame.Instance.buttonDefault.Bounds.Height / 2);
             return new Vector2(x, y);
         }
 
@@ -204,13 +204,13 @@ namespace ubeat.GameScreen
             if (!Paused)
             {
                 Logger.Instance.Info("Game Paused");
-                Game1.Instance.Player.Paused = true;
+                UbeatGame.Instance.Player.Paused = true;
                 Paused = !Paused;
             }
             else
             {
                 Logger.Instance.Info("Game unpaused");
-                Game1.Instance.Player.Paused = false;
+                UbeatGame.Instance.Player.Paused = false;
                 Paused = !Paused;
             }
         }
@@ -218,10 +218,10 @@ namespace ubeat.GameScreen
         public void Play(Beatmap.ubeatBeatMap beatmap = null, bool automode = false)
         {
             endedd += Grid_endedd;
-            Game1.Instance.IsMouseVisible=false;
+            UbeatGame.Instance.IsMouseVisible=false;
             ScoreDispl.Reset();
-            ScoreDispl.isActive = true;
-            ComboDspl.isActive = true;
+            ScoreDispl.IsActive = true;
+            ComboDspl.IsActive = true;
             combo.ResetAll();
             actualIndex = 0;
             GameTimeTotal = 0;
@@ -229,14 +229,14 @@ namespace ubeat.GameScreen
             cooldown = true;
             autoMode = automode;
             addTextureG();
-            Game1.Instance.Player.Stop();
+            UbeatGame.Instance.Player.Stop();
             if(beatmap!=null)
                 bemap = beatmap;
             //Start
             try
             {
                 FileStream filestream = new FileStream(bemap.Background, FileMode.Open, FileAccess.Read);
-                Background = Texture2D.FromStream(Game1.Instance.GraphicsDevice, filestream);
+                Background = Texture2D.FromStream(UbeatGame.Instance.GraphicsDevice, filestream);
                 filestream.Close();
             }
             catch
@@ -275,7 +275,7 @@ namespace ubeat.GameScreen
 
         void Grid_endedd()
         {
-            Game1.Instance.IsMouseVisible = false;
+            UbeatGame.Instance.IsMouseVisible = false;
 
         }
         #endregion
@@ -301,7 +301,7 @@ namespace ubeat.GameScreen
             else
                 offset++;
             Console.WriteLine("ACTUAL OFFSET: " + offset);
-            long pos = Game1.Instance.Player.Position;
+            long pos = UbeatGame.Instance.Player.Position;
             Console.WriteLine("pos - OFFSETTED/PLAYER: " + (pos+offset)+"/" +pos );
             Console.WriteLine("DIFF: " + (pos + offset-pos));
         }
@@ -312,7 +312,7 @@ namespace ubeat.GameScreen
             if (!Visible)
                 return;
 
-            int fpsm = (int)Math.Round((double)Game1.Instance.frameCounter.AverageFramesPerSecond,0);
+            int fpsm = (int)Math.Round((double)UbeatGame.Instance.frameCounter.AverageFramesPerSecond,0);
             FPSMetter.Text = fpsm.ToString("0", CultureInfo.InvariantCulture) + " FPS";
             FPSMetter.Update();
 
@@ -337,14 +337,14 @@ namespace ubeat.GameScreen
 
            
 
-            if (inGame && GameTimeTotal > bemap.SleepTime && Game1.Instance.Player.PlayState == NAudio.Wave.PlaybackState.Stopped)
+            if (inGame && GameTimeTotal > bemap.SleepTime && UbeatGame.Instance.Player.PlayState == NAudio.Wave.PlaybackState.Stopped)
             {
-                Game1.Instance.Player.Play(bemap.SongPath);
-                Game1.Instance.Player.soundOut.Volume = Game1.Instance.GeneralVolume;
+                UbeatGame.Instance.Player.Play(bemap.SongPath);
+                UbeatGame.Instance.Player.soundOut.Volume = UbeatGame.Instance.GeneralVolume;
 
                 //GameTimeTotal = Game1.Instance.player.Position+bemap.SleepTime;
 
-                if (Game1.Instance.VideoEnabled)
+                if (UbeatGame.Instance.VideoEnabled)
                     if (bemap.Video != null)
                         if (bemap.Video != "")
                             videoplayer.Play(bemap.Video);
@@ -404,10 +404,10 @@ namespace ubeat.GameScreen
             //long pos = (long)Game1.Instance.player.Position;
             if (!Paused)
             {
-                if(Game1.Instance.Player.PlayState == NAudio.Wave.PlaybackState.Stopped)
+                if(UbeatGame.Instance.Player.PlayState == NAudio.Wave.PlaybackState.Stopped)
                     GameTimeTotal += (long)tm.ElapsedGameTime.TotalMilliseconds;
                 else
-                    GameTimeTotal = Game1.Instance.Player.Position + bemap.SleepTime;
+                    GameTimeTotal = UbeatGame.Instance.Player.Position + bemap.SleepTime;
             }
 
 
@@ -421,9 +421,9 @@ namespace ubeat.GameScreen
                     if (pos > startTime )
                     {
                         if (bemap.HitObjects[actualIndex] is HitHolder)
-                            bemap.HitObjects[actualIndex].AddTexture(Game1.Instance.buttonHolder);
+                            bemap.HitObjects[actualIndex].AddTexture(UbeatGame.Instance.buttonHolder);
                         else
-                            bemap.HitObjects[actualIndex].AddTexture(Game1.Instance.buttonDefault);
+                            bemap.HitObjects[actualIndex].AddTexture(UbeatGame.Instance.buttonDefault);
 
                         bemap.HitObjects[actualIndex].Start(pos);
 
@@ -495,7 +495,7 @@ namespace ubeat.GameScreen
                             bemap.HitObjects[a].Reset();
                         }
                         videoplayer.Stop();
-                        Game1.Instance.GameStart(this.bemap);
+                        UbeatGame.Instance.GameStart(this.bemap);
                     }
                 }
                 else
@@ -507,7 +507,7 @@ namespace ubeat.GameScreen
                         nomoreobjectsplsm8 = true;
                         inGame = false;
                         Background = null;
-                        Game1.Instance.Player.Paused = false;
+                        UbeatGame.Instance.Player.Paused = false;
                         Paused = false;
                         ScreenManager.ChangeTo(new BeatmapScreen());
                         
@@ -540,7 +540,7 @@ namespace ubeat.GameScreen
                 nomoreobjectsplsm8 = true;
                 inGame = false;
                 Background = null;
-                Game1.Instance.Player.Paused = false;
+                UbeatGame.Instance.Player.Paused = false;
                 Paused = false;
                 ScreenManager.ChangeTo(new BeatmapScreen());
 
@@ -568,8 +568,8 @@ namespace ubeat.GameScreen
                 return;
             }
 
-            int screenWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-            int screenHeight = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+            int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
+            int screenHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
             //Rectangle screenRectangle = new Rectangle(0, 0, screenWidth, screenHeight);
 
@@ -581,7 +581,7 @@ namespace ubeat.GameScreen
                 Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
 
                 //Game1.Instance.spriteBatch.Draw(Background, screenRectangle, Color.White);
-                Game1.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                UbeatGame.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
 
             }
             else if(!inGame)
@@ -604,17 +604,17 @@ namespace ubeat.GameScreen
             long pos = GameTimeTotal + offset;   
             
             //draw square
-            int sWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-            int sHeight = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
-            int xi = (sWidth / 2) + (Game1.Instance.buttonDefault.Bounds.Width + 10) * 1;
-            int yi = (sHeight / 2) + (Game1.Instance.buttonDefault.Bounds.Height + 10) * 1;
+            int sWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
+            int sHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+            int xi = (sWidth / 2) + (UbeatGame.Instance.buttonDefault.Bounds.Width + 10) * 1;
+            int yi = (sHeight / 2) + (UbeatGame.Instance.buttonDefault.Bounds.Height + 10) * 1;
 
 
-            xi = xi - (Game1.Instance.buttonDefault.Bounds.Width + 20) * 2 - (Game1.Instance.buttonDefault.Bounds.Width / 2);
-            yi = yi - (Game1.Instance.buttonDefault.Bounds.Height + 20) * 2 - (Game1.Instance.buttonDefault.Bounds.Height / 2);
+            xi = xi - (UbeatGame.Instance.buttonDefault.Bounds.Width + 20) * 2 - (UbeatGame.Instance.buttonDefault.Bounds.Width / 2);
+            yi = yi - (UbeatGame.Instance.buttonDefault.Bounds.Height + 20) * 2 - (UbeatGame.Instance.buttonDefault.Bounds.Height / 2);
 
             if(Health.Enabled || cooldown)
-                Game1.Instance.spriteBatch.Draw(bg, new Vector2(xi,yi), Color.White*.75f);
+                UbeatGame.Instance.spriteBatch.Draw(bg, new Vector2(xi,yi), Color.White*.75f);
            
             int objectsCount = 0;
             for (int a = 0; a < grid.Count; a++)
@@ -651,7 +651,7 @@ namespace ubeat.GameScreen
                 if (objectsCount < 1)
                 {
                     inGame = false;
-                    ScoreDispl.isActive = false;
+                    ScoreDispl.IsActive = false;
                     Health.Stop();
                         cooldown = false;
                         Health.Enabled = false;
@@ -666,21 +666,21 @@ namespace ubeat.GameScreen
 
             if (Paused)
             {
-                int splashW=Game1.Instance.PauseSplash.Bounds.Width;
-                int splashH=Game1.Instance.PauseSplash.Bounds.Height;
+                int splashW=UbeatGame.Instance.PauseSplash.Bounds.Width;
+                int splashH=UbeatGame.Instance.PauseSplash.Bounds.Height;
                 if(!failed)
-                    Game1.Instance.spriteBatch.Draw(Game1.Instance.PauseSplash, new Rectangle(sWidth / 2 - splashW/2, sHeight / 2-splashH/2, splashW, splashH), Color.White);
+                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.PauseSplash, new Rectangle(sWidth / 2 - splashW/2, sHeight / 2-splashH/2, splashW, splashH), Color.White);
                 else
-                    Game1.Instance.spriteBatch.Draw(Game1.Instance.FailSplash, new Rectangle(sWidth / 2 - splashW / 2, sHeight / 2 - splashH / 2, splashW, splashH), Color.White);
+                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.FailSplash, new Rectangle(sWidth / 2 - splashW / 2, sHeight / 2 - splashH / 2, splashW, splashH), Color.White);
             }
         }
 
         void RenderVideoFrame()
         {
-            int screenWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-            int screenHeight = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+            int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
+            int screenHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
-            if (Game1.Instance.VideoEnabled)
+            if (UbeatGame.Instance.VideoEnabled)
             {
                 Rectangle screenVideoRectangle = new Rectangle();
                 if (!videoplayer.Stopped)
@@ -691,13 +691,13 @@ namespace ubeat.GameScreen
                         if (frame != null)
                         {
 
-                            Game1.Instance.spriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
+                            UbeatGame.Instance.spriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
 
-                            Texture2D texture = new Texture2D(Game1.Instance.GraphicsDevice, videoplayer.vdc.width, videoplayer.vdc.height);
+                            Texture2D texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, videoplayer.vdc.width, videoplayer.vdc.height);
                             screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)texture.Width / (float)texture.Height) * (float)screenHeight), screenHeight);
                             texture.SetData(frame);
                             lastFrameOfVid = texture;
-                            Game1.Instance.spriteBatch.Draw(texture, screenVideoRectangle, null, Color.White, 0, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 0);
+                            UbeatGame.Instance.spriteBatch.Draw(texture, screenVideoRectangle, null, Color.White, 0, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 0);
                             if (Settings1.Default.VideoMode > 0)
                                 VidFrame++;
                             if (Settings1.Default.VideoMode == 0)
@@ -712,9 +712,9 @@ namespace ubeat.GameScreen
                         {
                             try
                             {
-                                Game1.Instance.spriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
+                                UbeatGame.Instance.spriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
                                 screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)lastFrameOfVid.Width / (float)lastFrameOfVid.Height) * (float)screenHeight), screenHeight);
-                                Game1.Instance.spriteBatch.Draw(lastFrameOfVid, screenVideoRectangle, null, Color.White, 0, new Vector2(lastFrameOfVid.Width / 2, lastFrameOfVid.Height / 2), SpriteEffects.None, 0);
+                                UbeatGame.Instance.spriteBatch.Draw(lastFrameOfVid, screenVideoRectangle, null, Color.White, 0, new Vector2(lastFrameOfVid.Width / 2, lastFrameOfVid.Height / 2), SpriteEffects.None, 0);
                                 lastFrameOfVid.Dispose();
                             }
                             catch
@@ -734,26 +734,26 @@ namespace ubeat.GameScreen
 
             if (wait4End >= 0)
             {
-                wait4End -= (int)Game1.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds;
+                wait4End -= (int)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds;
             
 
-                int screenWidth = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-                int screenHeight = Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+                int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
+                int screenHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
                 if (Background != null)
                 {
                     Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
-                    Game1.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                    UbeatGame.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
                 }
 
                 RenderVideoFrame();
                 FPSMetter.Render();
 
-                Game1.Instance.spriteBatch.Draw(Game1.Instance.SpaceSkip,
-                    new Rectangle(screenWidth - (Game1.Instance.SpaceSkip.Width/2),
-                        screenHeight - (Game1.Instance.SpaceSkip.Height/2),
-                        Game1.Instance.SpaceSkip.Width/2,
-                        Game1.Instance.SpaceSkip.Height/2),
+                UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.SpaceSkip,
+                    new Rectangle(screenWidth - (UbeatGame.Instance.SpaceSkip.Width/2),
+                        screenHeight - (UbeatGame.Instance.SpaceSkip.Height/2),
+                        UbeatGame.Instance.SpaceSkip.Width/2,
+                        UbeatGame.Instance.SpaceSkip.Height/2),
                     null,
                     Color.White,
                     0,
@@ -769,7 +769,7 @@ namespace ubeat.GameScreen
                 }
                 if(!gEn)
                 {
-                    int diff = (int)(Game1.Instance.Player.soundOut.TotalTime.TotalMilliseconds - Game1.Instance.Player.Position);
+                    int diff = (int)(UbeatGame.Instance.Player.soundOut.TotalTime.TotalMilliseconds - UbeatGame.Instance.Player.Position);
                     if (diff > 2000 && diff < 60000)
                     {
                         gEn = true;
