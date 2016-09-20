@@ -20,7 +20,7 @@ namespace ubeat.GameScreen
         void ScoreScreen_OnLoad(object sender, EventArgs e)
         {
 
-            ChangeBeatmapDisplay(UbeatGame.Instance.SelectedBeatmap);
+            ChangeBeatmapDisplay(Grid.Instance.bemap); //Instance of grid 
             this.lblTitleDesc.Text = string.Format("{0} - {1} [{2}]", Grid.Instance.bemap.Artist, Grid.Instance.bemap.Title, Grid.Instance.bemap.Version);
             int perfect = 0;
             int excellent = 0;
@@ -64,12 +64,17 @@ namespace ubeat.GameScreen
 
         void ChangeBeatmapDisplay(ubeatBeatMap bm)
         {
+
+            /*
+             * 
+             * //I don't need to load same song again
             if (UbeatGame.Instance.SelectedBeatmap.SongPath != bm.SongPath)
             {
                 UbeatGame.Instance.Player.Play(bm.SongPath);
                 UbeatGame.Instance.Player.soundOut.Volume = UbeatGame.Instance.GeneralVolume;
             }
 
+            */
             UbeatGame.Instance.SelectedBeatmap = bm;
 
             try
