@@ -148,6 +148,7 @@
     <Compile Include="GameScreen\SUI\Buttons\ConfigButton.cs" />
     <Compile Include="GameScreen\SUI\Buttons\ExitButton.cs" />
     <Compile Include="GameScreen\SUI\Buttons\StartButton.cs" />
+    <Compile Include="GameScreen\SUI\ElementExample.cs" />
     <Compile Include="GameScreen\SUI\FilledRectangle.cs" />
     <Compile Include="GameScreen\SUI\Image.cs" />
     <Compile Include="GameScreen\SUI\Label.cs" />

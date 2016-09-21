@@ -32,11 +32,6 @@ namespace ubeat.GameScreen.UI
         {
             if (PlayHit)
             {
-                /*
-                SoundEffectInstance ins = Game1.Instance.ButtonHit.CreateInstance();
-                ins.Volume = Game1.Instance.GeneralVolume;
-                ins.Play();*/
-
                 AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.ButtonHit);
             }
 
