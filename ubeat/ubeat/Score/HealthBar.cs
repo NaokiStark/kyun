@@ -1,6 +1,4 @@
-﻿using System;
-using System.Windows.Forms;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ubeat.GameScreen;
 using ubeat.UIObjs;
@@ -15,7 +13,6 @@ namespace ubeat.Score
         Texture2D BgBar;
 
         float overallDiff;
-        Timer HltTmr;
         public HealthBar()
         {
 
@@ -31,24 +28,19 @@ namespace ubeat.Score
 
 
             BgBar = new Texture2D(UbeatGame.Instance.GraphicsDevice, width + 20, height + 20);
-            Color[] dataBar = new Color[(width+20) * (height+20)];
+            Color[] dataBar = new Color[(width + 20) * (height + 20)];
             for (int i = 0; i < dataBar.Length; ++i) dataBar[i] = Color.Black;
             this.BgBar.SetData(dataBar);
 
-            HltTmr = new Timer() { Interval = 1 };
-            HltTmr.Tick += HltTmr_Tick;
-            
-            //Later
-            HltTmr.Start();
-            
             this.IsActive = false;
         }
 
-        void HltTmr_Tick(object sender, EventArgs e)
+        void HltTmr_Tick()
         {
             if (!IsActive || !Grid.Instance.inGame || Grid.Instance.Paused) return;
 
-            this.Value -= ((overallDiff / 10) + .5f)/20; //Test if is hard c:
+            this.Value -= (UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds / 100f) *
+                ((overallDiff / 10f)); //Test if is hard c:
 
         }
 
@@ -64,7 +56,7 @@ namespace ubeat.Score
         {
             IsActive = false;
         }
-        
+
         public void Reset()
         {
             Value = 100;
@@ -79,7 +71,7 @@ namespace ubeat.Score
             else
                 this.Value += value;
         }
-        
+
         public void Substract(float value)
         {
             value += overallDiff / 10;
@@ -91,10 +83,12 @@ namespace ubeat.Score
 
         public void Update()
         {
-
-            if(Grid.Instance.inGame && !Grid.Instance.Paused && IsActive)
-                if (Value < 1)
-                    OnFail?.Invoke();
+            HltTmr_Tick();
+            if (Grid.Instance.inGame && !Grid.Instance.Paused && IsActive)
+                if (Value < 0.1f)
+                    if(!Grid.Instance.autoMode)
+                        if(!Grid.Instance.NoFailMode)
+                            OnFail?.Invoke();
         }
 
         public void Render()
@@ -115,15 +109,15 @@ namespace ubeat.Score
             Rectangle size = new Rectangle(10, 10, (int)res, Texture.Height);
             Rectangle sizeBar = new Rectangle(0, 0, this.BgBar.Width, this.BgBar.Height);
             //bg          
-            
+
 
             UbeatGame.Instance.spriteBatch.Draw(this.BgBar,
                 sizeBar,
                 null,
-                Color.White*0.75f,
+                Color.White * 0.75f,
                 0f,
                 new Vector2(0),
-                Microsoft.Xna.Framework.Graphics.SpriteEffects.None,
+                SpriteEffects.None,
                 0);
 
             //bar
@@ -133,7 +127,7 @@ namespace ubeat.Score
                 colbr,
                 0f,
                 new Vector2(0),
-                Microsoft.Xna.Framework.Graphics.SpriteEffects.None,
+                SpriteEffects.None,
                 0);
 
         }

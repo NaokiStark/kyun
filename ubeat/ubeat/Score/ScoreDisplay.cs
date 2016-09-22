@@ -10,26 +10,53 @@ namespace ubeat.Score
 {
     public class ScoreDisplay : IUIObject
     {
-        public Microsoft.Xna.Framework.Vector2 Position { get; set; }
+        public Vector2 Position { get; set; }
 
-        public Microsoft.Xna.Framework.Graphics.Texture2D Texture { get; set; }
+        public Texture2D Texture { get; set; }
 
         public bool IsActive { get; set; }
 
         public bool Died { get; set; }
 
-        ulong score=0;
+        float opa = 0f;
+        ulong score = 0;
+
+        ulong lScore = 0;
+
+        ulong RollingScore = 0;
 
         Queue<int> lastAdds = new Queue<int>();
 
         public void Add(long Score)
         {
+            this.lScore = this.score;
+
             this.score += (ulong)Score;
+            opa = 1;
         }
 
         public void Reset()
         {
             this.score = 0;
+        }
+
+        private void updateRolling()
+        {
+            if (RollingScore < score)
+            {
+                RollingScore += (ulong)((float)(score - lScore) * (float)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds / 100f));
+            }
+
+            float minus = (UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds / 100f)/5;
+
+            if (opa > 0)
+            {
+                opa -= minus;
+            }
+            else
+            {
+                opa = 0;
+            }
         }
 
         public ScoreDisplay()
@@ -49,9 +76,11 @@ namespace ubeat.Score
                 return this.score;
             }
         }
+
         public void Update()
         {
             if (!IsActive) return;
+            updateRolling();
         }
 
         public void Render()
@@ -60,13 +89,15 @@ namespace ubeat.Score
 
             int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
 
-            Vector2 fSize = UbeatGame.Instance.defaultFont.MeasureString(score.ToString("00000000")) * 1.5f;
+            Vector2 fSize = UbeatGame.Instance.defaultFont.MeasureString(RollingScore.ToString("00000000")) * 1.5f;
 
-            Rectangle rect = new Rectangle(screenWidth - (int)fSize.X-30, 0, (int)fSize.X+30, (int)fSize.Y);
+            Rectangle rect = new Rectangle(screenWidth - (int)fSize.X - 30, 0, (int)fSize.X + 30, (int)fSize.Y);
             UbeatGame.Instance.spriteBatch.Draw(this.Texture, rect, Color.White * .75f);
 
             //Draw score
-            UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, score.ToString("00000000"), new Vector2(rect.X + 15, 0), Color.WhiteSmoke, 0, new Vector2(0), 1.5f, SpriteEffects.None, 0);
+            UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, RollingScore.ToString("00000000"), new Vector2(rect.X + 15, 0), Color.WhiteSmoke, 0, new Vector2(0), 1.5f, SpriteEffects.None, 0);
+
+            UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, RollingScore.ToString("00000000"), new Vector2(rect.X + 15, 0), Color.Yellow*opa, 0, new Vector2(0), 1.5f, SpriteEffects.None, 0);
         }
     }
 }

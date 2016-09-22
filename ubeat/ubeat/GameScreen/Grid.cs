@@ -23,6 +23,7 @@ namespace ubeat.GameScreen
         public IScreen ScreenInstance { get; set; }
 
         public bool autoMode = false;
+        public bool NoFailMode = false;
         public bool inGame;
         public bool Paused { get; set; }
 

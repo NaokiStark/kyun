@@ -52,7 +52,7 @@ namespace ubeat.GameScreen.SUI
                 catch
                 {
                     return null;
-                }                
+                }
             }
         }
 
@@ -66,7 +66,7 @@ namespace ubeat.GameScreen.SUI
             {
                 baseListbox.Items = value;
             }
-        } 
+        }
 
         public ComboBox(Vector2 position, float width, SpriteFont font)
         {
@@ -85,7 +85,7 @@ namespace ubeat.GameScreen.SUI
 
         private void DisplayLabel_Click(object sender, EventArgs e)
         {
-            baseListbox.Position = new Vector2(displayLabel.Position.X,displayLabel.Position.Y + displayLabel.Texture.Height);
+            baseListbox.Position = new Vector2(displayLabel.Position.X, displayLabel.Position.Y + displayLabel.Texture.Height);
             baseListbox.Visible = true;
         }
 
@@ -106,7 +106,7 @@ namespace ubeat.GameScreen.SUI
             {
                 baseListbox.Render();
             }
-            
+
         }
 
         public override void Update()
