@@ -14,22 +14,41 @@ namespace ubeat.GameScreen.UI
         public string Text { get; set; }
         public Vector2 Size { get; set; }
         public float BackgroundOpacity { get; set; }
+
+        string lastStr ="";
+            
         public Label(float backgroundOpacity = 0.8f)
         {
+            this.Text = ""; //WTF NULL
             BackgroundOpacity = backgroundOpacity;
-            int width = 5;
-            int height = 5;
-            this.Texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, width, height);
-            Color[] dataBar = new Color[width * height];
+            generateTexture(5, 5);
+            Scale = 1;
+        }
+
+        private void generateTexture(int w, int h)
+        {            
+            this.Texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, w, h);
+            Color[] dataBar = new Color[w * h];
             for (int i = 0; i < dataBar.Length; ++i) dataBar[i] = Color.Black * BackgroundOpacity;
             this.Texture.SetData(dataBar);
-            Scale = 1;
         }
 
         public override void Update()
         {
+            
+            if(lastStr != Text) {
+                Vector2 messStr;
+                if (Font == null)
+                    messStr = UbeatGame.Instance.defaultFont.MeasureString(this.Text) * Scale;
+                else
+                    messStr = Font.MeasureString(this.Text) * Scale;
+
+                messStr = new Vector2(messStr.X + 15, messStr.Y + 10);
+                generateTexture((int)messStr.X, (int)messStr.Y);
+            }        
+
+            lastStr = Text;
             base.Update(); //Update Events
-           
         }
 
         public override void Render()

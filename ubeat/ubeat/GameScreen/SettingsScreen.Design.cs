@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using ubeat.GameScreen.SUI;
 using ubeat.Screen;
-using Squid;
+
 
 namespace ubeat.GameScreen
 {
@@ -27,26 +27,22 @@ namespace ubeat.GameScreen
                         center.X - (Logo.Texture.Width / 2),
                         center.Y - (Logo.Texture.Height / 2) - Logo.Texture.Height + 15);
 
+
+            //Combobox xdd
+
+            comboLang = new ComboBox(Vector2.Zero, 250, UbeatGame.Instance.defaultFont);
+            comboLang.Text = "Engrish";
+            comboLang.Items.Add("Engrish");
+            comboLang.Items.Add("Espanyol");
+
+
             var filledRect1 = new FilledRectangle(new Vector2(actualMode.Width, actualMode.Height), Color.Black * 0.5f);
-            filledRect1.Position = new Vector2(0, 0);
+            filledRect1.Position = Vector2.Zero;
 
-            // SQUID :o
-
-            var languageCombo = new DropDownList();
-            languageCombo.Size = new Squid.Point(222, 35);
-            languageCombo.Position = new Squid.Point(180, 180);
-
-            ListBoxItem englishItem = new ListBoxItem();
-            englishItem.Text = "English";
-            englishItem.Size = new Squid.Point(100, 35);
-            englishItem.Margin = new Margin(0, 0, 0, 4);
-            englishItem.Style = "item";
-
-            languageCombo.Items.Add(englishItem);
-
+            
             Controls.Add(filledRect1);
             Controls.Add(Logo);
-            //Controls.Add(languageCombo); RIP
+            Controls.Add(comboLang);
 
             UbeatGame.Instance.IsMouseVisible = true;
 
@@ -105,6 +101,7 @@ namespace ubeat.GameScreen
 
         public Texture2D Background { get; set; }
         public UI.Image Logo;
+        public ComboBox comboLang { get; set; }
 
         #endregion
 

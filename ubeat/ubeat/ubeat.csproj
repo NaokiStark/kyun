@@ -88,9 +88,6 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Squid">
-      <HintPath>..\..\lib\Squid.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -148,10 +145,12 @@
     <Compile Include="GameScreen\SUI\Buttons\ConfigButton.cs" />
     <Compile Include="GameScreen\SUI\Buttons\ExitButton.cs" />
     <Compile Include="GameScreen\SUI\Buttons\StartButton.cs" />
+    <Compile Include="GameScreen\SUI\ComboBox.cs" />
     <Compile Include="GameScreen\SUI\ElementExample.cs" />
     <Compile Include="GameScreen\SUI\FilledRectangle.cs" />
     <Compile Include="GameScreen\SUI\Image.cs" />
     <Compile Include="GameScreen\SUI\Label.cs" />
+    <Compile Include="GameScreen\SUI\ObjectListbox.cs" />
     <Compile Include="GameScreen\SUI\Listbox.cs" />
     <Compile Include="GameScreen\SUI\ListboxDiff.cs" />
     <Compile Include="LoadingWindow.cs">
@@ -188,6 +187,7 @@
     <Compile Include="UIObjs\IUIObject.cs" />
     <Compile Include="UIObjs\ScoreObj.cs" />
     <Compile Include="Utils\BeatmapSearchEngine.cs" />
+    <Compile Include="Utils\ContentLoader.cs" />
     <Compile Include="Utils\FrameCounter.cs" />
     <Compile Include="Utils\KeyboardManager.cs" />
     <Compile Include="Utils\ReplayBuilder.cs" />

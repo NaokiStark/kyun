@@ -57,7 +57,7 @@ namespace ubeat
 
             Busy = true;
 
-            switch(Queue[0].MessageType)
+            switch (Queue[0].MessageType)
             {
                 case MessageType.Info:
                     break;

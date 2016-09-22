@@ -19,7 +19,8 @@ namespace ubeat.GameScreen
         public bool Died { get; set; }
 
         public delegate void ScrollEventHandler(object sender, bool Up);
- 
+
+        public bool Visible { get; set; }
 
         public event EventHandler Click;
         public event EventHandler Over;
@@ -34,8 +35,16 @@ namespace ubeat.GameScreen
         int dClick = 1500;
         int clickC = 0;
         int clickCount = 0;
+
+        public ScreenUIObject()
+        {
+            Visible = true;
+        }
+
         public virtual void Update()
         {
+            if (!Visible)
+                return;
 
             Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, (int)this.Texture.Width, (int)this.Texture.Height);
             Rectangle cursor = new Rectangle((int)Mouse.GetState().X, (int)Mouse.GetState().Y, 1, 1);
@@ -92,7 +101,7 @@ namespace ubeat.GameScreen
                 }
             }
 
-            if (this is Listbox || this is ListboxDiff)
+            if (this is Listbox || this is ListboxDiff || this is ObjectListbox)
             {
                 int actualScrollVal = Mouse.GetState().ScrollWheelValue;
                 if (actualScrollVal > lastScrollVal)
@@ -120,6 +129,9 @@ namespace ubeat.GameScreen
 
         public virtual void Render()
         {
+            if (!Visible)
+                return;
+            
             Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, (int)(this.Texture.Width*Scale), (int)(this.Texture.Height*Scale));
             UbeatGame.Instance.spriteBatch.Draw(this.Texture, rg, Color.White);
         }
