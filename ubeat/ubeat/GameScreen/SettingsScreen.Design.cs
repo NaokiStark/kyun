@@ -31,9 +31,9 @@ namespace ubeat.GameScreen
             //Combobox xdd
 
             comboLang = new ComboBox(Vector2.Zero, 250, UbeatGame.Instance.defaultFont);
-            comboLang.Text = "Engrish";
-            comboLang.Items.Add("Engrish");
-            comboLang.Items.Add("Espanyol");
+            comboLang.Text = "English";
+            comboLang.Items.Add("English");
+            comboLang.Items.Add("Espaól");
 
 
             var filledRect1 = new FilledRectangle(new Vector2(actualMode.Width, actualMode.Height), Color.Black * 0.5f);
@@ -86,7 +86,7 @@ namespace ubeat.GameScreen
             var keyboardState = Keyboard.GetState();
             var newMouseState = Mouse.GetState();
 
-            if (keyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Back) || keyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
+            if (keyboardState.IsKeyDown(Keys.Back) || keyboardState.IsKeyDown(Keys.Escape))
                 onBackspacePressed();
 
             foreach (var ctr in Controls)
