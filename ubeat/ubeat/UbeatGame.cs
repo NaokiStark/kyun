@@ -404,7 +404,7 @@ namespace ubeat
         
             buttonDefault = Content.Load<Texture2D>("button_0");
             buttonHolder = Content.Load<Texture2D>("holder_0");
-            waitDefault = Content.Load<Texture2D>("approach");
+            waitDefault = Content.Load<Texture2D>("approachv2");
             HolderFillDeff = Content.Load<Texture2D>("HolderFill");
             radiance = Content.Load<Texture2D>("radiance");
             PauseSplash = Content.Load<Texture2D>("pausesplash");

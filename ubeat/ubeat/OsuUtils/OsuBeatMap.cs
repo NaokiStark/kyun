@@ -16,10 +16,13 @@ namespace ubeat.OsuUtils
         {
             try
             {
+                
                 int leadIn = 0;
                 Random cRnd= new Random(DateTime.Now.Millisecond);
                 osuBMParser.Beatmap osbm = new osuBMParser.Beatmap(path);
                 string relPath = new FileInfo(path).DirectoryName;
+
+                
 
                 OsuBeatMap tmpbm = new OsuBeatMap()
                 {
@@ -38,7 +41,12 @@ namespace ubeat.OsuUtils
                     VideoStartUp = osbm.VideoStartUp,
                 };
 
-                
+                tmpbm.Breaks = new List<Beatmap.Break>();
+                foreach (osuBMParser.Break brk in osbm.Breaks)
+                {
+                    tmpbm.Breaks.Add(Beatmap.Break.FromParser(brk));
+                }
+
                 tmpbm.Tags = osbm.Tags;
 
                 int lasN = 0;

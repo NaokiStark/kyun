@@ -116,6 +116,7 @@
     <Compile Include="Audio\CachedSoundSampleProvider.cs" />
     <Compile Include="Audio\NoDisposeFileReader.cs" />
     <Compile Include="Audio\NPlayer.cs" />
+    <Compile Include="Beatmap\Break.cs" />
     <Compile Include="Beatmap\IHitObj.cs" />
     <Compile Include="Beatmap\Mapset.cs" />
     <Compile Include="Beatmap\ubeatBeatMap.cs" />

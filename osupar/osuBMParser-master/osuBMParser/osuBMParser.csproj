@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Beatmap.cs" />
+    <Compile Include="Break.cs" />
     <Compile Include="BrezierCurve.cs" />
     <Compile Include="ComboColour.cs" />
     <Compile Include="HitCircle.cs" />

@@ -24,7 +24,7 @@ namespace osuBMParser
         #endregion
 
         #region methods
-        
+
         internal void parse()
         {
 
@@ -38,7 +38,7 @@ namespace osuBMParser
                     string filde = srtF.ReadToEnd();
                     lines = filde.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
                 }
-                
+
             }
             catch (IOException)
             {
@@ -55,7 +55,7 @@ namespace osuBMParser
             }
         }
 
-        string ActualSection="version";
+        string ActualSection = "version";
         void WHO_WANTS_SHIT(string line)
         {
             if (line.StartsWith("["))
@@ -63,41 +63,42 @@ namespace osuBMParser
                 ActualSection = line.ToLower();
                 return;
             }
-            else if(line.StartsWith("osu file"))
+            else if (line.StartsWith("osu file"))
             {
                 ActualSection = "osu";
             }
 
-           switch(ActualSection)
+            switch (ActualSection)
             {
-               case "osu":
-               case "[general]":
+                case "osu":
+                case "[general]":
                     normalParse(line);
                     break;
-               case "[metadata]":
+                case "[metadata]":
                     normalParse(line);
                     break;
-               case "[difficulty]":
+                case "[difficulty]":
                     normalParse(line);
                     break;
-               case "[events]":
+                case "[events]":
                     parseBG(line);
                     parseVideo(line);
+                    parseBreak(line);
                     break;
-               case "[timingpoints]":
+                case "[timingpoints]":
                     timingPointParse(line);
                     break;
-               case "[colours]":
+                case "[colours]":
                     break;
-               case "[hitobjects]":
+                case "[hitobjects]":
                     hitObjectParse(line);
                     break;
-               case "[editor]":
-                   
-                   break;
-               default:
-                  
-                   break;                   
+                case "[editor]":
+
+                    break;
+                default:
+
+                    break;
             }
         }
 
@@ -110,14 +111,14 @@ namespace osuBMParser
 
             if (gd[0] != "0")
                 return;
-            
-            string bgParsed = Regex.Replace(gd[2],"\"","");
+
+            string bgParsed = Regex.Replace(gd[2], "\"", "");
             if (bgParsed.ToLower().EndsWith(".jpg") || bgParsed.ToLower().EndsWith(".png"))
             {
                 beatmap.Background = bgParsed;
             }
         }
-        
+
         void parseVideo(string data)
         {
             string[] gd = data.Trim().Split(',');
@@ -133,7 +134,25 @@ namespace osuBMParser
 
             beatmap.Video = bgParsed;
             beatmap.VideoStartUp = videoStrtUp;
-            
+
+        }
+
+        void parseBreak(string data)
+        {
+            string[] gd = data.Trim().Split(',');
+
+            if (gd.Length < 3)
+                return;
+
+            if (gd[0] != "2")
+                return;
+
+            beatmap.Breaks.Add(new Break()
+            {
+                Start = toInt(gd[1]),
+                End = toInt(gd[2])
+            });
+
         }
 
         #region parseMethods
@@ -197,7 +216,7 @@ namespace osuBMParser
                     tnks.ForEach(x => x = x.ToLower());
                     beatmap.Tags = tnks;
                     break;
-                   
+
             }
 
         }
@@ -226,7 +245,7 @@ namespace osuBMParser
         private void colourParse(string data)
         {
             string[] tokens = data.Split(':');
-            if (tokens.Length >= 2) 
+            if (tokens.Length >= 2)
             {
                 string[] colourValues = tokens[1].Split(',');
                 if (colourValues.Length >= 3)
@@ -372,7 +391,7 @@ namespace osuBMParser
 
         }
         #endregion
-        
+
         private int toInt(string data)
         {
             int result;

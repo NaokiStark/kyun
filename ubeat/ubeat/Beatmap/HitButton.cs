@@ -37,7 +37,7 @@ namespace ubeat.UIObjs
 
         #region PrivateVars
         Timer tmrApproachOpacity;
-        float opacity=0;
+        float opacity = 0;
 
         #endregion
 
@@ -90,7 +90,7 @@ namespace ubeat.UIObjs
             this.opacity = opacity + percentg;
         }
 
-        public void Update(long Position,Vector2 ps)
+        public void Update(long Position, Vector2 ps)
         {
 
             if (isActive)
@@ -148,7 +148,7 @@ namespace ubeat.UIObjs
                 Score.ScoreValue getScore = GetScoreValue();
                 if ((int)getScore > (int)Score.ScoreValue.Miss)
                 {
-                    
+
                     Grid.Instance.FailsCount = 0;
                     float healthToAdd = (BeatmapContainer.OverallDifficulty / 2) + Math.Abs(PressedAt - (long)this.StartTime) / 100;
                     Grid.Instance.Health.Add(healthToAdd);
@@ -176,7 +176,7 @@ namespace ubeat.UIObjs
                     Grid.Instance.Health.Substract((2 * BeatmapContainer.OverallDifficulty) * Grid.Instance.FailsCount);
                 }
                 Grid.Instance.ScoreDispl.Add(((long)getScore * ((Combo.Instance.ActualMultiplier > 0) ? Combo.Instance.ActualMultiplier : 1)) / 2);
-                Grid.Instance.objs.Add(new ScoreObj(GetScore(), new Vector2(ps.X + (Texture.Bounds.Width / 2), ps.Y + (Texture.Bounds.Height / 2))));
+                Grid.Instance.objs.Add(new ScoreObj(GetScore(), new Vector2(ps.X+ (Texture.Width/4), ps.Y+(Texture.Height / 4))));
 
                 Stop(Position);
             }
@@ -186,13 +186,13 @@ namespace ubeat.UIObjs
         {
             if (Died)
             {
-               
+
                 return;
             }
-                        
+
             if (!isActive)
             {
-                
+
             }
             else
             {
@@ -207,7 +207,7 @@ namespace ubeat.UIObjs
                     {
                         opac = .6f;
                     }
-                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.radiance, new Microsoft.Xna.Framework.Rectangle((int)position.X-2, (int)position.Y-2, UbeatGame.Instance.radiance.Bounds.Width+2, UbeatGame.Instance.radiance.Bounds.Height+2), Color.White * opac);
+                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.radiance, new Microsoft.Xna.Framework.Rectangle((int)position.X - 2, (int)position.Y - 2, UbeatGame.Instance.radiance.Bounds.Width + 2, UbeatGame.Instance.radiance.Bounds.Height + 2), Color.White * opac);
 
                 }
                 UbeatGame.Instance.spriteBatch.Draw(this.Texture, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
@@ -251,31 +251,32 @@ namespace ubeat.UIObjs
         }
         public Score.ScoreType GetScore()
         {
-            
+
             if (PressedAt >= StartTime - BeatmapContainer.Timing300 && PressedAt <= StartTime + BeatmapContainer.Timing300)
             {
-                 //Perfect
-                 return Score.ScoreType.Perfect;
+                //Perfect
+                return Score.ScoreType.Perfect;
             }
-            else if(PressedAt >= StartTime - BeatmapContainer.Timing300 && PressedAt <= StartTime + BeatmapContainer.Timing100){
+            else if (PressedAt >= StartTime - BeatmapContainer.Timing300 && PressedAt <= StartTime + BeatmapContainer.Timing100)
+            {
 
                 return Score.ScoreType.Excellent;
             }
             else if (PressedAt >= StartTime - BeatmapContainer.Timing100 && PressedAt <= StartTime + BeatmapContainer.Timing100)
             {
-                 //Excellent
-                 return Score.ScoreType.Excellent;
+                //Excellent
+                return Score.ScoreType.Excellent;
             }
 
             else if (PressedAt >= StartTime - BeatmapContainer.Timing50 && PressedAt <= StartTime + BeatmapContainer.Timing50)
             {
-                 //Bad
-                 return Score.ScoreType.Good;
-             }
-             else
-             {
-                 return Score.ScoreType.Miss;
-             }
+                //Bad
+                return Score.ScoreType.Good;
+            }
+            else
+            {
+                return Score.ScoreType.Miss;
+            }
 
         }
         public Score.ScoreValue GetScoreValue()
@@ -292,12 +293,12 @@ namespace ubeat.UIObjs
                 case Score.ScoreType.Good:
                     sscv = Score.ScoreValue.Good;
                     break;
-                
+
             }
             return sscv;
         }
         #endregion
 
-       
+
     }
 }

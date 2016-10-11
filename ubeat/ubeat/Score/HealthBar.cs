@@ -37,7 +37,7 @@ namespace ubeat.Score
 
         void HltTmr_Tick()
         {
-            if (!IsActive || !Grid.Instance.inGame || Grid.Instance.Paused) return;
+            if (!IsActive || !Grid.Instance.inGame || Grid.Instance.Paused || Grid.Instance.onBreak()) return;
 
             this.Value -= (UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds / 100f) *
                 ((overallDiff / 10f)); //Test if is hard c:
@@ -52,6 +52,7 @@ namespace ubeat.Score
             this.overallDiff = OverallDiff;
         }
 
+    
         public void Stop()
         {
             IsActive = false;

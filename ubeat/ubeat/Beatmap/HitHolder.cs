@@ -76,7 +76,7 @@ namespace ubeat.UIObjs
 
         public void Reset()
         {
-            
+
             isActive = false;
             Died = true;
             isFilling = false;
@@ -98,12 +98,12 @@ namespace ubeat.UIObjs
                 tmrApproachOpacity.Dispose();
                 return;
             }
-            
+
 
             this.opacity = opacity + percentg;
         }
 
-        public void Update(long Position,Vector2 p)
+        public void Update(long Position, Vector2 p)
         {
             if (holdFld != null)
             {
@@ -111,13 +111,13 @@ namespace ubeat.UIObjs
                 if (isFilling && Grid.Instance.Paused)
                 {
                     if (holdFld.PlayState == NAudio.Wave.PlaybackState.Playing)
-                        holdFld.Paused=true;
+                        holdFld.Paused = true;
 
                 }
                 if (isFilling && !Grid.Instance.Paused)
                 {
                     if (holdFld.PlayState != NAudio.Wave.PlaybackState.Playing)
-                        holdFld.Paused=false;
+                        holdFld.Paused = false;
                 }
                 /*
                 if (isFilling && holdFld.PlayState == NAudio.Wave.PlaybackState.Stopped)
@@ -125,7 +125,7 @@ namespace ubeat.UIObjs
                     holdFld.Position = 0;
                     holdFld.WaveOut.Play();
                 }*/
-                
+
                 if (!isFilling)
                     holdFld.Dispose();
                 if (!isActive)
@@ -144,7 +144,7 @@ namespace ubeat.UIObjs
                     if (Position >= StartTime /*+ OsuBeatMap.rnd.Next(-(BeatmapContainer.Timing300), BeatmapContainer.Timing300) */&& !hasAlredyPressed)
                     {
                         PressedAt = (long)StartTime;
-                        
+
                         /*
                         SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
                         ins.Volume = Game1.Instance.GeneralVolume;
@@ -236,7 +236,7 @@ namespace ubeat.UIObjs
                     AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.HolderTick);
 
                     //SoundEffectInstance TickSnd = Game1.Instance.HolderTick.CreateInstance();
-                    Grid.Instance.Health.Add(1f*BeatmapContainer.OverallDifficulty);
+                    Grid.Instance.Health.Add(1f * BeatmapContainer.OverallDifficulty);
                     Combo.Instance.Add();
                     //TickSnd.Volume = Game1.Instance.GeneralVolume;
                     //TickSnd.Play();
@@ -260,13 +260,13 @@ namespace ubeat.UIObjs
                     Grid.Instance.FailsCount = 0;
                     float healthToAdd = (BeatmapContainer.OverallDifficulty / 2) + Math.Abs(this.LeaveAt - PressedAt) / 100;
                     Grid.Instance.Health.Add(healthToAdd);
-                    
+
                     /*
                     SoundEffectInstance ins = Game1.Instance.HolderHit.CreateInstance();
                     ins.Volume = Game1.Instance.GeneralVolume;
                     ins.Play();*/
 
-                    
+
                     Combo.Instance.Add();
                 }
                 else
@@ -287,23 +287,23 @@ namespace ubeat.UIObjs
 
                 Grid.Instance.ScoreDispl.Add(((long)score * ((Combo.Instance.ActualMultiplier > 0) ? Combo.Instance.ActualMultiplier : 1)) / 2);
 
-                Grid.Instance.objs.Add(new ScoreObj(GetScore(), new Vector2(p.X + (Texture.Bounds.Width / 2), p.Y + (Texture.Bounds.Height / 2))));
+                Grid.Instance.objs.Add(new ScoreObj(GetScore(), new Vector2(p.X + (Texture.Width / 4), p.Y + (Texture.Height / 4))));
 
                 Stop(Position);
             }
         }
-        public void Render(long ccc,Vector2 position)
+        public void Render(long ccc, Vector2 position)
         {
             if (Died)
             {
-                
+
                 return;
             }
-            
-            
+
+
             if (!isActive)
             {
-                
+
             }
             else
             {
@@ -346,20 +346,20 @@ namespace ubeat.UIObjs
                         new Vector2(0, 0),
                         Microsoft.Xna.Framework.Graphics.SpriteEffects.None,
                         0);
-                  
-                    string secondsTo = ((EndTime - ccc)/100).ToString("0");
+
+                    string secondsTo = ((EndTime - ccc) / 100).ToString("0");
                     Vector2 measureSize = UbeatGame.Instance.defaultFont.MeasureString(secondsTo);
 
                     Vector2 bgS = measureSize * 1.1f;
 
 
-                    UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, secondsTo, new Vector2((position.X + Texture.Width / 2)+1, (position.Y + Texture.Height / 2)+1), Color.Black, 0, bgS / 2, 1.1f, SpriteEffects.None, 0);
+                    UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, secondsTo, new Vector2((position.X + Texture.Width / 2) + 1, (position.Y + Texture.Height / 2) + 1), Color.Black, 0, bgS / 2, 1.1f, SpriteEffects.None, 0);
                     UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, secondsTo, new Vector2(position.X + Texture.Width / 2, position.Y + Texture.Height / 2), Color.White, 0, measureSize / 2, 1f, SpriteEffects.None, 0);
 
 
                 }
 
-               
+
             }
         }
         public void Stop(long Position)
@@ -396,8 +396,8 @@ namespace ubeat.UIObjs
 
         public Score.ScoreType GetScore()
         {
-            
-            float fillPerc = (((float)LeaveAt - (float)StartTime) /(float)Length)*100f;
+
+            float fillPerc = (((float)LeaveAt - (float)StartTime) / (float)Length) * 100f;
 
             if (LeaveAt > EndTime - BeatmapContainer.Timing50)
             {
@@ -444,11 +444,11 @@ namespace ubeat.UIObjs
                     return Score.ScoreType.Miss;
                 }
             }
-           
+
         }
         public Score.ScoreValue GetScoreValue()
         {
-            Score.ScoreValue sscv=Score.ScoreValue.Miss;
+            Score.ScoreValue sscv = Score.ScoreValue.Miss;
             switch (GetScore())
             {
                 case Score.ScoreType.Perfect:

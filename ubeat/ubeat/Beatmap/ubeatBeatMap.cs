@@ -23,6 +23,8 @@ namespace ubeat.Beatmap
         public string Video { get; set; }
         public long VideoStartUp { get; set; }
         public int SleepTime { get; set; }
+        public List<Break> Breaks { get; set; }
+
         public int Timing300
         {
             get
