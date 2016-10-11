@@ -21,6 +21,7 @@ namespace ubeat.Beatmap
         public float ApproachRate { get; set; }
         public string Background { get; set; }
         public string Video { get; set; }
+        public long VideoStartUp { get; set; }
         public int SleepTime { get; set; }
         public int Timing300
         {
@@ -67,7 +68,8 @@ namespace ubeat.Beatmap
                 HPDrainRate = float.Parse((string)jMap["HPDrain"]),
                 SleepTime = int.Parse(jMap["sleep"].ToString()),
                 OverallDifficulty = float.Parse((string)jMap["overallDifficulty"]),
-                Video = (string)jMap["video"]
+                Video = (string)jMap["video"],
+                VideoStartUp = int.Parse(jMap["videoStartUp"].ToString()),
             };
 
             string stringBM = (string)jMap["objects"];

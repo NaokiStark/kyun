@@ -87,7 +87,7 @@ namespace ubeat.GameScreen
             Health.OnFail += Health_OnFail;
             ScoreDispl = new ScoreDisplay();
             ComboDspl = new ComboDisplay();
-            videoplayer = new Video.VideoPlayer();
+            videoplayer = Video.VideoPlayer.Instance;
             combo = new Combo();
 
             List<ScreenMode> scmL = ScreenModeManager.GetSupportedModes();
@@ -271,6 +271,12 @@ namespace ubeat.GameScreen
                 inGame = true;
             }));
             Logger.Instance.Info("Game Started: {0} - {1} [{2}]", bemap.Artist, bemap.Title, bemap.Version);
+
+            if (UbeatGame.Instance.VideoEnabled)
+                if (bemap.Video != null)
+                    if (bemap.Video != "")
+                        videoplayer.Play(bemap.Video);
+
             th.Start();
         }
 
@@ -345,10 +351,7 @@ namespace ubeat.GameScreen
 
                 //GameTimeTotal = Game1.Instance.player.Position+bemap.SleepTime;
 
-                if (UbeatGame.Instance.VideoEnabled)
-                    if (bemap.Video != null)
-                        if (bemap.Video != "")
-                            videoplayer.Play(bemap.Video);
+                
             }
 
             if (started)
@@ -678,6 +681,11 @@ namespace ubeat.GameScreen
 
         void RenderVideoFrame()
         {
+
+            if(GameTimeTotal < bemap.VideoStartUp)
+                return;
+            
+
             int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
             int screenHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
@@ -688,7 +696,7 @@ namespace ubeat.GameScreen
                 {
                     if (VidFrame % Settings1.Default.VideoFrameSkip != 0 || Settings1.Default.VideoMode == 0)
                     {
-                        byte[] frame = videoplayer.GetFrame();
+                        byte[] frame = videoplayer.GetFrame(GameTimeTotal-bemap.SleepTime-bemap.VideoStartUp);
                         if (frame != null)
                         {
 

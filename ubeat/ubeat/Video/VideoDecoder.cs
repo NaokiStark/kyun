@@ -32,6 +32,16 @@ namespace ubeat.Video
         private byte[][] FrameBuffer;
         private int writeCursor;
         private int readCursor;
+        private bool decodingFinished;
+        private bool gotNewFrame;
+
+        public static VideoDecoder Instance
+        {
+            get
+            {
+                return new VideoDecoder(3);
+            }
+        }
 
         public double Length
         {
@@ -159,55 +169,85 @@ namespace ubeat.Video
 
         public bool Open(byte[] bytes)
         {
-            if (bytes == null || bytes.Length == 0)
-                return false;
-            this.streamHandle = GCHandle.Alloc((object)bytes, GCHandleType.Pinned);
-            IntPtr num1 = this.streamHandle.AddrOfPinnedObject();
-            if (this.videoOpened)
-                return false;
-            this.videoOpened = true;
-            string str = "memory:" + (object)num1 + "|" + (object)bytes.Length;
-            if (ubeat.Video.FFmpeg.av_open_input_file(out this.pFormatCtx, str, IntPtr.Zero, bytes.Length, IntPtr.Zero) != 0)
+
+            if (bytes == null || bytes.Length == 0) return false;
+
+            streamHandle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+            IntPtr ptr = streamHandle.AddrOfPinnedObject();
+
+            if (videoOpened) return false;
+
+            videoOpened = true;
+
+            string path = "memory:" + ptr + "|" + bytes.Length;
+
+            int ret = FFmpeg.av_open_input_file(out pFormatCtx, path, IntPtr.Zero, bytes.Length, IntPtr.Zero);
+
+            if (ret != 0)
                 throw new Exception("Couldn't open input file");
-            if (ubeat.Video.FFmpeg.av_find_stream_info(this.pFormatCtx) < 0)
+
+            ret = FFmpeg.av_find_stream_info(pFormatCtx);
+
+            if (ret < 0)
                 throw new Exception("Couldn't find stream info");
-            ubeat.Video.FFmpeg.dump_format(this.pFormatCtx, 0, str, 0);
-            this.formatContext = (ubeat.Video.FFmpeg.AVFormatContext)Marshal.PtrToStructure(this.pFormatCtx, typeof(ubeat.Video.FFmpeg.AVFormatContext));
-            this.videoStream = -1;
-            int num2 = this.formatContext.nb_streams;
-            for (int index = 0; index < num2; ++index)
+
+            FFmpeg.dump_format(pFormatCtx, 0, path, 0);
+
+            formatContext =
+                (FFmpeg.AVFormatContext)Marshal.PtrToStructure(pFormatCtx, typeof(FFmpeg.AVFormatContext));
+
+            videoStream = -1;
+            int nbStreams = formatContext.nb_streams;
+
+            for (int i = 0; i < nbStreams; i++)
             {
-                ubeat.Video.FFmpeg.AVStream avStream = (ubeat.Video.FFmpeg.AVStream)Marshal.PtrToStructure(this.formatContext.streams[index], typeof(ubeat.Video.FFmpeg.AVStream));
-                ubeat.Video.FFmpeg.AVCodecContext avCodecContext = (ubeat.Video.FFmpeg.AVCodecContext)Marshal.PtrToStructure(avStream.codec, typeof(ubeat.Video.FFmpeg.AVCodecContext));
-                if (avCodecContext.codec_type == ubeat.Video.FFmpeg.CodecType.CODEC_TYPE_VIDEO)
+                FFmpeg.AVStream str = (FFmpeg.AVStream)
+                                      Marshal.PtrToStructure(formatContext.streams[i], typeof(FFmpeg.AVStream));
+                FFmpeg.AVCodecContext codec = (FFmpeg.AVCodecContext)
+                                              Marshal.PtrToStructure(str.codec, typeof(FFmpeg.AVCodecContext));
+
+                if (codec.codec_type == FFmpeg.CodecType.CODEC_TYPE_VIDEO)
                 {
-                    this.videoStream = index;
-                    this.stream = avStream;
-                    this.codecCtx = avCodecContext;
-                    this.pCodecCtx = this.stream.codec;
+                    videoStream = i;
+                    stream = str;
+                    codecCtx = codec;
+                    pCodecCtx = stream.codec;
                     break;
                 }
             }
-            if (this.videoStream == -1)
+            if (videoStream == -1)
                 throw new Exception("couldn't find video stream");
-            this.FrameDelay = ubeat.Video.FFmpeg.av_q2d(this.stream.time_base);
-            this.pCodec = ubeat.Video.FFmpeg.avcodec_find_decoder(this.codecCtx.codec_id);
-            if (this.pCodec == IntPtr.Zero)
+
+            FrameDelay = FFmpeg.av_q2d(stream.time_base);
+
+            pCodec = FFmpeg.avcodec_find_decoder(codecCtx.codec_id);
+
+            if (pCodec == IntPtr.Zero)
                 throw new Exception("couldn't find decoder");
-            if (ubeat.Video.FFmpeg.avcodec_open(this.pCodecCtx, this.pCodec) < 0)
+
+            if (FFmpeg.avcodec_open(pCodecCtx, pCodec) < 0)
                 throw new Exception("couldn't open codec");
-            this.pFrame = ubeat.Video.FFmpeg.avcodec_alloc_frame();
-            this.pFrameRGB = ubeat.Video.FFmpeg.avcodec_alloc_frame();
-            if (this.pFrameRGB == IntPtr.Zero)
+
+            pFrame = FFmpeg.avcodec_alloc_frame();
+            pFrameRGB = FFmpeg.avcodec_alloc_frame();
+
+            if (pFrameRGB == IntPtr.Zero)
                 throw new Exception("couldn't allocate RGB frame");
-            this.buffer = Marshal.AllocHGlobal(ubeat.Video.FFmpeg.avpicture_get_size((int)FFmpeg.PixelFormat.PIX_FMT_RGB32, this.codecCtx.width, this.codecCtx.height));
-            ubeat.Video.FFmpeg.avpicture_fill(this.pFrameRGB, this.buffer, (int)FFmpeg.PixelFormat.PIX_FMT_RGB32, this.codecCtx.width, this.codecCtx.height);
-            this.packet = Marshal.AllocHGlobal(57);
-            for (int index = 0; index < this.BufferSize; ++index)
-                this.FrameBuffer[index] = new byte[this.width * this.height*4];
-            this.decodingThread = new Thread(new ThreadStart(this.Decode));
-            this.decodingThread.IsBackground = true;
-            this.decodingThread.Start();
+
+            int numBytes = FFmpeg.avpicture_get_size(PIXEL_FORMAT, codecCtx.width, codecCtx.height);
+            buffer = Marshal.AllocHGlobal(numBytes);
+
+            FFmpeg.avpicture_fill(pFrameRGB, buffer, PIXEL_FORMAT, codecCtx.width, codecCtx.height);
+
+            packet = Marshal.AllocHGlobal(57); // 52 = size of packet struct
+
+            for (int i = 0; i < BufferSize; i++)
+                FrameBuffer[i] = new byte[width * height * 4];
+
+            decodingThread = new Thread(Decode);
+            decodingThread.IsBackground = true;
+            decodingThread.Start();
+
             return true;
         }
 
@@ -217,53 +257,61 @@ namespace ubeat.Video
             {
                 while (true)
                 {
-                    bool flag;
-                    do
+                    gotNewFrame = false;
+
+                    lock (this)
                     {
-                        flag = false;
-                        lock (this)
+                        while (writeCursor - readCursor < BufferSize && (decodingFinished = (FFmpeg.av_read_frame(pFormatCtx, packet) < 0)) == false)
                         {
-                            while (this.writeCursor - this.readCursor < this.BufferSize)
+                            if (Marshal.ReadInt32(packet, 24) == videoStream)
                             {
-                                if (ubeat.Video.FFmpeg.av_read_frame(this.pFormatCtx, this.packet) >= 0)
+                                //double pts = Marshal.ReadInt64(packet, 0);
+                                double dts = Marshal.ReadInt64(packet, 8);
+
+                                IntPtr data = Marshal.ReadIntPtr(packet, 16); // 16 = offset of data
+                                int size = Marshal.ReadInt32(packet, 20); // 20 = offset of size
+
+                                FFmpeg.avcodec_decode_video(pCodecCtx, pFrame, ref frameFinished, data, size);
+
+                                if (frameFinished != 0 && Marshal.ReadIntPtr(packet, 16) != IntPtr.Zero)
                                 {
-                                    if (Marshal.ReadInt32(this.packet, 24) == this.videoStream)
+                                    int correct = FFmpeg.img_convert(pFrameRGB, PIXEL_FORMAT, pFrame,
+                                                                     (int)codecCtx.pix_fmt, codecCtx.width,
+                                                                     codecCtx.height);
+
+                                    //if (Marshal.ReadIntPtr(packet, 16) != IntPtr.Zero) // packet->data != null
+                                    if (correct == 0)
                                     {
-                                        double local_1 = (double)Marshal.ReadInt64(this.packet, 8);
-                                        ubeat.Video.FFmpeg.avcodec_decode_video(this.pCodecCtx, this.pFrame, ref this.frameFinished, Marshal.ReadIntPtr(this.packet, 16), Marshal.ReadInt32(this.packet, 20));
-                                        if (this.frameFinished != 0 && Marshal.ReadIntPtr(this.packet, 16) != IntPtr.Zero && ubeat.Video.FFmpeg.img_convert(this.pFrameRGB, (int)FFmpeg.PixelFormat.PIX_FMT_RGB32, this.pFrame, (int)this.codecCtx.pix_fmt, this.codecCtx.width, this.codecCtx.height) == 0)
-                                        {
-                                            byte[] frameData = this.FrameBuffer[this.writeCursor % this.BufferSize];
-                                            Marshal.Copy(Marshal.ReadIntPtr(this.pFrameRGB), frameData, 0, frameData.Length);
-                                            this.FrameBufferTimes[this.writeCursor % this.BufferSize] = (local_1 - (double)this.stream.start_time) * this.FrameDelay * 1000.0;
-                                           
-                                            bgraToRgba(frameData, frameData.Length);
-                                            ++this.writeCursor;
-                                            
-                                            this.lastPts = local_1;
+                                        byte[] frameData = FrameBuffer[writeCursor % BufferSize];
+                                        Marshal.Copy(Marshal.ReadIntPtr(pFrameRGB), frameData, 0, frameData.Length);
+                                        FrameBufferTimes[writeCursor % BufferSize] = (dts - stream.start_time) * FrameDelay * 1000;
 
-                                            
+                                        bgraToRgba(frameData, frameData.Length);
 
-                                            flag = true;
-                                        }
+                                        writeCursor++;
+
+                                        lastPts = dts;
+
+                                        gotNewFrame = true;
                                     }
+
+                                    //FFmpeg.av_free(data);
                                 }
-                                else
-                                    break;
                             }
                         }
                     }
-                    while (flag);
-                    Thread.Sleep(15);
+
+                    if (!gotNewFrame)
+                        Thread.Sleep(15);
                 }
             }
-            catch (ThreadAbortException ex)
+            catch (ThreadAbortException)
             {
+                return;
             }
             catch (Exception ex)
             {
-                using (StreamWriter text = File.CreateText("video-debug.txt"))
-                    text.WriteLine(ex.ToString());
+                Logger.Instance.Warn(ex.Message + "\n\r" + ex.StackTrace);
             }
         }
 
@@ -284,6 +332,7 @@ namespace ubeat.Video
            
             return this.FrameBuffer[this.readCursor % this.BufferSize];;
         }
+
         private static unsafe void bgraToRgba(byte[] data, int length)
         {
             fixed (byte* dPtr = &data[0])

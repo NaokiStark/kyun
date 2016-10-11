@@ -129,8 +129,10 @@ namespace osuBMParser
                 return;
 
             string bgParsed = Regex.Replace(gd[2], "\"", "");
-            
-                beatmap.Video = bgParsed;
+            int videoStrtUp = toInt(gd[1]);
+
+            beatmap.Video = bgParsed;
+            beatmap.VideoStartUp = videoStrtUp;
             
         }
 

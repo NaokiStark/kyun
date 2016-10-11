@@ -367,12 +367,12 @@ namespace ubeat.Video
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avcodec-51.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern ubeat.Video.FFmpeg.PixelFormat avcodec_get_pix_fmt([MarshalAs(UnmanagedType.LPStr)] string name);
+        public static extern PixelFormat avcodec_get_pix_fmt([MarshalAs(UnmanagedType.LPStr)] string name);
 
         [SuppressUnmanagedCodeSecurity]
         [CLSCompliant(false)]
         [DllImport("avcodec-51.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern uint avcodec_pix_fmt_to_codec_tag(ubeat.Video.FFmpeg.PixelFormat p);
+        public static extern uint avcodec_pix_fmt_to_codec_tag(PixelFormat p);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avcodec-51.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -472,7 +472,7 @@ namespace ubeat.Video
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avcodec-51.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern ubeat.Video.FFmpeg.PixelFormat avcodec_default_get_format(IntPtr pAVCodecContext, ref ubeat.Video.FFmpeg.PixelFormat fmt);
+        public static extern PixelFormat avcodec_default_get_format(IntPtr pAVCodecContext, ref PixelFormat fmt);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avcodec-51.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -915,7 +915,7 @@ namespace ubeat.Video
 
         public delegate int GetBufferCallback(IntPtr pAVCodecContext, IntPtr pAVFrame);
 
-        public delegate ubeat.Video.FFmpeg.PixelFormat GetFormatCallback(IntPtr pAVCodecContext, IntPtr pPixelFormat);
+        public delegate PixelFormat GetFormatCallback(IntPtr pAVCodecContext, IntPtr pPixelFormat);
 
         public delegate int InitCallback(IntPtr pAVCodecContext);
 
@@ -1216,7 +1216,7 @@ namespace ubeat.Video
             public int height;
             [MarshalAs(UnmanagedType.I4)]
             public int gop_size;
-            public ubeat.Video.FFmpeg.PixelFormat pix_fmt;
+            public PixelFormat pix_fmt;
             [MarshalAs(UnmanagedType.I4)]
             public int rate_emu;
             [MarshalAs(UnmanagedType.FunctionPtr)]
@@ -1738,7 +1738,7 @@ namespace ubeat.Video
             public int channels;
             public int width;
             public int height;
-            public ubeat.Video.FFmpeg.PixelFormat pix_fmt;
+            public PixelFormat pix_fmt;
             public IntPtr image_format;
             public int channel;
             [MarshalAs(UnmanagedType.LPStr)]
@@ -1977,7 +1977,7 @@ namespace ubeat.Video
 
         public struct AVImageInfo
         {
-            public ubeat.Video.FFmpeg.PixelFormat pix_fmt;
+            public PixelFormat pix_fmt;
             [MarshalAs(UnmanagedType.I4)]
             public int width;
             [MarshalAs(UnmanagedType.I4)]

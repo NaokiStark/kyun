@@ -63,7 +63,7 @@ namespace ubeat.GameScreen
             string[] songs = { "Shiawase no Sakura Namiki.mp3", "Sakura no THEME II.mp3" };
             string[] bgs = { "bg2.png", "bg.png" };
             float[] mspb = {483.90999274135f,428f};
-            int song = getRndNotRepeated(0, songs.Length - 1);
+            int song = /*getRndNotRepeated(0, songs.Length - 1)*/1;
 
             ubeatBeatMap mainBm = new ubeatBeatMap()
             {

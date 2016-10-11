@@ -20,7 +20,7 @@ namespace ubeat.OsuUtils
                 Random cRnd= new Random(DateTime.Now.Millisecond);
                 osuBMParser.Beatmap osbm = new osuBMParser.Beatmap(path);
                 string relPath = new FileInfo(path).DirectoryName;
-               
+
                 OsuBeatMap tmpbm = new OsuBeatMap()
                 {
                     Artist = osbm.Artist,
@@ -33,8 +33,9 @@ namespace ubeat.OsuUtils
                     Title = osbm.Title,
                     Version = osbm.Version,
                     Background = relPath + @"\" + osbm.Background,
-                    SleepTime  = osbm.AudioLeadIn,
-                    Video = relPath + @"\" + osbm.Video
+                    SleepTime = osbm.AudioLeadIn,
+                    Video = relPath + @"\" + osbm.Video,
+                    VideoStartUp = osbm.VideoStartUp,
                 };
 
                 

@@ -23,6 +23,7 @@ namespace osuBMParser
         public bool LetterBoxInBreaks { get; set; }
         public bool WidescreenStoryboard { get; set; }
         public string Video { get; set; } //Fabi
+        public long VideoStartUp { get; set; }
         #endregion
 
         #region editor

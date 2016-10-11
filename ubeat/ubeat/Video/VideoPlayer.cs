@@ -1,23 +1,26 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
-using System.Threading;
-using System.Runtime.InteropServices;
-using System.Drawing.Imaging;
-using System.Runtime.Serialization.Formatters.Binary;
+using System;
 
 namespace ubeat.Video
 {
     public class VideoPlayer
     {
 
-        public Microsoft.Xna.Framework.Graphics.Texture2D FrameVideo { get; set; }
+        static VideoPlayer instance = null;
+
+        public static VideoPlayer Instance
+        {
+            get
+            {
+                if(instance==null)
+                    instance = new VideoPlayer();
+                return instance;
+            }
+        }
+
+        public Texture2D FrameVideo { get; set; }
         int width = 0;
         int height = 0;
         
@@ -40,8 +43,9 @@ namespace ubeat.Video
                 return;
             }
             Stopped = false;
-            vdc = new VideoDecoder(32);
+            vdc = VideoDecoder.Instance;
             bool oppenned = vdc.Open(VideoPath);
+            //vdc.Seek(64); //TEST
             if (oppenned == false)
             {
                 Stopped = true;
@@ -55,7 +59,6 @@ namespace ubeat.Video
         {
             if (Stopped) return;
             Stopped = true;
-
             vdc.Dispose();
             
         }
@@ -71,6 +74,15 @@ namespace ubeat.Video
             return frame;
         }
 
-        
+        internal byte[] GetFrame(long v)
+        {
+            if (Stopped) return null;
+            if (vdc == null) return null;
+            if (Buffer.Count > 2) return null;
+
+            byte[] frame = vdc.GetFrame((int)v);
+            if (frame == null) return null;
+            return frame;
+        }
     }    
 }
