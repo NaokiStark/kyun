@@ -30,23 +30,66 @@ namespace ubeat.GameScreen
 
             //Combobox xdd
 
-            comboLang = new ComboBox(Vector2.Zero, 250, UbeatGame.Instance.defaultFont);
+            comboLang = new ComboBox(new Vector2(
+                center.X, Logo.Position.Y + 12 + Logo.Texture.Height),
+                250,
+                UbeatGame.Instance.ListboxFont);
+
+
             comboLang.Text = "English";
             comboLang.Items.Add("English");
-            comboLang.Items.Add("Espaól");
+            comboLang.Items.Add("Español");
 
+            //Combo display
 
-            var filledRect1 = new FilledRectangle(new Vector2(actualMode.Width, actualMode.Height), Color.Black * 0.5f);
+            combodisplayMode = new ComboBox(
+                new Vector2(
+                    center.X,
+                    comboLang.Position.Y + 12 + UbeatGame.Instance.ListboxFont.MeasureString("a").Y + 5),
+                250,
+                UbeatGame.Instance.ListboxFont);
+
+            fillComboDisplay();
+            combodisplayMode.IndexChaged += CombodisplayMode_IndexChaged;
+
+            var filledRect1 = new FilledRectangle(
+                new Vector2(actualMode.Width, actualMode.Height),
+                Color.Black * 0.5f);
+
             filledRect1.Position = Vector2.Zero;
 
             
             Controls.Add(filledRect1);
             Controls.Add(Logo);
             Controls.Add(comboLang);
+            Controls.Add(combodisplayMode);
 
             UbeatGame.Instance.IsMouseVisible = true;
 
             OnLoad?.Invoke(this, new EventArgs());
+        }
+
+        private void CombodisplayMode_IndexChaged(object sender, EventArgs e)
+        {
+            List<ScreenMode> scrnm = ScreenModeManager.GetSupportedModes();
+            Logger.Instance.Debug("Setting Display Mode: {0}", ((ComboBox)sender).Items[((ComboBox)sender).SelectedIndex]);
+            Settings1.Default.ScreenMode = ((ComboBox)sender).SelectedIndex;
+            Settings1.Default.Save();
+            UbeatGame.Instance.ChangeResolution(scrnm[((ComboBox)sender).SelectedIndex]);
+
+        }
+
+        private void fillComboDisplay()
+        {
+
+            List<ScreenMode> scrnm = ScreenModeManager.GetSupportedModes();
+
+            foreach (ScreenMode mode in scrnm)
+            {
+                combodisplayMode.Items.Add(string.Format("({0}x{1}){2}", mode.Width, mode.Height, (mode.WindowMode == Screen.WindowDisposition.Windowed) ? "[Windowed]" : ""));
+            }
+
+            combodisplayMode.Text = combodisplayMode.Items[Settings1.Default.ScreenMode].ToString();
         }
 
         public void Redraw()
@@ -101,6 +144,8 @@ namespace ubeat.GameScreen
 
         public Texture2D Background { get; set; }
         public UI.Image Logo;
+        private ComboBox combodisplayMode;
+
         public ComboBox comboLang { get; set; }
 
         #endregion

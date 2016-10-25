@@ -53,7 +53,33 @@ with.
     <CharacterRegions>
       <CharacterRegion>
         <Start>&#32;</Start>
-        <End>&#126;</End>
+        <End>&#255;</End>
+      </CharacterRegion>
+      
+      <!-- Japanese & chinese support-->
+
+      <!-- Ideographic Symbols and Punctuation -->
+      <CharacterRegion>
+        <Start>&#x3000;</Start>
+        <End>&#x303F;</End>
+      </CharacterRegion>
+
+      <!-- Hiragana -->
+      <CharacterRegion>
+        <Start>&#x3040;</Start>
+        <End>&#x309F;</End>
+      </CharacterRegion>
+
+      <!-- Katakana -->
+      <CharacterRegion>
+        <Start>&#x30A0;</Start>
+        <End>&#x30FF;</End>
+      </CharacterRegion>
+
+      <!-- Fullwidth Latin -->
+      <CharacterRegion>
+        <Start>&#xFF01;</Start>
+        <End>&#xFFE6;</End>
       </CharacterRegion>
     </CharacterRegions>
   </Asset>
