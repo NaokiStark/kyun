@@ -21,7 +21,7 @@ namespace ubeat.GameScreen
         {
             ScreenInstance.LoadCurrentGameInstanceBackground();
 #if DEBUG
-            Logger.Instance.Debug("SettingsScreen loaded");
+            Logger.Instance.Debug("SettingsScreen loaded...");
 #endif
         }
 
