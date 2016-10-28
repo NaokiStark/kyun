@@ -84,8 +84,16 @@ namespace ubeat.OsuUtils
                     if(tmCount < osbm.TimingPoints.Count){
                         if ((ho.Time - leadIn) < osbm.TimingPoints[tmCount].Offset)
                         {
-                            tmCount++;
-                            tm = osbm.TimingPoints[tmCount];                            
+                            try
+                            {
+                                tmCount++;
+                                tm = osbm.TimingPoints[tmCount];
+                            }
+                            catch
+                            {
+                                tm = osbm.TimingPoints[0];
+                            }
+                                                    
                         }
                     }
 

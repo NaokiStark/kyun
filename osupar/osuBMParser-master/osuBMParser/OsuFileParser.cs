@@ -36,7 +36,9 @@ namespace osuBMParser
                 using (StreamReader srtF = new StreamReader(path))
                 {
                     string filde = srtF.ReadToEnd();
-                    lines = filde.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                    //Bug
+                    //lines = filde.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                    lines = Regex.Split(filde, "[\n]", RegexOptions.Compiled);
                 }
 
             }
@@ -50,7 +52,7 @@ namespace osuBMParser
                 //Skip line if empty
                 if (!string.IsNullOrWhiteSpace(line))
                 {
-                    WHO_WANTS_SHIT(line);
+                    WHO_WANTS_SHIT(Regex.Replace(line, "\r", "", RegexOptions.Compiled));
                 }
             }
         }
