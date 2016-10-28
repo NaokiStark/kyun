@@ -28,7 +28,7 @@ namespace osuBMParser
         internal void parse()
         {
 
-            //Read in file. Exceptions here are to be handled by the devs who use this library.
+            
             string[] lines;
             try
             {
