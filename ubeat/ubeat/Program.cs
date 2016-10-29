@@ -38,6 +38,7 @@ namespace ubeat
             }
             catch(Exception e)
             {
+                Logger.Instance.Severe("An critical error is broking your computer, go outside, this message will explode in 1 minute.");
                 Logger.Instance.Severe(e.Message);
                 Logger.Instance.Severe(e.StackTrace);
                 Logger.Instance.Info("Press any key to exit");
