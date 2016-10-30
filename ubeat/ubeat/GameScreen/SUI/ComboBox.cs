@@ -70,6 +70,17 @@ namespace ubeat.GameScreen.SUI
             }
         }
 
+        public new Vector2 Position {
+            get
+            {
+                return displayLabel.Position;
+            }
+            set
+            {
+                displayLabel.Position = value;
+            }
+        }
+
         public ComboBox(Vector2 position, float width, SpriteFont font)
         {
             //TODO: hard-coded heigth
@@ -78,7 +89,7 @@ namespace ubeat.GameScreen.SUI
 
             displayLabel = new UI.Label(0.8f);
             displayLabel.Position = position;
-            this.Position = position;
+            
             //TODO STYLING
 
             baseListbox.IndexChanged += BaseListbox_IndexChanged;
@@ -117,6 +128,7 @@ namespace ubeat.GameScreen.SUI
             displayLabel.Update();
             if (baseListbox.Visible)
             {
+                baseListbox.width = displayLabel.TotalSize.X;
                 baseListbox.Update();
             }
         }

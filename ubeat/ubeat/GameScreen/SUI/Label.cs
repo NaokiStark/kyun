@@ -5,11 +5,12 @@ using Microsoft.Xna.Framework.Graphics;
 namespace ubeat.GameScreen.UI
 {
     
-    public class Label:GameScreen.ScreenUIObject
+    public class Label: ScreenUIObject
     {
         public SpriteFont Font;
         public string Text { get; set; }
         public Vector2 Size { get; set; }
+        public Vector2 TotalSize { get; set; }
         public float BackgroundOpacity { get; set; }
 
         string lastStr ="";
@@ -69,10 +70,13 @@ namespace ubeat.GameScreen.UI
             if (Size == null || Size == Vector2.Zero)
             {
                 UbeatGame.Instance.spriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(messStr.X), (int)(messStr.Y)), Color.White);
+                
+                TotalSize = new Vector2(messStr.X, messStr.Y); //TODO: Make this better
             }
             else
             {
                 UbeatGame.Instance.spriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(Size.X), (int)(Size.Y)), Color.White);
+                TotalSize = Size; //TODO: Make this better
             }
 
             UbeatGame.Instance.spriteBatch.DrawString((Font == null) ? UbeatGame.Instance.defaultFont : Font, this.Text, new Vector2(pos.X + 5, pos.Y + 5), Color.White, 0,
