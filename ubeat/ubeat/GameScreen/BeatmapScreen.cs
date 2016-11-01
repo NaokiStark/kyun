@@ -8,12 +8,14 @@ namespace ubeat.GameScreen
 {
     public partial class BeatmapScreen : IScreen
     {
+        Video.VideoPlayer videoPlayer;
         string lastStr = "";
         public BeatmapScreen()
         {
             ScreenInstance = this;
             LoadInterface();
             UbeatGame.Instance.kbmgr.OnKeyPress += kbmgr_OnKeyPress;
+            videoPlayer = Video.VideoPlayer.Instance;
         }
 
         void kbmgr_OnKeyPress()
@@ -94,6 +96,10 @@ namespace ubeat.GameScreen
             }
 
             ScreenInstance.ChangeBackground(beatMap.Background);
+            videoPlayer?.Stop();
+            if (UbeatGame.Instance.VideoEnabled)
+                if (beatMap.Video != null)
+                    videoPlayer.Play(beatMap.Video);
         }
     }
 }

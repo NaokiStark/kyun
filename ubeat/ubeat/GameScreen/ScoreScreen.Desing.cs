@@ -132,7 +132,7 @@ namespace ubeat.GameScreen
 
         void backPressed()
         {
-            ScreenManager.ChangeTo(new BeatmapScreen());
+            ScreenManager.ChangeTo(BeatmapScreen.Instance);
         }
 
         public void Render()

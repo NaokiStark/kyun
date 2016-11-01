@@ -494,7 +494,7 @@ namespace ubeat.GameScreen
                         Background = null;
                         UbeatGame.Instance.Player.Paused = false;
                         Paused = false;
-                        ScreenManager.ChangeTo(new BeatmapScreen());
+                        ScreenManager.ChangeTo(BeatmapScreen.Instance);
 
                         videoplayer.Stop();
                     }
@@ -524,7 +524,7 @@ namespace ubeat.GameScreen
                 Background = null;
                 UbeatGame.Instance.Player.Paused = false;
                 Paused = false;
-                ScreenManager.ChangeTo(new BeatmapScreen());
+                ScreenManager.ChangeTo(BeatmapScreen.Instance);
 
                 videoplayer.Stop();
             }

@@ -14,6 +14,16 @@ namespace ubeat.GameScreen
     {
 
         public IScreen ScreenInstance { get; set; }
+        static IScreen instance = null;
+        public static IScreen Instance {
+            get
+            {
+                if (instance == null)
+                    instance = new BeatmapScreen();
+
+                return instance;
+            } 
+        }
 
         public List<ScreenUIObject> Controls { get; set; }
         public event EventHandler OnLoad;
@@ -77,6 +87,8 @@ namespace ubeat.GameScreen
 
             OnLoad += BeatmapScreen_OnLoad;
 
+            addTextureG();
+
             OnLoad?.Invoke(this, new EventArgs());
         }
 
@@ -94,12 +106,29 @@ namespace ubeat.GameScreen
             }
         }
 
+        void addTextureG()
+        {
+            int wid = (UbeatGame.Instance.buttonDefault.Bounds.Width + 20) * 3;
+            int hei = (UbeatGame.Instance.buttonDefault.Bounds.Height + 20) * 3;
+            bg = new Texture2D(UbeatGame.Instance.GraphicsDevice, wid, hei);
 
+            Color[] data = new Color[wid * hei];
+            for (int i = 0; i < data.Length; ++i) data[i] = Color.Black;
+            bg.SetData(data);
+
+        }
 
         bool EscapeAlredyPressed = false;
+        private Texture2D lastFrameOfVid;
+        private Texture2D bg;
 
         public void Update(GameTime tm)
         {
+
+            if(UbeatGame.Instance.Player.PlayState == NAudio.Wave.PlaybackState.Stopped)
+            {
+                videoPlayer?.Stop();
+            }
 
             if (!Visible) return;
 
@@ -134,24 +163,79 @@ namespace ubeat.GameScreen
                 int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
                 int screenHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
-                //Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, (int)(((float)Background.Height / (float)Background.Width) * (float)screenWidth));
                 Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
 
                 UbeatGame.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
             }
+
+            RenderVideoFrame();
             
             foreach (ScreenUIObject ctr in Controls)
                 ctr.Render();
 
         }
 
+        void RenderVideoFrame()
+        {
+
+            int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
+            int screenHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+
+            if (UbeatGame.Instance.VideoEnabled)
+            {
+                Rectangle screenVideoRectangle = new Rectangle();
+                if (!videoPlayer.Stopped)
+                {
+                    if (VidFrame % Settings1.Default.VideoFrameSkip != 0 || Settings1.Default.VideoMode == 0)
+                    {
+                        byte[] frame = videoPlayer.GetFrame(UbeatGame.Instance.Player.Position + UbeatGame.Instance.SelectedBeatmap.SleepTime);
+                        if (frame != null)
+                        {
+
+                            UbeatGame.Instance.spriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
+
+                            Texture2D texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, videoPlayer.vdc.width, videoPlayer.vdc.height);
+                            screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)texture.Width / (float)texture.Height) * (float)screenHeight), screenHeight);
+                            texture.SetData(frame);
+                            lastFrameOfVid = texture;
+                            UbeatGame.Instance.spriteBatch.Draw(texture, screenVideoRectangle, null, Color.White, 0, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 0);
+                            if (Settings1.Default.VideoMode > 0)
+                                VidFrame++;
+                            if (Settings1.Default.VideoMode == 0)
+                                texture.Dispose();
+                        }
+
+                    }
+                    else
+                    {
+                        VidFrame = 1;
+                        if (lastFrameOfVid != null)
+                        {
+                            try
+                            {
+                                UbeatGame.Instance.spriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
+                                screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)lastFrameOfVid.Width / (float)lastFrameOfVid.Height) * (float)screenHeight), screenHeight);
+                                UbeatGame.Instance.spriteBatch.Draw(lastFrameOfVid, screenVideoRectangle, null, Color.White, 0, new Vector2(lastFrameOfVid.Width / 2, lastFrameOfVid.Height / 2), SpriteEffects.None, 0);
+                                lastFrameOfVid.Dispose();
+                            }
+                            catch
+                            {
+                                ///???
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         public void Redraw()
         {
-            //Called when resize
+            
         }
 
         public bool Visible { get; set; }
 
         public Label lblSearch { get; set; }
+        public int VidFrame { get; private set; }
     }
 }

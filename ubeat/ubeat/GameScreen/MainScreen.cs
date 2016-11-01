@@ -49,7 +49,7 @@ namespace ubeat.GameScreen
 
         void StrBtn_Click(object sender, EventArgs e)
         {
-            ScreenManager.ChangeTo(new BeatmapScreen());
+            ScreenManager.ChangeTo(BeatmapScreen.Instance);
         }
 
         void ExtBtn_Click(object sender, EventArgs e)
