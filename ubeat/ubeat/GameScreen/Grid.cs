@@ -41,6 +41,7 @@ namespace ubeat.GameScreen
         bool cooldown { get; set; }
 
 
+
         // TODO: TEST ONLY
         private int offset = 0;
 
@@ -341,7 +342,7 @@ namespace ubeat.GameScreen
             {
                 UbeatGame.Instance.Player.Play(bemap.SongPath);
                 UbeatGame.Instance.Player.soundOut.Volume = UbeatGame.Instance.GeneralVolume;
-                
+
             }
 
             if (started)
@@ -570,7 +571,7 @@ namespace ubeat.GameScreen
             RenderVideoFrame();
 
             //IN GAME
-            FPSMetter.Render();
+            
             if (!onbreak)
                 Health.Render();
 
@@ -591,6 +592,7 @@ namespace ubeat.GameScreen
 
             xi = xi - (UbeatGame.Instance.buttonDefault.Bounds.Width + 20) * 2 - (UbeatGame.Instance.buttonDefault.Bounds.Width / 2);
             yi = yi - (UbeatGame.Instance.buttonDefault.Bounds.Height + 20) * 2 - (UbeatGame.Instance.buttonDefault.Bounds.Height / 2);
+
 
             if (Health.Enabled || cooldown)
                 UbeatGame.Instance.spriteBatch.Draw(bg, new Vector2(xi, yi), Color.White * ((onbreak) ? 0f : .75f));
@@ -652,6 +654,10 @@ namespace ubeat.GameScreen
                 else
                     UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.FailSplash, new Rectangle(sWidth / 2 - splashW / 2, sHeight / 2 - splashH / 2, splashW, splashH), Color.White);
             }
+
+            if (onbreak) DrawBreak();
+
+            FPSMetter.Render();
         }
 
         void RenderVideoFrame()
@@ -780,6 +786,8 @@ namespace ubeat.GameScreen
             }
         }
 
+
+
         public void Redraw()
         {
             //Magic things
@@ -796,6 +804,71 @@ namespace ubeat.GameScreen
 
             return false;
         }
+
+        Break getBreak()
+        {
+            long actualTime = GameTimeTotal - bemap.SleepTime;
+            foreach (Beatmap.Break brk in bemap.Breaks)
+            {
+                if (brk.Start < actualTime && brk.End > actualTime)
+                    return brk;
+            }
+
+            return null;
+        }
+
+        void DrawBreak()
+        {
+            ScreenMode actualMode = ScreenModeManager.GetActualMode();
+
+            var center = new Vector2(actualMode.Width / 2, actualMode.Height / 2);
+
+            Break brk = getBreak();
+
+            Vector2 mesBreak = UbeatGame.Instance.defaultFont.MeasureString("Break");
+            Vector2 mesWarn = UbeatGame.Instance.defaultFont.MeasureString("Warning!");
+            
+            if(lastBreak!= brk.Start)
+            {
+                lastBreak = brk.Start;
+                op = 0;
+            }
+            
+
+            if (GameTimeTotal > brk.End - 150)
+            {
+                float op = 1f-((GameTimeTotal - (brk.Start + (brk.Length - 20))) / 1500f * 1f);
+
+
+                Rectangle rtcw = new Rectangle(0, 0, (int)actualMode.Width, (int)((mesWarn.Y + 20) * 1.5f));
+                Rectangle rtcw2 = new Rectangle(0, actualMode.Height - (int)((mesWarn.Y + 20) * 1.5f), (int)actualMode.Width, (int)((mesWarn.Y + 20) * 1.5f));
+
+                Vector2 ctopw = new Vector2(center.X - (mesWarn.X / 2), 15);
+
+                UbeatGame.Instance.spriteBatch.Draw(bg, rtcw, null, Color.White * op, 0, Vector2.Zero, SpriteEffects.None, 0);
+                UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, "Warning!", ctopw, Color.Red * op, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
+                UbeatGame.Instance.spriteBatch.Draw(bg, rtcw2, null, Color.White * op, 0, Vector2.Zero, SpriteEffects.None, 0);
+
+            }
+            else
+            {
+
+                if(op + 0.002f * (float)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds < 1)
+                    op = op + 0.002f * (float)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds;
+                
+                Rectangle rtcx = new Rectangle(0, 0, (int)actualMode.Width, (int)((mesBreak.Y + 20) * 1.5f));
+                Vector2 ctopx = new Vector2(center.X - (mesBreak.X / 2), 15);
+                Rectangle rtcx2 = new Rectangle(0, actualMode.Height - (int)((mesBreak.Y + 20) * 1.5f), (int)actualMode.Width, (int)((mesWarn.Y + 20) * 1.5f));
+
+                UbeatGame.Instance.spriteBatch.Draw(bg, rtcx, null, Color.White * op, 0, Vector2.Zero, SpriteEffects.None, 0);
+                UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, "Break", ctopx, Color.White* op, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
+                UbeatGame.Instance.spriteBatch.Draw(bg, rtcx2, null, Color.White * op, 0, Vector2.Zero, SpriteEffects.None, 0);
+
+            }
+
+        }
+        float op;
+        long lastBreak = 0;
         #endregion
 
         public bool SpaceAlredyPressed { get; set; }

@@ -131,8 +131,11 @@ namespace ubeat.GameScreen
             }
 
             if (!Visible) return;
+           
 
-            if(Keyboard.GetState().IsKeyDown(Keys.Escape)){
+            if (!UbeatGame.Instance.IsMouseVisible) UbeatGame.Instance.IsMouseVisible = true;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape)){
                 EscapeAlredyPressed = true;
             }
             if (Keyboard.GetState().IsKeyUp(Keys.Escape))
