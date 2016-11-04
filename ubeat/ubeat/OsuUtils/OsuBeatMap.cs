@@ -27,7 +27,7 @@ namespace ubeat.OsuUtils
                 OsuBeatMap tmpbm = new OsuBeatMap()
                 {
                     Artist = osbm.Artist,
-                    ApproachRate = osbm.ApproachRate,
+                    ApproachRate = (osbm.ApproachRate < 1)? osbm.OverallDifficulty: osbm.ApproachRate,
                     BPM = 0,
                     Creator = osbm.Creator,
                     HPDrainRate = osbm.HpDrainRate,

@@ -28,11 +28,7 @@ namespace ubeat.GameScreen
                 lbox.Items = BeatmapSearchEngine.SearchBeatmaps(ActualText);
                 lbox.vertOffset = 0;
                 int lastind = lbox.selectedIndex;
-                /*
-                if (lastind == 0)
-                {
-                    lbox.LaunchEvent();//Helps
-                }*/
+                
             }
 
         }
@@ -57,6 +53,7 @@ namespace ubeat.GameScreen
             lBDff.MouseDoubleClick += lBDff_MouseDoubleClick;
 
             ChangeBeatmapDisplay(UbeatGame.Instance.SelectedBeatmap);
+            lbox.selectedIndex = 0;
         }
 
         void lBDff_MouseDoubleClick(object sender, EventArgs e)
@@ -74,7 +71,6 @@ namespace ubeat.GameScreen
             if (lBDff.selectedIndex < 0 || lBDff.selectedIndex > lBDff.Items.Count-1) return;
             AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.SelectorHit);
             lblTitleDesc.Text = lBDff.Items[lBDff.selectedIndex].Artist + " - " + lBDff.Items[lBDff.selectedIndex].Title;
-            //ChangeBeatmapDisplay(lBDff.Items[lBDff.selectedIndex]);
         }
 
         void lbox_IndexChanged(object sender, EventArgs e)
@@ -85,6 +81,7 @@ namespace ubeat.GameScreen
 
             ChangeBeatmapDisplay(lbox.Items[lbox.selectedIndex][0]);
             lBDff.Items = Mapset.OrderByDiff(lbox.Items[lbox.selectedIndex]);
+            lBDff.selectedIndex = 0;
         }
 
         void ChangeBeatmapDisplay(ubeatBeatMap beatMap)
@@ -97,9 +94,12 @@ namespace ubeat.GameScreen
 
             ScreenInstance.ChangeBackground(beatMap.Background);
             videoPlayer?.Stop();
-            if (UbeatGame.Instance.VideoEnabled)
-                if (beatMap.Video != null)
-                    videoPlayer.Play(beatMap.Video);
+            
+            if (UbeatGame.Instance.SelectedBeatmap.Video != beatMap.Video)
+                if (UbeatGame.Instance.VideoEnabled)
+                    if (beatMap.Video != null)
+                        videoPlayer.Play(beatMap.Video);
+
         }
     }
 }

@@ -837,7 +837,7 @@ namespace ubeat.GameScreen
 
             if (GameTimeTotal > brk.End - 150)
             {
-                float op = 1f-((GameTimeTotal - (brk.Start + (brk.Length - 20))) / 1500f * 1f);
+                float op = Math.Abs(1f-((GameTimeTotal - (brk.Start + (brk.Length - 20))) / 1500f * 1f));
 
 
                 Rectangle rtcw = new Rectangle(0, 0, (int)actualMode.Width, (int)((mesWarn.Y + 20) * 1.5f));

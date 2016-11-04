@@ -231,7 +231,11 @@ namespace osuBMParser
             TimingPoint timingPoint = new TimingPoint();
 
             if (tokens[0] != null) timingPoint.Offset = toInt(tokens[0]);
+
+
             if (tokens[1] != null) timingPoint.MsPerBeat = toFloat(tokens[1]);
+
+            
             if (tokens[2] != null) timingPoint.Meter = toInt(tokens[2]);
             if (tokens[3] != null) timingPoint.SampleType = toInt(tokens[3]);
             if (tokens[4] != null) timingPoint.SampleSet = toInt(tokens[4]);
@@ -402,8 +406,7 @@ namespace osuBMParser
 
         private float toFloat(string data)
         {
-            float result;
-            return float.TryParse(data, NumberStyles.Float, CultureInfo.InvariantCulture, out result) ? result : 0f;
+            return float.Parse(data, NumberFormatInfo.InvariantInfo);
         }
 
         private bool toBool(string data)
