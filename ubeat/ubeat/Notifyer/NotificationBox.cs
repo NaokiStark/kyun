@@ -38,8 +38,8 @@ namespace ubeat.Notifyer
             rectng = new RoundedRectangle(
                 new Vector2(200, (MeasuredString.Y * (Text.Split('\n').Length) + 20)),
                 Color.Black * .75f,
-                5,
-                5,
+                4,
+                4,
                 Color.CornflowerBlue
                 );
 
