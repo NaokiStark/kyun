@@ -38,8 +38,8 @@ namespace ubeat.GameScreen
                 ChangeBeatmapDisplay(UbeatGame.Instance.SelectedBeatmap);
 
             UbeatGame.Instance.Player.OnStopped += player_OnStopped;
-
-        }
+            ntfr.ShowDialog("Prueba de este coso, probando textwrapping xdddddddddddddddd asfbasd th8bq9fbasifbasgbqw3 89tg98gva8tfgwtg wi9ytgvyvw34939t");
+        } 
 
         void CnfBtn_Click(object sender, EventArgs e)
         {

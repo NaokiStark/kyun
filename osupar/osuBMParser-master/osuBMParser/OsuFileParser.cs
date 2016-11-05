@@ -33,7 +33,7 @@ namespace osuBMParser
             try
             {
                 //lines = File.ReadAllLines(path);
-                using (StreamReader srtF = new StreamReader(path))
+                using (StreamReader srtF = new StreamReader(path, System.Text.Encoding.UTF8))
                 {
                     string filde = srtF.ReadToEnd();
                     //Bug
@@ -235,14 +235,22 @@ namespace osuBMParser
 
             if (tokens[1] != null) timingPoint.MsPerBeat = toFloat(tokens[1]);
 
+            try
+            {
+                if (tokens[2] != null) timingPoint.Meter = toInt(tokens[2]);
+                if (tokens[3] != null) timingPoint.SampleType = toInt(tokens[3]);
+                if (tokens[4] != null) timingPoint.SampleSet = toInt(tokens[4]);
+                if (tokens[5] != null) timingPoint.Volume = toInt(tokens[5]);
+                if (tokens[6] != null) timingPoint.Inherited = toBool(tokens[6]);
+                //if (tokens[6] != null) timingPoint.Inherited = (timingPoint.MsPerBeat > 0);
+                if (tokens[7] != null) timingPoint.KiaiMode = toBool(tokens[7]);
+            }
+            catch
+            {
+                //Old beatmap
+
+            }
             
-            if (tokens[2] != null) timingPoint.Meter = toInt(tokens[2]);
-            if (tokens[3] != null) timingPoint.SampleType = toInt(tokens[3]);
-            if (tokens[4] != null) timingPoint.SampleSet = toInt(tokens[4]);
-            if (tokens[5] != null) timingPoint.Volume = toInt(tokens[5]);
-            if (tokens[6] != null) timingPoint.Inherited = toBool(tokens[6]);
-            //if (tokens[6] != null) timingPoint.Inherited = (timingPoint.MsPerBeat > 0);
-            if (tokens[7] != null) timingPoint.KiaiMode = toBool(tokens[7]);
 
             beatmap.TimingPoints.Add(timingPoint);
 

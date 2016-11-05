@@ -26,15 +26,15 @@ namespace ubeat.OsuUtils
 
                 OsuBeatMap tmpbm = new OsuBeatMap()
                 {
-                    Artist = osbm.Artist,
+                    Artist = StringHelper.SanitizeUnicode(osbm.Artist),
                     ApproachRate = (osbm.ApproachRate < 1)? osbm.OverallDifficulty: osbm.ApproachRate,
                     BPM = 0,
-                    Creator = osbm.Creator,
+                    Creator = StringHelper.SanitizeUnicode(osbm.Creator),
                     HPDrainRate = osbm.HpDrainRate,
                     SongPath = relPath + @"\" + osbm.AudioFileName,
                     OverallDifficulty = osbm.OverallDifficulty,
-                    Title = osbm.Title,
-                    Version = osbm.Version,
+                    Title = StringHelper.SanitizeUnicode(osbm.Title),
+                    Version = StringHelper.SanitizeUnicode(osbm.Version),
                     Background = relPath + @"\" + osbm.Background,
                     SleepTime = osbm.AudioLeadIn,
                     Video = relPath + @"\" + osbm.Video,

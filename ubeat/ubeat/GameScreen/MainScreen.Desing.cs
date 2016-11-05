@@ -3,8 +3,10 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using ubeat.GameScreen.SUI;
 using ubeat.GameScreen.UI.Buttons;
 using ubeat.Screen;
+using ubeat.Notifyer;
 
 namespace ubeat.GameScreen
 {
@@ -48,12 +50,17 @@ namespace ubeat.GameScreen
             FPSMetter.Position = new Vector2(0, ActualMode.Height - meas.Y);
 
 
+            ntfr = new Notifyer.Notifyer();
+            
+
+
             Controls.Add(CnfBtn);
             Controls.Add(StrBtn);
             Controls.Add(ExtBtn);
             Controls.Add(Logo);
             Controls.Add(Label1);
             Controls.Add(FPSMetter);
+            Controls.Add(ntfr);
 
             UbeatGame.Instance.IsMouseVisible = true;
             OnLoad += MainScreen_OnLoad;
@@ -130,6 +137,7 @@ namespace ubeat.GameScreen
         public UI.Image Logo;
         public UI.Label Label1;
         public UI.Label FPSMetter;
+        private Notifyer.Notifyer ntfr;
 
         #endregion
 
