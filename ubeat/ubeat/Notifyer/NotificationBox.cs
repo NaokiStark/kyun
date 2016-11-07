@@ -1,12 +1,21 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using ubeat.GameScreen;
 using ubeat.GameScreen.SUI;
 using ubeat.Utils;
 
 namespace ubeat.Notifyer
 {
-    public class NotificationBox : ScreenUIObject
+    public class NotificationBox : ScreenUIObject, IDisposable
     {
+
+        //Dammit
+
+        //EventHandler Click(); -> NotificationBox 
+
+        //FUUUCK
+
+        public new event EventHandler Click;
 
         string Text { get; }
         int millisecondsRemain { get; set; }
@@ -19,6 +28,8 @@ namespace ubeat.Notifyer
             }
             
         }
+
+        public int ActualPosition { get; set; }
 
         RoundedRectangle rectng;
         GameScreen.UI.Label displayLabel;
@@ -48,6 +59,11 @@ namespace ubeat.Notifyer
 
             rectng.Click += Rectng_Click;
             displayLabel.Click += DisplayLabel_Click;
+
+        }
+
+        private void NotificationBox_Click(object sender, System.EventArgs e)
+        {
         }
 
         private void DisplayLabel_Click(object sender, System.EventArgs e)
@@ -58,15 +74,22 @@ namespace ubeat.Notifyer
         private void Rectng_Click(object sender, System.EventArgs e)
         {
 
+            Click?.Invoke(this, e); //Fuck this again
             
-
         }
 
         public override void Update()
         {
             //base.Update(); //Events
 
+            if (!Visible) return;
+
             millisecondsRemain -= UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds;
+            
+            if(millisecondsRemain < 0)
+            {
+                Dispose();
+            }
 
             rectng.Position = Position;
             displayLabel.Position = new Vector2(Position.X+10, Position.Y + 5);
@@ -78,8 +101,17 @@ namespace ubeat.Notifyer
 
         public override void Render()
         {
+            if (!Visible) return;
             rectng.Render();
             displayLabel.Render();
+        }
+
+        public void Dispose()
+        {
+            this.Visible = false;
+            rectng?.Texture?.Dispose();
+            displayLabel?.Texture?.Dispose();
+            
         }
     }
 }
