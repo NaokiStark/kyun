@@ -13,7 +13,6 @@ namespace ubeat.GameScreen
     public partial class BeatmapScreen : IScreen
     {
 
-        public IScreen ScreenInstance { get; set; }
         static IScreen instance = null;
         public static IScreen Instance {
             get
@@ -25,8 +24,7 @@ namespace ubeat.GameScreen
             } 
         }
 
-        public List<ScreenUIObject> Controls { get; set; }
-        public event EventHandler OnLoad;
+       
         Listbox lbox;
         ListboxDiff lBDff;
         FilledRectangle filledRect1;
@@ -34,8 +32,6 @@ namespace ubeat.GameScreen
         AutoModeButton autoBtn;
 
         bool AMode = false;
-
-        public Texture2D Background { get; set; }
 
         public void LoadInterface()
         {
@@ -86,10 +82,18 @@ namespace ubeat.GameScreen
             Controls.Add(lblSearch);
 
             OnLoad += BeatmapScreen_OnLoad;
+            OnBackSpacePress += BeatmapScreen_OnBackSpacePress;
+
 
             addTextureG();
 
-            OnLoad?.Invoke(this, new EventArgs());
+            OnLoadScreen();
+        }
+
+        private void BeatmapScreen_OnBackSpacePress(object sender, EventArgs e)
+        {
+            BackPressed(new MainScreen(false));
+
         }
 
         void autoBtn_Click(object sender, EventArgs e)
@@ -122,42 +126,21 @@ namespace ubeat.GameScreen
         private Texture2D lastFrameOfVid;
         private Texture2D bg;
 
-        public void Update(GameTime tm)
+        public override void Update(GameTime tm)
         {
 
             if(UbeatGame.Instance.Player.PlayState == NAudio.Wave.PlaybackState.Stopped)
             {
                 videoPlayer?.Stop();
             }
-
-            if (!Visible) return;
-           
-
+            
             if (!UbeatGame.Instance.IsMouseVisible) UbeatGame.Instance.IsMouseVisible = true;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape)){
-                EscapeAlredyPressed = true;
-            }
-            if (Keyboard.GetState().IsKeyUp(Keys.Escape))
-            {
-                if (EscapeAlredyPressed)
-                {
-                    EscapeAlredyPressed = false;
-                    backPressed();
-                }
-            }
-
-            foreach(ScreenUIObject ctr in Controls)
-                ctr.Update();
+            base.Update(tm);
 
         }
-
-        void backPressed()
-        {
-            ScreenManager.ChangeTo(new MainScreen(false));
-        }
-       
-        public void Render()
+        
+        public override void Render()
         {
             if (!Visible) return;
 
@@ -172,7 +155,7 @@ namespace ubeat.GameScreen
             }
 
             RenderVideoFrame();
-            
+
             foreach (ScreenUIObject ctr in Controls)
                 ctr.Render();
 
@@ -230,13 +213,6 @@ namespace ubeat.GameScreen
                 }
             }
         }
-
-        public void Redraw()
-        {
-            
-        }
-
-        public bool Visible { get; set; }
 
         public Label lblSearch { get; set; }
         public int VidFrame { get; private set; }

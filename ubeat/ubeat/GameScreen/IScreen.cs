@@ -13,5 +13,9 @@ namespace ubeat.GameScreen
         IScreen ScreenInstance { get; set; }
         List<ScreenUIObject> Controls { get; set; }
         bool Visible { get; set; }
+        float Opacity { get; set; }
+        void BackPressed(IScreen screen);
+        void OnLoadScreen();
+        string Name { get; set; }
     }
 }

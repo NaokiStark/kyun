@@ -11,7 +11,7 @@ using ubeat.Notifyer;
 namespace ubeat.GameScreen
 {
     //Here goes Desing
-    public partial class MainScreen : IScreen
+    public partial class MainScreen : ScreenBase
     {
         public void LoadInterface()
         {
@@ -51,7 +51,7 @@ namespace ubeat.GameScreen
 
 
             ntfr = new Notifyer.Notifyer();
-            
+
 
 
             Controls.Add(CnfBtn);
@@ -65,11 +65,11 @@ namespace ubeat.GameScreen
             UbeatGame.Instance.IsMouseVisible = true;
             OnLoad += MainScreen_OnLoad;
 
-            OnLoad?.Invoke(this, new EventArgs());
+            OnLoadScreen();
         }
 
 
-        public void Update(GameTime tm)
+        public override void Update(GameTime tm)
         {
 
             //FPSMetter.Text = Game1.Instance.frameCounter.AverageFramesPerSecond.ToString("0", CultureInfo.InvariantCulture) +" FPS";
@@ -78,31 +78,10 @@ namespace ubeat.GameScreen
 
             FPSMetter.Text = fps.ToString("0", CultureInfo.InvariantCulture) + " FPS";
 
-            if (Visible)
-                foreach (ScreenUIObject ctr in Controls)
-                    ctr.Update();
+            base.Update(tm);
         }
 
-        public void Render()
-        {
-            if (!Visible) return;
-
-            if (Background != null)
-            {
-                int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-                int screenHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
-
-                //Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, (int)(((float)Background.Height / (float)Background.Width) * (float)screenWidth));
-                Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
-
-                UbeatGame.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
-            }
-
-            foreach (var ctr in Controls)
-                ctr.Render();
-        }
-
-        public void Redraw()
+        public override void Redraw()
         {
             ScreenMode ActualMode = ScreenModeManager.GetActualMode();
 
@@ -121,19 +100,12 @@ namespace ubeat.GameScreen
                 center.Y - (ExtBtn.Texture.Height / 2) + ExtBtn.Texture.Height + 2 + Logo.Texture.Height / 2);
         }
 
-        #region Properties
-
-        public bool Visible { get; set; }
-        public List<ScreenUIObject> Controls { get; set; }
-
-        #endregion
 
         #region UI
 
         public ConfigButton CnfBtn;
         public StartButton StrBtn;
         public ExitButton ExtBtn;
-        public Texture2D Background { get; set; }
         public UI.Image Logo;
         public UI.Label Label1;
         public UI.Label FPSMetter;
@@ -141,10 +113,5 @@ namespace ubeat.GameScreen
 
         #endregion
 
-        #region Events
-
-        public event EventHandler OnLoad;
-
-        #endregion
     }
 }

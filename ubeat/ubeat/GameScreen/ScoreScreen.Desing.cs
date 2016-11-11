@@ -9,14 +9,9 @@ using ubeat.Screen;
 
 namespace ubeat.GameScreen
 {
-    public partial class ScoreScreen:IScreen
+    public partial class ScoreScreen: ScreenBase
     {
-        public IScreen ScreenInstance { get; set; }
 
-        public List<ScreenUIObject> Controls { get; set; }
-
-        public Texture2D Background { get; set; }
-        public event EventHandler OnLoad;
 
         public void LoadInterface()
         {
@@ -102,66 +97,24 @@ namespace ubeat.GameScreen
             Controls.Add(lblMiss);
             Controls.Add(lblAccuracy);
             Controls.Add(lblCombo);
-
-
+            
             OnLoad += ScoreScreen_OnLoad;
 
-            OnLoad?.Invoke(this, new EventArgs());
+            OnBackSpacePress += (sender, args)=>{
+                BackPressed(BeatmapScreen.Instance);
+            };
+
+            OnLoadScreen();
         }
 
-        public void Update(GameTime tm)
+        public override void Update(GameTime tm)
         {
-            if (!Visible) return;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-            {
-                EscapeAlredyPressed = true;
-            }
-            if (Keyboard.GetState().IsKeyUp(Keys.Escape))
-            {
-                if (EscapeAlredyPressed)
-                {
-                    EscapeAlredyPressed = false;
-                    backPressed();
-                }
-            }
 
             foreach (ScreenUIObject ctr in Controls)
                 ctr.Update();
         }
-
-        void backPressed()
-        {
-            ScreenManager.ChangeTo(BeatmapScreen.Instance);
-        }
-
-        public void Render()
-        {
-            if (!Visible) return;
-
-            if (Background != null)
-            {
-                int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-                int screenHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
-
-                //Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, (int)(((float)Background.Height / (float)Background.Width) * (float)screenWidth));
-                Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
-
-                UbeatGame.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
-            }
-
-            foreach (ScreenUIObject ctr in Controls)
-                ctr.Render();
-        }
-
-        public void Redraw()
-        {
-
-        }
-
-        public bool Visible { get; set; }
-
-
+       
         public FilledRectangle filledRect1 { get; set; }
 
         public Label lblTitleDesc { get; set; }

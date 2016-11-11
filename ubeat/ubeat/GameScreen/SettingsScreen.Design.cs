@@ -9,7 +9,7 @@ using ubeat.Screen;
 
 namespace ubeat.GameScreen
 {
-    public partial class SettingsScreen : IScreen
+    public partial class SettingsScreen : ScreenBase
     {
 
         int globalMarginBottom = 30;
@@ -61,6 +61,10 @@ namespace ubeat.GameScreen
 
             filledRect1.Position = Vector2.Zero;
 
+            OnBackSpacePress += (sender, args) =>
+             {
+                 BackPressed(new MainScreen(false));
+             };
             
             Controls.Add(filledRect1);
             Controls.Add(Logo);
@@ -71,7 +75,7 @@ namespace ubeat.GameScreen
 
             UbeatGame.Instance.IsMouseVisible = true;
 
-            OnLoad?.Invoke(this, new EventArgs());
+            OnLoadScreen();
         }
         
         private void fillComboDisplay()
@@ -87,7 +91,7 @@ namespace ubeat.GameScreen
             combodisplayMode.Text = combodisplayMode.Items[Settings1.Default.ScreenMode].ToString();
         }
 
-        public void Redraw()
+        public override void Redraw()
         {
             var modes = ScreenModeManager.GetSupportedModes();
             var actualMode = modes[Settings1.Default.ScreenMode];
@@ -113,46 +117,9 @@ namespace ubeat.GameScreen
                     comboLang.Position.Y + globalMarginBottom + UbeatGame.Instance.ListboxFont.MeasureString("a").Y + 5);
         }
 
-        public void Render()
-        {
-            if (!Visible) return;
-
-            if (Background != null)
-            {
-                int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-                int screenHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
-
-                //Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, (int)(((float)Background.Height / (float)Background.Width) * (float)screenWidth));
-                var screenRectangle = new Microsoft.Xna.Framework.Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
-
-                UbeatGame.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
-            }
-
-            foreach (var ctr in Controls)
-                ctr.Render();
-        }
-
-        public void Update(GameTime tm)
-        {
-            if (!Visible) return;
-
-            var keyboardState = Keyboard.GetState();
-            var newMouseState = Mouse.GetState();
-
-            if (keyboardState.IsKeyDown(Keys.Back) || keyboardState.IsKeyDown(Keys.Escape))
-                onBackspacePressed();
-
-            foreach (var ctr in Controls)
-                ctr.Update();
-        }
-
-        public IScreen ScreenInstance { get; set; }
-        public List<ScreenUIObject> Controls { get; set; }
-        public bool Visible { get; set; }
 
         #region UI
 
-        public Texture2D Background { get; set; }
         public UI.Image Logo;
         private ComboBox combodisplayMode;
         private FilledRectangle filledRect1;
@@ -163,7 +130,7 @@ namespace ubeat.GameScreen
 
         #region Events
 
-        public event EventHandler OnLoad;
+
 
         #endregion
     }

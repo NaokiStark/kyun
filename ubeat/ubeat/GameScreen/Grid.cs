@@ -14,19 +14,17 @@ using ubeat.Screen;
 namespace ubeat.GameScreen
 {
 
-    public class Grid : IScreen
+    public class Grid : ScreenBase
     {
 
         #region PublicVars
 
-        public List<ScreenUIObject> Controls { get; set; } //Dummy
-        public IScreen ScreenInstance { get; set; }
+      
 
         public bool autoMode = false;
         public bool NoFailMode = false;
         public bool inGame;
         public bool Paused { get; set; }
-
         public static Grid Instance = null;
 
         public List<IUIObject> objs = new List<IUIObject>();
@@ -37,7 +35,6 @@ namespace ubeat.GameScreen
         public ComboDisplay ComboDspl;
         public int FailsCount = 0;
         public long GameTimeTotal = 0;
-        public bool Visible { get; set; }
         bool cooldown { get; set; }
 
 
@@ -73,7 +70,9 @@ namespace ubeat.GameScreen
 
         #region Constructor
         public Grid(Beatmap.ubeatBeatMap beatmap)
+            : base("Grid")
         {
+            OnLoadScreen();
             Instance = this;
             ScreenInstance = this;
 
@@ -295,7 +294,7 @@ namespace ubeat.GameScreen
         }
 
         #region GameEvents
-        public void Update(GameTime tm)
+        public override void Update(GameTime tm)
         {
             if (!Visible)
                 return;
@@ -539,7 +538,7 @@ namespace ubeat.GameScreen
         bool Waiting;
 
 
-        public void Render()
+        public override void Render()
         {
 
 
@@ -786,13 +785,7 @@ namespace ubeat.GameScreen
             }
         }
 
-
-
-        public void Redraw()
-        {
-            //Magic things
-        }
-
+                
         public bool onBreak()
         {
             long actualTime = GameTimeTotal - bemap.SleepTime;

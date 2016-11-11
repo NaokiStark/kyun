@@ -9,30 +9,17 @@ using System.Collections.Generic;
 
 namespace ubeat.GameScreen
 {
-    public partial class SettingsScreen : IScreen
+    public partial class SettingsScreen : ScreenBase
     {
-        public SettingsScreen()
+        public SettingsScreen() 
+            : base("SettingsScreen")
         {
             ScreenInstance = this;
-
-            OnLoad += _OnLoad;
 
             LoadInterface();
         }
 
-        private void _OnLoad(object sender, EventArgs e)
-        {
-            ScreenInstance.LoadCurrentGameInstanceBackground();
-#if DEBUG
-            Logger.Instance.Debug("SettingsScreen loaded...");
-#endif
-        }
-
-        private void onBackspacePressed()
-        {
-            ScreenManager.ChangeTo(new MainScreen(false));
-        }
-
+           
         private void CombodisplayMode_IndexChaged(object sender, EventArgs e)
         {
             List<ScreenMode> scrnm = ScreenModeManager.GetSupportedModes();

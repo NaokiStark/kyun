@@ -140,6 +140,7 @@
     <Compile Include="GameScreen\ScoreScreen.cs" />
     <Compile Include="GameScreen\ScoreScreen.Desing.cs" />
     <Compile Include="GameScreen\IScreen.cs" />
+    <Compile Include="GameScreen\ScreenBase.cs" />
     <Compile Include="GameScreen\ScreenManager.cs" />
     <Compile Include="GameScreen\ScreenUIObject.cs" />
     <Compile Include="GameScreen\SettingsScreen.cs" />

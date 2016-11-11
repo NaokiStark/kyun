@@ -11,7 +11,8 @@ namespace ubeat.GameScreen
 {
     public partial class ScoreScreen
     {
-        public ScoreScreen()
+        public ScoreScreen() 
+            : base("ScoreScreen")
         {
             LoadInterface();
 

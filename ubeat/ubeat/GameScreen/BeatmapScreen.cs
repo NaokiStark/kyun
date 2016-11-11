@@ -6,11 +6,13 @@ using ubeat.Extensions;
 
 namespace ubeat.GameScreen
 {
-    public partial class BeatmapScreen : IScreen
+    public partial class BeatmapScreen : ScreenBase
     {
         Video.VideoPlayer videoPlayer;
         string lastStr = "";
+
         public BeatmapScreen()
+            : base("BeatmapScreen")
         {
             ScreenInstance = this;
             LoadInterface();

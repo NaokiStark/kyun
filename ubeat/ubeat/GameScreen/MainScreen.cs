@@ -8,9 +8,10 @@ using ubeat.Extensions;
 
 namespace ubeat.GameScreen
 {
-    public partial class MainScreen : IScreen
+    public partial class MainScreen : ScreenBase
     {
-        public MainScreen(bool LoadRandom=true)
+        public MainScreen(bool LoadRandom=true) 
+            : base("MainScreen")
         {
             UbeatGame.Instance.IsMouseVisible=true;
 
@@ -167,7 +168,6 @@ namespace ubeat.GameScreen
 
         #region Properties
 
-        public IScreen ScreenInstance { get; set; }
         bool noLoadRnd = false;
         bool PlayingInit { get; set; }
 
