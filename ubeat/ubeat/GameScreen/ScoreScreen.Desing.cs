@@ -106,14 +106,6 @@ namespace ubeat.GameScreen
 
             OnLoadScreen();
         }
-
-        public override void Update(GameTime tm)
-        {
-
-
-            foreach (ScreenUIObject ctr in Controls)
-                ctr.Update();
-        }
        
         public FilledRectangle filledRect1 { get; set; }
 

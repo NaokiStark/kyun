@@ -128,6 +128,8 @@ namespace ubeat.GameScreen
 
         public override void Update(GameTime tm)
         {
+            if (Visible)
+                UbeatGame.Instance.kbmgr.Enabled = true;
 
             if(UbeatGame.Instance.Player.PlayState == NAudio.Wave.PlaybackState.Stopped)
             {

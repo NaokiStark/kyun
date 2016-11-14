@@ -576,8 +576,12 @@ namespace ubeat.GameScreen
 
             if (Health.Enabled)
             {
-                ScoreDispl.Render();
-                ComboDspl.Render();
+                if (!onbreak)
+                {
+                    ScoreDispl.Render();
+                    ComboDspl.Render();
+                }
+                
             }
 
             long pos = GameTimeTotal + offset;
@@ -821,44 +825,44 @@ namespace ubeat.GameScreen
             Vector2 mesBreak = UbeatGame.Instance.defaultFont.MeasureString("Break");
             Vector2 mesWarn = UbeatGame.Instance.defaultFont.MeasureString("Warning!");
             
-            if(lastBreak!= brk.Start)
+            if(lastBreak != brk.Start)
             {
                 lastBreak = brk.Start;
                 op = 0;
             }
             
 
-            if (GameTimeTotal > brk.End - 150)
+            if (GameTimeTotal+1 > brk.End - 1)
             {
-                float op = Math.Abs(1f-((GameTimeTotal - (brk.Start + (brk.Length - 20))) / 1500f * 1f));
-
-
-                Rectangle rtcw = new Rectangle(0, 0, (int)actualMode.Width, (int)((mesWarn.Y + 20) * 1.5f));
-                Rectangle rtcw2 = new Rectangle(0, actualMode.Height - (int)((mesWarn.Y + 20) * 1.5f), (int)actualMode.Width, (int)((mesWarn.Y + 20) * 1.5f));
-
-                Vector2 ctopw = new Vector2(center.X - (mesWarn.X / 2), 15);
-
-                UbeatGame.Instance.spriteBatch.Draw(bg, rtcw, null, Color.White * op, 0, Vector2.Zero, SpriteEffects.None, 0);
-                UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, "Warning!", ctopw, Color.Red * op, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
-                UbeatGame.Instance.spriteBatch.Draw(bg, rtcw2, null, Color.White * op, 0, Vector2.Zero, SpriteEffects.None, 0);
+                if (op - 0.0005f * (float)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds > 0)
+                    op = op - 0.0005f * (float)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds;
 
             }
             else
             {
 
-                if(op + 0.002f * (float)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds < 1)
+                if(op + 0.002f * (float)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds < .75f)
                     op = op + 0.002f * (float)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds;
-                
-                Rectangle rtcx = new Rectangle(0, 0, (int)actualMode.Width, (int)((mesBreak.Y + 20) * 1.5f));
-                Vector2 ctopx = new Vector2(center.X - (mesBreak.X / 2), 15);
-                Rectangle rtcx2 = new Rectangle(0, actualMode.Height - (int)((mesBreak.Y + 20) * 1.5f), (int)actualMode.Width, (int)((mesWarn.Y + 20) * 1.5f));
-
-                UbeatGame.Instance.spriteBatch.Draw(bg, rtcx, null, Color.White * op, 0, Vector2.Zero, SpriteEffects.None, 0);
-                UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, "Break", ctopx, Color.White* op, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
-                UbeatGame.Instance.spriteBatch.Draw(bg, rtcx2, null, Color.White * op, 0, Vector2.Zero, SpriteEffects.None, 0);
-
             }
 
+            Rectangle rtcx = new Rectangle(0, 0, (int)actualMode.Width, (int)((mesBreak.Y + 20) * 1.5f));
+            Vector2 ctopx = new Vector2(center.X - (mesBreak.X / 2), 15);
+            Rectangle rtcx2 = new Rectangle(0, actualMode.Height - (int)((mesBreak.Y + 20) * 1.5f), (int)actualMode.Width, (int)((mesWarn.Y + 20) * 1.5f));
+
+            UbeatGame.Instance.spriteBatch.Draw(bg, rtcx, null, Color.White * op, 0, Vector2.Zero, SpriteEffects.None, 0);
+
+            if (GameTimeTotal > brk.End - 200)
+            {
+                Vector2 ctopw = new Vector2(center.X - (mesWarn.X / 2), 15);
+
+                UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, "Warning!", ctopw, Color.Red * op, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
+            }
+            else
+            {
+                UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, "Break", ctopx, Color.White * op, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
+            }
+
+            UbeatGame.Instance.spriteBatch.Draw(bg, rtcx2, null, Color.White * op, 0, Vector2.Zero, SpriteEffects.None, 0);
         }
         float op;
         long lastBreak = 0;

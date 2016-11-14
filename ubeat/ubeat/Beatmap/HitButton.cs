@@ -207,7 +207,7 @@ namespace ubeat.UIObjs
                     {
                         opac = .6f;
                     }
-                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.radiance, new Microsoft.Xna.Framework.Rectangle((int)position.X - 2, (int)position.Y - 2, UbeatGame.Instance.radiance.Bounds.Width + 2, UbeatGame.Instance.radiance.Bounds.Height + 2), Color.White * opac);
+                    //UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.radiance, new Microsoft.Xna.Framework.Rectangle((int)position.X - 2, (int)position.Y - 2, UbeatGame.Instance.radiance.Bounds.Width + 2, UbeatGame.Instance.radiance.Bounds.Height + 2), Color.White * opac);
 
                 }
                 UbeatGame.Instance.spriteBatch.Draw(this.Texture, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);

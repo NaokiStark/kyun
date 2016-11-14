@@ -16,8 +16,6 @@ namespace ubeat.UIObjs
 
         public bool Died { get; set; }
 
-        public Timer tickSize { get; set; }
-
         float width = 0;
         float height = 0;
         float opacity = 1;
@@ -32,31 +30,25 @@ namespace ubeat.UIObjs
             this.approachrate = approachRate;
             this.width = Texture.Bounds.Width;
             this.height = Texture.Bounds.Height;
-            tickSize = new Timer()
-            {
-                Interval = 1
-            };
-            tickSize.Tick += tickSize_Tick;
-            tickSize.Start();
+            
         }
 
-        void tickSize_Tick(object sender, EventArgs e)
+        void tickSize_Tick()
         {
-            
+
+            float twidth = Texture.Bounds.Width * 1.8f;
+
             int appr = (int)(1950 - approachrate * 150);
 
-
-
+            
             float stime = (float)starttime - (float)Grid.Instance.GameTimeTotal;
-
-
-
+           
             float gtime = (stime / appr);
-            float percen = gtime*(((float)Texture.Bounds.Width));
+            float percen = gtime * twidth;
 
-            float pcrt = percen / Texture.Bounds.Width * 100;
+            float pcrt = percen / twidth * 100;
 
-            float percentgg = percen * 2f;
+            float percentgg = percen;
 
 
             float percentg = gtime * 1/*/100f*/;
@@ -74,17 +66,16 @@ namespace ubeat.UIObjs
             if (width < 0)
             {
                 Died = true;
-                tickSize.Stop();
-
             }
         }
 
         public void Apdeit(Vector2 position)
         {
             Position = position;
-//            RotationAngle += Game1.Instance.elapsed;
+            //            RotationAngle += Game1.Instance.elapsed;
             //float circle = MathHelper.Pi * 2;
             //RotationAngle = RotationAngle % circle;
+            Update();
         }
         float RotationAngle=0;
         public void Render()
@@ -109,7 +100,8 @@ namespace ubeat.UIObjs
 
         public void Update()
         {
-            throw new NotImplementedException();
+            if(!Died)
+                tickSize_Tick();
         }
     }
 }
