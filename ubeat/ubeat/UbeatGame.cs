@@ -353,8 +353,15 @@ namespace ubeat
         #region TEXTURES
         public Texture2D buttonDefault;
         public Texture2D buttonHolder;
+        public Texture2D buttonDefault_0;
+        public Texture2D buttonHolder_0;
+
         public Texture2D waitDefault;
+        public Texture2D waitDefault_0;
+
         public Texture2D HolderFillDeff;
+        public Texture2D HolderFillDeff_0;
+
         public Texture2D radiance;
         public Texture2D PauseSplash;
         public Texture2D PerfectTx;
@@ -406,6 +413,14 @@ namespace ubeat
             buttonHolder = Content.Load<Texture2D>("holder_0");
             waitDefault = Content.Load<Texture2D>("approachv2");
             HolderFillDeff = Content.Load<Texture2D>("HolderFill");
+
+
+            buttonDefault_0 = Content.Load<Texture2D>("button_0.5");
+            buttonHolder_0 = Content.Load<Texture2D>("holder_0.5");
+            waitDefault_0 = Content.Load<Texture2D>("approach0.5");
+            HolderFillDeff_0 = Content.Load<Texture2D>("HolderFill0.5");
+
+
             radiance = Content.Load<Texture2D>("radiance");
             PauseSplash = Content.Load<Texture2D>("pausesplash");
             PerfectTx = Content.Load<Texture2D>("Perfect");

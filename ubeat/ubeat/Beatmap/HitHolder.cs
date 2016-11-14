@@ -13,6 +13,7 @@ using ubeat.Beatmap;
 using ubeat.GameScreen;
 using ubeat.OsuUtils;
 using ubeat.Score;
+using ubeat.Screen;
 
 namespace ubeat.UIObjs
 {
@@ -347,7 +348,11 @@ namespace ubeat.UIObjs
                     //    Microsoft.Xna.Framework.Graphics.SpriteEffects.None,
                     //    0);
 
-                    float initSize = UbeatGame.Instance.HolderFillDeff.Width;
+                    ScreenMode mode = ScreenModeManager.GetActualMode();
+                    bool isSmallRes = mode.Height < 720;
+
+
+                    float initSize = (isSmallRes)? UbeatGame.Instance.HolderFillDeff_0.Width : UbeatGame.Instance.HolderFillDeff.Width;
 
                     long positionOnHolder = ccc - (long)StartTime;
 
@@ -355,9 +360,10 @@ namespace ubeat.UIObjs
 
                     float percen = initSize * positionPercent / 100f;
 
-                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.radiance, new Microsoft.Xna.Framework.Rectangle((int)position.X , (int)position.Y, UbeatGame.Instance.radiance.Bounds.Width, UbeatGame.Instance.radiance.Bounds.Height), Color.White * 0.5f);
+                    if(!(isSmallRes))
+                        UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.radiance, new Microsoft.Xna.Framework.Rectangle((int)position.X , (int)position.Y, UbeatGame.Instance.radiance.Bounds.Width, UbeatGame.Instance.radiance.Bounds.Height), Color.White * 0.5f);
 
-                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.HolderFillDeff,
+                    UbeatGame.Instance.spriteBatch.Draw((isSmallRes) ? UbeatGame.Instance.HolderFillDeff_0 : UbeatGame.Instance.HolderFillDeff,
                       new Rectangle((int)position.X + (this.Texture.Width / 2) - (int)(percen/2), (int)position.Y + (this.Texture.Height/2) - (int)(percen / 2), (int)percen, (int)percen),
                       null,
                       Color.White,

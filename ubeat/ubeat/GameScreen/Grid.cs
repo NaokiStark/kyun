@@ -141,8 +141,14 @@ namespace ubeat.GameScreen
 
         void addTextureG()
         {
-            int wid = (UbeatGame.Instance.buttonDefault.Bounds.Width + 20) * 3;
-            int hei = (UbeatGame.Instance.buttonDefault.Bounds.Height + 20) * 3;
+
+            ScreenMode mode = ScreenModeManager.GetActualMode();
+            bool isSmallRes = mode.Height < 720;
+
+            Texture2D txbtn = (isSmallRes) ? UbeatGame.Instance.buttonDefault_0: UbeatGame.Instance.buttonDefault;
+
+            int wid = (txbtn.Bounds.Width + 20) * 3;
+            int hei = (txbtn.Bounds.Height + 20) * 3;
             bg = new Texture2D(UbeatGame.Instance.GraphicsDevice, wid, hei);
 
             Color[] data = new Color[wid * hei];
@@ -189,14 +195,17 @@ namespace ubeat.GameScreen
                 posXX = index;
             }
 
+            ScreenMode mode = ScreenModeManager.GetActualMode();
+            bool isSmallRes = mode.Height < 720;
+
+            Texture2D txbtn = (isSmallRes) ? UbeatGame.Instance.buttonDefault_0 : UbeatGame.Instance.buttonDefault;
+
+            int x = (sWidth / 2) + (txbtn.Bounds.Width + 20) * posXX;
+            int y = (sHeight / 2) + (txbtn.Bounds.Height + 20) * posYY;
 
 
-            int x = (sWidth / 2) + (UbeatGame.Instance.buttonDefault.Bounds.Width + 20) * posXX;
-            int y = (sHeight / 2) + (UbeatGame.Instance.buttonDefault.Bounds.Height + 20) * posYY;
-
-
-            x = x - (UbeatGame.Instance.buttonDefault.Bounds.Width + 20) * 2 - (UbeatGame.Instance.buttonDefault.Bounds.Width / 2);
-            y = y - (UbeatGame.Instance.buttonDefault.Bounds.Height + 20) * 2 - (UbeatGame.Instance.buttonDefault.Bounds.Height / 2);
+            x = x - (txbtn.Bounds.Width + 20) * 2 - (txbtn.Bounds.Width / 2);
+            y = y - (txbtn.Bounds.Height + 20) * 2 - (txbtn.Bounds.Height / 2);
             return new Vector2(x, y);
         }
 
@@ -404,7 +413,7 @@ namespace ubeat.GameScreen
                     GameTimeTotal = UbeatGame.Instance.Player.Position + bemap.SleepTime;
             }
 
-
+           
             long pos = GameTimeTotal + offset;
             if (!Paused)
             {
@@ -415,10 +424,13 @@ namespace ubeat.GameScreen
 
                     if (pos > startTime)
                     {
+                        ScreenMode mode = ScreenModeManager.GetActualMode();
+                        bool isSmallRes = mode.Height < 720;
+
                         if (bemap.HitObjects[actualIndex] is HitHolder)
-                            bemap.HitObjects[actualIndex].AddTexture(UbeatGame.Instance.buttonHolder);
+                            bemap.HitObjects[actualIndex].AddTexture((isSmallRes)? UbeatGame.Instance.buttonHolder_0 : UbeatGame.Instance.buttonHolder);
                         else
-                            bemap.HitObjects[actualIndex].AddTexture(UbeatGame.Instance.buttonDefault);
+                            bemap.HitObjects[actualIndex].AddTexture((isSmallRes) ? UbeatGame.Instance.buttonDefault_0 : UbeatGame.Instance.buttonDefault);
 
                         bemap.HitObjects[actualIndex].Start(pos);
 
@@ -589,12 +601,18 @@ namespace ubeat.GameScreen
             //draw square
             int sWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
             int sHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
-            int xi = (sWidth / 2) + (UbeatGame.Instance.buttonDefault.Bounds.Width + 10) * 1;
-            int yi = (sHeight / 2) + (UbeatGame.Instance.buttonDefault.Bounds.Height + 10) * 1;
+
+            ScreenMode mode = ScreenModeManager.GetActualMode();
+            bool isSmallRes = mode.Height < 720;
+
+            Texture2D txbtn = (isSmallRes) ? UbeatGame.Instance.buttonDefault_0 : UbeatGame.Instance.buttonDefault;
+
+            int xi = (sWidth / 2) + (txbtn.Bounds.Width + 10) * 1;
+            int yi = (sHeight / 2) + (txbtn.Bounds.Height + 10) * 1;
 
 
-            xi = xi - (UbeatGame.Instance.buttonDefault.Bounds.Width + 20) * 2 - (UbeatGame.Instance.buttonDefault.Bounds.Width / 2);
-            yi = yi - (UbeatGame.Instance.buttonDefault.Bounds.Height + 20) * 2 - (UbeatGame.Instance.buttonDefault.Bounds.Height / 2);
+            xi = xi - (txbtn.Bounds.Width + 20) * 2 - (txbtn.Bounds.Width / 2);
+            yi = yi - (txbtn.Bounds.Height + 20) * 2 - (txbtn.Bounds.Height / 2);
 
 
             if (Health.Enabled || cooldown)

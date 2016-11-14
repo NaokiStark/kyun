@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using ubeat.GameScreen;
+using ubeat.Screen;
 
 namespace ubeat.UIObjs
 {
@@ -24,9 +25,12 @@ namespace ubeat.UIObjs
         
         public ApproachObj(Vector2 position, float approachRate,decimal startTime)
         {
+            ScreenMode mode = ScreenModeManager.GetActualMode();
+            bool isSmallRes = mode.Height < 720;
+
             this.starttime = startTime;
             this.Position = position;
-            this.Texture = UbeatGame.Instance.waitDefault;
+            this.Texture = (isSmallRes)? UbeatGame.Instance.waitDefault_0 : UbeatGame.Instance.waitDefault;
             this.approachrate = approachRate;
             this.width = Texture.Bounds.Width;
             this.height = Texture.Bounds.Height;
