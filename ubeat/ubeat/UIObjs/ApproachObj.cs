@@ -87,11 +87,11 @@ namespace ubeat.UIObjs
             if (Died)
                 return;
             //if(width <= Texture.Bounds.Width)
-
+                
 
 
             UbeatGame.Instance.spriteBatch.Draw(this.Texture,
-                    new Rectangle((int)Position.X + (int)Texture.Width / 2,(int)Position.Y + (int)Texture.Height / 2, (int)width, (int)height),
+                    new Rectangle((int)Position.X + (int)Texture.Bounds.Width / 2,(int)Position.Y + (int)Texture.Bounds.Height / 2, (int)width, (int)height),
                     null, Color.White * opacity,
                     //RotationAngle,
                     0,
