@@ -328,7 +328,16 @@ namespace ubeat.UIObjs
                 {
                     float perct = (float)(ccc / (StartTime - BeatmapContainer.Timing300)) * 1f;
 
-                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.Hold, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, UbeatGame.Instance.Hold.Bounds.Width, UbeatGame.Instance.Hold.Bounds.Height), Color.White * perct);
+                    ScreenMode mode = ScreenModeManager.GetActualMode();
+                    bool isSmallRes = mode.Height < 720;
+
+                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.Hold,
+                        new Rectangle(
+                            (int)position.X,
+                            (int)position.Y,
+                            (isSmallRes) ? Texture.Width : UbeatGame.Instance.Hold.Bounds.Width,
+                            (isSmallRes) ? Texture.Height : UbeatGame.Instance.Hold.Bounds.Height),
+                        Color.White * perct);
                 }
                 //Game1.Instance.spriteBatch.DrawString(Game1.Instance.fontDefault, (Location - 96).ToString(), new Vector2(position.X + (Texture.Bounds.Width / 2), position.Y + (Texture.Bounds.Height / 2)), Color.Black * opacity);
                 if (isFilling)

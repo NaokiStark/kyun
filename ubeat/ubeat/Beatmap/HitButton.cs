@@ -14,6 +14,8 @@ using Microsoft.Xna.Framework.Audio;
 using ubeat.OsuUtils;
 using ubeat.Score;
 using ubeat.Audio;
+using ubeat.Screen;
+
 namespace ubeat.UIObjs
 {
     public class HitButton : IHitObj
@@ -213,8 +215,17 @@ namespace ubeat.UIObjs
                 UbeatGame.Instance.spriteBatch.Draw(this.Texture, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
                 if (ccc >= StartTime - BeatmapContainer.Timing50)
                 {
+                    ScreenMode mode = ScreenModeManager.GetActualMode();
+                    bool isSmallRes = mode.Height < 720;
+
                     float perct = (float)(ccc / (StartTime - BeatmapContainer.Timing300)) * 1f;
-                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.Push, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, UbeatGame.Instance.Push.Bounds.Width, UbeatGame.Instance.Push.Bounds.Height), Color.White * perct);
+                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.Push,
+                        new Rectangle(
+                            (int)position.X,
+                            (int)position.Y,
+                            (isSmallRes)? Texture.Width : UbeatGame.Instance.Push.Bounds.Width,
+                             (isSmallRes) ? Texture.Height : UbeatGame.Instance.Push.Bounds.Height),
+                        Color.White * perct);
                 }
             }
         }

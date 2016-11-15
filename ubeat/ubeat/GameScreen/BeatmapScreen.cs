@@ -7,7 +7,7 @@ using ubeat.Extensions;
 namespace ubeat.GameScreen
 {
     public partial class BeatmapScreen : ScreenBase
-    {
+    { 
         Video.VideoPlayer videoPlayer;
         string lastStr = "";
 
