@@ -2,7 +2,6 @@
 using ubeat.Audio;
 using ubeat.Beatmap;
 using ubeat.Utils;
-using ubeat.Extensions;
 
 namespace ubeat.GameScreen
 {
@@ -38,7 +37,7 @@ namespace ubeat.GameScreen
         void BeatmapScreen_OnLoad(object sender, EventArgs e)
         {
             UbeatGame.Instance.kbmgr.Enabled = true;
-            if (UbeatGame.Instance.AllBeatmaps.Count < 1)
+            if (InstanceManager.AllBeatmaps.Count < 1)
             {
                 var mpset = new Mapset();
                 lbox.Items.Add(mpset);
@@ -46,7 +45,7 @@ namespace ubeat.GameScreen
             }
             else
             {
-                foreach (Mapset mps in UbeatGame.Instance.AllBeatmaps)
+                foreach (Mapset mps in InstanceManager.AllBeatmaps)
                     lbox.Items.Add(mps);
             }
             
@@ -86,15 +85,10 @@ namespace ubeat.GameScreen
             lBDff.selectedIndex = 0;
         }
 
-        void ChangeBeatmapDisplay(ubeatBeatMap beatMap)
+        public override void ChangeBeatmapDisplay(ubeatBeatMap beatMap)
         {
-            if (UbeatGame.Instance.SelectedBeatmap.SongPath != beatMap.SongPath)
-            {
-                UbeatGame.Instance.Player.Play(beatMap.SongPath);
-                UbeatGame.Instance.Player.soundOut.Volume = UbeatGame.Instance.GeneralVolume;
-            }
+            base.ChangeBeatmapDisplay(beatMap);
 
-            ScreenInstance.ChangeBackground(beatMap.Background);
             videoPlayer?.Stop();
             
             if (UbeatGame.Instance.SelectedBeatmap.Video != beatMap.Video)

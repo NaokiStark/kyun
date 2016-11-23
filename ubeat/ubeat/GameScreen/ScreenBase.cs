@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.IO;
+using ubeat.Beatmap;
 
 namespace ubeat.GameScreen
 {
-    public class ScreenBase : IScreen
+    public class ScreenBase : IScreen, IDisposable
     {
         private bool EscapeAlredyPressed;
 
@@ -40,7 +42,7 @@ namespace ubeat.GameScreen
 
         public virtual void Render()
         {
-            if (!Visible) return;
+            if (!Visible || isDisposing) return;
 
             if (Background != null)
             {
@@ -58,7 +60,7 @@ namespace ubeat.GameScreen
 
         public virtual void Update(GameTime tm)
         {
-            if (!Visible) return;
+            if (!Visible || isDisposing) return;
 
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
@@ -101,5 +103,45 @@ namespace ubeat.GameScreen
             Logger.Instance.Debug($"{this.Name} unloaded");
 #endif
         }
+
+        public void Dispose()
+        {
+            isDisposing = true;
+        }
+
+        public void ChangeBackground(string backgroundPath)
+        {
+            try
+            {
+                using (var fs = new FileStream(backgroundPath, FileMode.Open))
+                {
+                    Background = Texture2D.FromStream(UbeatGame.Instance.GraphicsDevice, fs);
+                }
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Logger.Instance.Warn("There was a problem loading the background: {0}", ex.Message);
+                Logger.Instance.Warn("StackTrace: {0}", ex.StackTrace);
+#else
+                Logger.Instance.Warn("There was a problem loading the background");
+#endif
+            }
+        }
+
+        public virtual void ChangeBeatmapDisplay(ubeatBeatMap bm)
+        {
+            if (UbeatGame.Instance.SelectedBeatmap.SongPath != bm.SongPath)
+            {
+                UbeatGame.Instance.Player.Play(bm.SongPath);
+                UbeatGame.Instance.Player.soundOut.Volume = UbeatGame.Instance.GeneralVolume;
+            }
+
+            UbeatGame.Instance.SelectedBeatmap = bm;
+
+            ChangeBackground(bm.Background);
+        }
+
+        public bool isDisposing;
     }
 }

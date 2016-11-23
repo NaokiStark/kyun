@@ -18,11 +18,19 @@ namespace ubeat.Audio
 
         public int Read(float[] buffer, int offset, int count)
         {
-            var availableSamples = cachedSound.AudioData.Length - position;
-            var samplesToCopy = Math.Min(availableSamples, count);
-            Array.Copy(cachedSound.AudioData, position, buffer, offset, samplesToCopy);
-            position += samplesToCopy;
-            return (int)samplesToCopy;
+            try
+            {
+                var availableSamples = cachedSound.AudioData.Length - position;
+                var samplesToCopy = Math.Min(availableSamples, count);
+                Array.Copy(cachedSound.AudioData, position, buffer, offset, samplesToCopy);
+                position += samplesToCopy;
+                return (int)samplesToCopy;
+            }
+            catch
+            {
+                return 0;
+            }
+
         }
 
         public WaveFormat WaveFormat { get { return cachedSound.WaveFormat; } }

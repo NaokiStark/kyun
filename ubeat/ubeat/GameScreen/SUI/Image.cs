@@ -17,6 +17,7 @@ namespace ubeat.GameScreen.UI
             UbeatGame.Instance.Player.OnStopped += () => {
                 nextBeat = 0;
             };
+            BeatReact = true;
         }
 
 

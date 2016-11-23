@@ -68,6 +68,7 @@
             this.Text = "ubeat";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.LoadingWindow_Load);
+            this.Click += new System.EventHandler(this.LoadingWindow_Click);
             this.ResumeLayout(false);
 
         }

@@ -102,6 +102,14 @@ namespace ubeat.Audio
             }
         }
 
+        public long SongLength
+        {
+            get
+            {
+                return (long)audioFile.TotalTime.TotalMilliseconds;
+            }
+        }
+
         public float Volume
         {
             get

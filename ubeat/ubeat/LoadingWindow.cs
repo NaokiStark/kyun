@@ -18,7 +18,14 @@ namespace ubeat
 
         private void LoadingWindow_Load(object sender, EventArgs e)
         {
-            
+            ((Control)elementHost1).Click += LoadingWindow_Click;
+            label1.Click += LoadingWindow_Click;
+        }
+
+        private void LoadingWindow_Click(object sender, EventArgs e)
+        {
+            label1.Text = "POWERED BY PEPPY xdd";
+            UbeatGame.Instance.ppyMode = true;
         }
     }
 }

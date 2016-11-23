@@ -10,7 +10,7 @@ using ubeat.GameScreen.SUI.Buttons;
 
 namespace ubeat.GameScreen
 {
-    public partial class BeatmapScreen : IScreen
+    public partial class BeatmapScreen : ScreenBase
     {
 
         static IScreen instance = null;
@@ -21,7 +21,11 @@ namespace ubeat.GameScreen
                     instance = new BeatmapScreen();
 
                 return instance;
-            } 
+            }
+            set
+            {
+                instance = value;
+            }
         }
 
        
@@ -122,12 +126,12 @@ namespace ubeat.GameScreen
 
         }
 
-        bool EscapeAlredyPressed = false;
         private Texture2D lastFrameOfVid;
         private Texture2D bg;
 
         public override void Update(GameTime tm)
         {
+            if (isDisposing) return;
             if (Visible)
                 UbeatGame.Instance.kbmgr.Enabled = true;
 
@@ -144,7 +148,7 @@ namespace ubeat.GameScreen
         
         public override void Render()
         {
-            if (!Visible) return;
+            if (!Visible || isDisposing) return;
 
             if (Background != null)
             {

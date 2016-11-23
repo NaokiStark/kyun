@@ -62,32 +62,5 @@ namespace ubeat.GameScreen
                                 
             
         }
-
-        void ChangeBeatmapDisplay(ubeatBeatMap bm)
-        {
-
-            /*
-             * 
-             * //I don't need to load same song again
-            if (UbeatGame.Instance.SelectedBeatmap.SongPath != bm.SongPath)
-            {
-                UbeatGame.Instance.Player.Play(bm.SongPath);
-                UbeatGame.Instance.Player.soundOut.Volume = UbeatGame.Instance.GeneralVolume;
-            }
-
-            */
-            UbeatGame.Instance.SelectedBeatmap = bm;
-
-            try
-            {
-                FileStream bgFstr = new FileStream(bm.Background, FileMode.Open);
-                Background = Texture2D.FromStream(UbeatGame.Instance.GraphicsDevice, bgFstr);
-                bgFstr.Close();
-            }
-            catch
-            {
-                Logger.Instance.Warn("BACKGROUND NOT FOUND!!");
-            }
-        }
     }
 }

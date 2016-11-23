@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 using Troschuetz.Random.Generators;
 using ubeat.Beatmap;
-using ubeat.Extensions;
+using ubeat.Utils;
 
 namespace ubeat.GameScreen
 {
@@ -39,7 +39,17 @@ namespace ubeat.GameScreen
                 ChangeBeatmapDisplay(UbeatGame.Instance.SelectedBeatmap);
 
             UbeatGame.Instance.Player.OnStopped += player_OnStopped;
-            ntfr.ShowDialog("Now!                               More bugs!");
+
+
+            if (!UbeatGame.Instance.ppyMode)
+            {
+                ntfr.ShowDialog("Now!                               More bugs!");
+            }
+            else
+            {
+                ntfr.ShowDialog("You are in osu! v0.1 (ubeat codename)!, to show changes, click here.");
+            }
+            
 
         } 
 
@@ -51,6 +61,7 @@ namespace ubeat.GameScreen
 
         void StrBtn_Click(object sender, EventArgs e)
         {
+            if(UbeatGame.Instance.ppyMode) UbeatGame.Instance.ppyMode = false;
             ScreenManager.ChangeTo(BeatmapScreen.Instance);
         }
 
@@ -62,33 +73,42 @@ namespace ubeat.GameScreen
         public void PlayUbeatMain()
         {
             PlayingInit = true;
-            string[] songs = { "Shiawase no Sakura Namiki.mp3", "Sakura no THEME II.mp3" };
+            string[] songs = { "Shiawase no Sakura Namiki.mp3", "Sakura no THEME II.mp3", "RetroVision - Puzzle.mp3" };
+
+            
+
             string[] bgs = { "bg2.png", "bg.png" };
             float[] mspb = {483.90999274135f,428f};
+
+            if (UbeatGame.Instance.ppyMode)
+            {
+                songs[2] = "CirclesClick_xddd.mp3";
+                bgs[1] = "ppy.jpg";
+                mspb[1] = 326;
+            }
+
             int song = /*getRndNotRepeated(0, songs.Length - 1)*/1;
 
             ubeatBeatMap mainBm = new ubeatBeatMap()
             {
-                Artist = "",
+                Artist = (!UbeatGame.Instance.ppyMode)?"RetroVision":"Nekodex",
                 BPM = mspb[song],
-                SongPath = AppDomain.CurrentDomain.BaseDirectory + @"\Assets\"+songs[song],
+                SongPath = AppDomain.CurrentDomain.BaseDirectory + @"\Assets\"+songs[2],
                 ApproachRate=10,
                 Background = AppDomain.CurrentDomain.BaseDirectory + @"\Assets\" + bgs[song],
                 Creator ="Fabi",
                 OverallDifficulty=10,
                 Version="",
                 SleepTime=0,
-                Title = "",
+                Title = (!UbeatGame.Instance.ppyMode) ? "Puzzle": "Circles",
                 
             };
 
             UbeatGame.Instance.Player.Play(mainBm.SongPath);
             UbeatGame.Instance.Player.soundOut.Volume = UbeatGame.Instance.GeneralVolume;
             UbeatGame.Instance.SelectedBeatmap = mainBm;
+            ChangeBeatmapDisplay(mainBm);
 
-            Label1.Text = string.Join(" - ", UbeatGame.Instance.SelectedBeatmap.Artist, UbeatGame.Instance.SelectedBeatmap.Title);
-
-            ScreenInstance.LoadCurrentGameInstanceBackground();
         }
 
         void player_OnStopped()
@@ -125,7 +145,7 @@ namespace ubeat.GameScreen
         {
             Random c = new Random(DateTime.Now.Millisecond);
 
-            List<Beatmap.Mapset> bms = UbeatGame.Instance.AllBeatmaps;
+            List<Beatmap.Mapset> bms = InstanceManager.AllBeatmaps;
 
             if (bms.Count < 1) return;
             Beatmap.Mapset bsel;
@@ -149,21 +169,13 @@ namespace ubeat.GameScreen
 
             Label1.Text = ubm.Artist + " - "+ ubm.Title;
 
-            ScreenInstance.LoadCurrentGameInstanceBackground();
+            ChangeBackground(ubm.Background);
         }
 
-        void ChangeBeatmapDisplay(ubeatBeatMap bm)
+        public override void ChangeBeatmapDisplay(ubeatBeatMap bm)
         {
-            if (UbeatGame.Instance.SelectedBeatmap.SongPath != bm.SongPath)
-            {
-                UbeatGame.Instance.Player.Play(bm.SongPath);
-                UbeatGame.Instance.Player.soundOut.Volume = UbeatGame.Instance.GeneralVolume;
-            }
-
-            UbeatGame.Instance.SelectedBeatmap = bm;
+            base.ChangeBeatmapDisplay(bm);
             Label1.Text = bm.Artist + " - " + bm.Title;
-
-            ScreenInstance.LoadCurrentGameInstanceBackground();
         }
 
         #region Properties

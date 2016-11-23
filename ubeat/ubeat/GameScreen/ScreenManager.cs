@@ -16,6 +16,7 @@ namespace ubeat.GameScreen
 
         public static void Update(GameTime gm)
         {
+            if (((ScreenBase)ActualScreen).isDisposing) return;
             if (ActualScreen == null)
                 return;
 
@@ -24,6 +25,7 @@ namespace ubeat.GameScreen
 
         public static void Render()
         {
+            if (((ScreenBase)ActualScreen).isDisposing) return;
             if (ActualScreen == null)
                 return;
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
+using System;
 
 namespace ubeat.GameScreen.UI
 {
@@ -24,7 +24,8 @@ namespace ubeat.GameScreen.UI
         }
 
         private void generateTexture(int w, int h)
-        {            
+        {
+            if (UbeatGame.Instance.GraphicsDevice == null) return; //BUG ON CLOSE, WTF M8!!!11!!1!!
             this.Texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, w, h);
             Color[] dataBar = new Color[w * h];
             for (int i = 0; i < dataBar.Length; ++i) dataBar[i] = Color.Black * BackgroundOpacity;
@@ -33,7 +34,8 @@ namespace ubeat.GameScreen.UI
 
         public override void Update()
         {
-            
+            if (Disposing) return;
+
             if(lastStr != Text) {
                 Vector2 messStr;
                 if (Font == null)
@@ -42,7 +44,7 @@ namespace ubeat.GameScreen.UI
                     messStr = Font.MeasureString(this.Text) * Scale;
 
                 messStr = new Vector2(messStr.X + 15, messStr.Y + 10);
-                generateTexture((int)messStr.X, (int)messStr.Y);
+                generateTexture((int)messStr.X, (int)messStr.Y);    
             }        
 
             lastStr = Text;

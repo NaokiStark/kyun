@@ -10,6 +10,7 @@ using ubeat.UIObjs;
 using ubeat.Score;
 using ubeat.GameScreen.UI;
 using ubeat.Screen;
+using ubeat.GameScreen.SUI;
 
 namespace ubeat.GameScreen
 {
@@ -82,6 +83,7 @@ namespace ubeat.GameScreen
             {
                 grid.Add(new List<IHitObj>());
             }
+
             songGameTime = new GameTime();
             Health = new HealthBar();
             Health.OnFail += Health_OnFail;
@@ -95,6 +97,11 @@ namespace ubeat.GameScreen
             ScreenMode ActualMode = scmL[Settings1.Default.ScreenMode];
 
             Vector2 meas = UbeatGame.Instance.defaultFont.MeasureString("ubeat") * .85f;
+
+            Vector2 fSize = UbeatGame.Instance.defaultFont.MeasureString("00000000") * 1.5f;
+
+            songProgress = new ProgressBar((int)fSize.X+30-2,7);
+            songProgress.Position = new Vector2(ScoreDispl.Position.X+1, ScoreDispl.Position.Y + 44);
 
             FPSMetter = new Label();
             FPSMetter.Text = "fps";
@@ -418,6 +425,7 @@ namespace ubeat.GameScreen
             if (!Paused)
             {
                 pos = GameTimeTotal;
+                songProgress.Value = ((float)pos / (float)UbeatGame.Instance.Player.SongLength) * 100f;
                 if (actualIndex <= bemap.HitObjects.Count - 1)
                 {
                     long startTime = (long)bemap.HitObjects[actualIndex].StartTime - (long)(1950 - bemap.ApproachRate * 150);
@@ -617,6 +625,8 @@ namespace ubeat.GameScreen
 
             if (Health.Enabled || cooldown)
                 UbeatGame.Instance.spriteBatch.Draw(bg, new Vector2(xi, yi), Color.White * ((onbreak) ? 0f : .75f));
+
+            songProgress.Render();
 
             int objectsCount = 0;
             for (int a = 0; a < grid.Count; a++)
@@ -884,6 +894,7 @@ namespace ubeat.GameScreen
         }
         float op;
         long lastBreak = 0;
+        private ProgressBar songProgress;
         #endregion
 
         public bool SpaceAlredyPressed { get; set; }

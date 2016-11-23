@@ -132,7 +132,6 @@
     <Compile Include="ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas\SuperSecretSettings.Designer.cs">
       <DependentUpon>SuperSecretSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="Extensions\IScreenExtensions.cs" />
     <Compile Include="GameScreen\BeatmapScreen.cs" />
     <Compile Include="GameScreen\BeatmapScreen.Desing.cs" />
     <Compile Include="GameScreen\Grid.cs" />
@@ -158,6 +157,7 @@
     <Compile Include="GameScreen\SUI\ObjectListbox.cs" />
     <Compile Include="GameScreen\SUI\Listbox.cs" />
     <Compile Include="GameScreen\SUI\ListboxDiff.cs" />
+    <Compile Include="GameScreen\SUI\ProgressBar.cs" />
     <Compile Include="GameScreen\SUI\RoundedRectangle.cs" />
     <Compile Include="LoadingWindow.cs">
       <SubType>Form</SubType>
@@ -197,6 +197,7 @@
     <Compile Include="Utils\BeatmapSearchEngine.cs" />
     <Compile Include="Utils\ContentLoader.cs" />
     <Compile Include="Utils\FrameCounter.cs" />
+    <Compile Include="Utils\InstanceManager.cs" />
     <Compile Include="Utils\KeyboardManager.cs" />
     <Compile Include="Utils\ReplayBuilder.cs" />
     <Compile Include="Utils\StringHelper.cs" />
@@ -286,6 +287,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Extensions\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />

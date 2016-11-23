@@ -1,11 +1,12 @@
 ﻿using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace ubeat.Audio
 {
-    public class CachedSound
+    public class CachedSound : IDisposable
     {
         public float[] AudioData { get; private set; }
         public WaveFormat WaveFormat { get; private set; }
@@ -32,5 +33,10 @@ namespace ubeat.Audio
         }
 
         public WdlResamplingSampleProvider mfr { get; set; }
+
+        public void Dispose()
+        {
+            AudioData = null;
+        }
     }
 }

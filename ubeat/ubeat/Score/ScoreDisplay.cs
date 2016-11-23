@@ -67,6 +67,13 @@ namespace ubeat.Score
             Color[] data = new Color[width * height];
             for (int i = 0; i < data.Length; ++i) data[i] = Color.Black;
             this.Texture.SetData(data);
+
+
+            int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
+
+            Vector2 fSize = UbeatGame.Instance.defaultFont.MeasureString(RollingScore.ToString("00000000")) * 1.5f;
+
+            Position = new Vector2(screenWidth - (int)fSize.X - 30, 0);
         }
 
         public ulong TotalScore
@@ -92,6 +99,7 @@ namespace ubeat.Score
             Vector2 fSize = UbeatGame.Instance.defaultFont.MeasureString(RollingScore.ToString("00000000")) * 1.5f;
 
             Rectangle rect = new Rectangle(screenWidth - (int)fSize.X - 30, 0, (int)fSize.X + 30, (int)fSize.Y);
+            
             UbeatGame.Instance.spriteBatch.Draw(this.Texture, rect, Color.White * .75f);
 
             //Draw score

@@ -5,8 +5,9 @@ using ubeat.GameScreen.SUI;
 
 namespace ubeat.GameScreen
 {
-    public class ScreenUIObject : UIObjs.IUIObject
+    public class ScreenUIObject : UIObjs.IUIObject, IDisposable
     {
+        public bool Disposing { get; set; }
 
         public float Scale = 1;
 
@@ -134,6 +135,11 @@ namespace ubeat.GameScreen
             
             Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, (int)(this.Texture.Width*Scale), (int)(this.Texture.Height*Scale));
             UbeatGame.Instance.spriteBatch.Draw(this.Texture, rg, Color.White);
+        }
+
+        public void Dispose()
+        {
+            Disposing = true;
         }
     }
 }

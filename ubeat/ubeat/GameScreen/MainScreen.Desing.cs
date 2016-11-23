@@ -15,6 +15,11 @@ namespace ubeat.GameScreen
     {
         public void LoadInterface()
         {
+            if (UbeatGame.Instance.ppyMode)
+            {
+                Audio.AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.WelcomeToOsuXd);
+
+            }
             Controls = new List<ScreenUIObject>();
 
             ScreenMode ActualMode = ScreenModeManager.GetActualMode();

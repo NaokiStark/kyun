@@ -1,14 +1,18 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
 using System.Reflection;
+using ubeat.Utils;
 
 namespace ubeat
 {
 #if WINDOWS || XBOX
-    static class Program
+    internal static class Program
     {
         [STAThread]
         static void Main(string[] args)
         {
+            
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Version vr = Assembly.GetExecutingAssembly().GetName().Version;
 
@@ -31,10 +35,9 @@ namespace ubeat
 
             try
             {
-                using (var game = new UbeatGame())
-                {
-                    game.Run();
-                }
+
+                using (InsManager = new InstanceManager()) { } ;
+                
             }
             catch(Exception e)
             {
@@ -45,8 +48,14 @@ namespace ubeat
                 Console.Read();
                 return;
             }
-           
+
+            Logger.Instance.Debug("Exited");
+            Environment.Exit(0); //Kill all subprocess
+
         }
+
+        static InstanceManager InsManager = null;
+
     }
 #endif
 }
