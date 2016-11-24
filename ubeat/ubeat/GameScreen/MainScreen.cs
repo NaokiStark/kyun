@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Troschuetz.Random.Generators;
 using ubeat.Beatmap;
 using ubeat.Utils;
+using System.Threading;
 
 namespace ubeat.GameScreen
 {
@@ -67,7 +68,21 @@ namespace ubeat.GameScreen
 
         void ExtBtn_Click(object sender, EventArgs e)
         {
-            UbeatGame.Instance.Exit();
+            if (UbeatGame.Instance.ppyMode)
+            {
+                Thread tr = new Thread(new ThreadStart(()=> {
+                    UbeatGame.Instance.Player.Volume = .05f;
+                    Audio.AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.SeeyaOsu);
+                    Thread.Sleep(2000);
+                    UbeatGame.Instance.Exit();
+                }));
+                tr.Start();
+            }
+            else
+            {
+                UbeatGame.Instance.Exit();
+            }
+            
         }
 
         public void PlayUbeatMain()

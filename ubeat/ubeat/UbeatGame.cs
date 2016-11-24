@@ -421,6 +421,8 @@ namespace ubeat
         public CachedSound HolderTick;
         public CachedSound SelectorHit;
         public CachedSound ScrollHit;
+        public CachedSound SeeyaOsu;
+
 
         public CachedSound WelcomeToOsuXd;
 
@@ -508,6 +510,7 @@ namespace ubeat
             SelectorHit = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\SelectorHit.wav");
             ScrollHit = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\Scroll.wav");
             WelcomeToOsuXd = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\welcome.mp3");
+            SeeyaOsu = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\seeya.mp3");
 
 
             SoundsEff.Add(HolderFilling);
@@ -570,7 +573,7 @@ namespace ubeat
 
             Textures.Clear();
 
-            Player.WaveOut.Dispose();
+            Player?.WaveOut?.Dispose();
 
             
 
