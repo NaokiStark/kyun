@@ -17,15 +17,15 @@
 
 # Ubeat
 
-#![Dd]ebug/Assets/
+![Dd]ebug/Assets/
 ![Dd]ebug/Maps/
-#![Dd]ebug/*.wmv
-#![Dd]ebug/*.mp3
+![Dd]ebug/*.wmv
+![Dd]ebug/*.mp3
 
-#![Rr]elease/Assets/
+![Rr]elease/Assets/
 ![Rr]elease/Maps/
-#![Rr]elease/*.wmv
-#![Rr]elease/*.mp3
+![Rr]elease/*.wmv
+![Rr]elease/*.mp3
 
 # Continue build results
 
