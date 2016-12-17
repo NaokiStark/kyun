@@ -19,7 +19,7 @@ namespace ubeat.GameScreen
             {
                 if (instance == null)
                     instance = new BeatmapScreen();
-
+                UbeatGame.Instance.kbmgr.Enabled = true;
                 return instance;
             }
             set
@@ -55,19 +55,21 @@ namespace ubeat.GameScreen
             filledRect1 = new FilledRectangle(new Vector2(actualMode.Width, 4), Color.SpringGreen);
             filledRect1.Position = new Vector2(0, 96);
 
-            lblTitleDesc = new Label(.98f) { 
-                Scale=1.2f,
-                Text="",
-                Position = new Vector2(0,0),
-                Size = new Vector2(actualMode.Width, 96)
+            lblTitleDesc = new Label(.98f) {
+                Scale = 1f,
+                Text = "",
+                Position = new Vector2(0, 0),
+                Size = new Vector2(actualMode.Width, 96),
+                Font = UbeatGame.Instance.TitleFont
             };
 
-            lblSearch = new Label(.98f)
+            lblSearch = new Label(0f)
             {
-                Scale = .8f,
+                Scale = 1,
                 Text = "",
-                Position = new Vector2(actualMode.Width/2, 48), 
-                Centered=true
+                Position = new Vector2(actualMode.Width / 2, 48),
+                Centered = true,
+                Font = UbeatGame.Instance.SettingsFont
             };
 
             autoBtn = new AutoModeButton() {
@@ -96,8 +98,8 @@ namespace ubeat.GameScreen
 
         private void BeatmapScreen_OnBackSpacePress(object sender, EventArgs e)
         {
-            BackPressed(new MainScreen(false));
-
+            //BackPressed(new MainScreen(false));
+            BackPressed(MainScreen.Instance);
         }
 
         void autoBtn_Click(object sender, EventArgs e)
@@ -132,8 +134,7 @@ namespace ubeat.GameScreen
         public override void Update(GameTime tm)
         {
             if (isDisposing) return;
-            if (Visible)
-                UbeatGame.Instance.kbmgr.Enabled = true;
+                        
 
             if(UbeatGame.Instance.Player.PlayState == NAudio.Wave.PlaybackState.Stopped)
             {
@@ -160,7 +161,7 @@ namespace ubeat.GameScreen
                 UbeatGame.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
             }
 
-            RenderVideoFrame();
+            //RenderVideoFrame();
 
             foreach (ScreenUIObject ctr in Controls)
                 ctr.Render();

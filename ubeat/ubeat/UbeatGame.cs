@@ -11,13 +11,13 @@ using Redux.Utilities.Managers;
 using ubeat.Audio;
 using ubeat.GameScreen;
 using ubeat.Utils;
-
+using NAudio.Wave.SampleProviders;
 
 namespace ubeat
 {
     public class UbeatGame : Game
     {
-
+        //Puto
         LoadingWindow lwnd;
         GraphicsDeviceManager graphics;
         public SpriteBatch spriteBatch;
@@ -91,6 +91,9 @@ namespace ubeat
 
             Content.RootDirectory = "Content";
 
+            //graphics.GraphicsProfile = GraphicsProfile.HiDef;
+
+           
 
             this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 60.0f);
 
@@ -139,11 +142,32 @@ namespace ubeat
             base.Initialize();
             Player = new NPlayer();
 
+#if DEBUG
+            Logger.Instance.Debug("!!!! GRAPHIC CARD !!!!");
+            Logger.Instance.Debug("======================");
+            Logger.Instance.Debug("");
+
+            Logger.Instance.Debug(graphics.GraphicsDevice.Adapter.Description);
+            Logger.Instance.Debug(graphics.GraphicsDevice.Adapter.DeviceName);
+            Logger.Instance.Debug(graphics.GraphicsDevice.Adapter.VendorId.ToString());
+            Logger.Instance.Debug((graphics.GraphicsDevice.Adapter.IsDefaultAdapter)?"Default adapter: True": "Default adapter: False");
+
+           
+
+            Logger.Instance.Debug("");
+            Logger.Instance.Debug("======================");
+
+#endif
+
+            graphics.PreferMultiSampling = true;
+            graphics.ApplyChanges();
+            this.IsFixedTimeStep = true;
+
             //Loads Beatmaps
             Logger.Instance.Info("");
             Logger.Instance.Info("Loading beatmaps.");
             Logger.Instance.Info("");
-            
+
 
             if (!InstanceManager.Instance.IntancedBeatmaps)
             {
@@ -214,6 +238,7 @@ namespace ubeat
                 }
             }
             loadLocalMaps();
+
 
 
             lwnd.Close();
@@ -339,6 +364,7 @@ namespace ubeat
             }
 
             ToggleVSync(Settings1.Default.VSync);
+            ToggleFullscreen(Settings1.Default.FullScreen);
 
             this.graphics.ApplyChanges();
 
@@ -361,7 +387,10 @@ namespace ubeat
 
             GeneralVolume = Settings1.Default.Volume;
             this.FistLoad = true;
-            ScreenManager.ChangeTo(new MainScreen());
+            ScreenManager.ChangeTo(MainScreen.Instance);
+
+
+            
         }
 
         void showMain()
@@ -407,9 +436,14 @@ namespace ubeat
         public Texture2D AutoModeButtonSel;
         public Texture2D Logo;
         public Texture2D SpaceSkip;
+        public Texture2D TopEffect;
+
+
         //public SoundEffect ButtonOver;
         public SpriteFont GeneralBig;
         public SpriteFont ListboxFont;
+        public SpriteFont SettingsFont;
+        public SpriteFont TitleFont;
         /*update NAudio*/
 
         public CachedSound ButtonHit;
@@ -431,6 +465,10 @@ namespace ubeat
 
         protected override void LoadContent()
         {
+            Screen.ScreenMode actmode = Screen.ScreenModeManager.GetActualMode();
+
+            ScreenManager.Start();
+
             Logger.Instance.Info("Loading textures");
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -446,6 +484,17 @@ namespace ubeat
             buttonHolder_0 = Content.Load<Texture2D>("holder_0.5");
             waitDefault_0 = Content.Load<Texture2D>("approach0.5");
             HolderFillDeff_0 = Content.Load<Texture2D>("HolderFill0.5");
+
+            TopEffect = new Texture2D(GraphicsDevice, actmode.Width, actmode.Height);
+
+            Color[] txClr = new Color[actmode.Width * actmode.Height];
+            for (int a = 0; a < txClr.Length; a++)
+            {
+                //txClr[a] = Color.FromNonPremultiplied(40, 19, 173, 255);
+                txClr[a] = Color.White;
+            }
+            TopEffect.SetData<Color>(txClr);
+
 
 
             radiance = Content.Load<Texture2D>("radiance");
@@ -471,6 +520,8 @@ namespace ubeat
             defaultFont = Content.Load<SpriteFont>("SpriteFont1");
             GeneralBig = Content.Load<SpriteFont>("General");
             ListboxFont = Content.Load<SpriteFont>("Listbox");
+            SettingsFont = Content.Load<SpriteFont>("SettingsDisplayFont");
+            TitleFont = Content.Load<SpriteFont>("TitleFont");
 
             Textures.Add(StartButton);
             Textures.Add(ExitButton);
@@ -528,9 +579,11 @@ namespace ubeat
             Logger.Instance.Info("Done.");
             Logger.Instance.Info("");
             Logger.Instance.Info("----------------");
+
+
         }
 
-      
+
         protected override void UnloadContent()
         {
             if (Player != null)
@@ -585,14 +638,25 @@ namespace ubeat
         #region GameUpdates
         protected override void Update(GameTime gameTime)
         {
+            System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(Window.Handle);
+
+            if (Player.PlayState == NAudio.Wave.PlaybackState.Playing)
+            {
+                FormGame.Text = "ubeat - Playing: " + SelectedBeatmap.Artist + " - " + SelectedBeatmap.Title;
+            }
+            else
+            {
+                FormGame.Text = "ubeat";
+            }
+
             //Update Gametime FIRST
             GameTimeP = gameTime;
 
             if (Keyboard.GetState().IsKeyDown(Keys.Add))
-                GeneralVolume += .02f;
+                GeneralVolume = GeneralVolume + (gameTime.ElapsedGameTime.Milliseconds)*.0005f;
 
             if (Keyboard.GetState().IsKeyDown(Keys.Subtract))
-                GeneralVolume -= .02f;
+                GeneralVolume = GeneralVolume -(gameTime.ElapsedGameTime.Milliseconds) * .0005f; 
 
             elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -602,8 +666,8 @@ namespace ubeat
             ScreenManager.Update(gameTime);
 
 
-
             base.Update(gameTime);
+            frameCounter.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -611,18 +675,21 @@ namespace ubeat
             GraphicsDevice.Clear(Color.Black);
 
 
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, DepthStencilState.None, RasterizerState.CullCounterClockwise);
+
+
 
             ScreenManager.Render();
+
+            //spriteBatch.Draw(TopEffect, new Rectangle(0, 0, TopEffect.Width, TopEffect.Height), Color.White*.145f);
+
+            //spriteBatch.Draw(TopEffect, new Rectangle(0, 0, TopEffect.Width, TopEffect.Height), Color.White * (Player.PeakVol));
 
             spriteBatch.End();
 
             base.Draw(gameTime);
 
-
-            var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            frameCounter.Update(deltaTime);
+            
         }
 
         #endregion
@@ -666,6 +733,9 @@ namespace ubeat
 
         public void ToggleFullscreen(bool enabled = false)
         {
+            this.graphics.IsFullScreen = enabled;
+            this.graphics.ApplyChanges();
+
             System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Form.FromHandle(Window.Handle);
             if (enabled)
             {
@@ -674,7 +744,9 @@ namespace ubeat
             }
             else
             {
-                if (Screen.ScreenModeManager.GetSupportedModes()[Settings1.Default.VideoMode].WindowMode == Screen.WindowDisposition.Windowed)
+                Screen.ScreenMode modd = Screen.ScreenModeManager.GetActualMode();
+
+                if (modd.WindowMode == Screen.WindowDisposition.Windowed)
                 {
                     FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
                     FormGame.WindowState = System.Windows.Forms.FormWindowState.Normal;
@@ -682,23 +754,21 @@ namespace ubeat
                 else
                 {
                     FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-                    FormGame.WindowState = System.Windows.Forms.FormWindowState.Normal;
+                    FormGame.WindowState = System.Windows.Forms.FormWindowState.Maximized;
                 }
             }
 
-            this.graphics.IsFullScreen = enabled;
-            this.graphics.ApplyChanges();
+            
         }
+
+
 
         public void ChangeFrameRate(float fps)
         {
-            if (fps > 250)
-                this.IsFixedTimeStep = false;
-            else
-            {
-                this.IsFixedTimeStep = true;
-                this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / fps);
-            }
+          
+               
+            TargetElapsedTime = TimeSpan.FromSeconds(1.0f / fps);
+  
         }
 
         public VolumeDlg VolDlg { get; set; }

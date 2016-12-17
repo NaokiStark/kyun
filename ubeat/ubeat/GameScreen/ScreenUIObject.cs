@@ -137,6 +137,11 @@ namespace ubeat.GameScreen
             UbeatGame.Instance.spriteBatch.Draw(this.Texture, rg, Color.White);
         }
 
+        public void _OnClick()
+        {
+            Click?.Invoke(this, new EventArgs());
+        }
+
         public void Dispose()
         {
             Disposing = true;

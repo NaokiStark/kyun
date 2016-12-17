@@ -4,6 +4,7 @@ using System.Linq;
 using NAudio;
 using NAudio.Wave;
 using System.IO;
+using NAudio.Wave.SampleProviders;
 
 namespace ubeat.Audio
 {
@@ -11,9 +12,13 @@ namespace ubeat.Audio
     {
         IWavePlayer waveOut;
         AudioFileReader audioFile;
+        MeteringSampleProvider meterSampleProvider;
 
         public delegate void PlayerEvents();
         public event PlayerEvents OnStopped;
+
+        public float PeakVol = 0;
+
 
         /// <summary>
         /// Adapt to old code
@@ -165,12 +170,20 @@ namespace ubeat.Audio
 
             waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 2);
             audioFile = fromStream;
+            meterSampleProvider = new MeteringSampleProvider(audioFile);
+           // meterSampleProvider.SamplesPerNotification = 60;
+            meterSampleProvider.StreamVolume += MeterSampleProvider_StreamVolume;
 
             audioFile.Volume = vol;
-            waveOut.Init(audioFile);
+            waveOut.Init(meterSampleProvider);
             /*if (Loop)
                 waveOut.PlaybackStopped += waveOut_PlaybackStopped;*/
             waveOut.Play();
+        }
+
+        private void MeterSampleProvider_StreamVolume(object sender, StreamVolumeEventArgs e)
+        {
+            PeakVol = normalize(e.MaxSampleValues[0]);
         }
 
         public void Play(string fileName = null)
@@ -187,13 +200,31 @@ namespace ubeat.Audio
             if (fileName != null)
                 ActualSong = fileName;
 
-            waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared,2);      
-            audioFile = new AudioFileReader(ActualSong);
+            waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared,2);
             
+            audioFile = new AudioFileReader(ActualSong);
+            meterSampleProvider = new MeteringSampleProvider(audioFile);
+            meterSampleProvider.SamplesPerNotification = 120;
+            meterSampleProvider.StreamVolume += MeterSampleProvider_StreamVolume;
+
             audioFile.Volume = vol;
-            waveOut.Init(audioFile);
+            waveOut.Init(meterSampleProvider);
             waveOut.PlaybackStopped += waveOut_PlaybackStopped;
             waveOut.Play();
+        }
+
+        public float normalize(float value)
+        {
+            float rawMax = 1;
+            float targetMax = 10;
+
+            //This is the maximum volume reduction
+            float maxReduce = 1 - targetMax / (float)rawMax;
+
+            float abs = Math.Abs(value);
+            double factor = (maxReduce * abs / (double)rawMax);
+
+            return (float)Math.Round((1 - factor) * value);
         }
 
         void waveOut_PlaybackStopped(object sender, StoppedEventArgs e)

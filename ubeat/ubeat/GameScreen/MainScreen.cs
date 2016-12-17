@@ -11,6 +11,23 @@ namespace ubeat.GameScreen
 {
     public partial class MainScreen : ScreenBase
     {
+
+        static IScreen instance = null;
+        public static IScreen Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new MainScreen();
+                ((MainScreen)instance).leaving = false;
+                return instance;
+            }
+            set
+            {
+                instance = value;
+            }
+        }
+
         public MainScreen(bool LoadRandom=true) 
             : base("MainScreen")
         {
@@ -57,38 +74,44 @@ namespace ubeat.GameScreen
         void CnfBtn_Click(object sender, EventArgs e)
         {
             /*new ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas.Settings().Show();*/
-            ScreenManager.ChangeTo(new SettingsScreen());
+            //ScreenManager.ChangeTo(new SettingsScreen());
+            ScreenManager.ChangeTo(SettingsScreen.Instance);
         }
 
         void StrBtn_Click(object sender, EventArgs e)
         {
+            leaving = true;
             if(UbeatGame.Instance.ppyMode) UbeatGame.Instance.ppyMode = false;
             ScreenManager.ChangeTo(BeatmapScreen.Instance);
         }
 
         void ExtBtn_Click(object sender, EventArgs e)
         {
+
+            leaving = true;
+
             if (UbeatGame.Instance.ppyMode)
             {
                 Thread tr = new Thread(new ThreadStart(()=> {
                     UbeatGame.Instance.Player.Volume = .05f;
                     Audio.AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.SeeyaOsu);
-                    Thread.Sleep(2000);
-                    UbeatGame.Instance.Exit();
+                    Thread.Sleep(1000);
+                    ScreenManager.ChangeTo(new LeaveScreen());
                 }));
                 tr.Start();
             }
             else
             {
-                UbeatGame.Instance.Exit();
+                ScreenManager.ChangeTo(new LeaveScreen());
             }
+
             
         }
 
         public void PlayUbeatMain()
         {
             PlayingInit = true;
-            string[] songs = { "Shiawase no Sakura Namiki.mp3", "Sakura no THEME II.mp3", "RetroVision - Puzzle.mp3" };
+            string[] songs = { "Shiawase no Sakura Namiki.mp3", "Sakura no THEME II.mp3", "On_the_Bach.mp3" };
 
             
 
@@ -106,7 +129,7 @@ namespace ubeat.GameScreen
 
             ubeatBeatMap mainBm = new ubeatBeatMap()
             {
-                Artist = (!UbeatGame.Instance.ppyMode)?"RetroVision":"Nekodex",
+                Artist = (!UbeatGame.Instance.ppyMode)?"Jingle Punks":"Nekodex",
                 BPM = mspb[song],
                 SongPath = AppDomain.CurrentDomain.BaseDirectory + @"\Assets\"+songs[2],
                 ApproachRate=10,
@@ -115,7 +138,7 @@ namespace ubeat.GameScreen
                 OverallDifficulty=10,
                 Version="",
                 SleepTime=0,
-                Title = (!UbeatGame.Instance.ppyMode) ? "Puzzle": "Circles",
+                Title = (!UbeatGame.Instance.ppyMode) ? "On the Bach" : "Circles",
                 
             };
 
@@ -128,11 +151,12 @@ namespace ubeat.GameScreen
 
         void player_OnStopped()
         {
-            if (!Visible) return;
+            if (!Visible || leaving) return;
 
+            /*
             if (PlayingInit)
-                UbeatGame.Instance.Player.Play(UbeatGame.Instance.SelectedBeatmap.SongPath);
-            else
+                PlayUbeatMain();
+            else */
                 playRandomSong();
         }
 
@@ -196,6 +220,8 @@ namespace ubeat.GameScreen
         #region Properties
 
         bool noLoadRnd = false;
+        private bool leaving;
+
         bool PlayingInit { get; set; }
 
         #endregion

@@ -54,8 +54,16 @@ namespace ubeat.GameScreen
                 UbeatGame.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
             }
 
-            foreach (ScreenUIObject obj in Controls)
-                obj.Render();
+            try
+            {
+                foreach (ScreenUIObject obj in Controls)
+                    obj.Render();
+            }
+            catch
+            {
+
+            }
+            
         }
 
         public virtual void Update(GameTime tm)
@@ -75,6 +83,12 @@ namespace ubeat.GameScreen
                 }
             }
 
+            UpdateControls();
+            
+        }
+
+        public virtual void UpdateControls()
+        {
             foreach (ScreenUIObject obj in Controls)
                 obj.Update();
         }

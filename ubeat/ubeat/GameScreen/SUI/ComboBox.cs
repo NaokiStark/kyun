@@ -15,8 +15,7 @@ namespace ubeat.GameScreen.SUI
         //And listbox (and make a combo (genius))
         ObjectListbox baseListbox;
 
-        public new event EventHandler Click;
-
+      
         public event EventHandler IndexChaged;
 
         public string Text
@@ -99,7 +98,7 @@ namespace ubeat.GameScreen.SUI
 
             displayLabel = new UI.Label(0.8f);
             displayLabel.Position = position;
-            
+            displayLabel.Font = font;
             //TODO STYLING
 
             baseListbox.IndexChanged += BaseListbox_IndexChanged;
@@ -112,7 +111,7 @@ namespace ubeat.GameScreen.SUI
             baseListbox.Position = new Vector2(displayLabel.Position.X, displayLabel.Position.Y + displayLabel.Texture.Height);
             baseListbox.Visible = !baseListbox.Visible;
 
-            Click?.Invoke(this, new EventArgs());
+            _OnClick();
         }
 
         private void BaseListbox_IndexChanged(object sender, EventArgs e)
@@ -141,9 +140,10 @@ namespace ubeat.GameScreen.SUI
             displayLabel.Update();
             if (baseListbox.Visible)
             {
-                baseListbox.width = displayLabel.TotalSize.X;
-                baseListbox.Update();
+                baseListbox.width = displayLabel.TotalSize.X + 60;
+                
             }
+            baseListbox.Update();
         }
     }
 }

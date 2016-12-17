@@ -5,7 +5,7 @@
     <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ubeat</RootNamespace>
     <AssemblyName>ubeat</AssemblyName>
@@ -120,6 +120,7 @@
     <Compile Include="Beatmap\IHitObj.cs" />
     <Compile Include="Beatmap\Mapset.cs" />
     <Compile Include="Beatmap\ubeatBeatMap.cs" />
+    <Compile Include="Dialog\DialogLayer.cs" />
     <Compile Include="ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas\Settings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -135,6 +136,7 @@
     <Compile Include="GameScreen\BeatmapScreen.cs" />
     <Compile Include="GameScreen\BeatmapScreen.Desing.cs" />
     <Compile Include="GameScreen\Grid.cs" />
+    <Compile Include="GameScreen\LeaveScreen.cs" />
     <Compile Include="GameScreen\MainScreen.cs" />
     <Compile Include="GameScreen\ScoreScreen.cs" />
     <Compile Include="GameScreen\ScoreScreen.Desing.cs" />
@@ -149,6 +151,7 @@
     <Compile Include="GameScreen\SUI\Buttons\ConfigButton.cs" />
     <Compile Include="GameScreen\SUI\Buttons\ExitButton.cs" />
     <Compile Include="GameScreen\SUI\Buttons\StartButton.cs" />
+    <Compile Include="GameScreen\SUI\CheckBox.cs" />
     <Compile Include="GameScreen\SUI\ComboBox.cs" />
     <Compile Include="GameScreen\SUI\ElementExample.cs" />
     <Compile Include="GameScreen\SUI\FilledRectangle.cs" />
@@ -200,6 +203,7 @@
     <Compile Include="Utils\InstanceManager.cs" />
     <Compile Include="Utils\KeyboardManager.cs" />
     <Compile Include="Utils\ReplayBuilder.cs" />
+    <Compile Include="Utils\ReplayParser.cs" />
     <Compile Include="Utils\StringHelper.cs" />
     <Compile Include="Utils\VerticalProgressBar.cs">
       <SubType>Component</SubType>

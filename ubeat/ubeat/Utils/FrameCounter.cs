@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ubeat.Utils
@@ -10,8 +11,9 @@ namespace ubeat.Utils
 
         }
 
-        public void Update(float deltaTime)
+        public void Update(GameTime deltaTime)
         {
+            /*
             CurrentFramesPerSecond = 1.0f / deltaTime;
 
             _sampleBuffer.Enqueue(CurrentFramesPerSecond);
@@ -27,7 +29,11 @@ namespace ubeat.Utils
             }
 
             TotalFrames++;
-            TotalSeconds += deltaTime;
+            TotalSeconds += deltaTime;*/
+            
+            AverageFramesPerSecond = (double)1 / deltaTime.ElapsedGameTime.TotalSeconds;
+            
+            //frameCounter = 0;
         }
 
         #region Constants
@@ -39,6 +45,7 @@ namespace ubeat.Utils
         #region Private fields
 
         private Queue<float> _sampleBuffer = new Queue<float>();
+        private float frameCounter;
 
         #endregion
 
@@ -46,7 +53,7 @@ namespace ubeat.Utils
 
         public long TotalFrames { get; private set; }
         public float TotalSeconds { get; private set; }
-        public float AverageFramesPerSecond { get; private set; }
+        public double AverageFramesPerSecond { get; private set; }
         public float CurrentFramesPerSecond { get; private set; }
 
         #endregion

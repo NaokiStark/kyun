@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
-using ubeat.Beatmap;
+﻿using System;
 using ubeat.Screen;
 using ubeat.GameScreen.SUI;
 using System.Collections.Generic;
@@ -12,6 +9,23 @@ namespace ubeat.GameScreen
 {
     public partial class SettingsScreen : ScreenBase
     {
+
+        static IScreen instance = null;
+        public static IScreen Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new SettingsScreen();
+
+                return instance;
+            }
+            set
+            {
+                instance = value;
+            }
+        }
+
         public SettingsScreen() 
             : base("SettingsScreen")
         {

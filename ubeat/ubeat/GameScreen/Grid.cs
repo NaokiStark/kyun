@@ -121,13 +121,7 @@ namespace ubeat.GameScreen
             lastUpdate = now;
         }
 
-        void ResetSongGameTime()
-        {
-            lastUpdate = null;
-            timePosition = new TimeSpan();
-
-            UpdateSongGameTime();
-        }
+     
 
         void cleanObjects()
         {
@@ -234,6 +228,12 @@ namespace ubeat.GameScreen
 
         public void Play(Beatmap.ubeatBeatMap beatmap = null, bool automode = false)
         {
+            UbeatGame.Instance.Player.Stop();
+            Health.Reset();
+            Health.Enabled = false;
+            inGame = false;
+            endedd = null;
+            Paused = false;
             endedd += Grid_endedd;
             UbeatGame.Instance.IsMouseVisible = false;
             ScoreDispl.Reset();
@@ -246,7 +246,9 @@ namespace ubeat.GameScreen
             cooldown = true;
             autoMode = automode;
             addTextureG();
-            UbeatGame.Instance.Player.Stop();
+
+            GameTimeTotal = 0;
+            
             if (beatmap != null)
                 bemap = beatmap;
             //Start
@@ -261,19 +263,14 @@ namespace ubeat.GameScreen
                 Logger.Instance.Warn("this beatmap has not image");
             }
 
-            System.Threading.Thread th = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
-            {
-                ResetSongGameTime();
-                inGame = true;
-            }));
+
             Logger.Instance.Info("Game Started: {0} - {1} [{2}]", bemap.Artist, bemap.Title, bemap.Version);
 
             if (UbeatGame.Instance.VideoEnabled)
                 if (bemap.Video != null)
                     if (bemap.Video != "")
                         videoplayer.Play(bemap.Video);
-
-            th.Start();
+            inGame = true;
         }
 
         void Grid_endedd()
@@ -500,7 +497,8 @@ namespace ubeat.GameScreen
                             bemap.HitObjects[a].Reset();
                         }
                         videoplayer.Stop();
-                        UbeatGame.Instance.GameStart(this.bemap);
+                        //UbeatGame.Instance.GameStart(this.bemap);
+                        Play(null,autoMode);
                     }
                 }
                 else

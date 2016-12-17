@@ -13,7 +13,7 @@ namespace ubeat
         static void Main(string[] args)
         {
             
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            //Console.OutputEncoding = System.Text.Encoding.UTF8;
             Version vr = Assembly.GetExecutingAssembly().GetName().Version;
 
             Logger.Instance.Info("");
@@ -45,7 +45,7 @@ namespace ubeat
                 Logger.Instance.Severe(e.Message);
                 Logger.Instance.Severe(e.StackTrace);
                 Logger.Instance.Info("Press any key to exit");
-                Console.Read();
+                //Console.Read();
                 return;
             }
 

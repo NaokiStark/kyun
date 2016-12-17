@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
+using ubeat.Utils;
 
 namespace ubeat.GameScreen.UI
 {
@@ -19,17 +21,19 @@ namespace ubeat.GameScreen.UI
         {
             this.Text = ""; //WTF NULL
             BackgroundOpacity = backgroundOpacity;
-            generateTexture(5, 5);
+            generateTexture(1, 1);
             Scale = 1;
         }
 
         private void generateTexture(int w, int h)
         {
+            
             if (UbeatGame.Instance.GraphicsDevice == null) return; //BUG ON CLOSE, WTF M8!!!11!!1!!
-            this.Texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, w, h);
+            Texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, w, h);
             Color[] dataBar = new Color[w * h];
             for (int i = 0; i < dataBar.Length; ++i) dataBar[i] = Color.Black * BackgroundOpacity;
             this.Texture.SetData(dataBar);
+           
         }
 
         public override void Update()
@@ -72,7 +76,7 @@ namespace ubeat.GameScreen.UI
             if (Size == null || Size == Vector2.Zero)
             {
                 UbeatGame.Instance.spriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(messStr.X), (int)(messStr.Y)), Color.White);
-                
+                //SpriteBatchExtensions.DrawRoundedRect(UbeatGame.Instance.spriteBatch, new Rectangle((int)pos.X, (int)pos.Y, (int)(messStr.X), (int)(messStr.Y)), Texture, 16, Color.White);
                 TotalSize = new Vector2(messStr.X, messStr.Y); //TODO: Make this better
             }
             else

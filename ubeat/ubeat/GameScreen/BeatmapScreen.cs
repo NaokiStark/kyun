@@ -16,11 +16,12 @@ namespace ubeat.GameScreen
             ScreenInstance = this;
             LoadInterface();
             UbeatGame.Instance.kbmgr.OnKeyPress += kbmgr_OnKeyPress;
-            videoPlayer = Video.VideoPlayer.Instance;
+            //videoPlayer = Video.VideoPlayer.Instance;
         }
 
         void kbmgr_OnKeyPress()
         {
+            
             string ActualText = UbeatGame.Instance.kbmgr.Text;
             if (ActualText != lastStr)
             {
@@ -91,10 +92,11 @@ namespace ubeat.GameScreen
 
             videoPlayer?.Stop();
             
-            if (UbeatGame.Instance.SelectedBeatmap.Video != beatMap.Video)
-                if (UbeatGame.Instance.VideoEnabled)
-                    if (beatMap.Video != null)
-                        videoPlayer.Play(beatMap.Video);
+
+            //if (UbeatGame.Instance.SelectedBeatmap.Video != beatMap.Video)
+            //    if (UbeatGame.Instance.VideoEnabled)
+            //        if (beatMap.Video != null)
+            //            videoPlayer.Play(beatMap.Video);
 
         }
     }

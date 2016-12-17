@@ -11,8 +11,8 @@ namespace ubeat.Screen
         public static List<ScreenMode> GetSupportedModes()
         {
             List<ScreenMode> screenMode = new List<ScreenMode>();
-            int screenWidth = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
-            int screenHeight = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height;
+            int screenWidth = UbeatGame.Instance.GraphicsDevice.Adapter.CurrentDisplayMode.Width;
+            int screenHeight = UbeatGame.Instance.GraphicsDevice.Adapter.CurrentDisplayMode.Height;
             foreach (DisplayMode mode in GraphicsAdapter.DefaultAdapter.SupportedDisplayModes)
             {
                 if (mode.Width < 800) continue;

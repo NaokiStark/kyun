@@ -11,6 +11,8 @@ namespace ubeat.Utils
     {
         public static bool SaveReplay(Beatmap.ubeatBeatMap BeatmapComplete)
         {
+            //I NEED MONEY
+
             try
             {
                 string fDir = Path.Combine(System.Windows.Forms.Application.StartupPath, "Replays");
@@ -22,7 +24,7 @@ namespace ubeat.Utils
 
                 StreamWriter fl = new StreamWriter(fName);
 
-                fl.WriteLine(BeatmapComplete.Artist + BeatmapComplete.Title + BeatmapComplete.Version + BeatmapComplete.Creator);
+                fl.WriteLine(BeatmapComplete.Artist + "|" + BeatmapComplete.Title + "|" + BeatmapComplete.Version + "|" + BeatmapComplete.Creator);
                 fl.WriteLine("=");
 
                 for (int a = 0; a < BeatmapComplete.HitObjects.Count; a++)
@@ -50,4 +52,54 @@ namespace ubeat.Utils
             return true;
         }
     }
+
+    //REPLAY OBJECT XD
+
+    // This needs refactoring later
+    // I'm doing this shit cuz I'm a fucking faggot person who have autism
+
+    public class Replay
+    {
+        /// <summary>
+        /// Obviusly, Hits
+        /// </summary>
+        public List<ReplayObject> Hits { get; set; }
+
+        /// <summary>
+        /// Fucking Title
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        /// Fucking artist
+        /// </summary>
+        public string Artist { get; set; }
+
+        /// <summary>
+        /// Fucking Version of beatmap
+        /// </summary>
+        public string Version { get; set; }
+
+        /// <summary>
+        /// I think I will need it sometime
+        /// </summary>
+        public int Id { get; set; }
+    }
+
+    public class ReplayObject
+    {
+        /// <summary>
+        /// Hit pressed at fucking specified time
+        /// </summary>
+        public long PressedAt { get; set; }
+    }
+
+    public class ReplayHitHolder : ReplayObject
+    {
+        /// <summary>
+        /// HitHolder key-up. Fuck.
+        /// </summary>
+        public long LeaveAt { get; set; }
+    }
+
 }

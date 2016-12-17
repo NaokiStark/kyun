@@ -26,26 +26,35 @@ namespace ubeat.GameScreen.UI
             if (!BeatReact) return;
             //ToDo: Ms per beat
 
-           
+            /*
 
-            if (UbeatGame.Instance.Player.PlayState == NAudio.Wave.PlaybackState.Playing)
-            {
-                if (UbeatGame.Instance.SelectedBeatmap != null)
-                {
-                    if (nextBeat == 0) nextBeat += (long)UbeatGame.Instance.SelectedBeatmap.BPM;
+             if (UbeatGame.Instance.Player.PlayState == NAudio.Wave.PlaybackState.Playing)
+             {
+                 if (UbeatGame.Instance.SelectedBeatmap != null)
+                 {
+                     if (nextBeat == 0) nextBeat += (long)UbeatGame.Instance.SelectedBeatmap.BPM;
 
-                    if (UbeatGame.Instance.Player.Position > nextBeat)
-                    {
-                        Scale = 1.1f;
-                        nextBeat += (long)UbeatGame.Instance.SelectedBeatmap.BPM;
-                    }
-                }
+                     if (UbeatGame.Instance.Player.Position > nextBeat)
+                     {
+                         Scale = 1.1f;
+                         nextBeat += (long)UbeatGame.Instance.SelectedBeatmap.BPM;
+                     }
+                 }
 
-            }
-            
+             }*/
+
+            float pScale = UbeatGame.Instance.Player.PeakVol + .8f;
+            if (pScale < 1) pScale = 1;
+            if (pScale > 1.15) pScale = 1.15f;
+
+            if (pScale < Scale) pScale = Scale;  
+
+
+            Scale = pScale;
+
             if (Scale > 1f)
             {
-                Scale -= (float)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.0001f);
+                Scale -= (float)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.0004f);
             }
 
         }

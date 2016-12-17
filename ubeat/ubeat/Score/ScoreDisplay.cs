@@ -37,7 +37,9 @@ namespace ubeat.Score
 
         public void Reset()
         {
-            this.score = 0;
+            score = 0;
+            RollingScore = 0;
+            lScore = 0;
         }
 
         private void updateRolling()
