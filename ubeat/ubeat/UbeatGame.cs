@@ -18,12 +18,12 @@ namespace ubeat
     public class UbeatGame : Game
     {
         //Puto
-        LoadingWindow lwnd;
-        GraphicsDeviceManager graphics;
-        public SpriteBatch spriteBatch;
+        LoadingWindow LoadingWindow;
+        GraphicsDeviceManager Graphics;
+        public SpriteBatch SpriteBatch;
         public NPlayer Player;
         public static UbeatGame Instance = null;
-        public KeyboardManager kbmgr;
+        public KeyboardManager KeyBoardManager;
         //Beatmaps
 
         public bool ppyMode {
@@ -86,7 +86,7 @@ namespace ubeat
         {
             frameCounter = new FrameCounter();
             Instance = this;
-            graphics = new GraphicsDeviceManager(this);
+            Graphics = new GraphicsDeviceManager(this);
             GameTimeP = new GameTime();
 
             Content.RootDirectory = "Content";
@@ -97,7 +97,7 @@ namespace ubeat
 
             this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 60.0f);
 
-            kbmgr = new KeyboardManager(this);
+            KeyBoardManager = new KeyboardManager(this);
             VideoEnabled = Settings1.Default.Video;
         }
 
@@ -132,8 +132,8 @@ namespace ubeat
         }
         protected override void Initialize()
         {
-            lwnd = new LoadingWindow();
-            lwnd.Show();
+            LoadingWindow = new LoadingWindow();
+            LoadingWindow.Show();
             System.Windows.Forms.Application.DoEvents();
 
 
@@ -147,10 +147,10 @@ namespace ubeat
             Logger.Instance.Debug("======================");
             Logger.Instance.Debug("");
 
-            Logger.Instance.Debug(graphics.GraphicsDevice.Adapter.Description);
-            Logger.Instance.Debug(graphics.GraphicsDevice.Adapter.DeviceName);
-            Logger.Instance.Debug(graphics.GraphicsDevice.Adapter.VendorId.ToString());
-            Logger.Instance.Debug((graphics.GraphicsDevice.Adapter.IsDefaultAdapter)?"Default adapter: True": "Default adapter: False");
+            Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.Description);
+            Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.DeviceName);
+            Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.VendorId.ToString());
+            Logger.Instance.Debug((Graphics.GraphicsDevice.Adapter.IsDefaultAdapter)?"Default adapter: True": "Default adapter: False");
 
            
 
@@ -159,8 +159,8 @@ namespace ubeat
 
 #endif
 
-            graphics.PreferMultiSampling = true;
-            graphics.ApplyChanges();
+            Graphics.PreferMultiSampling = true;
+            Graphics.ApplyChanges();
             this.IsFixedTimeStep = true;
 
             //Loads Beatmaps
@@ -241,7 +241,7 @@ namespace ubeat
 
 
 
-            lwnd.Close();
+            LoadingWindow.Close();
             Logger.Instance.Info("");
             Logger.Instance.Info("Done.");
             Logger.Instance.Info("");
@@ -259,7 +259,7 @@ namespace ubeat
         public void ToggleVSync(bool b)
         {
             //
-            graphics.SynchronizeWithVerticalRetrace = b;
+            Graphics.SynchronizeWithVerticalRetrace = b;
 
             if (b)
                 ChangeFrameRate(60f);
@@ -349,8 +349,8 @@ namespace ubeat
             wSize.X = srcm[Settings1.Default.ScreenMode].Width;
             wSize.Y = srcm[Settings1.Default.ScreenMode].Height;
 
-            this.graphics.PreferredBackBufferWidth = (int)wSize.X;
-            this.graphics.PreferredBackBufferHeight = (int)wSize.Y;
+            this.Graphics.PreferredBackBufferWidth = (int)wSize.X;
+            this.Graphics.PreferredBackBufferHeight = (int)wSize.Y;
 
             try
             {
@@ -366,7 +366,7 @@ namespace ubeat
             ToggleVSync(Settings1.Default.VSync);
             ToggleFullscreen(Settings1.Default.FullScreen);
 
-            this.graphics.ApplyChanges();
+            this.Graphics.ApplyChanges();
 
 
             /*
@@ -378,7 +378,7 @@ namespace ubeat
             if (srcm[Settings1.Default.ScreenMode].WindowMode != Screen.WindowDisposition.Windowed)
             {
 
-                System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Form.FromHandle(Window.Handle);
+                System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(Window.Handle);
 
                 FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
                 FormGame.WindowState = System.Windows.Forms.FormWindowState.Maximized;
@@ -471,7 +471,7 @@ namespace ubeat
 
             Logger.Instance.Info("Loading textures");
 
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            SpriteBatch = new SpriteBatch(GraphicsDevice);
 
 
             buttonDefault = Content.Load<Texture2D>("button_0");
@@ -662,7 +662,7 @@ namespace ubeat
 
             float frameTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            kbmgr.Update(gameTime);
+            KeyBoardManager.Update(gameTime);
             ScreenManager.Update(gameTime);
 
 
@@ -675,7 +675,7 @@ namespace ubeat
             GraphicsDevice.Clear(Color.Black);
 
 
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, DepthStencilState.None, RasterizerState.CullCounterClockwise);
+            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, DepthStencilState.None, RasterizerState.CullCounterClockwise);
 
 
 
@@ -685,7 +685,7 @@ namespace ubeat
 
             //spriteBatch.Draw(TopEffect, new Rectangle(0, 0, TopEffect.Width, TopEffect.Height), Color.White * (Player.PeakVol));
 
-            spriteBatch.End();
+            SpriteBatch.End();
 
             base.Draw(gameTime);
 
@@ -720,11 +720,11 @@ namespace ubeat
             this.wSize.X = screenMode.Width;
             this.wSize.Y = screenMode.Height;
 
-            this.graphics.PreferredBackBufferWidth = (int)wSize.X;
-            this.graphics.PreferredBackBufferHeight = (int)wSize.Y;
+            this.Graphics.PreferredBackBufferWidth = (int)wSize.X;
+            this.Graphics.PreferredBackBufferHeight = (int)wSize.Y;
 
 
-            this.graphics.ApplyChanges();
+            this.Graphics.ApplyChanges();
 
             if (ScreenManager.ActualScreen != null)
                 ScreenManager.ActualScreen.Redraw();
@@ -733,8 +733,8 @@ namespace ubeat
 
         public void ToggleFullscreen(bool enabled = false)
         {
-            this.graphics.IsFullScreen = enabled;
-            this.graphics.ApplyChanges();
+            this.Graphics.IsFullScreen = enabled;
+            this.Graphics.ApplyChanges();
 
             System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Form.FromHandle(Window.Handle);
             if (enabled)

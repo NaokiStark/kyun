@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using ubeat.GameScreen.SUI;
 using ubeat.Screen;
 using ubeat.GameScreen.UI;
+using ubeat.Notifications;
 
 namespace ubeat.GameScreen
 {
@@ -41,6 +42,7 @@ namespace ubeat.GameScreen
 
             comboLang.Text = "English";
             comboLang.Items.Add("English");
+            comboLang.Items.Add("Español");
 
             //Label Lang
 
@@ -159,6 +161,8 @@ namespace ubeat.GameScreen
             lcheckInGameVideo.Size = UbeatGame.Instance.SettingsFont.MeasureString(lcheckInGameVideo.Text) + new Vector2(20,10);
             lcheckInGameVideo.Position = new Vector2(center.X - lcheckInGameVideo.Size.X - 10, checkInGameVideo.Position.Y);
 
+            notifier = new Notifier();
+
             //Filled Rectangle
 
             filledRect1 = new FilledRectangle(
@@ -191,6 +195,7 @@ namespace ubeat.GameScreen
             Controls.Add(combodisplayMode);
             Controls.Add(lcomboLang);
             Controls.Add(comboLang);
+            Controls.Add(notifier);
             
             
 
@@ -269,7 +274,12 @@ namespace ubeat.GameScreen
 
             foreach (ScreenMode mode in scrnm)
             {
-                combodisplayMode.Items.Add(string.Format("({0}x{1}){2}", mode.Width, mode.Height, (mode.WindowMode == Screen.WindowDisposition.Windowed) ? "[Windowed]" : ""));
+                combodisplayMode.Items.Add(
+                    string.Format("({0}x{1}){2}",
+                    mode.Width,
+                    mode.Height,
+                    (mode.WindowMode == WindowDisposition.Windowed) ? "[Windowed]" : "")
+                );
             }
 
             combodisplayMode.Text = combodisplayMode.Items[Settings1.Default.ScreenMode].ToString();
@@ -339,6 +349,7 @@ namespace ubeat.GameScreen
         private Label lcheckFullScr;
         private Label lcheckVSync;
         private Label lcheckInGameVideo;
+        private Notifier notifier;
 
         public ComboBox comboLang { get; set; }
 

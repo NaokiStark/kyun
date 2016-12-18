@@ -69,7 +69,7 @@ namespace ubeat.GameScreen.UI
         public override void Render()
         {
             Rectangle rg = new Rectangle((int)this.Position.X + (this.Texture.Width/2), (int)this.Position.Y + (this.Texture.Height/2), (int)(this.Texture.Width * Scale), (int)(this.Texture.Height * Scale));
-            UbeatGame.Instance.spriteBatch.Draw(this.Texture, rg, null, Color.White, 0, new Vector2((this.Texture.Width / 2), (this.Texture.Height / 2)), SpriteEffects.None, 0);
+            UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rg, null, Color.White, 0, new Vector2((this.Texture.Width / 2), (this.Texture.Height / 2)), SpriteEffects.None, 0);
         }
     }
 }

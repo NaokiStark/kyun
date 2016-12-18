@@ -112,7 +112,7 @@ namespace ubeat.Score
             //bg          
 
 
-            UbeatGame.Instance.spriteBatch.Draw(this.BgBar,
+            UbeatGame.Instance.SpriteBatch.Draw(this.BgBar,
                 sizeBar,
                 null,
                 Color.White * 0.75f,
@@ -122,7 +122,7 @@ namespace ubeat.Score
                 0);
 
             //bar
-            UbeatGame.Instance.spriteBatch.Draw(this.Texture,
+            UbeatGame.Instance.SpriteBatch.Draw(this.Texture,
                 size,
                 null,
                 colbr,

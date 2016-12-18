@@ -102,7 +102,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Net" />
     <Reference Include="Troschuetz.Random, Version=4.0.3.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Troschuetz.Random.4.0.5\lib\net40\Troschuetz.Random.dll</HintPath>
+      <HintPath>..\..\packages\Troschuetz.Random.4.0.8\lib\net40\Troschuetz.Random.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="UIAutomationProvider" />
@@ -121,16 +121,16 @@
     <Compile Include="Beatmap\Mapset.cs" />
     <Compile Include="Beatmap\ubeatBeatMap.cs" />
     <Compile Include="Dialog\DialogLayer.cs" />
-    <Compile Include="ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas\Settings.cs">
+    <Compile Include="Settings\Settings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas\Settings.Designer.cs">
+    <Compile Include="Settings\Settings.Designer.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
-    <Compile Include="ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas\SuperSecretSettings.cs">
+    <Compile Include="Settings\SuperSecretSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas\SuperSecretSettings.Designer.cs">
+    <Compile Include="Settings\SuperSecretSettings.Designer.cs">
       <DependentUpon>SuperSecretSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="GameScreen\BeatmapScreen.cs" />
@@ -169,8 +169,8 @@
       <DependentUpon>LoadingWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Logger.cs" />
-    <Compile Include="Notifyer\NotificationBox.cs" />
-    <Compile Include="Notifyer\Notifyer.cs" />
+    <Compile Include="Notifications\NotificationBox.cs" />
+    <Compile Include="Notifications\Notifier.cs" />
     <Compile Include="OsuUtils\OsuBeatMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
@@ -260,10 +260,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas\Settings.resx">
+    <EmbeddedResource Include="Settings\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas\SuperSecretSettings.resx">
+    <EmbeddedResource Include="Settings\SuperSecretSettings.resx">
       <DependentUpon>SuperSecretSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LoadingWindow.resx">

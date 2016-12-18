@@ -323,7 +323,7 @@ namespace ubeat.UIObjs
                     }
 
                 }
-                UbeatGame.Instance.spriteBatch.Draw(this.Texture, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
+                UbeatGame.Instance.SpriteBatch.Draw(this.Texture, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
                 if (ccc >= StartTime - BeatmapContainer.Timing50 && !isFilling)
                 {
                     float perct = (float)(ccc / (StartTime - BeatmapContainer.Timing300)) * 1f;
@@ -331,7 +331,7 @@ namespace ubeat.UIObjs
                     ScreenMode mode = ScreenModeManager.GetActualMode();
                     bool isSmallRes = mode.Height < 720;
 
-                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.Hold,
+                    UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.Hold,
                         new Rectangle(
                             (int)position.X,
                             (int)position.Y,
@@ -370,9 +370,9 @@ namespace ubeat.UIObjs
                     float percen = initSize * positionPercent / 100f;
 
                     if(!(isSmallRes))
-                        UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.radiance, new Microsoft.Xna.Framework.Rectangle((int)position.X , (int)position.Y, UbeatGame.Instance.radiance.Bounds.Width, UbeatGame.Instance.radiance.Bounds.Height), Color.White * 0.5f);
+                        UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.radiance, new Microsoft.Xna.Framework.Rectangle((int)position.X , (int)position.Y, UbeatGame.Instance.radiance.Bounds.Width, UbeatGame.Instance.radiance.Bounds.Height), Color.White * 0.5f);
 
-                    UbeatGame.Instance.spriteBatch.Draw((isSmallRes) ? UbeatGame.Instance.HolderFillDeff_0 : UbeatGame.Instance.HolderFillDeff,
+                    UbeatGame.Instance.SpriteBatch.Draw((isSmallRes) ? UbeatGame.Instance.HolderFillDeff_0 : UbeatGame.Instance.HolderFillDeff,
                       new Rectangle((int)position.X + (this.Texture.Width / 2) - (int)(percen/2), (int)position.Y + (this.Texture.Height/2) - (int)(percen / 2), (int)percen, (int)percen),
                       null,
                       Color.White,
@@ -387,8 +387,8 @@ namespace ubeat.UIObjs
                     Vector2 bgS = measureSize * 1.1f;
 
 
-                    UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, secondsTo, new Vector2((position.X + Texture.Width / 2) + 1, (position.Y + Texture.Height / 2) + 1), Color.Black, 0, bgS / 2, 1.1f, SpriteEffects.None, 0);
-                    UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, secondsTo, new Vector2(position.X + Texture.Width / 2, position.Y + Texture.Height / 2), Color.White, 0, measureSize / 2, 1f, SpriteEffects.None, 0);
+                    UbeatGame.Instance.SpriteBatch.DrawString(UbeatGame.Instance.defaultFont, secondsTo, new Vector2((position.X + Texture.Width / 2) + 1, (position.Y + Texture.Height / 2) + 1), Color.Black, 0, bgS / 2, 1.1f, SpriteEffects.None, 0);
+                    UbeatGame.Instance.SpriteBatch.DrawString(UbeatGame.Instance.defaultFont, secondsTo, new Vector2(position.X + Texture.Width / 2, position.Y + Texture.Height / 2), Color.White, 0, measureSize / 2, 1f, SpriteEffects.None, 0);
 
 
                 }

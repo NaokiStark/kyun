@@ -1,25 +1,20 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using ubeat.GameScreen.SUI;
+using Microsoft.Xna.Framework;
 using ubeat.GameScreen.UI.Buttons;
 using ubeat.Screen;
-using ubeat.Notifyer;
+using ubeat.Notifications;
 
 namespace ubeat.GameScreen
 {
-    //Here goes Desing
     public partial class MainScreen : ScreenBase
     {
         public void LoadInterface()
         {
             if (UbeatGame.Instance.ppyMode)
-            {
                 Audio.AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.WelcomeToOsuXd);
 
-            }
             Controls = new List<ScreenUIObject>();
 
             ScreenMode ActualMode = ScreenModeManager.GetActualMode();
@@ -54,10 +49,7 @@ namespace ubeat.GameScreen
             FPSMetter.Scale = .75f;
             FPSMetter.Position = new Vector2(0, ActualMode.Height - meas.Y);
 
-
-            ntfr = new Notifyer.Notifyer();
-
-
+            ntfr = new Notifier();
 
             Controls.Add(CnfBtn);
             Controls.Add(StrBtn);
@@ -114,7 +106,7 @@ namespace ubeat.GameScreen
         public UI.Image Logo;
         public UI.Label Label1;
         public UI.Label FPSMetter;
-        private Notifyer.Notifyer ntfr;
+        private Notifier ntfr;
 
         #endregion
 

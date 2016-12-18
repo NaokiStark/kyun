@@ -28,7 +28,7 @@ namespace ubeat.GameScreen.SUI
         {
 
             int finalWidth = (int)(Value * MaxWidth / 100f);
-            UbeatGame.Instance.spriteBatch.Draw(Background.Texture, new Rectangle((int)Position.X, (int)Position.Y, finalWidth, Background.Texture.Height), Color.White);
+            UbeatGame.Instance.SpriteBatch.Draw(Background.Texture, new Rectangle((int)Position.X, (int)Position.Y, finalWidth, Background.Texture.Height), Color.White);
             
         }
     }

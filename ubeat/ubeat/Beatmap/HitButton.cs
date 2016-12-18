@@ -212,14 +212,14 @@ namespace ubeat.UIObjs
                     //UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.radiance, new Microsoft.Xna.Framework.Rectangle((int)position.X - 2, (int)position.Y - 2, UbeatGame.Instance.radiance.Bounds.Width + 2, UbeatGame.Instance.radiance.Bounds.Height + 2), Color.White * opac);
 
                 }
-                UbeatGame.Instance.spriteBatch.Draw(this.Texture, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
+                UbeatGame.Instance.SpriteBatch.Draw(this.Texture, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
                 if (ccc >= StartTime - BeatmapContainer.Timing50)
                 {
                     ScreenMode mode = ScreenModeManager.GetActualMode();
                     bool isSmallRes = mode.Height < 720;
 
                     float perct = (float)(ccc / (StartTime - BeatmapContainer.Timing300)) * 1f;
-                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.Push,
+                    UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.Push,
                         new Rectangle(
                             (int)position.X,
                             (int)position.Y,

@@ -4,6 +4,7 @@ using ubeat.GameScreen.SUI;
 using System.Collections.Generic;
 using System.Windows;
 using ubeat.Utils;
+using ubeat.Notifications;
 
 namespace ubeat.GameScreen
 {
@@ -26,7 +27,7 @@ namespace ubeat.GameScreen
             }
         }
 
-        public SettingsScreen() 
+        public SettingsScreen()
             : base("SettingsScreen")
         {
             ScreenInstance = this;
@@ -35,16 +36,17 @@ namespace ubeat.GameScreen
 
             OnLoad += SettingsScreen_OnLoad;
             ChangeBackground(UbeatGame.Instance.SelectedBeatmap.Background);
+
             combodisplayMode.Click += (obj, args) =>
-              {
-                  if(combodisplayMode.IsListVisible)
-                    MessageBox.Show("Warning, this will restart ubeat.");
-              };
+            {
+                if (combodisplayMode.IsListVisible)
+                    notifier.ShowDialog("This will restart ubeat", 5000, NotificationType.Warning);
+            };
         }
 
         private void SettingsScreen_OnLoad(object sender, EventArgs e)
         {
-            ChangeBackground(UbeatGame.Instance.SelectedBeatmap.Background);
+            base.ChangeBackground(UbeatGame.Instance.SelectedBeatmap.Background);
         }
 
         private void CombodisplayMode_IndexChaged(object sender, EventArgs e)
@@ -55,11 +57,9 @@ namespace ubeat.GameScreen
             Settings1.Default.Save();
             //UbeatGame.Instance.ChangeResolution(scrnm[((ComboBox)sender).SelectedIndex]);
 
-            MessageBox.Show("ubeat will reload right now.","ubeat",MessageBoxButton.OK,MessageBoxImage.Exclamation);
+            MessageBox.Show("ubeat will restart right now.", "ubeat", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 
             InstanceManager.Instance.Reload();
-
         }
-
     }
 }

@@ -62,16 +62,16 @@ namespace ubeat.UIObjs
             switch (this.scoreType)
             {
                 case Score.ScoreType.Miss:
-                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.MissTx, tcR, null, Color.White * Opacity, RotationAngle, origin, SpriteEffects.None, 0);
+                    UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.MissTx, tcR, null, Color.White * Opacity, RotationAngle, origin, SpriteEffects.None, 0);
                     break;
                 case Score.ScoreType.Perfect:
-                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.PerfectTx, tcR, null, Color.White * Opacity, RotationAngle, origin, SpriteEffects.None, 0);
+                    UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.PerfectTx, tcR, null, Color.White * Opacity, RotationAngle, origin, SpriteEffects.None, 0);
                     break;
                 case Score.ScoreType.Excellent:
-                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.ExcellentTx, tcR, null, Color.White * Opacity, RotationAngle, origin, SpriteEffects.None, 0);
+                    UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.ExcellentTx, tcR, null, Color.White * Opacity, RotationAngle, origin, SpriteEffects.None, 0);
                     break;
                 case Score.ScoreType.Good:
-                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.GoodTx, tcR, null, Color.White * Opacity, RotationAngle, origin, SpriteEffects.None, 0);
+                    UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.GoodTx, tcR, null, Color.White * Opacity, RotationAngle, origin, SpriteEffects.None, 0);
                     break;
 
             }

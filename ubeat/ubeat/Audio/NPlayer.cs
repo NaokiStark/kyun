@@ -61,21 +61,10 @@ namespace ubeat.Audio
                 {
                     if (audioFile != null)
                     {
-                        audioFile.Seek(value, System.IO.SeekOrigin.Begin);
+                        audioFile.Seek(value, SeekOrigin.Begin);
                     }
                 }
             }        
-        }
-
-        /// <summary>
-        /// Adapt to old code
-        /// </summary>
-        public long RawPosition
-        {
-            get
-            {
-                return this.Position;
-            }
         }
 
         public bool Paused
@@ -183,7 +172,7 @@ namespace ubeat.Audio
 
         private void MeterSampleProvider_StreamVolume(object sender, StreamVolumeEventArgs e)
         {
-            PeakVol = normalize(e.MaxSampleValues[0]);
+            PeakVol = Normalize(e.MaxSampleValues[0]);
         }
 
         public void Play(string fileName = null)
@@ -200,7 +189,7 @@ namespace ubeat.Audio
             if (fileName != null)
                 ActualSong = fileName;
 
-            waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared,2);
+            waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 2);
             
             audioFile = new AudioFileReader(ActualSong);
             meterSampleProvider = new MeteringSampleProvider(audioFile);
@@ -213,7 +202,7 @@ namespace ubeat.Audio
             waveOut.Play();
         }
 
-        public float normalize(float value)
+        public float Normalize(float value)
         {
             float rawMax = 1;
             float targetMax = 10;

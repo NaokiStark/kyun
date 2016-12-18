@@ -90,7 +90,7 @@ namespace ubeat.UIObjs
                 
 
 
-            UbeatGame.Instance.spriteBatch.Draw(this.Texture,
+            UbeatGame.Instance.SpriteBatch.Draw(this.Texture,
                     new Rectangle((int)Position.X + (int)Texture.Bounds.Width / 2,(int)Position.Y + (int)Texture.Bounds.Height / 2, (int)width, (int)height),
                     null, Color.White * opacity,
                     //RotationAngle,

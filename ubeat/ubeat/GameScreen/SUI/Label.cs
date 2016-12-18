@@ -75,17 +75,17 @@ namespace ubeat.GameScreen.UI
 
             if (Size == null || Size == Vector2.Zero)
             {
-                UbeatGame.Instance.spriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(messStr.X), (int)(messStr.Y)), Color.White);
+                UbeatGame.Instance.SpriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(messStr.X), (int)(messStr.Y)), Color.White);
                 //SpriteBatchExtensions.DrawRoundedRect(UbeatGame.Instance.spriteBatch, new Rectangle((int)pos.X, (int)pos.Y, (int)(messStr.X), (int)(messStr.Y)), Texture, 16, Color.White);
                 TotalSize = new Vector2(messStr.X, messStr.Y); //TODO: Make this better
             }
             else
             {
-                UbeatGame.Instance.spriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(Size.X), (int)(Size.Y)), Color.White);
+                UbeatGame.Instance.SpriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(Size.X), (int)(Size.Y)), Color.White);
                 TotalSize = Size; //TODO: Make this better
             }
 
-            UbeatGame.Instance.spriteBatch.DrawString((Font == null) ? UbeatGame.Instance.defaultFont : Font, this.Text, new Vector2(pos.X + 5, pos.Y + 5), Color.White, 0,
+            UbeatGame.Instance.SpriteBatch.DrawString((Font == null) ? UbeatGame.Instance.defaultFont : Font, this.Text, new Vector2(pos.X + 5, pos.Y + 5), Color.White, 0,
                 Vector2.Zero,this.Scale,SpriteEffects.None,0);
         }
 

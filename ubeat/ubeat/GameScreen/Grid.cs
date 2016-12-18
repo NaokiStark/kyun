@@ -226,7 +226,7 @@ namespace ubeat.GameScreen
             }
         }
 
-        public void Play(Beatmap.ubeatBeatMap beatmap = null, bool automode = false)
+        public void Play(ubeatBeatMap beatmap = null, bool automode = false)
         {
             UbeatGame.Instance.Player.Stop();
             Health.Reset();
@@ -251,18 +251,9 @@ namespace ubeat.GameScreen
             
             if (beatmap != null)
                 bemap = beatmap;
-            //Start
-            try
-            {
-                FileStream filestream = new FileStream(bemap.Background, FileMode.Open, FileAccess.Read);
-                Background = Texture2D.FromStream(UbeatGame.Instance.GraphicsDevice, filestream);
-                filestream.Close();
-            }
-            catch
-            {
-                Logger.Instance.Warn("this beatmap has not image");
-            }
 
+
+            base.ChangeBackground(bemap.Background);
 
             Logger.Instance.Info("Game Started: {0} - {1} [{2}]", bemap.Artist, bemap.Title, bemap.Version);
 
@@ -270,6 +261,7 @@ namespace ubeat.GameScreen
                 if (bemap.Video != null)
                     if (bemap.Video != "")
                         videoplayer.Play(bemap.Video);
+
             inGame = true;
         }
 
@@ -280,7 +272,7 @@ namespace ubeat.GameScreen
         }
         #endregion
 
-        void skip()
+        void Skip()
         {
             endedd();
             if (Waiting)
@@ -327,7 +319,7 @@ namespace ubeat.GameScreen
                     if (SpaceAlredyPressed)
                     {
                         SpaceAlredyPressed = false;
-                        skip();
+                        Skip();
                     }
                 }
             }
@@ -578,7 +570,7 @@ namespace ubeat.GameScreen
             if (Background != null)
             {
                 Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
-                UbeatGame.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                UbeatGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
             }
             else if (!inGame)
             {
@@ -622,7 +614,7 @@ namespace ubeat.GameScreen
 
 
             if (Health.Enabled || cooldown)
-                UbeatGame.Instance.spriteBatch.Draw(bg, new Vector2(xi, yi), Color.White * ((onbreak) ? 0f : .75f));
+                UbeatGame.Instance.SpriteBatch.Draw(bg, new Vector2(xi, yi), Color.White * ((onbreak) ? 0f : .75f));
 
             songProgress.Render();
 
@@ -679,9 +671,9 @@ namespace ubeat.GameScreen
                 int splashW = UbeatGame.Instance.PauseSplash.Bounds.Width;
                 int splashH = UbeatGame.Instance.PauseSplash.Bounds.Height;
                 if (!failed)
-                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.PauseSplash, new Rectangle(sWidth / 2 - splashW / 2, sHeight / 2 - splashH / 2, splashW, splashH), Color.White);
+                    UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.PauseSplash, new Rectangle(sWidth / 2 - splashW / 2, sHeight / 2 - splashH / 2, splashW, splashH), Color.White);
                 else
-                    UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.FailSplash, new Rectangle(sWidth / 2 - splashW / 2, sHeight / 2 - splashH / 2, splashW, splashH), Color.White);
+                    UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.FailSplash, new Rectangle(sWidth / 2 - splashW / 2, sHeight / 2 - splashH / 2, splashW, splashH), Color.White);
             }
 
             if (onbreak) DrawBreak();
@@ -713,13 +705,13 @@ namespace ubeat.GameScreen
                         if (frame != null)
                         {
 
-                            UbeatGame.Instance.spriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
+                            UbeatGame.Instance.SpriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
 
                             Texture2D texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, videoplayer.vdc.width, videoplayer.vdc.height);
                             screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)texture.Width / (float)texture.Height) * (float)screenHeight), screenHeight);
                             texture.SetData(frame);
                             lastFrameOfVid = texture;
-                            UbeatGame.Instance.spriteBatch.Draw(texture, screenVideoRectangle, null, Color.White, 0, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 0);
+                            UbeatGame.Instance.SpriteBatch.Draw(texture, screenVideoRectangle, null, Color.White, 0, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 0);
                             if (Settings1.Default.VideoMode > 0)
                                 VidFrame++;
                             if (Settings1.Default.VideoMode == 0)
@@ -734,9 +726,9 @@ namespace ubeat.GameScreen
                         {
                             try
                             {
-                                UbeatGame.Instance.spriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
+                                UbeatGame.Instance.SpriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
                                 screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)lastFrameOfVid.Width / (float)lastFrameOfVid.Height) * (float)screenHeight), screenHeight);
-                                UbeatGame.Instance.spriteBatch.Draw(lastFrameOfVid, screenVideoRectangle, null, Color.White, 0, new Vector2(lastFrameOfVid.Width / 2, lastFrameOfVid.Height / 2), SpriteEffects.None, 0);
+                                UbeatGame.Instance.SpriteBatch.Draw(lastFrameOfVid, screenVideoRectangle, null, Color.White, 0, new Vector2(lastFrameOfVid.Width / 2, lastFrameOfVid.Height / 2), SpriteEffects.None, 0);
                                 lastFrameOfVid.Dispose();
                             }
                             catch
@@ -765,13 +757,13 @@ namespace ubeat.GameScreen
                 if (Background != null)
                 {
                     Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
-                    UbeatGame.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                    UbeatGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
                 }
 
                 RenderVideoFrame();
                 FPSMetter.Render();
 
-                UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.SpaceSkip,
+                UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.SpaceSkip,
                     new Rectangle(screenWidth - (UbeatGame.Instance.SpaceSkip.Width / 2),
                         screenHeight - (UbeatGame.Instance.SpaceSkip.Height / 2),
                         UbeatGame.Instance.SpaceSkip.Width / 2,
@@ -875,20 +867,20 @@ namespace ubeat.GameScreen
             Vector2 ctopx = new Vector2(center.X - (mesBreak.X / 2), 15);
             Rectangle rtcx2 = new Rectangle(0, actualMode.Height - (int)((mesBreak.Y + 20) * 1.5f), (int)actualMode.Width, (int)((mesWarn.Y + 20) * 1.5f));
 
-            UbeatGame.Instance.spriteBatch.Draw(bg, rtcx, null, Color.White * op, 0, Vector2.Zero, SpriteEffects.None, 0);
+            UbeatGame.Instance.SpriteBatch.Draw(bg, rtcx, null, Color.White * op, 0, Vector2.Zero, SpriteEffects.None, 0);
 
             if (GameTimeTotal > brk.End - 200)
             {
                 Vector2 ctopw = new Vector2(center.X - (mesWarn.X / 2), 15);
 
-                UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, "Warning!", ctopw, Color.Red * op, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
+                UbeatGame.Instance.SpriteBatch.DrawString(UbeatGame.Instance.defaultFont, "Warning!", ctopw, Color.Red * op, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
             }
             else
             {
-                UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, "Break", ctopx, Color.White * op, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
+                UbeatGame.Instance.SpriteBatch.DrawString(UbeatGame.Instance.defaultFont, "Break", ctopx, Color.White * op, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
             }
 
-            UbeatGame.Instance.spriteBatch.Draw(bg, rtcx2, null, Color.White * op, 0, Vector2.Zero, SpriteEffects.None, 0);
+            UbeatGame.Instance.SpriteBatch.Draw(bg, rtcx2, null, Color.White * op, 0, Vector2.Zero, SpriteEffects.None, 0);
         }
         float op;
         long lastBreak = 0;

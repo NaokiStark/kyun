@@ -19,7 +19,7 @@ namespace ubeat.GameScreen
             {
                 if (instance == null)
                     instance = new BeatmapScreen();
-                UbeatGame.Instance.kbmgr.Enabled = true;
+                UbeatGame.Instance.KeyBoardManager.Enabled = true;
                 return instance;
             }
             set
@@ -158,7 +158,7 @@ namespace ubeat.GameScreen
 
                 Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
 
-                UbeatGame.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                UbeatGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
             }
 
             //RenderVideoFrame();
@@ -185,13 +185,13 @@ namespace ubeat.GameScreen
                         if (frame != null)
                         {
 
-                            UbeatGame.Instance.spriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
+                            UbeatGame.Instance.SpriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
 
                             Texture2D texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, videoPlayer.vdc.width, videoPlayer.vdc.height);
                             screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)texture.Width / (float)texture.Height) * (float)screenHeight), screenHeight);
                             texture.SetData(frame);
                             lastFrameOfVid = texture;
-                            UbeatGame.Instance.spriteBatch.Draw(texture, screenVideoRectangle, null, Color.White, 0, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 0);
+                            UbeatGame.Instance.SpriteBatch.Draw(texture, screenVideoRectangle, null, Color.White, 0, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 0);
                             if (Settings1.Default.VideoMode > 0)
                                 VidFrame++;
                             if (Settings1.Default.VideoMode == 0)
@@ -206,9 +206,9 @@ namespace ubeat.GameScreen
                         {
                             try
                             {
-                                UbeatGame.Instance.spriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
+                                UbeatGame.Instance.SpriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
                                 screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)lastFrameOfVid.Width / (float)lastFrameOfVid.Height) * (float)screenHeight), screenHeight);
-                                UbeatGame.Instance.spriteBatch.Draw(lastFrameOfVid, screenVideoRectangle, null, Color.White, 0, new Vector2(lastFrameOfVid.Width / 2, lastFrameOfVid.Height / 2), SpriteEffects.None, 0);
+                                UbeatGame.Instance.SpriteBatch.Draw(lastFrameOfVid, screenVideoRectangle, null, Color.White, 0, new Vector2(lastFrameOfVid.Width / 2, lastFrameOfVid.Height / 2), SpriteEffects.None, 0);
                                 lastFrameOfVid.Dispose();
                             }
                             catch

@@ -51,7 +51,7 @@ namespace ubeat.GameScreen
 
                 Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
 
-                UbeatGame.Instance.spriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                UbeatGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
             }
 
             try
@@ -70,11 +70,12 @@ namespace ubeat.GameScreen
         {
             if (!Visible || isDisposing) return;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-            {
+            var keyboardState = Keyboard.GetState();
+
+            if (keyboardState.IsKeyDown(Keys.Escape))
                 EscapeAlredyPressed = true;
-            }
-            if (Keyboard.GetState().IsKeyUp(Keys.Escape))
+
+            if (keyboardState.IsKeyUp(Keys.Escape))
             {
                 if (EscapeAlredyPressed)
                 {
@@ -84,7 +85,6 @@ namespace ubeat.GameScreen
             }
 
             UpdateControls();
-            
         }
 
         public virtual void UpdateControls()
@@ -127,7 +127,7 @@ namespace ubeat.GameScreen
         {
             try
             {
-                using (var fs = new FileStream(backgroundPath, FileMode.Open))
+                using (var fs = new FileStream(backgroundPath, FileMode.Open, FileAccess.Read))
                 {
                     Background = Texture2D.FromStream(UbeatGame.Instance.GraphicsDevice, fs);
                 }

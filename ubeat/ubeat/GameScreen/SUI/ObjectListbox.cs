@@ -139,7 +139,7 @@ namespace ubeat.GameScreen.SUI
              horizontalOffset = 0;
 
              Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, (int)width, (int)height);
-             UbeatGame.Instance.spriteBatch.Draw(this.Texture, rg, Color.White);
+             UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rg, Color.White);
 
             for (int i = 0; i < maxCanHold && i + vertOffset < Items.Count; i++)
             {
@@ -161,7 +161,7 @@ namespace ubeat.GameScreen.SUI
                     textColor = Color.Yellow;
                 }
 
-                UbeatGame.Instance.spriteBatch.DrawString(textFont, o, drawTextPos, textColor, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0);
+                UbeatGame.Instance.SpriteBatch.DrawString(textFont, o, drawTextPos, textColor, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0);
 
                 startBoxPos.Y += perEntryHeight;
                 drawTextPos.Y += perEntryHeight;

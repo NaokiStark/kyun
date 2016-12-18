@@ -15,14 +15,14 @@ namespace ubeat.GameScreen
         {
             ScreenInstance = this;
             LoadInterface();
-            UbeatGame.Instance.kbmgr.OnKeyPress += kbmgr_OnKeyPress;
+            UbeatGame.Instance.KeyBoardManager.OnKeyPress += kbmgr_OnKeyPress;
             //videoPlayer = Video.VideoPlayer.Instance;
         }
 
         void kbmgr_OnKeyPress()
         {
             
-            string ActualText = UbeatGame.Instance.kbmgr.Text;
+            string ActualText = UbeatGame.Instance.KeyBoardManager.Text;
             if (ActualText != lastStr)
             {
                 lastStr = ActualText;
@@ -37,7 +37,7 @@ namespace ubeat.GameScreen
 
         void BeatmapScreen_OnLoad(object sender, EventArgs e)
         {
-            UbeatGame.Instance.kbmgr.Enabled = true;
+            UbeatGame.Instance.KeyBoardManager.Enabled = true;
             if (InstanceManager.AllBeatmaps.Count < 1)
             {
                 var mpset = new Mapset();
@@ -62,7 +62,7 @@ namespace ubeat.GameScreen
         {
             if (lBDff.selectedIndex < 0 || lBDff.selectedIndex > lBDff.Items.Count - 1) return;
             
-            UbeatGame.Instance.kbmgr.Enabled = false;
+            UbeatGame.Instance.KeyBoardManager.Enabled = false;
 
             UbeatGame.Instance.GameStart(lBDff.Items[lBDff.selectedIndex], this.AMode);
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using ubeat.Utils;
 
@@ -36,8 +37,7 @@ namespace ubeat
             try
             {
 
-                using (InsManager = new InstanceManager()) { } ;
-                
+                using (InsManager = new InstanceManager()) { }
             }
             catch(Exception e)
             {

@@ -134,7 +134,7 @@ namespace ubeat.GameScreen
                 return;
             
             Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, (int)(this.Texture.Width*Scale), (int)(this.Texture.Height*Scale));
-            UbeatGame.Instance.spriteBatch.Draw(this.Texture, rg, Color.White);
+            UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rg, Color.White);
         }
 
         public void _OnClick()
@@ -142,7 +142,7 @@ namespace ubeat.GameScreen
             Click?.Invoke(this, new EventArgs());
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             Disposing = true;
         }

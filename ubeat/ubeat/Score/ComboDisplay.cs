@@ -73,8 +73,8 @@ namespace ubeat.Score
 
             Rectangle rg = new Rectangle((int)posX - 20, (int)(sHeight- 20), (int)fsize.X + 30, (int)fsize.Y);
 
-            UbeatGame.Instance.spriteBatch.Draw(this.Texture, rg, null, Color.White * .75f, 0, new Vector2(0, origin.Y), SpriteEffects.None, 0);
-            UbeatGame.Instance.spriteBatch.DrawString(UbeatGame.Instance.defaultFont, lastCD.ToString() + "x", new Vector2(posX-10,rg.Y), Color.WhiteSmoke, 0, new Vector2(0,fsize.Y/3), (float)(size.X / 200f), SpriteEffects.None, 0);
+            UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rg, null, Color.White * .75f, 0, new Vector2(0, origin.Y), SpriteEffects.None, 0);
+            UbeatGame.Instance.SpriteBatch.DrawString(UbeatGame.Instance.defaultFont, lastCD.ToString() + "x", new Vector2(posX-10,rg.Y), Color.WhiteSmoke, 0, new Vector2(0,fsize.Y/3), (float)(size.X / 200f), SpriteEffects.None, 0);
         }
     }
 }

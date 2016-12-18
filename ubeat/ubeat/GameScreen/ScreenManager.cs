@@ -79,7 +79,7 @@ namespace ubeat.GameScreen
 
             if(Opacity > 0.00001)
             {
-                UbeatGame.Instance.spriteBatch.Draw(TopEffect, new Rectangle(0, 0, TopEffect.Width, TopEffect.Height), Color.White * Opacity);
+                UbeatGame.Instance.SpriteBatch.Draw(TopEffect, new Rectangle(0, 0, TopEffect.Width, TopEffect.Height), Color.White * Opacity);
             }
 
         }
