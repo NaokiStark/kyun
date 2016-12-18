@@ -7,7 +7,7 @@ using System.Text;
 
 namespace ubeat.GameScreen.SUI
 {
-    public class ComboBox : ScreenUIObject
+    public class ComboBox : InputControl
     {
         //Well, display label
         UI.Label displayLabel;

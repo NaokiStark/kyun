@@ -7,10 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ubeat.Audio;
+using ubeat.GameScreen.SUI;
 
 namespace ubeat.GameScreen.UI
 {
-    public class Button : ScreenUIObject
+    public class Button : InputControl
     {
 
         bool alredyIntersecs = false;

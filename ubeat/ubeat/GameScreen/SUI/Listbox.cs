@@ -10,7 +10,7 @@ using ubeat.Beatmap;
 
 namespace ubeat.GameScreen.SUI
 {
-    public class Listbox : ScreenUIObject
+    public class Listbox : InputControl
     {
         public Rectangle BoundBox
         {

@@ -4,7 +4,7 @@ using System;
 
 namespace ubeat.GameScreen.SUI
 {
-    public class CheckBox : ScreenUIObject
+    public class CheckBox : InputControl
     {
 
         RoundedRectangle box;

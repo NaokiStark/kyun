@@ -311,24 +311,39 @@ namespace ubeat.GameScreen
                     comboLang.Position.Y + globalMarginBottom + UbeatGame.Instance.ListboxFont.MeasureString("a").Y + 5);
         }
 
+       
+
         public override void UpdateControls()
         {
-            bool updateAll =true;
+            bool restrictedUpdate = false;
 
-            foreach (ScreenUIObject ctr in Controls)
+            ComboBox activeBox=null;
+
+            foreach(ScreenUIObject ctr in Controls)
             {
-                if (ctr is ComboBox)
+                if(ctr is ComboBox)
                 {
-                    updateAll = !((ComboBox)ctr).IsListVisible;
-                }
-                if (!updateAll) {
-                    ctr.Update();
-                    return;
+                    ComboBox ctrc = (ComboBox)ctr;
+                    if (ctrc.IsListVisible)
+                    {
+                        restrictedUpdate = true;
+                        activeBox = ctrc;
+                        break;
+                    }
                 }
             }
 
             foreach (ScreenUIObject ctr in Controls)
             {
+                if(activeBox != null) {
+                    if (restrictedUpdate && (ctr is InputControl && !activeBox.IsListVisible))
+                    {
+                        continue;
+                    }
+                        
+                }
+                
+
                 ctr.Update();
             }
         }

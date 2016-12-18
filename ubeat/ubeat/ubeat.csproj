@@ -121,6 +121,7 @@
     <Compile Include="Beatmap\Mapset.cs" />
     <Compile Include="Beatmap\ubeatBeatMap.cs" />
     <Compile Include="Dialog\DialogLayer.cs" />
+    <Compile Include="GameScreen\SUI\InputControl.cs" />
     <Compile Include="Settings\Settings.cs">
       <SubType>Form</SubType>
     </Compile>
