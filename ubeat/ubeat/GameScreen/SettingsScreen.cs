@@ -55,9 +55,8 @@ namespace ubeat.GameScreen
             Logger.Instance.Debug("Setting Display Mode: {0}", ((ComboBox)sender).Items[((ComboBox)sender).SelectedIndex]);
             Settings1.Default.ScreenMode = ((ComboBox)sender).SelectedIndex;
             Settings1.Default.Save();
-            //UbeatGame.Instance.ChangeResolution(scrnm[((ComboBox)sender).SelectedIndex]);
 
-            MessageBox.Show("ubeat will restart right now.", "ubeat", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            notifier.ShowDialog("Ubeat will restart now", 5000, NotificationType.Warning);
 
             InstanceManager.Instance.Reload();
         }

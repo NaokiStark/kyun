@@ -54,7 +54,6 @@ namespace ubeat.GameScreen
 
         List<IHitObj> hitObjects = new List<IHitObj>();
         List<List<IHitObj>> grid = new List<List<IHitObj>>();
-        public Texture2D Background { get; set; }
         Video.VideoPlayer videoplayer;
         Combo combo;
 
@@ -65,8 +64,8 @@ namespace ubeat.GameScreen
         public DateTime? lastUpdate { get; set; }
         Label FPSMetter;
 
-        public delegate void onend();
-        public event onend endedd;
+        public delegate void OnEnd();
+        public event OnEnd Ended;
         #endregion
 
         #region Constructor
@@ -146,7 +145,7 @@ namespace ubeat.GameScreen
             ScreenMode mode = ScreenModeManager.GetActualMode();
             bool isSmallRes = mode.Height < 720;
 
-            Texture2D txbtn = (isSmallRes) ? UbeatGame.Instance.buttonDefault_0: UbeatGame.Instance.buttonDefault;
+            Texture2D txbtn = (isSmallRes) ? UbeatGame.Instance.buttonDefault_0 : UbeatGame.Instance.buttonDefault;
 
             int wid = (txbtn.Bounds.Width + 20) * 3;
             int hei = (txbtn.Bounds.Height + 20) * 3;
@@ -232,9 +231,9 @@ namespace ubeat.GameScreen
             Health.Reset();
             Health.Enabled = false;
             inGame = false;
-            endedd = null;
+            Ended = null;
             Paused = false;
-            endedd += Grid_endedd;
+            Ended += Grid_endedd;
             UbeatGame.Instance.IsMouseVisible = false;
             ScoreDispl.Reset();
             ScoreDispl.IsActive = true;
@@ -251,7 +250,6 @@ namespace ubeat.GameScreen
             
             if (beatmap != null)
                 bemap = beatmap;
-
 
             base.ChangeBackground(bemap.Background);
 
@@ -274,7 +272,7 @@ namespace ubeat.GameScreen
 
         void Skip()
         {
-            endedd();
+            Ended();
             if (Waiting)
             {
                 Waiting = false;
@@ -799,7 +797,7 @@ namespace ubeat.GameScreen
             else if (wait4End < 0)
             {
                 gEn = false;
-                endedd();
+                Ended();
                 Waiting = false;
                 Background = null;
                 ScreenManager.ChangeTo(new ScoreScreen());

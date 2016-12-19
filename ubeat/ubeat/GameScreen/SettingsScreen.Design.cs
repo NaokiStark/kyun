@@ -196,8 +196,6 @@ namespace ubeat.GameScreen
             Controls.Add(lcomboLang);
             Controls.Add(comboLang);
             Controls.Add(notifier);
-            
-            
 
             UbeatGame.Instance.IsMouseVisible = true;
 

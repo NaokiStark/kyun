@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,24 +10,6 @@ namespace ubeat.GameScreen
 {
     public class ScreenBase : IScreen, IDisposable
     {
-        private bool EscapeAlredyPressed;
-
-        public Texture2D Background { get; set; }
-
-        public List<ScreenUIObject> Controls { get; set; }
-
-        public float Opacity { get; set; }
-
-        public IScreen ScreenInstance { get; set; }
-
-        public bool Visible { get; set; }
-
-        public string Name { get; set; }
-
-        public event EventHandler OnLoad;
-
-        public event EventHandler OnBackSpacePress;
-
         public ScreenBase(string name = "BaseScreen")
         {
             Name = name;
@@ -49,9 +30,9 @@ namespace ubeat.GameScreen
                 int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
                 int screenHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
-                Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
+                var screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
 
-                UbeatGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                UbeatGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Microsoft.Xna.Framework.Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
             }
 
             try
@@ -125,6 +106,9 @@ namespace ubeat.GameScreen
 
         public void ChangeBackground(string backgroundPath)
         {
+            //if (!backgroundPath.EndsWith(".png") && !backgroundPath.EndsWith(".jpg"))
+            //    return;
+
             try
             {
                 using (var fs = new FileStream(backgroundPath, FileMode.Open, FileAccess.Read))
@@ -140,6 +124,11 @@ namespace ubeat.GameScreen
 #else
                 Logger.Instance.Warn("There was a problem loading the background");
 #endif
+                // Use a default bgs n stuff class
+                using (var fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"\Assets\bg.png", FileMode.Open, FileAccess.Read))
+                {
+                    Background = Texture2D.FromStream(UbeatGame.Instance.GraphicsDevice, fs);
+                }
             }
         }
 
@@ -156,6 +145,15 @@ namespace ubeat.GameScreen
             ChangeBackground(bm.Background);
         }
 
+        private bool EscapeAlredyPressed;
         public bool isDisposing;
+        public Texture2D Background { get; set; }
+        public List<ScreenUIObject> Controls { get; set; }
+        public float Opacity { get; set; }
+        public IScreen ScreenInstance { get; set; }
+        public bool Visible { get; set; }
+        public string Name { get; set; }
+        public event EventHandler OnLoad;
+        public event EventHandler OnBackSpacePress;
     }
 }
