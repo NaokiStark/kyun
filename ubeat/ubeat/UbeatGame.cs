@@ -90,10 +90,7 @@ namespace ubeat
             GameTimeP = new GameTime();
 
             Content.RootDirectory = "Content";
-
-            //graphics.GraphicsProfile = GraphicsProfile.HiDef;
-
-           
+            
 
             this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 60.0f);
 
@@ -161,7 +158,7 @@ namespace ubeat
 
             Graphics.PreferMultiSampling = true;
             Graphics.ApplyChanges();
-            this.IsFixedTimeStep = true;
+            this.IsFixedTimeStep = false;
 
             //Loads Beatmaps
             Logger.Instance.Info("");
@@ -437,6 +434,7 @@ namespace ubeat
         public Texture2D Logo;
         public Texture2D SpaceSkip;
         public Texture2D TopEffect;
+        public Texture2D DefaultBackground;
 
 
         //public SoundEffect ButtonOver;
@@ -511,6 +509,10 @@ namespace ubeat
             AutoModeButtonSel = Content.Load<Texture2D>("autoBtnSel");
             SpaceSkip = Content.Load<Texture2D>("SpaceSkip");
 
+            using (var fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"\Assets\bg.png", FileMode.Open, FileAccess.Read))
+            {
+                DefaultBackground = Texture2D.FromStream(GraphicsDevice, fs);
+            }
 
             //test
             StartButton = Content.Load<Texture2D>("PlayMain");

@@ -125,10 +125,7 @@ namespace ubeat.GameScreen
                 Logger.Instance.Warn("There was a problem loading the background");
 #endif
                 // Use a default bgs n stuff class
-                using (var fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"\Assets\bg.png", FileMode.Open, FileAccess.Read))
-                {
-                    Background = Texture2D.FromStream(UbeatGame.Instance.GraphicsDevice, fs);
-                }
+                Background = UbeatGame.Instance.DefaultBackground;
             }
         }
 
