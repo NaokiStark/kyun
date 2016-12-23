@@ -133,6 +133,9 @@ namespace ubeat.UIObjs
                     holdFld.Dispose();
             }
 
+            
+
+
             if (isActive)
             {
                 if (apo == null)
@@ -183,13 +186,20 @@ namespace ubeat.UIObjs
                 }
                 else
                 {
+                    bool mouseDown = (Mouse.GetState().LeftButton == ButtonState.Pressed) || (Mouse.GetState().RightButton == ButtonState.Pressed);
+                    Rectangle MousePos = new Rectangle((int)UbeatGame.Instance.touchHandler.LastPosition.X, (int)UbeatGame.Instance.touchHandler.LastPosition.Y, 10, 10);
+                    Rectangle ActualPos = new Rectangle((int)p.X, (int)p.Y, Texture.Bounds.Width, Texture.Bounds.Height);
+                    bool intersecs = MousePos.Intersects(ActualPos);
+
+                    bool mouseUp = Mouse.GetState().LeftButton == ButtonState.Released || Mouse.GetState().RightButton == ButtonState.Released;
+
 
                     if (Position > StartTime + BeatmapContainer.Timing50 && !hasAlredyPressed)
                     {
                         isActive = false;
                         PressedAt = Position;
                     }
-                    if (Keyboard.GetState().IsKeyDown((Microsoft.Xna.Framework.Input.Keys)Location) && !hasAlredyPressed)
+                    if ((Keyboard.GetState().IsKeyDown((Keys)Location) || (UbeatGame.Instance.touchHandler.TouchDown && intersecs)) && !hasAlredyPressed)
                     {
                         if (Position > StartTime - BeatmapContainer.Timing50)
                         {
@@ -215,11 +225,17 @@ namespace ubeat.UIObjs
                         }
                         return;
                     }
-                    if (Keyboard.GetState().IsKeyUp((Microsoft.Xna.Framework.Input.Keys)Location) && hasAlredyPressed)
+
+                    mouseUp = Mouse.GetState().LeftButton == ButtonState.Released;
+                    bool kup = Keyboard.GetState().IsKeyUp((Keys)Location);
+                    if (kup && hasAlredyPressed)
                     {
-                        isFilling = false;
-                        LeaveAt = Position;
-                        isActive = false;
+                        if (UbeatGame.Instance.touchHandler.TouchUp)
+                        {
+                            isFilling = false;
+                            LeaveAt = Position;
+                            isActive = false;
+                        }                        
 
                     }
                     if (Position > EndTime)
@@ -323,7 +339,7 @@ namespace ubeat.UIObjs
                     }
 
                 }
-                UbeatGame.Instance.SpriteBatch.Draw(this.Texture, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
+                UbeatGame.Instance.SpriteBatch.Draw(this.Texture, new Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
                 if (ccc >= StartTime - BeatmapContainer.Timing50 && !isFilling)
                 {
                     float perct = (float)(ccc / (StartTime - BeatmapContainer.Timing300)) * 1f;
@@ -370,7 +386,7 @@ namespace ubeat.UIObjs
                     float percen = initSize * positionPercent / 100f;
 
                     if(!(isSmallRes))
-                        UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.radiance, new Microsoft.Xna.Framework.Rectangle((int)position.X , (int)position.Y, UbeatGame.Instance.radiance.Bounds.Width, UbeatGame.Instance.radiance.Bounds.Height), Color.White * 0.5f);
+                        UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.radiance, new Rectangle((int)position.X , (int)position.Y, UbeatGame.Instance.radiance.Bounds.Width, UbeatGame.Instance.radiance.Bounds.Height), Color.White * 0.5f);
 
                     UbeatGame.Instance.SpriteBatch.Draw((isSmallRes) ? UbeatGame.Instance.HolderFillDeff_0 : UbeatGame.Instance.HolderFillDeff,
                       new Rectangle((int)position.X + (this.Texture.Width / 2) - (int)(percen/2), (int)position.Y + (this.Texture.Height/2) - (int)(percen / 2), (int)percen, (int)percen),

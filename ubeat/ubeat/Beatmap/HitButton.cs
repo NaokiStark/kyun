@@ -2,16 +2,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using ubeat.Beatmap;
 using ubeat.GameScreen;
-using Troschuetz.Random;
-using Troschuetz.Random.Generators;
-using Microsoft.Xna.Framework.Audio;
-using ubeat.OsuUtils;
 using ubeat.Score;
 using ubeat.Audio;
 using ubeat.Screen;
@@ -108,21 +101,38 @@ namespace ubeat.UIObjs
                     if (Position > StartTime)
                     {
                         hasAlredyPressed = true;
-                        isActive = false;/*
-                        SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
-                        ins.Volume = Game1.Instance.GeneralVolume;
-                        ins.Play();*/
+                        isActive = false;
                         PressedAt = (long)StartTime;
                     }
                 }
                 else
                 {
+                    bool mouseDown = (Mouse.GetState().LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed) || (Mouse.GetState().RightButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed);
+                    Rectangle MousePos = new Rectangle((int)UbeatGame.Instance.touchHandler.LastPosition.X, (int)UbeatGame.Instance.touchHandler.LastPosition.Y, 10, 10);
+                    Rectangle ActualPos = new Rectangle((int)ps.X, (int)ps.Y, Texture.Bounds.Width, Texture.Bounds.Height);
+                    bool intersecs = MousePos.Intersects(ActualPos);
+                    bool mouseUp = Mouse.GetState().LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Released || Mouse.GetState().RightButton == Microsoft.Xna.Framework.Input.ButtonState.Released;
+
+
+
+
                     if (Position > StartTime + BeatmapContainer.Timing50 && !hasAlredyPressed)
                     {
                         isActive = false;
                         PressedAt = Position;
                     }
-                    if (Keyboard.GetState().IsKeyDown((Microsoft.Xna.Framework.Input.Keys)Location) && !hasAlredyPressed)
+                    if ((Keyboard.GetState().IsKeyDown((Microsoft.Xna.Framework.Input.Keys)Location)) && !hasAlredyPressed)
+                    {
+
+                        if (Position > StartTime - BeatmapContainer.Timing50)
+                        {
+                            hasAlredyPressed = true;
+                            PressedAt = Position;
+                            isActive = false;
+                        }
+                        return;
+                    }
+                    else if(UbeatGame.Instance.touchHandler.TouchDown && intersecs)
                     {
                         if (Position > StartTime - BeatmapContainer.Timing50)
                         {
@@ -132,7 +142,8 @@ namespace ubeat.UIObjs
                         }
                         return;
                     }
-                    if (Keyboard.GetState().IsKeyUp((Microsoft.Xna.Framework.Input.Keys)Location) && hasAlredyPressed)
+
+                    if ((Keyboard.GetState().IsKeyUp((Microsoft.Xna.Framework.Input.Keys)Location) || (UbeatGame.Instance.touchHandler.TouchUp)) && hasAlredyPressed)
                     {
                         isActive = false;
 

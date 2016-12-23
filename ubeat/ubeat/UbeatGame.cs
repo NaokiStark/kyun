@@ -84,6 +84,9 @@ namespace ubeat
 
         public UbeatGame()
         {
+
+            
+
             frameCounter = new FrameCounter();
             Instance = this;
             Graphics = new GraphicsDeviceManager(this);
@@ -129,6 +132,8 @@ namespace ubeat
         }
         protected override void Initialize()
         {
+           
+
             LoadingWindow = new LoadingWindow();
             LoadingWindow.Show();
             System.Windows.Forms.Application.DoEvents();
@@ -460,9 +465,13 @@ namespace ubeat
 
         List<CachedSound> SoundsEff = new List<CachedSound>();
         List<Texture2D> Textures = new List<Texture2D>();
+        public TouchHandler touchHandler;
 
         protected override void LoadContent()
         {
+
+            
+
             Screen.ScreenMode actmode = Screen.ScreenModeManager.GetActualMode();
 
             ScreenManager.Start();
@@ -576,7 +585,7 @@ namespace ubeat
             SoundsEff.Add(SelectorHit);
             SoundsEff.Add(ScrollHit);
 
-
+            touchHandler = new TouchHandler(System.Windows.Forms.Control.FromHandle(Window.Handle));
             Logger.Instance.Info("");
             Logger.Instance.Info("Done.");
             Logger.Instance.Info("");
@@ -640,6 +649,9 @@ namespace ubeat
         #region GameUpdates
         protected override void Update(GameTime gameTime)
         {
+
+            touchHandler?.Update();
+
             System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(Window.Handle);
 
             if (Player.PlayState == NAudio.Wave.PlaybackState.Playing)
@@ -670,6 +682,7 @@ namespace ubeat
 
             base.Update(gameTime);
             frameCounter.Update(gameTime);
+                      
         }
 
         protected override void Draw(GameTime gameTime)
@@ -683,6 +696,8 @@ namespace ubeat
 
             ScreenManager.Render();
 
+
+            touchHandler?.Render();
             //spriteBatch.Draw(TopEffect, new Rectangle(0, 0, TopEffect.Width, TopEffect.Height), Color.White*.145f);
 
             //spriteBatch.Draw(TopEffect, new Rectangle(0, 0, TopEffect.Width, TopEffect.Height), Color.White * (Player.PeakVol));
