@@ -10,6 +10,7 @@ namespace ubeat.GameScreen
 {
     public class ScreenBase : IScreen, IDisposable
     {
+        internal float peak = 0;
         public ScreenBase(string name = "BaseScreen")
         {
             Name = name;
@@ -34,6 +35,7 @@ namespace ubeat.GameScreen
 
                 UbeatGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Microsoft.Xna.Framework.Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
             }
+            RenderPeak();
 
             try
             {
@@ -44,7 +46,10 @@ namespace ubeat.GameScreen
             {
 
             }
+
+
             
+
         }
 
         public virtual void Update(GameTime tm)
@@ -66,6 +71,33 @@ namespace ubeat.GameScreen
             }
 
             UpdateControls();
+
+            UpdatePeak();
+        }
+
+        internal void RenderPeak()
+        {
+            UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.TopEffect, new Rectangle(0, 0, UbeatGame.Instance.TopEffect.Width, UbeatGame.Instance.TopEffect.Height), Color.White * (peak * .7f / 10f));
+
+        }
+
+        internal void UpdatePeak()
+        {
+            //Experimental
+            float pScale = UbeatGame.Instance.Player.PeakVol;
+            if (pScale > 1) pScale = 1;
+            if (pScale > 0.8f)
+                pScale = 1;
+            else
+                pScale = 0f;
+
+            if (pScale < peak) pScale = peak;
+
+            peak = pScale;
+            if (peak > 0f)
+            {
+                peak -= (float)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f);
+            }
         }
 
         public virtual void UpdateControls()

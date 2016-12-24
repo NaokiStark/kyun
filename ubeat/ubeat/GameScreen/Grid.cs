@@ -305,7 +305,7 @@ namespace ubeat.GameScreen
             int fpsm = (int)Math.Round((double)UbeatGame.Instance.frameCounter.AverageFramesPerSecond, 0);
             FPSMetter.Text = fpsm.ToString("0", CultureInfo.InvariantCulture) + " FPS";
             FPSMetter.Update();
-
+            UpdatePeak();
             if (Waiting)
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.Space))
@@ -576,7 +576,7 @@ namespace ubeat.GameScreen
             }
 
             RenderVideoFrame();
-
+            RenderPeak();
             //IN GAME
             
             if (!onbreak)

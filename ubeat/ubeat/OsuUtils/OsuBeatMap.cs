@@ -58,7 +58,7 @@ namespace ubeat.OsuUtils
 
                 int offset = 0;
                 offset = ((fVer >= 14 && osbm.Mode == 0) ? 63 : 53);
-                
+                offset -= 35;
                /* 
                if (fVer > 9)
                     offset -= 125;

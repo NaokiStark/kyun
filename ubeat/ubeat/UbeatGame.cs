@@ -682,7 +682,10 @@ namespace ubeat
 
             base.Update(gameTime);
             frameCounter.Update(gameTime);
-                      
+
+            
+            
+
         }
 
         protected override void Draw(GameTime gameTime)
@@ -700,7 +703,6 @@ namespace ubeat
             touchHandler?.Render();
             //spriteBatch.Draw(TopEffect, new Rectangle(0, 0, TopEffect.Width, TopEffect.Height), Color.White*.145f);
 
-            //spriteBatch.Draw(TopEffect, new Rectangle(0, 0, TopEffect.Width, TopEffect.Height), Color.White * (Player.PeakVol));
 
             SpriteBatch.End();
 
@@ -708,6 +710,9 @@ namespace ubeat
 
             
         }
+
+        
+
 
         #endregion
 

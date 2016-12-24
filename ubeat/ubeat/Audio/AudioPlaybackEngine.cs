@@ -69,7 +69,7 @@ namespace ubeat.Audio
         {
             try
             {
-                vsp.Volume = 60f*UbeatGame.Instance.GeneralVolume/100f;
+                vsp.Volume = 90f*UbeatGame.Instance.GeneralVolume/100f;
                 mixer.AddMixerInput(ConvertToRightChannelCount(input));
                 
             }
