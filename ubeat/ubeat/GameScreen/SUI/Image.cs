@@ -43,9 +43,10 @@ namespace ubeat.GameScreen.UI
 
              }*/
 
-            float pScale = UbeatGame.Instance.Player.PeakVol + .8f;
-            if (pScale < 1) pScale = 1;
+            float pScale = UbeatGame.Instance.Player.PeakVol;
+            if (pScale > 0.7f) pScale = 1.15f;
             if (pScale > 1.15) pScale = 1.15f;
+
 
             if (pScale < Scale) pScale = Scale;  
 

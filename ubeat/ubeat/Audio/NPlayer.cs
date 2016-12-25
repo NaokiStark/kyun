@@ -160,7 +160,7 @@ namespace ubeat.Audio
             waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 2);
             audioFile = fromStream;
             meterSampleProvider = new MeteringSampleProvider(audioFile);
-           // meterSampleProvider.SamplesPerNotification = 60;
+            meterSampleProvider.SamplesPerNotification = 60;
             meterSampleProvider.StreamVolume += MeterSampleProvider_StreamVolume;
 
             audioFile.Volume = vol;
@@ -192,8 +192,11 @@ namespace ubeat.Audio
             waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 2);
             
             audioFile = new AudioFileReader(ActualSong);
+
             meterSampleProvider = new MeteringSampleProvider(audioFile);
             meterSampleProvider.SamplesPerNotification = 120;
+            
+            //meterSampleProvider.StreamVolume += MeterSampleProvider_StreamVolume;
             meterSampleProvider.StreamVolume += MeterSampleProvider_StreamVolume;
 
             audioFile.Volume = vol;
@@ -204,16 +207,8 @@ namespace ubeat.Audio
 
         public float Normalize(float value)
         {
-            float rawMax = 1;
-            float targetMax = 10;
-
-            //This is the maximum volume reduction
-            float maxReduce = 1 - targetMax / (float)rawMax;
-
-            float abs = Math.Abs(value);
-            double factor = (maxReduce * abs / (double)rawMax);
-
-            return (float)Math.Round((1 - factor) * value);
+            if (Volume == 0) return 0;
+            return ((value)*(1/Volume));
         }
 
         void waveOut_PlaybackStopped(object sender, StoppedEventArgs e)

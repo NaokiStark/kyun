@@ -492,15 +492,7 @@ namespace ubeat
             waitDefault_0 = Content.Load<Texture2D>("approach0.5");
             HolderFillDeff_0 = Content.Load<Texture2D>("HolderFill0.5");
 
-            TopEffect = new Texture2D(GraphicsDevice, actmode.Width, actmode.Height);
-
-            Color[] txClr = new Color[actmode.Width * actmode.Height];
-            for (int a = 0; a < txClr.Length; a++)
-            {
-                //txClr[a] = Color.FromNonPremultiplied(40, 19, 173, 255);
-                txClr[a] = Color.White;
-            }
-            TopEffect.SetData<Color>(txClr);
+            TopEffect = Content.Load<Texture2D>("BackgroundEffect" + (((float)actmode.Width / (float)actmode.Height == 1.3f)?"@1-3":""));
 
 
 

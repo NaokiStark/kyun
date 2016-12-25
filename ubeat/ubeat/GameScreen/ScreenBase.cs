@@ -11,8 +11,10 @@ namespace ubeat.GameScreen
     public class ScreenBase : IScreen, IDisposable
     {
         internal float peak = 0;
+        internal Screen.ScreenMode ActualScreenMode;
         public ScreenBase(string name = "BaseScreen")
         {
+            ActualScreenMode = Screen.ScreenModeManager.GetActualMode();
             Name = name;
             OnLoad += _OnLoad;
         }
@@ -77,7 +79,7 @@ namespace ubeat.GameScreen
 
         internal void RenderPeak()
         {
-            UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.TopEffect, new Rectangle(0, 0, UbeatGame.Instance.TopEffect.Width, UbeatGame.Instance.TopEffect.Height), Color.White * (peak * .7f / 10f));
+            UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.TopEffect, new Rectangle(0, 0, ActualScreenMode.Width, ActualScreenMode.Height), Color.White * (peak * .7f / 10f));
 
         }
 
@@ -86,7 +88,7 @@ namespace ubeat.GameScreen
             //Experimental
             float pScale = UbeatGame.Instance.Player.PeakVol;
             if (pScale > 1) pScale = 1;
-            if (pScale > 0.8f)
+            if (pScale > 0.7f)
                 pScale = 1;
             else
                 pScale = 0f;

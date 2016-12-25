@@ -380,6 +380,7 @@ namespace ubeat.UIObjs
                     float initSize = (isSmallRes)? UbeatGame.Instance.HolderFillDeff_0.Width : UbeatGame.Instance.HolderFillDeff.Width;
 
                     long positionOnHolder = ccc - (long)StartTime;
+                    if (positionOnHolder < 0) positionOnHolder = 0;
 
                     float positionPercent = positionOnHolder * 100f / (float)Length;
 
