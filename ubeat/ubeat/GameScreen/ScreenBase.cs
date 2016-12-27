@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.IO;
 using ubeat.Beatmap;
+using ubeat.Utils;
 
 namespace ubeat.GameScreen
 {
@@ -41,7 +42,7 @@ namespace ubeat.GameScreen
 
             try
             {
-                foreach (ScreenUIObject obj in Controls)
+                foreach (UIObjectBase obj in Controls)
                     obj.Render();
             }
             catch
@@ -79,7 +80,7 @@ namespace ubeat.GameScreen
 
         internal void RenderPeak()
         {
-            UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.TopEffect, new Rectangle(0, 0, ActualScreenMode.Width, ActualScreenMode.Height), Color.White * (peak * .7f / 10f));
+            UbeatGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.TopEffect, new Rectangle(0, 0, ActualScreenMode.Width, ActualScreenMode.Height), Color.White * (peak * .7f / 10f));
 
         }
 
@@ -104,7 +105,7 @@ namespace ubeat.GameScreen
 
         public virtual void UpdateControls()
         {
-            foreach (ScreenUIObject obj in Controls)
+            foreach (UIObjectBase obj in Controls)
                 obj.Update();
         }
 
@@ -159,7 +160,7 @@ namespace ubeat.GameScreen
                 Logger.Instance.Warn("There was a problem loading the background");
 #endif
                 // Use a default bgs n stuff class
-                Background = UbeatGame.Instance.DefaultBackground;
+                Background = SpritesContent.Instance.DefaultBackground;
             }
         }
 
@@ -179,7 +180,7 @@ namespace ubeat.GameScreen
         private bool EscapeAlredyPressed;
         public bool isDisposing;
         public Texture2D Background { get; set; }
-        public List<ScreenUIObject> Controls { get; set; }
+        public List<UIObjectBase> Controls { get; set; }
         public float Opacity { get; set; }
         public IScreen ScreenInstance { get; set; }
         public bool Visible { get; set; }

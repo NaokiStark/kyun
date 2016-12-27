@@ -11,6 +11,7 @@ using ubeat.Score;
 using ubeat.GameScreen.UI;
 using ubeat.Screen;
 using ubeat.GameScreen.SUI;
+using ubeat.Utils;
 
 namespace ubeat.GameScreen
 {
@@ -95,9 +96,9 @@ namespace ubeat.GameScreen
 
             ScreenMode ActualMode = scmL[Settings1.Default.ScreenMode];
 
-            Vector2 meas = UbeatGame.Instance.defaultFont.MeasureString("ubeat") * .85f;
+            Vector2 meas = SpritesContent.Instance.DefaultFont.MeasureString("ubeat") * .85f;
 
-            Vector2 fSize = UbeatGame.Instance.defaultFont.MeasureString("00000000") * 1.5f;
+            Vector2 fSize = SpritesContent.Instance.DefaultFont.MeasureString("00000000") * 1.5f;
 
             songProgress = new ProgressBar((int)fSize.X+30-2,7);
             songProgress.Position = new Vector2(ScoreDispl.Position.X+1, ScoreDispl.Position.Y + 44);
@@ -145,7 +146,7 @@ namespace ubeat.GameScreen
             ScreenMode mode = ScreenModeManager.GetActualMode();
             bool isSmallRes = mode.Height < 720;
 
-            Texture2D txbtn = (isSmallRes) ? UbeatGame.Instance.buttonDefault_0 : UbeatGame.Instance.buttonDefault;
+            Texture2D txbtn = (isSmallRes) ? SpritesContent.Instance.ButtonDefault_0 : SpritesContent.Instance.ButtonDefault;
 
             int wid = (txbtn.Bounds.Width + 20) * 3;
             int hei = (txbtn.Bounds.Height + 20) * 3;
@@ -198,7 +199,7 @@ namespace ubeat.GameScreen
             ScreenMode mode = ScreenModeManager.GetActualMode();
             bool isSmallRes = mode.Height < 720;
 
-            Texture2D txbtn = (isSmallRes) ? UbeatGame.Instance.buttonDefault_0 : UbeatGame.Instance.buttonDefault;
+            Texture2D txbtn = (isSmallRes) ? SpritesContent.Instance.ButtonDefault_0 : SpritesContent.Instance.ButtonDefault;
 
             int x = (sWidth / 2) + (txbtn.Bounds.Width + 20) * posXX;
             int y = (sHeight / 2) + (txbtn.Bounds.Height + 20) * posYY;
@@ -423,9 +424,9 @@ namespace ubeat.GameScreen
                         bool isSmallRes = mode.Height < 720;
 
                         if (bemap.HitObjects[actualIndex] is HitHolder)
-                            bemap.HitObjects[actualIndex].AddTexture((isSmallRes)? UbeatGame.Instance.buttonHolder_0 : UbeatGame.Instance.buttonHolder);
+                            bemap.HitObjects[actualIndex].AddTexture((isSmallRes)? SpritesContent.Instance.ButtonHolder_0 : SpritesContent.Instance.ButtonHolder);
                         else
-                            bemap.HitObjects[actualIndex].AddTexture((isSmallRes) ? UbeatGame.Instance.buttonDefault_0 : UbeatGame.Instance.buttonDefault);
+                            bemap.HitObjects[actualIndex].AddTexture((isSmallRes) ? SpritesContent.Instance.ButtonDefault_0 : SpritesContent.Instance.ButtonDefault);
 
                         bemap.HitObjects[actualIndex].Start(pos);
 
@@ -601,7 +602,7 @@ namespace ubeat.GameScreen
             ScreenMode mode = ScreenModeManager.GetActualMode();
             bool isSmallRes = mode.Height < 720;
 
-            Texture2D txbtn = (isSmallRes) ? UbeatGame.Instance.buttonDefault_0 : UbeatGame.Instance.buttonDefault;
+            Texture2D txbtn = (isSmallRes) ? SpritesContent.Instance.ButtonDefault_0 : SpritesContent.Instance.ButtonDefault;
 
             int xi = (sWidth / 2) + (txbtn.Bounds.Width + 10) * 1;
             int yi = (sHeight / 2) + (txbtn.Bounds.Height + 10) * 1;
@@ -666,12 +667,12 @@ namespace ubeat.GameScreen
 
             if (Paused)
             {
-                int splashW = UbeatGame.Instance.PauseSplash.Bounds.Width;
-                int splashH = UbeatGame.Instance.PauseSplash.Bounds.Height;
+                int splashW = SpritesContent.Instance.PauseSplash.Bounds.Width;
+                int splashH = SpritesContent.Instance.PauseSplash.Bounds.Height;
                 if (!failed)
-                    UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.PauseSplash, new Rectangle(sWidth / 2 - splashW / 2, sHeight / 2 - splashH / 2, splashW, splashH), Color.White);
+                    UbeatGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.PauseSplash, new Rectangle(sWidth / 2 - splashW / 2, sHeight / 2 - splashH / 2, splashW, splashH), Color.White);
                 else
-                    UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.FailSplash, new Rectangle(sWidth / 2 - splashW / 2, sHeight / 2 - splashH / 2, splashW, splashH), Color.White);
+                    UbeatGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.FailSplash, new Rectangle(sWidth / 2 - splashW / 2, sHeight / 2 - splashH / 2, splashW, splashH), Color.White);
             }
 
             if (onbreak) DrawBreak();
@@ -761,11 +762,11 @@ namespace ubeat.GameScreen
                 RenderVideoFrame();
                 FPSMetter.Render();
 
-                UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.SpaceSkip,
-                    new Rectangle(screenWidth - (UbeatGame.Instance.SpaceSkip.Width / 2),
-                        screenHeight - (UbeatGame.Instance.SpaceSkip.Height / 2),
-                        UbeatGame.Instance.SpaceSkip.Width / 2,
-                        UbeatGame.Instance.SpaceSkip.Height / 2),
+                UbeatGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.SpaceSkip,
+                    new Rectangle(screenWidth - (SpritesContent.Instance.SpaceSkip.Width / 2),
+                        screenHeight - (SpritesContent.Instance.SpaceSkip.Height / 2),
+                        SpritesContent.Instance.SpaceSkip.Width / 2,
+                        SpritesContent.Instance.SpaceSkip.Height / 2),
                     null,
                     Color.White,
                     0,
@@ -838,8 +839,8 @@ namespace ubeat.GameScreen
 
             Break brk = getBreak();
 
-            Vector2 mesBreak = UbeatGame.Instance.defaultFont.MeasureString("Break");
-            Vector2 mesWarn = UbeatGame.Instance.defaultFont.MeasureString("Warning!");
+            Vector2 mesBreak = SpritesContent.Instance.DefaultFont.MeasureString("Break");
+            Vector2 mesWarn = SpritesContent.Instance.DefaultFont.MeasureString("Warning!");
             
             if(lastBreak != brk.Start)
             {
@@ -871,11 +872,11 @@ namespace ubeat.GameScreen
             {
                 Vector2 ctopw = new Vector2(center.X - (mesWarn.X / 2), 15);
 
-                UbeatGame.Instance.SpriteBatch.DrawString(UbeatGame.Instance.defaultFont, "Warning!", ctopw, Color.Red * op, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
+                UbeatGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.DefaultFont, "Warning!", ctopw, Color.Red * op, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
             }
             else
             {
-                UbeatGame.Instance.SpriteBatch.DrawString(UbeatGame.Instance.defaultFont, "Break", ctopx, Color.White * op, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
+                UbeatGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.DefaultFont, "Break", ctopx, Color.White * op, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
             }
 
             UbeatGame.Instance.SpriteBatch.Draw(bg, rtcx2, null, Color.White * op, 0, Vector2.Zero, SpriteEffects.None, 0);

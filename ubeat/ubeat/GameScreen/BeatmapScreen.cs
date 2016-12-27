@@ -71,14 +71,14 @@ namespace ubeat.GameScreen
         void lBDff_IndexChanged(object sender, EventArgs e)
         {
             if (lBDff.selectedIndex < 0 || lBDff.selectedIndex > lBDff.Items.Count-1) return;
-            AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.SelectorHit);
+            AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.SelectorHit);
             lblTitleDesc.Text = lBDff.Items[lBDff.selectedIndex].Artist + " - " + lBDff.Items[lBDff.selectedIndex].Title;
         }
 
         void lbox_IndexChanged(object sender, EventArgs e)
         {
             if (lbox.selectedIndex < 0 || lbox.selectedIndex > lbox.Items.Count - 1) return;
-            AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.SelectorHit);
+            AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.SelectorHit);
             lblTitleDesc.Text = lbox.Items[lbox.selectedIndex][0].Artist + " - " + lbox.Items[lbox.selectedIndex][0].Title;
 
             ChangeBeatmapDisplay(lbox.Items[lbox.selectedIndex][0]);

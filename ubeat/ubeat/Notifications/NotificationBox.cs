@@ -3,10 +3,11 @@ using System;
 using ubeat.GameScreen;
 using ubeat.GameScreen.SUI;
 using ubeat.GameScreen.UI;
+using ubeat.Utils;
 
 namespace ubeat.Notifications
 {
-    public class NotificationBox : ScreenUIObject, IDisposable
+    public class NotificationBox : UIObjectBase, IDisposable
     {
         public Rectangle Size { get { return rectng.Texture.Bounds; } }
 
@@ -16,9 +17,9 @@ namespace ubeat.Notifications
             
             displayLabel.Scale = .65f;
 
-            Vector2 MeasuredString = UbeatGame.Instance.defaultFont.MeasureString(text) * displayLabel.Scale;
+            Vector2 MeasuredString = SpritesContent.Instance.DefaultFont.MeasureString(text) * displayLabel.Scale;
 
-            Text = StringHelper.WrapText(UbeatGame.Instance.defaultFont, text, 200, .65f);
+            Text = StringHelper.WrapText(SpritesContent.Instance.DefaultFont, text, 200, .65f);
 
             displayLabel.Text = Text;
 

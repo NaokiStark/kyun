@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using ubeat.UIObjs;
+using ubeat.Beatmap;
 
 namespace ubeat.Utils
 {

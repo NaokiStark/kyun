@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ubeat.GameScreen.SUI
+namespace ubeat.GameModes.Midi
 {
-    public class InputControl : UIObjectBase
+    class HitHolder
     {
     }
 }

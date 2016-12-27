@@ -14,8 +14,10 @@ using ubeat.GameScreen;
 using ubeat.OsuUtils;
 using ubeat.Score;
 using ubeat.Screen;
+using ubeat.UIObjs;
+using ubeat.Utils;
 
-namespace ubeat.UIObjs
+namespace ubeat.Beatmap
 {
     public class HitHolder : IHitObj
     {
@@ -154,7 +156,7 @@ namespace ubeat.UIObjs
                         ins.Volume = Game1.Instance.GeneralVolume;
                         ins.Play();
                          */
-                        AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.HitHolder);
+                        AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HitHolder);
 
                         hasAlredyPressed = true;
                         isFilling = true;
@@ -210,7 +212,7 @@ namespace ubeat.UIObjs
                             ins.Play();
                              * 
                              */
-                            AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.HitHolder);
+                            AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HitHolder);
 
                             hasAlredyPressed = true;
                             PressedAt = Position;
@@ -250,7 +252,7 @@ namespace ubeat.UIObjs
                 {
                     ticked = true;
 
-                    AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.HolderTick);
+                    AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HolderTick);
 
                     //SoundEffectInstance TickSnd = Game1.Instance.HolderTick.CreateInstance();
                     Grid.Instance.Health.Add(1f * BeatmapContainer.OverallDifficulty);
@@ -273,7 +275,7 @@ namespace ubeat.UIObjs
                 Score.ScoreValue score = GetScoreValue();
                 if ((int)score > (int)Score.ScoreValue.Miss)
                 {
-                    AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.HitHolder);
+                    AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HitHolder);
                     Grid.Instance.FailsCount = 0;
                     float healthToAdd = (BeatmapContainer.OverallDifficulty / 2) + Math.Abs(this.LeaveAt - PressedAt) / 100;
                     Grid.Instance.Health.Add(healthToAdd);
@@ -295,7 +297,7 @@ namespace ubeat.UIObjs
                         SoundEffectInstance ins = Game1.Instance.ComboBreak.CreateInstance();
                         ins.Volume = Game1.Instance.GeneralVolume;
                         ins.Play();*/
-                        AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.ComboBreak);
+                        AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.ComboBreak);
 
                     }
                     Combo.Instance.Miss();
@@ -347,12 +349,12 @@ namespace ubeat.UIObjs
                     ScreenMode mode = ScreenModeManager.GetActualMode();
                     bool isSmallRes = mode.Height < 720;
 
-                    UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.Hold,
+                    UbeatGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.Hold,
                         new Rectangle(
                             (int)position.X,
                             (int)position.Y,
-                            (isSmallRes) ? Texture.Width : UbeatGame.Instance.Hold.Bounds.Width,
-                            (isSmallRes) ? Texture.Height : UbeatGame.Instance.Hold.Bounds.Height),
+                            (isSmallRes) ? Texture.Width : SpritesContent.Instance.Hold.Bounds.Width,
+                            (isSmallRes) ? Texture.Height : SpritesContent.Instance.Hold.Bounds.Height),
                         Color.White * perct);
                 }
                 //Game1.Instance.spriteBatch.DrawString(Game1.Instance.fontDefault, (Location - 96).ToString(), new Vector2(position.X + (Texture.Bounds.Width / 2), position.Y + (Texture.Bounds.Height / 2)), Color.Black * opacity);
@@ -377,7 +379,7 @@ namespace ubeat.UIObjs
                     bool isSmallRes = mode.Height < 720;
 
 
-                    float initSize = (isSmallRes)? UbeatGame.Instance.HolderFillDeff_0.Width : UbeatGame.Instance.HolderFillDeff.Width;
+                    float initSize = (isSmallRes)? SpritesContent.Instance.HolderFillDeff_0.Width : SpritesContent.Instance.HolderFillDeff.Width;
 
                     long positionOnHolder = ccc - (long)StartTime;
                     if (positionOnHolder < 0) positionOnHolder = 0;
@@ -387,9 +389,9 @@ namespace ubeat.UIObjs
                     float percen = initSize * positionPercent / 100f;
 
                     if(!(isSmallRes))
-                        UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.radiance, new Rectangle((int)position.X , (int)position.Y, UbeatGame.Instance.radiance.Bounds.Width, UbeatGame.Instance.radiance.Bounds.Height), Color.White * 0.5f);
+                        UbeatGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.Radiance, new Rectangle((int)position.X , (int)position.Y, SpritesContent.Instance.Radiance.Bounds.Width, SpritesContent.Instance.Radiance.Bounds.Height), Color.White * 0.5f);
 
-                    UbeatGame.Instance.SpriteBatch.Draw((isSmallRes) ? UbeatGame.Instance.HolderFillDeff_0 : UbeatGame.Instance.HolderFillDeff,
+                    UbeatGame.Instance.SpriteBatch.Draw((isSmallRes) ? SpritesContent.Instance.HolderFillDeff_0 : SpritesContent.Instance.HolderFillDeff,
                       new Rectangle((int)position.X + (this.Texture.Width / 2) - (int)(percen/2), (int)position.Y + (this.Texture.Height/2) - (int)(percen / 2), (int)percen, (int)percen),
                       null,
                       Color.White,
@@ -399,13 +401,13 @@ namespace ubeat.UIObjs
                       0);
 
                     string secondsTo = ((EndTime - ccc) / 100).ToString("0");
-                    Vector2 measureSize = UbeatGame.Instance.defaultFont.MeasureString(secondsTo);
+                    Vector2 measureSize = SpritesContent.Instance.DefaultFont.MeasureString(secondsTo);
 
                     Vector2 bgS = measureSize * 1.1f;
 
 
-                    UbeatGame.Instance.SpriteBatch.DrawString(UbeatGame.Instance.defaultFont, secondsTo, new Vector2((position.X + Texture.Width / 2) + 1, (position.Y + Texture.Height / 2) + 1), Color.Black, 0, bgS / 2, 1.1f, SpriteEffects.None, 0);
-                    UbeatGame.Instance.SpriteBatch.DrawString(UbeatGame.Instance.defaultFont, secondsTo, new Vector2(position.X + Texture.Width / 2, position.Y + Texture.Height / 2), Color.White, 0, measureSize / 2, 1f, SpriteEffects.None, 0);
+                    UbeatGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.DefaultFont, secondsTo, new Vector2((position.X + Texture.Width / 2) + 1, (position.Y + Texture.Height / 2) + 1), Color.Black, 0, bgS / 2, 1.1f, SpriteEffects.None, 0);
+                    UbeatGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.DefaultFont, secondsTo, new Vector2(position.X + Texture.Width / 2, position.Y + Texture.Height / 2), Color.White, 0, measureSize / 2, 1f, SpriteEffects.None, 0);
 
 
                 }

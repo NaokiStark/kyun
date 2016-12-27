@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ubeat.GameScreen.UI
 {
-    public class Image : ScreenUIObject
+    public class Image : UIObjectBase
     {
 
         public bool BeatReact = false;

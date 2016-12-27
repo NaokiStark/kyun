@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ubeat.GameScreen.UI;
 using ubeat.GameScreen.SUI.Buttons;
+using ubeat.Utils;
 
 namespace ubeat.GameScreen
 {
@@ -40,17 +41,17 @@ namespace ubeat.GameScreen
         public void LoadInterface()
         {
             UbeatGame.Instance.IsMouseVisible = true;
-            Controls = new List<ScreenUIObject>();
+            Controls = new List<UIObjectBase>();
 
             ScreenMode actualMode = ScreenModeManager.GetActualMode();
 
             Vector2 lPos = new Vector2(0, 100);
 
-            lbox = new Listbox(lPos, actualMode.Width / 2, actualMode.Height - 100, UbeatGame.Instance.ListboxFont);
+            lbox = new Listbox(lPos, actualMode.Width / 2, actualMode.Height - 100, SpritesContent.Instance.ListboxFont);
             
             lbox.IndexChanged += lbox_IndexChanged;
             
-            lBDff = new ListboxDiff(new Vector2(lbox.width, lbox.Position.Y), 200, 500, UbeatGame.Instance.ListboxFont);
+            lBDff = new ListboxDiff(new Vector2(lbox.width, lbox.Position.Y), 200, 500, SpritesContent.Instance.ListboxFont);
 
             filledRect1 = new FilledRectangle(new Vector2(actualMode.Width, 4), Color.SpringGreen);
             filledRect1.Position = new Vector2(0, 96);
@@ -60,7 +61,7 @@ namespace ubeat.GameScreen
                 Text = "",
                 Position = new Vector2(0, 0),
                 Size = new Vector2(actualMode.Width, 96),
-                Font = UbeatGame.Instance.TitleFont
+                Font = SpritesContent.Instance.TitleFont
             };
 
             lblSearch = new Label(0f)
@@ -69,11 +70,11 @@ namespace ubeat.GameScreen
                 Text = "",
                 Position = new Vector2(actualMode.Width / 2, 48),
                 Centered = true,
-                Font = UbeatGame.Instance.SettingsFont
+                Font = SpritesContent.Instance.SettingsFont
             };
 
             autoBtn = new AutoModeButton() {
-                Position = new Vector2(actualMode.Width - UbeatGame.Instance.AutoModeButton.Width-20, actualMode.Height - UbeatGame.Instance.AutoModeButton.Height-20),
+                Position = new Vector2(actualMode.Width - SpritesContent.Instance.AutoModeButton.Width-20, actualMode.Height - SpritesContent.Instance.AutoModeButton.Height-20),
                 Scale=.85f,
                 PlayHit=true
             };
@@ -107,19 +108,19 @@ namespace ubeat.GameScreen
             if (AMode)
             {
                 AMode = false;
-                autoBtn.Texture = UbeatGame.Instance.AutoModeButton;
+                autoBtn.Texture = SpritesContent.Instance.AutoModeButton;
             }
             else
             {
                 AMode = true;
-                autoBtn.Texture = UbeatGame.Instance.AutoModeButtonSel;
+                autoBtn.Texture = SpritesContent.Instance.AutoModeButtonSel;
             }
         }
 
         void addTextureG()
         {
-            int wid = (UbeatGame.Instance.buttonDefault.Bounds.Width + 20) * 3;
-            int hei = (UbeatGame.Instance.buttonDefault.Bounds.Height + 20) * 3;
+            int wid = (SpritesContent.Instance.ButtonDefault.Bounds.Width + 20) * 3;
+            int hei = (SpritesContent.Instance.ButtonDefault.Bounds.Height + 20) * 3;
             bg = new Texture2D(UbeatGame.Instance.GraphicsDevice, wid, hei);
 
             Color[] data = new Color[wid * hei];
@@ -163,7 +164,7 @@ namespace ubeat.GameScreen
 
             //RenderVideoFrame();
 
-            foreach (ScreenUIObject ctr in Controls)
+            foreach (UIObjectBase ctr in Controls)
                 ctr.Render();
 
         }

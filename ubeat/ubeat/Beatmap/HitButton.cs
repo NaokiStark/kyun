@@ -3,13 +3,14 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Windows.Forms;
-using ubeat.Beatmap;
+using ubeat.UIObjs;
 using ubeat.GameScreen;
 using ubeat.Score;
 using ubeat.Audio;
 using ubeat.Screen;
+using ubeat.Utils;
 
-namespace ubeat.UIObjs
+namespace ubeat.Beatmap
 {
     public class HitButton : IHitObj
     {
@@ -169,7 +170,7 @@ namespace ubeat.UIObjs
                         SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
                         ins.Volume = Game1.Instance.GeneralVolume;
                         ins.Play();*/
-                    AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.HitButton);
+                    AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HitButton);
 
                     Combo.Instance.Add();
                 }
@@ -179,7 +180,7 @@ namespace ubeat.UIObjs
                     Grid.Instance.FailsCount++;
                     if (Combo.Instance.ActualMultiplier > 10)
                     {
-                        AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.ComboBreak);
+                        AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.ComboBreak);
                         /*
                         SoundEffectInstance ins = Game1.Instance.ComboBreak.CreateInstance();
                         ins.Volume = Game1.Instance.GeneralVolume;
@@ -230,12 +231,12 @@ namespace ubeat.UIObjs
                     bool isSmallRes = mode.Height < 720;
 
                     float perct = (float)(ccc / (StartTime - BeatmapContainer.Timing300)) * 1f;
-                    UbeatGame.Instance.SpriteBatch.Draw(UbeatGame.Instance.Push,
+                    UbeatGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.Push,
                         new Rectangle(
                             (int)position.X,
                             (int)position.Y,
-                            (isSmallRes)? Texture.Width : UbeatGame.Instance.Push.Bounds.Width,
-                             (isSmallRes) ? Texture.Height : UbeatGame.Instance.Push.Bounds.Height),
+                            (isSmallRes)? Texture.Width : SpritesContent.Instance.Push.Bounds.Width,
+                             (isSmallRes) ? Texture.Height : SpritesContent.Instance.Push.Bounds.Height),
                         Color.White * perct);
                 }
             }

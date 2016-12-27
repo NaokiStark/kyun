@@ -7,6 +7,7 @@ using ubeat.GameScreen.SUI;
 using ubeat.Screen;
 using ubeat.GameScreen.UI;
 using ubeat.Notifications;
+using ubeat.Utils;
 
 namespace ubeat.GameScreen
 {
@@ -17,14 +18,14 @@ namespace ubeat.GameScreen
 
         public void LoadInterface()
         {
-            Controls = new List<ScreenUIObject>();
+            Controls = new List<UIObjectBase>();
 
             //ñam ñam
             ScreenMode actualMode = ScreenModeManager.GetActualMode();
 
             var center = new Vector2(actualMode.Width / 2, actualMode.Height / 2);
 
-            Logo = new UI.Image(UbeatGame.Instance.Logo) { BeatReact = true };
+            Logo = new UI.Image(SpritesContent.Instance.Logo) { BeatReact = true };
 
             Logo.Position = 
                     new Vector2(
@@ -37,7 +38,7 @@ namespace ubeat.GameScreen
             comboLang = new ComboBox(new Vector2(
                 center.X, Logo.Position.Y + globalMarginBottom + Logo.Texture.Height),
                 250,
-                UbeatGame.Instance.SettingsFont);
+                SpritesContent.Instance.SettingsFont);
 
 
             comboLang.Text = "English";
@@ -48,8 +49,8 @@ namespace ubeat.GameScreen
 
             lcomboLang = new Label();
             lcomboLang.Text = "Language";
-            lcomboLang.Font = UbeatGame.Instance.SettingsFont;
-            lcomboLang.Size = UbeatGame.Instance.SettingsFont.MeasureString(lcomboLang.Text) + new Vector2(20,10);
+            lcomboLang.Font = SpritesContent.Instance.SettingsFont;
+            lcomboLang.Size = SpritesContent.Instance.SettingsFont.MeasureString(lcomboLang.Text) + new Vector2(20,10);
             lcomboLang.Position = new Vector2(center.X - lcomboLang.Size.X - 10, comboLang.Position.Y);
 
 
@@ -58,9 +59,9 @@ namespace ubeat.GameScreen
             combodisplayMode = new ComboBox(
                 new Vector2(
                     center.X,
-                    comboLang.Position.Y + globalMarginBottom + UbeatGame.Instance.SettingsFont.MeasureString("a").Y + 5),
+                    comboLang.Position.Y + globalMarginBottom + SpritesContent.Instance.SettingsFont.MeasureString("a").Y + 5),
                 250,
-                UbeatGame.Instance.SettingsFont);
+                SpritesContent.Instance.SettingsFont);
 
             combodisplayMode.IndexChaged += CombodisplayMode_IndexChaged;
             fillComboDisplay();
@@ -69,8 +70,8 @@ namespace ubeat.GameScreen
 
             lcombodisplayMode = new Label();
             lcombodisplayMode.Text = "Display Mode";
-            lcombodisplayMode.Font = UbeatGame.Instance.SettingsFont;
-            lcombodisplayMode.Size = UbeatGame.Instance.SettingsFont.MeasureString(lcombodisplayMode.Text) + new Vector2(20,10);
+            lcombodisplayMode.Font = SpritesContent.Instance.SettingsFont;
+            lcombodisplayMode.Size = SpritesContent.Instance.SettingsFont.MeasureString(lcombodisplayMode.Text) + new Vector2(20,10);
             lcombodisplayMode.Position = new Vector2(center.X - lcombodisplayMode.Size.X - 10, combodisplayMode.Position.Y);
 
 
@@ -79,9 +80,9 @@ namespace ubeat.GameScreen
             comboFrameRate = new ComboBox(
                 new Vector2(
                     center.X,
-                    combodisplayMode.Position.Y + globalMarginBottom + UbeatGame.Instance.SettingsFont.MeasureString("a").Y + 5),
+                    combodisplayMode.Position.Y + globalMarginBottom + SpritesContent.Instance.SettingsFont.MeasureString("a").Y + 5),
                 250,
-                UbeatGame.Instance.SettingsFont
+                SpritesContent.Instance.SettingsFont
                 );
 
             comboFrameRate.Text = Settings1.Default.FrameRate.ToString();
@@ -103,8 +104,8 @@ namespace ubeat.GameScreen
 
             lcomboFrameRate = new Label();
             lcomboFrameRate.Text = "Framerate (FPS)";
-            lcomboFrameRate.Font = UbeatGame.Instance.SettingsFont;
-            lcomboFrameRate.Size = UbeatGame.Instance.SettingsFont.MeasureString(lcomboFrameRate.Text) + new Vector2(20,10);
+            lcomboFrameRate.Font = SpritesContent.Instance.SettingsFont;
+            lcomboFrameRate.Size = SpritesContent.Instance.SettingsFont.MeasureString(lcomboFrameRate.Text) + new Vector2(20,10);
             lcomboFrameRate.Position = new Vector2(center.X - lcomboFrameRate.Size.X - 10, comboFrameRate.Position.Y);
 
             // Check fullscreen
@@ -112,7 +113,7 @@ namespace ubeat.GameScreen
             checkFullScr = new CheckBox();
             checkFullScr.Position = new Vector2(
                     center.X,
-                    comboFrameRate.Position.Y + globalMarginBottom + UbeatGame.Instance.SettingsFont.MeasureString("a").Y + 5);
+                    comboFrameRate.Position.Y + globalMarginBottom + SpritesContent.Instance.SettingsFont.MeasureString("a").Y + 5);
 
             checkFullScr.Checked = Settings1.Default.FullScreen;
             checkFullScr.CheckChanged += CheckFullScr_CheckChanged;
@@ -121,8 +122,8 @@ namespace ubeat.GameScreen
 
             lcheckFullScr = new Label();
             lcheckFullScr.Text = "Fullscreen";
-            lcheckFullScr.Font = UbeatGame.Instance.SettingsFont;
-            lcheckFullScr.Size = UbeatGame.Instance.SettingsFont.MeasureString(lcheckFullScr.Text) + new Vector2(20,10);
+            lcheckFullScr.Font = SpritesContent.Instance.SettingsFont;
+            lcheckFullScr.Size = SpritesContent.Instance.SettingsFont.MeasureString(lcheckFullScr.Text) + new Vector2(20,10);
             lcheckFullScr.Position = new Vector2(center.X - lcheckFullScr.Size.X - 10, checkFullScr.Position.Y);
 
             // Check VSync
@@ -130,7 +131,7 @@ namespace ubeat.GameScreen
             checkVSync = new CheckBox();
             checkVSync.Position = new Vector2(
                     center.X,
-                    checkFullScr.Position.Y + globalMarginBottom + UbeatGame.Instance.SettingsFont.MeasureString("a").Y + 5);
+                    checkFullScr.Position.Y + globalMarginBottom + SpritesContent.Instance.SettingsFont.MeasureString("a").Y + 5);
 
             checkVSync.Checked = Settings1.Default.VSync;
             checkVSync.CheckChanged += CheckVSync_CheckChanged;
@@ -139,8 +140,8 @@ namespace ubeat.GameScreen
 
             lcheckVSync = new Label();
             lcheckVSync.Text = "VSync (Fix framerate to 60FPS)";
-            lcheckVSync.Font = UbeatGame.Instance.SettingsFont;
-            lcheckVSync.Size = UbeatGame.Instance.SettingsFont.MeasureString(lcheckVSync.Text) + new Vector2(20,10);
+            lcheckVSync.Font = SpritesContent.Instance.SettingsFont;
+            lcheckVSync.Size = SpritesContent.Instance.SettingsFont.MeasureString(lcheckVSync.Text) + new Vector2(20,10);
             lcheckVSync.Position = new Vector2(center.X - lcheckVSync.Size.X - 10, checkVSync.Position.Y);
 
             //Check InGame Video
@@ -148,7 +149,7 @@ namespace ubeat.GameScreen
             checkInGameVideo = new CheckBox();
             checkInGameVideo.Position = new Vector2(
                     center.X,
-                    checkVSync.Position.Y + globalMarginBottom + UbeatGame.Instance.SettingsFont.MeasureString("a").Y + 5);
+                    checkVSync.Position.Y + globalMarginBottom + SpritesContent.Instance.SettingsFont.MeasureString("a").Y + 5);
             checkInGameVideo.Checked = Settings1.Default.Video;
 
             checkInGameVideo.CheckChanged += CheckInGameVideo_CheckChanged;
@@ -157,8 +158,8 @@ namespace ubeat.GameScreen
 
             lcheckInGameVideo = new Label();
             lcheckInGameVideo.Text = "In-Game Video (Warn!)";
-            lcheckInGameVideo.Font = UbeatGame.Instance.SettingsFont;
-            lcheckInGameVideo.Size = UbeatGame.Instance.SettingsFont.MeasureString(lcheckInGameVideo.Text) + new Vector2(20,10);
+            lcheckInGameVideo.Font = SpritesContent.Instance.SettingsFont;
+            lcheckInGameVideo.Size = SpritesContent.Instance.SettingsFont.MeasureString(lcheckInGameVideo.Text) + new Vector2(20,10);
             lcheckInGameVideo.Position = new Vector2(center.X - lcheckInGameVideo.Size.X - 10, checkInGameVideo.Position.Y);
 
             notifier = new Notifier();
@@ -306,7 +307,7 @@ namespace ubeat.GameScreen
 
             combodisplayMode.Position = new Vector2(
                     center.X,
-                    comboLang.Position.Y + globalMarginBottom + UbeatGame.Instance.ListboxFont.MeasureString("a").Y + 5);
+                    comboLang.Position.Y + globalMarginBottom + SpritesContent.Instance.ListboxFont.MeasureString("a").Y + 5);
         }
 
        
@@ -317,7 +318,7 @@ namespace ubeat.GameScreen
 
             ComboBox activeBox=null;
 
-            foreach(ScreenUIObject ctr in Controls)
+            foreach(UIObjectBase ctr in Controls)
             {
                 if(ctr is ComboBox)
                 {
@@ -331,7 +332,7 @@ namespace ubeat.GameScreen
                 }
             }
 
-            foreach (ScreenUIObject ctr in Controls)
+            foreach (UIObjectBase ctr in Controls)
             {
                 if(activeBox != null) {
                     if (restrictedUpdate && (ctr is InputControl && !activeBox.IsListVisible))

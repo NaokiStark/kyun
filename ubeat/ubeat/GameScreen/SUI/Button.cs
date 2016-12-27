@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using ubeat.Audio;
 using ubeat.GameScreen.SUI;
+using ubeat.Utils;
 
 namespace ubeat.GameScreen.UI
 {
@@ -33,7 +34,7 @@ namespace ubeat.GameScreen.UI
         {
             if (PlayHit)
             {
-                AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.ButtonHit);
+                AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.ButtonHit);
             }
 
         }
@@ -80,7 +81,7 @@ namespace ubeat.GameScreen.UI
 
                 if (!alredyIntersecs)
                 {
-                    AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.ButtonOver);
+                    AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.ButtonOver);
                 }
 
                 alredyIntersecs = true;

@@ -5,7 +5,7 @@ using ubeat.GameScreen.SUI;
 
 namespace ubeat.GameScreen
 {
-    public class ScreenUIObject : UIObjs.IUIObject, IDisposable
+    public class UIObjectBase : UIObjs.IUIObject, IDisposable
     {
         public bool Disposing { get; set; }
 
@@ -37,7 +37,7 @@ namespace ubeat.GameScreen
         int clickC = 0;
         int clickCount = 0;
 
-        public ScreenUIObject()
+        public UIObjectBase()
         {
             Visible = true;
         }

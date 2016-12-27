@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using ubeat.GameScreen;
 using ubeat.Screen;
+using ubeat.Utils;
 
 namespace ubeat.UIObjs
 {
@@ -30,7 +31,7 @@ namespace ubeat.UIObjs
 
             this.starttime = startTime;
             this.Position = position;
-            this.Texture = (isSmallRes)? UbeatGame.Instance.waitDefault_0 : UbeatGame.Instance.waitDefault;
+            this.Texture = (isSmallRes)? SpritesContent.Instance.WaitDefault_0 : SpritesContent.Instance.WaitDefault;
             this.approachrate = approachRate;
             this.width = Texture.Bounds.Width;
             this.height = Texture.Bounds.Height;

@@ -94,7 +94,7 @@ namespace ubeat.GameScreen
             {
                 Thread tr = new Thread(new ThreadStart(()=> {
                     UbeatGame.Instance.Player.Volume = .05f;
-                    Audio.AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.SeeyaOsu);
+                    Audio.AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.SeeyaOsu);
                     Thread.Sleep(1000);
                     ScreenManager.ChangeTo(new LeaveScreen());
                 }));
@@ -197,7 +197,7 @@ namespace ubeat.GameScreen
             Beatmap.ubeatBeatMap ubm;
 
             if (bsel.Count == 1)
-                ubm = bsel[1];
+                ubm = bsel[0];
             else
                 ubm = bsel[OsuUtils.OsuBeatMap.rnd.Next(0, bsel.Count - 1)];
 

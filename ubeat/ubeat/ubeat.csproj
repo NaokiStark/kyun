@@ -85,8 +85,8 @@
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="PommaLabs.Thrower, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Thrower.3.0.4\lib\net40\PommaLabs.Thrower.dll</HintPath>
+    <Reference Include="PommaLabs.Thrower, Version=4.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Thrower.4.0.5\lib\net40\PommaLabs.Thrower.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PresentationCore" />
@@ -102,7 +102,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Net" />
     <Reference Include="Troschuetz.Random, Version=4.0.3.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Troschuetz.Random.4.0.8\lib\net40\Troschuetz.Random.dll</HintPath>
+      <HintPath>..\..\packages\Troschuetz.Random.4.1.2\lib\net40\Troschuetz.Random.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="UIAutomationProvider" />
@@ -127,6 +127,14 @@
     <Compile Include="Beatmap\Mapset.cs" />
     <Compile Include="Beatmap\ubeatBeatMap.cs" />
     <Compile Include="Dialog\DialogLayer.cs" />
+    <Compile Include="GameModes\Classic\ClassicModeScreen.cs" />
+    <Compile Include="GameModes\Classic\HitHolder.cs" />
+    <Compile Include="GameModes\Classic\HitSingle.cs" />
+    <Compile Include="GameModes\GameModeScreenBase.cs" />
+    <Compile Include="GameModes\HitBase.cs" />
+    <Compile Include="GameModes\Midi\HitHolder.cs" />
+    <Compile Include="GameModes\Midi\HitSingle.cs" />
+    <Compile Include="GameModes\Midi\MidiModeScreen.cs" />
     <Compile Include="GameScreen\SUI\InputControl.cs" />
     <Compile Include="Settings\Settings.cs">
       <SubType>Form</SubType>
@@ -211,6 +219,7 @@
     <Compile Include="Utils\KeyboardManager.cs" />
     <Compile Include="Utils\ReplayBuilder.cs" />
     <Compile Include="Utils\ReplayParser.cs" />
+    <Compile Include="Utils\SpritesContent.cs" />
     <Compile Include="Utils\StringHelper.cs" />
     <Compile Include="Utils\TouchHandler.cs" />
     <Compile Include="Utils\VerticalProgressBar.cs">

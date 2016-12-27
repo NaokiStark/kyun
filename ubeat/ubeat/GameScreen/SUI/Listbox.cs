@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using ubeat.Audio;
 using ubeat.Beatmap;
+using ubeat.Utils;
 
 namespace ubeat.GameScreen.SUI
 {
@@ -81,7 +82,7 @@ namespace ubeat.GameScreen.SUI
 
         void Listbox_OnScroll(object sender, bool Up)
         {
-            AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.ScrollHit);
+            AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.ScrollHit);
             if (!Up)
             {
                 vertOffset++;

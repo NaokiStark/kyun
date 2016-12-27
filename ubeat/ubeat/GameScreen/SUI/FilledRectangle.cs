@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ubeat.GameScreen.SUI
 {
-    public class FilledRectangle : ScreenUIObject
+    public class FilledRectangle : UIObjectBase
     {
         
         public FilledRectangle(Vector2 Size, Color Colr)

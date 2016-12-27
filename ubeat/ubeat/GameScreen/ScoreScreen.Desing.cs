@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using ubeat.GameScreen.SUI;
 using ubeat.GameScreen.UI;
 using ubeat.Screen;
+using ubeat.Utils;
 
 namespace ubeat.GameScreen
 {
@@ -16,7 +17,7 @@ namespace ubeat.GameScreen
         public void LoadInterface()
         {
             UbeatGame.Instance.IsMouseVisible = true;
-            Controls = new List<ScreenUIObject>();
+            Controls = new List<UIObjectBase>();
 
             ScreenMode ActualMode = ScreenModeManager.GetActualMode();
 
@@ -39,7 +40,7 @@ namespace ubeat.GameScreen
                 Scale = 1.1f,
                 Text = "",
                 Position = new Vector2(center.X, 120),
-                Font = UbeatGame.Instance.GeneralBig,
+                Font = SpritesContent.Instance.GeneralBig,
                 Centered = true
             };
 
@@ -47,7 +48,7 @@ namespace ubeat.GameScreen
                 Scale = .95f,
                 Text = "",
                 Position = new Vector2(center.X, (lblScore.Position.Y + spaced) + 5f),
-                Font = UbeatGame.Instance.GeneralBig,
+                Font = SpritesContent.Instance.GeneralBig,
                 Centered = true
             };
 
@@ -55,7 +56,7 @@ namespace ubeat.GameScreen
                 Scale = .95f,
                 Text = "",
                 Position = new Vector2(center.X, (lblPerfect.Position.Y + spaced) + 5f),
-                Font = UbeatGame.Instance.GeneralBig,
+                Font = SpritesContent.Instance.GeneralBig,
                 Centered = true
             };
 
@@ -63,28 +64,28 @@ namespace ubeat.GameScreen
                 Scale = .95f,
                 Text = "",
                 Position = new Vector2(center.X, (lblExcellent.Position.Y + spaced) + 5f),
-                Font = UbeatGame.Instance.GeneralBig,
+                Font = SpritesContent.Instance.GeneralBig,
                 Centered = true
             };
             lblMiss = new Label() {
                 Scale = .95f,
                 Text = "",
                 Position = new Vector2(center.X, (lblGood.Position.Y + spaced) + 5f),
-                Font = UbeatGame.Instance.GeneralBig,
+                Font = SpritesContent.Instance.GeneralBig,
                 Centered = true
             };
             lblAccuracy = new Label() {
                 Scale = .95f,
                 Text = "",
                 Position = new Vector2(center.X, (lblMiss.Position.Y + spaced) + 5f),
-                Font = UbeatGame.Instance.GeneralBig,
+                Font = SpritesContent.Instance.GeneralBig,
                 Centered = true
             };
             lblCombo = new Label() {
                 Scale = .95f,
                 Text = "",
                 Position = new Vector2(center.X, (lblAccuracy.Position.Y + spaced) + 5f),
-                Font = UbeatGame.Instance.GeneralBig,
+                Font = SpritesContent.Instance.GeneralBig,
                 Centered = true
             };
             

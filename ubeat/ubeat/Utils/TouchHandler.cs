@@ -11,7 +11,7 @@ using Windows7.Multitouch;
 
 namespace ubeat.Utils
 {
-    public class TouchHandler : ScreenUIObject
+    public class TouchHandler : UIObjectBase
     {
 
         static TouchHandler instance = null;

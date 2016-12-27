@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ubeat.GameScreen.SUI
+namespace ubeat.GameModes.Classic
 {
-    public class InputControl : UIObjectBase
+    public class HitSingle : HitBase
     {
     }
 }

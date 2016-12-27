@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ubeat.GameScreen.SUI
 {
-    public class ProgressBar : ScreenUIObject
+    public class ProgressBar : UIObjectBase
     {
         public int MaxWidth { get; set; }
 

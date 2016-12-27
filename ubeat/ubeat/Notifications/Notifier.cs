@@ -6,7 +6,7 @@ using ubeat.Screen;
 
 namespace ubeat.Notifications
 {
-    public class Notifier : ScreenUIObject
+    public class Notifier : UIObjectBase
     {
         public Notifier()
         {

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ubeat.UIObjs;
+using ubeat.Utils;
 
 namespace ubeat.Score
 {
@@ -73,7 +74,7 @@ namespace ubeat.Score
 
             int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
 
-            Vector2 fSize = UbeatGame.Instance.defaultFont.MeasureString(RollingScore.ToString("00000000")) * 1.5f;
+            Vector2 fSize = SpritesContent.Instance.DefaultFont.MeasureString(RollingScore.ToString("00000000")) * 1.5f;
 
             Position = new Vector2(screenWidth - (int)fSize.X - 30, 0);
         }
@@ -98,16 +99,16 @@ namespace ubeat.Score
 
             int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
 
-            Vector2 fSize = UbeatGame.Instance.defaultFont.MeasureString(RollingScore.ToString("00000000")) * 1.5f;
+            Vector2 fSize = SpritesContent.Instance.DefaultFont.MeasureString(RollingScore.ToString("00000000")) * 1.5f;
 
             Rectangle rect = new Rectangle(screenWidth - (int)fSize.X - 30, 0, (int)fSize.X + 30, (int)fSize.Y);
             
             UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rect, Color.White * .75f);
 
             //Draw score
-            UbeatGame.Instance.SpriteBatch.DrawString(UbeatGame.Instance.defaultFont, RollingScore.ToString("00000000"), new Vector2(rect.X + 15, 0), Color.WhiteSmoke, 0, new Vector2(0), 1.5f, SpriteEffects.None, 0);
+            UbeatGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.DefaultFont, RollingScore.ToString("00000000"), new Vector2(rect.X + 15, 0), Color.WhiteSmoke, 0, new Vector2(0), 1.5f, SpriteEffects.None, 0);
 
-            UbeatGame.Instance.SpriteBatch.DrawString(UbeatGame.Instance.defaultFont, RollingScore.ToString("00000000"), new Vector2(rect.X + 15, 0), Color.Yellow*opa, 0, new Vector2(0), 1.5f, SpriteEffects.None, 0);
+            UbeatGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.DefaultFont, RollingScore.ToString("00000000"), new Vector2(rect.X + 15, 0), Color.Yellow*opa, 0, new Vector2(0), 1.5f, SpriteEffects.None, 0);
         }
     }
 }

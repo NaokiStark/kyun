@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using ubeat.GameScreen.UI.Buttons;
 using ubeat.Screen;
 using ubeat.Notifications;
+using ubeat.Utils;
 
 namespace ubeat.GameScreen
 {
@@ -15,13 +16,13 @@ namespace ubeat.GameScreen
             if (UbeatGame.Instance.ppyMode)
                 Audio.AudioPlaybackEngine.Instance.PlaySound(UbeatGame.Instance.WelcomeToOsuXd);
 
-            Controls = new List<ScreenUIObject>();
+            Controls = new List<UIObjectBase>();
 
             ScreenMode ActualMode = ScreenModeManager.GetActualMode();
 
             Vector2 center = new Vector2(ActualMode.Width / 2, ActualMode.Height / 2);
 
-            Logo = new UI.Image(UbeatGame.Instance.Logo) { BeatReact = true };
+            Logo = new UI.Image(SpritesContent.Instance.Logo) { BeatReact = true };
             Logo.Position = new Vector2(center.X - (Logo.Texture.Width / 2),
                 center.Y - (Logo.Texture.Height / 2) - Logo.Texture.Height + 15);
 
@@ -37,7 +38,7 @@ namespace ubeat.GameScreen
             ExtBtn.Position = new Vector2(center.X - (ExtBtn.Texture.Width / 2),
                 center.Y - (ExtBtn.Texture.Height / 2) + ExtBtn.Texture.Height + 2 + Logo.Texture.Height / 2);
 
-            Vector2 meas = UbeatGame.Instance.defaultFont.MeasureString("ubeat") * .85f;
+            Vector2 meas = SpritesContent.Instance.DefaultFont.MeasureString("ubeat") * .85f;
 
             Label1 = new UI.Label();
             Label1.Text = "Hello world";

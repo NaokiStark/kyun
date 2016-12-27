@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ubeat.GameScreen.SUI
 {
-    public class ElementExample : ScreenUIObject
+    public class ElementExample : UIObjectBase
     {
         public ElementExample(Texture2D texture)
         {

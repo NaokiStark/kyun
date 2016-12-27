@@ -7,7 +7,7 @@ using ubeat.Utils;
 namespace ubeat.GameScreen.UI
 {
     
-    public class Label: ScreenUIObject
+    public class Label: UIObjectBase
     {
         public SpriteFont Font;
         public string Text { get; set; }
@@ -43,7 +43,7 @@ namespace ubeat.GameScreen.UI
             if(lastStr != Text) {
                 Vector2 messStr;
                 if (Font == null)
-                    messStr = UbeatGame.Instance.defaultFont.MeasureString(this.Text) * Scale;
+                    messStr = SpritesContent.Instance.DefaultFont.MeasureString(this.Text) * Scale;
                 else
                     messStr = Font.MeasureString(this.Text) * Scale;
 
@@ -60,7 +60,7 @@ namespace ubeat.GameScreen.UI
             //base.Render(); //Nope
             Vector2 messStr;
             if(Font==null)
-                messStr = UbeatGame.Instance.defaultFont.MeasureString(this.Text) * Scale;
+                messStr = SpritesContent.Instance.DefaultFont.MeasureString(this.Text) * Scale;
             else
                 messStr = Font.MeasureString(this.Text) * Scale;
 
@@ -85,7 +85,7 @@ namespace ubeat.GameScreen.UI
                 TotalSize = Size; //TODO: Make this better
             }
 
-            UbeatGame.Instance.SpriteBatch.DrawString((Font == null) ? UbeatGame.Instance.defaultFont : Font, this.Text, new Vector2(pos.X + 5, pos.Y + 5), Color.White, 0,
+            UbeatGame.Instance.SpriteBatch.DrawString((Font == null) ? SpritesContent.Instance.DefaultFont : Font, this.Text, new Vector2(pos.X + 5, pos.Y + 5), Color.White, 0,
                 Vector2.Zero,this.Scale,SpriteEffects.None,0);
         }
 
