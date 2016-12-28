@@ -8,6 +8,7 @@ namespace ubeat.Screen
 {
     public class ScreenModeManager
     {
+        static ScreenMode _actualScreenMode;
         public static List<ScreenMode> GetSupportedModes()
         {
             List<ScreenMode> screenMode = new List<ScreenMode>();
@@ -29,8 +30,13 @@ namespace ubeat.Screen
 
         public static ScreenMode GetActualMode()
         {
-            var modes = GetSupportedModes();
-            return modes[Settings1.Default.ScreenMode];
+            if(_actualScreenMode == null)
+            {
+                var modes = GetSupportedModes();
+                _actualScreenMode = modes[Settings1.Default.ScreenMode];
+            }
+
+            return _actualScreenMode;
         }
     }
 }

@@ -163,7 +163,7 @@ namespace ubeat
 
             Graphics.PreferMultiSampling = true;
             Graphics.ApplyChanges();
-            this.IsFixedTimeStep = false;
+            this.IsFixedTimeStep = true;
 
             //Loads Beatmaps
             Logger.Instance.Info("");

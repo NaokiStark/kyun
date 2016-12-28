@@ -11,7 +11,7 @@ namespace ubeat.Beatmap
     public interface IHitObj
     {
         decimal StartTime { get; set; }
-        ubeat.Beatmap.ubeatBeatMap BeatmapContainer { get; set; }
+        IBeatmap BeatmapContainer { get; set; }
         int Location { get; set; }
         void Start(long Position);
         void Update(long Position, Vector2 position);

@@ -123,6 +123,7 @@
     <Compile Include="Audio\NoDisposeFileReader.cs" />
     <Compile Include="Audio\NPlayer.cs" />
     <Compile Include="Beatmap\Break.cs" />
+    <Compile Include="Beatmap\IBeatmap.cs" />
     <Compile Include="Beatmap\IHitObj.cs" />
     <Compile Include="Beatmap\Mapset.cs" />
     <Compile Include="Beatmap\ubeatBeatMap.cs" />
@@ -130,8 +131,10 @@
     <Compile Include="GameModes\Classic\ClassicModeScreen.cs" />
     <Compile Include="GameModes\Classic\HitHolder.cs" />
     <Compile Include="GameModes\Classic\HitSingle.cs" />
+    <Compile Include="GameModes\Classic\ModeConstants.cs" />
     <Compile Include="GameModes\GameModeScreenBase.cs" />
     <Compile Include="GameModes\HitBase.cs" />
+    <Compile Include="GameModes\IScreenGameMode.cs" />
     <Compile Include="GameModes\Midi\HitHolder.cs" />
     <Compile Include="GameModes\Midi\HitSingle.cs" />
     <Compile Include="GameModes\Midi\MidiModeScreen.cs" />

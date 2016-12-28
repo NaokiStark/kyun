@@ -5,7 +5,7 @@ using ubeat.UIObjs;
 
 namespace ubeat.Beatmap
 {
-    public class ubeatBeatMap
+    public class ubeatBeatMap : IBeatmap
     {
         public string Title { get;  set; }
         public string Artist { get;  set; }

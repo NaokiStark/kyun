@@ -18,6 +18,7 @@ namespace ubeat.GameScreen
             ActualScreenMode = Screen.ScreenModeManager.GetActualMode();
             Name = name;
             OnLoad += _OnLoad;
+            Controls = new List<UIObjectBase>();
         }
 
         public virtual void Redraw()
@@ -25,10 +26,8 @@ namespace ubeat.GameScreen
             
         }
 
-        public virtual void Render()
+        internal void RenderBg()
         {
-            if (!Visible || isDisposing) return;
-
             if (Background != null)
             {
                 int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
@@ -39,6 +38,14 @@ namespace ubeat.GameScreen
                 UbeatGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Microsoft.Xna.Framework.Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
             }
             RenderPeak();
+        }
+
+        public virtual void Render()
+        {
+            if (!Visible || isDisposing) return;
+
+            RenderBg();
+            
 
             try
             {

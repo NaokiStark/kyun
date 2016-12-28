@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using ubeat.GameScreen;
 using ubeat.Screen;
 using ubeat.Utils;
+using ubeat.GameModes.Classic;
 
 namespace ubeat.UIObjs
 {
@@ -23,9 +24,12 @@ namespace ubeat.UIObjs
         float opacity = 1;
         float approachrate = 0;
         decimal starttime;
+
+        ClassicModeScreen ClassicInstance;
         
-        public ApproachObj(Vector2 position, float approachRate,decimal startTime)
+        public ApproachObj(Vector2 position, float approachRate, decimal startTime, ClassicModeScreen Instance)
         {
+            ClassicInstance = Instance;
             ScreenMode mode = ScreenModeManager.GetActualMode();
             bool isSmallRes = mode.Height < 720;
 
@@ -46,7 +50,7 @@ namespace ubeat.UIObjs
             int appr = (int)(1950 - approachrate * 150);
 
             
-            float stime = (float)starttime - (float)Grid.Instance.GameTimeTotal;
+            float stime = (float)starttime - (float)ClassicInstance.GamePosition;
            
             float gtime = (stime / appr);
             float percen = gtime * twidth;

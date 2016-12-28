@@ -277,7 +277,7 @@ namespace ubeat.GameScreen
                     string.Format("({0}x{1}){2}",
                     mode.Width,
                     mode.Height,
-                    (mode.WindowMode == WindowDisposition.Windowed) ? "[Windowed]" : "")
+                    (mode.WindowMode == WindowDisposition.Borderless) ? "[Borderless]" : "[Windowed]")
                 );
             }
 
