@@ -119,6 +119,7 @@ namespace ubeat.Utils
 
         private void LoadSprites(SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
+            LoadingSpinnerTx = Content.Load<Texture2D>("loadingSpin");
             ButtonDefault = Content.Load<Texture2D>("button_0");
             ButtonHolder = Content.Load<Texture2D>("holder_0");
             WaitDefault = Content.Load<Texture2D>("approachv2");
@@ -146,7 +147,7 @@ namespace ubeat.Utils
             AutoModeButtonSel = Content.Load<Texture2D>("autoBtnSel");
             SpaceSkip = Content.Load<Texture2D>("SpaceSkip");
 
-            using (var fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"\Assets\bg.png", FileMode.Open, FileAccess.Read))
+            using (var fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"\Assets\bg.jpg", FileMode.Open, FileAccess.Read))
             {
                 DefaultBackground = Texture2D.FromStream(graphics, fs);
             }
@@ -186,6 +187,7 @@ namespace ubeat.Utils
         public Texture2D SpaceSkip { get; set; }
         public Texture2D TopEffect { get; set; }
         public Texture2D DefaultBackground { get; set; }
+        public Texture2D LoadingSpinnerTx { get; set; }
         #endregion
 
         #region FontsVars

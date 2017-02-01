@@ -11,19 +11,19 @@ namespace ubeat.GameScreen
 {
     public class ScreenBase : IScreen, IDisposable
     {
-        internal float peak = 0;
-        internal Screen.ScreenMode ActualScreenMode;
+
+        public delegate void KeyEventHandler(object sender, InputEvents.KeyPressEventArgs args);
+        public event KeyEventHandler onKeyPress;
+
+        private KeyboardState keyboardOldState;
+
         public ScreenBase(string name = "BaseScreen")
         {
+            keyboardOldState = Keyboard.GetState();
             ActualScreenMode = Screen.ScreenModeManager.GetActualMode();
             Name = name;
             OnLoad += _OnLoad;
             Controls = new List<UIObjectBase>();
-        }
-
-        public virtual void Redraw()
-        {
-            
         }
 
         internal void RenderBg()
@@ -36,17 +36,13 @@ namespace ubeat.GameScreen
                 var screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
 
                 UbeatGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Microsoft.Xna.Framework.Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
-            }
+            } 
+
             RenderPeak();
         }
 
-        public virtual void Render()
+        internal void RenderObjects()
         {
-            if (!Visible || isDisposing) return;
-
-            RenderBg();
-            
-
             try
             {
                 foreach (UIObjectBase obj in Controls)
@@ -56,15 +52,25 @@ namespace ubeat.GameScreen
             {
 
             }
+        }
 
+        public virtual void Render()
+        {
+            if (!Visible || isDisposing) return;
 
-            
+            RenderBg();
+
+            RenderObjects();
 
         }
+
+
 
         public virtual void Update(GameTime tm)
         {
             if (!Visible || isDisposing) return;
+
+            KeyboardState actualState = Keyboard.GetState();
 
             var keyboardState = Keyboard.GetState();
 
@@ -80,9 +86,33 @@ namespace ubeat.GameScreen
                 }
             }
 
+            checkKeyboardEvents(keyboardOldState, actualState);
+
             UpdateControls();
 
             UpdatePeak();
+
+            actualState = keyboardOldState;
+        }
+
+        private void checkKeyboardEvents(KeyboardState kbOldState, KeyboardState kbActualState)
+        {
+            Keys[] currentPressedKeys = kbActualState.GetPressedKeys();
+            Keys[] oldPressedKeys = kbOldState.GetPressedKeys();
+
+
+            if (currentPressedKeys.Length < 1 && oldPressedKeys.Length < 1)
+                return;
+
+            foreach (Keys aKey in currentPressedKeys)
+            {
+                if (kbOldState.IsKeyUp(aKey))
+                {
+                    onKeyPress?.Invoke(this, new InputEvents.KeyPressEventArgs{
+                        Key = aKey
+                    });
+                }
+            }
         }
 
         internal void RenderPeak()
@@ -110,7 +140,7 @@ namespace ubeat.GameScreen
             }
         }
 
-        public virtual void UpdateControls()
+        internal virtual void UpdateControls()
         {
             foreach (UIObjectBase obj in Controls)
                 obj.Update();
@@ -184,7 +214,11 @@ namespace ubeat.GameScreen
             ChangeBackground(bm.Background);
         }
 
+        internal float peak = 0;
+        internal Screen.ScreenMode ActualScreenMode;
+
         private bool EscapeAlredyPressed;
+
         public bool isDisposing;
         public Texture2D Background { get; set; }
         public List<UIObjectBase> Controls { get; set; }

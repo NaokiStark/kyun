@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
-using ubeat.GameScreen.SUI;
+using ubeat.GameScreen.UI;
 
 namespace ubeat.GameScreen
 {

@@ -10,7 +10,6 @@ using ubeat.UIObjs;
 using ubeat.Score;
 using ubeat.GameScreen.UI;
 using ubeat.Screen;
-using ubeat.GameScreen.SUI;
 using ubeat.Utils;
 
 namespace ubeat.GameScreen
@@ -329,7 +328,7 @@ namespace ubeat.GameScreen
                 //IUIObject
                 for (int b = 0; b < objs.Count; b++)
                 {
-                    if (objs[b] is ApproachObj)
+                    if (objs[b] is OldApproachObj)
                         continue;
 
                     objs[b].Update();
@@ -643,7 +642,7 @@ namespace ubeat.GameScreen
 
             for (int b = 0; b < objs.Count; b++)
             {
-                if (objs[b] is ApproachObj) continue;
+                if (objs[b] is OldApproachObj) continue;
                 objs[b].Render();
             }
 
@@ -777,7 +776,7 @@ namespace ubeat.GameScreen
 
                 for (int b = 0; b < objs.Count; b++)
                 {
-                    if (objs[b] is ApproachObj) continue;
+                    if (objs[b] is OldApproachObj) continue;
                     objs[b].Render();
                 }
                 if (!gEn)

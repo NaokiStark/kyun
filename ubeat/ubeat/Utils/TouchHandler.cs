@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Input;
 using ubeat.GameScreen;
-using ubeat.GameScreen.SUI;
+using ubeat.GameScreen.UI;
 using Windows7.Multitouch;
 
 namespace ubeat.Utils

@@ -32,6 +32,7 @@ namespace ubeat.Utils
         {
             //ubeat.Dispose();
             Application.Restart();
+            Application.Exit();
         }
 
         public void Dispose()

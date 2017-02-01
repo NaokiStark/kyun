@@ -29,10 +29,12 @@ namespace ubeat.GameModes.Classic
         /// <param name="beatmap"></param>
         public override void Play(IBeatmap beatmap, GameMod GameMods = GameMod.None)
         {
+            base.gameMod = GameMods;
             UbeatGame.Instance.Player.Stop();
             Beatmap = beatmap;
             GamePosition = 0;
             InGame = true;
+            
         }
 
 
@@ -95,7 +97,7 @@ namespace ubeat.GameModes.Classic
             base.Update(tm);
         }
 
-        public override void UpdateControls()
+        internal override void UpdateControls()
         {
             for (int a = 0; a < Controls.Count; a++)
             {

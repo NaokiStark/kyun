@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using ubeat.GameScreen;
-using ubeat.GameScreen.SUI;
 using ubeat.GameScreen.UI;
 using ubeat.Utils;
 

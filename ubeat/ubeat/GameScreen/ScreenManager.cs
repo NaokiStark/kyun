@@ -43,7 +43,13 @@ namespace ubeat.GameScreen
 
             if (showing && ToBeChanged != null)
             {
-                
+
+
+                if (UbeatGame.Instance.Player.Volume > (float)(UbeatGame.Instance.GeneralVolume/2))
+                {
+                    UbeatGame.Instance.Player.Volume -= (float)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f);
+                }
+
                 if (Opacity < 1f)
                 {
                     
@@ -66,6 +72,13 @@ namespace ubeat.GameScreen
                 {
                     Opacity -= (float)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f);
                 }
+
+
+                if (UbeatGame.Instance.Player.Volume < UbeatGame.Instance.GeneralVolume)
+                {
+                    UbeatGame.Instance.Player.Volume += (float)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f);
+                }
+
             }
             
         }

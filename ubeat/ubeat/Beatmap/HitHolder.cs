@@ -34,7 +34,7 @@ namespace ubeat.Beatmap
         public decimal Length { get; set; }
         public System.Windows.Forms.Timer tmrApproachOpacity { get; set; }
         public float opacity { get; set; }
-        public ApproachObj apo { get; set; }
+        public OldApproachObj apo { get; set; }
         public decimal StartTime { get; set; }
         public IBeatmap BeatmapContainer { get; set; }
         public int Location { get; set; }
@@ -142,7 +142,7 @@ namespace ubeat.Beatmap
             {
                 if (apo == null)
                 {
-                    apo = new ApproachObj(Grid.GetPositionFor(this.Location - 96), BeatmapContainer.ApproachRate, this.StartTime, null);
+                    apo = new OldApproachObj(Grid.GetPositionFor(this.Location - 96), BeatmapContainer.ApproachRate, this.StartTime, Grid.Instance);
                     Grid.Instance.objs.Add(apo);
                 }
                 if (Grid.Instance.autoMode)

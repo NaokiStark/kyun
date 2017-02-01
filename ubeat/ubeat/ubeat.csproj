@@ -138,7 +138,10 @@
     <Compile Include="GameModes\Midi\HitHolder.cs" />
     <Compile Include="GameModes\Midi\HitSingle.cs" />
     <Compile Include="GameModes\Midi\MidiModeScreen.cs" />
-    <Compile Include="GameScreen\SUI\InputControl.cs" />
+    <Compile Include="GameScreen\InputEvents\KeyPressEventArgs.cs" />
+    <Compile Include="GameScreen\LoadScreen.cs" />
+    <Compile Include="GameScreen\UI\InputControl.cs" />
+    <Compile Include="GameScreen\VideoScreenBase.cs" />
     <Compile Include="Settings\Settings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -164,28 +167,22 @@
     <Compile Include="GameScreen\ScreenUIObject.cs" />
     <Compile Include="GameScreen\SettingsScreen.cs" />
     <Compile Include="GameScreen\SettingsScreen.Design.cs" />
-    <Compile Include="GameScreen\SUI\Button.cs" />
-    <Compile Include="GameScreen\SUI\Buttons\AutoModeButton.cs" />
-    <Compile Include="GameScreen\SUI\Buttons\ConfigButton.cs" />
-    <Compile Include="GameScreen\SUI\Buttons\ExitButton.cs" />
-    <Compile Include="GameScreen\SUI\Buttons\StartButton.cs" />
-    <Compile Include="GameScreen\SUI\CheckBox.cs" />
-    <Compile Include="GameScreen\SUI\ComboBox.cs" />
-    <Compile Include="GameScreen\SUI\ElementExample.cs" />
-    <Compile Include="GameScreen\SUI\FilledRectangle.cs" />
-    <Compile Include="GameScreen\SUI\Image.cs" />
-    <Compile Include="GameScreen\SUI\Label.cs" />
-    <Compile Include="GameScreen\SUI\ObjectListbox.cs" />
-    <Compile Include="GameScreen\SUI\Listbox.cs" />
-    <Compile Include="GameScreen\SUI\ListboxDiff.cs" />
-    <Compile Include="GameScreen\SUI\ProgressBar.cs" />
-    <Compile Include="GameScreen\SUI\RoundedRectangle.cs" />
-    <Compile Include="LoadingWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="LoadingWindow.Designer.cs">
-      <DependentUpon>LoadingWindow.cs</DependentUpon>
-    </Compile>
+    <Compile Include="GameScreen\UI\Button.cs" />
+    <Compile Include="GameScreen\UI\Buttons\AutoModeButton.cs" />
+    <Compile Include="GameScreen\UI\Buttons\ConfigButton.cs" />
+    <Compile Include="GameScreen\UI\Buttons\ExitButton.cs" />
+    <Compile Include="GameScreen\UI\Buttons\StartButton.cs" />
+    <Compile Include="GameScreen\UI\CheckBox.cs" />
+    <Compile Include="GameScreen\UI\ComboBox.cs" />
+    <Compile Include="GameScreen\UI\ElementExample.cs" />
+    <Compile Include="GameScreen\UI\FilledRectangle.cs" />
+    <Compile Include="GameScreen\UI\Image.cs" />
+    <Compile Include="GameScreen\UI\Label.cs" />
+    <Compile Include="GameScreen\UI\ObjectListbox.cs" />
+    <Compile Include="GameScreen\UI\Listbox.cs" />
+    <Compile Include="GameScreen\UI\ListboxDiff.cs" />
+    <Compile Include="GameScreen\UI\ProgressBar.cs" />
+    <Compile Include="GameScreen\UI\RoundedRectangle.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Notifications\NotificationBox.cs" />
     <Compile Include="Notifications\Notifier.cs" />
@@ -212,6 +209,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings1.settings</DependentUpon>
     </Compile>
+    <Compile Include="UIObjs\OldApproachObj.cs" />
     <Compile Include="UIObjs\ApproachObj.cs" />
     <Compile Include="UIObjs\IUIObject.cs" />
     <Compile Include="UIObjs\ScoreObj.cs" />
@@ -228,9 +226,7 @@
     <Compile Include="Utils\VerticalProgressBar.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Video.xaml.cs">
-      <DependentUpon>Video.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Video\AudioVideoPlayer.cs" />
     <Compile Include="Video\FFmpeg.cs" />
     <Compile Include="Video\VideoDecoder.cs" />
     <Compile Include="Video\VideoPlayer.cs" />
@@ -286,9 +282,6 @@
     <EmbeddedResource Include="Settings\SuperSecretSettings.resx">
       <DependentUpon>SuperSecretSettings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LoadingWindow.resx">
-      <DependentUpon>LoadingWindow.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Resource1.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
@@ -302,15 +295,9 @@
     <Compile Include="GameScreen\MainScreen.Desing.cs" />
     <None Include="packages.config" />
     <None Include="Settings1.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings1.Designer.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Video.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Extensions\" />

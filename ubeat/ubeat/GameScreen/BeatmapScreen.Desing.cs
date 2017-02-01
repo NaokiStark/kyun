@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using ubeat.Screen;
-using ubeat.GameScreen.SUI;
+using ubeat.GameScreen.UI;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using ubeat.GameScreen.UI;
-using ubeat.GameScreen.SUI.Buttons;
+using ubeat.GameScreen.UI.Buttons;
 using ubeat.Utils;
 
 namespace ubeat.GameScreen

@@ -25,6 +25,6 @@ namespace ubeat.Beatmap
         Score.ScoreValue GetScoreValue();
         Score.ScoreType GetScore();
         float GetAccuracyPercentage();
-        ApproachObj apo { get; set; }
+        OldApproachObj apo { get; set; }
     }
 }

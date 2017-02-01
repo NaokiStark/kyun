@@ -27,7 +27,7 @@ namespace ubeat.Beatmap
         public IBeatmap BeatmapContainer { get; set; }
         public int Location { get; set; }
         public decimal EndTime { get; set; }
-        public ApproachObj apo { get; set; }
+        public OldApproachObj apo { get; set; }
 
         #endregion
 
@@ -93,7 +93,7 @@ namespace ubeat.Beatmap
             {
                 if (apo == null)
                 {
-                    apo = new ApproachObj(Grid.GetPositionFor(this.Location - 96), BeatmapContainer.ApproachRate, this.StartTime, null);
+                    apo = new OldApproachObj(Grid.GetPositionFor(this.Location - 96), BeatmapContainer.ApproachRate, this.StartTime, Grid.Instance);
                     Grid.Instance.objs.Add(apo);
 
                 }

@@ -18,7 +18,7 @@ namespace ubeat
     public class UbeatGame : Game
     {
         //Puto
-        LoadingWindow LoadingWindow;
+        //LoadingWindow LoadingWindow;
         GraphicsDeviceManager Graphics;
         public SpriteBatch SpriteBatch;
         public NPlayer Player;
@@ -126,223 +126,8 @@ namespace ubeat
 
         }
 
-        public void GameStop()
-        {
-
-        }
-        protected override void Initialize()
-        {
-           
-
-            LoadingWindow = new LoadingWindow();
-            LoadingWindow.Show();
-            System.Windows.Forms.Application.DoEvents();
-
-
-            VolDlg = new VolumeDlg();
-
-            base.Initialize();
-            Player = new NPlayer();
-
-#if DEBUG
-            Logger.Instance.Debug("!!!! GRAPHIC CARD !!!!");
-            Logger.Instance.Debug("======================");
-            Logger.Instance.Debug("");
-
-            Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.Description);
-            Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.DeviceName);
-            Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.VendorId.ToString());
-            Logger.Instance.Debug((Graphics.GraphicsDevice.Adapter.IsDefaultAdapter)?"Default adapter: True": "Default adapter: False");
-
-           
-
-            Logger.Instance.Debug("");
-            Logger.Instance.Debug("======================");
-
-#endif
-
-            Graphics.PreferMultiSampling = true;
-            Graphics.ApplyChanges();
-            this.IsFixedTimeStep = true;
-
-            //Loads Beatmaps
-            Logger.Instance.Info("");
-            Logger.Instance.Info("Loading beatmaps.");
-            Logger.Instance.Info("");
-
-
-            if (!InstanceManager.Instance.IntancedBeatmaps)
-            {
-                InstanceManager.AllBeatmaps = new List<Beatmap.Mapset>();
-                if (Settings1.Default.osuBeatmaps != "")
-                {
-
-                    DirectoryInfo osuDirPath = new DirectoryInfo(Settings1.Default.osuBeatmaps);
-                    if (osuDirPath.Exists)
-                    {
-                        DirectoryInfo[] osuMapsDirs = osuDirPath.GetDirectories();
-                        int flieCnt = 0;
-
-
-                        int fCount = osuMapsDirs.Length;
-                        int dCount = 0;
-
-                        foreach (DirectoryInfo odir in osuMapsDirs)
-                        {
-                            System.Windows.Forms.Application.DoEvents();
-
-                            dCount++;
-                            FileInfo[] fils = odir.GetFiles();
-                            // Mapset
-                            Beatmap.Mapset bmms = null;
-                            foreach (FileInfo fff in fils)
-                            {
-
-                                if (fff.Extension.ToLower() == ".osu")
-                                {
-
-                                    flieCnt++;
-                                    OsuUtils.OsuBeatMap bmp = OsuUtils.OsuBeatMap.FromFile(fff.FullName);
-                                    if (bmp != null)
-                                    {
-
-                                        //Beatmaps.Add(bmp);
-                                        if (bmms == null)
-                                            bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator, bmp.Tags);
-                                        bmms.Add(bmp);
-
-
-                                    }
-
-                                    // Debug.WriteLine("File: {0}s", flieCnt);
-                                }
-
-                            }
-                            if (bmms != null)
-                            {
-                                Beatmap.Mapset mapst = Beatmap.Mapset.OrderByDiff(bmms);
-
-                                InstanceManager.AllBeatmaps.Add(mapst);
-                            }
-                            float pctg = (float)dCount / (float)fCount * 100f;
-                            if (pctg % 20 == 0)
-                                Logger.Instance.Info("-> {0}%", pctg);
-                        }
-                    }
-                    else
-                    {
-                        Logger.Instance.Warn("Could not find Osu! beatmaps folder, please, make sure that if exist.");
-                    }
-                }
-                else
-                {
-                    Logger.Instance.Warn("osu! beatmaps is not setted, if you have osu beatmaps, set folder in config and restart ubeat.");
-                }
-            }
-            loadLocalMaps();
-
-
-
-            LoadingWindow.Close();
-            Logger.Instance.Info("");
-            Logger.Instance.Info("Done.");
-            Logger.Instance.Info("");
-            Logger.Instance.Info("----------------");
-            Logger.Instance.Info("");
-
-
-
-            //Loads main Screen
-
-
-            hideGameWindow();
-        }
-
-        public void ToggleVSync(bool b)
-        {
-            //
-            Graphics.SynchronizeWithVerticalRetrace = b;
-
-            if (b)
-                ChangeFrameRate(60f);
-            else
-                ChangeFrameRate(Settings1.Default.FrameRate);
-
-        }
-
-        void loadLocalMaps()
-        {
-            if (!InstanceManager.Instance.IntancedBeatmaps)
-            {
-
-                Logger.Instance.Info("Loading local");
-
-                DirectoryInfo osuDirPath = new DirectoryInfo(Path.Combine(System.Windows.Forms.Application.StartupPath, "Maps"));
-                if (!osuDirPath.Exists)
-                    osuDirPath.Create();
-
-                DirectoryInfo[] osuMapsDirs = osuDirPath.GetDirectories();
-                int flieCnt = 0;
-
-
-                int fCount = osuMapsDirs.Length;
-                int dCount = 0;
-
-                foreach (DirectoryInfo odir in osuMapsDirs)
-                {
-                    System.Windows.Forms.Application.DoEvents();
-
-                    dCount++;
-                    FileInfo[] fils = odir.GetFiles();
-                    // Mapset
-                    Beatmap.Mapset bmms = null;
-                    foreach (FileInfo fff in fils)
-                    {
-
-                        if (fff.Extension.ToLower() == ".osu")
-                        {
-
-                            flieCnt++;
-                            OsuUtils.OsuBeatMap bmp = OsuUtils.OsuBeatMap.FromFile(fff.FullName);
-                            if (bmp != null)
-                            {
-
-                                //Beatmaps.Add(bmp);
-                                if (bmms == null)
-                                    bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator, bmp.Tags);
-                                bmms.Add(bmp);
-
-
-                            }
-
-                            // Debug.WriteLine("File: {0}s", flieCnt);
-                        }
-
-                    }
-                    if (bmms != null)
-                    {
-                        Beatmap.Mapset mapst = Beatmap.Mapset.OrderByDiff(bmms);
-
-                        InstanceManager.AllBeatmaps.Add(mapst);
-                    }
-                    float pctg = (float)dCount / (float)fCount * 100f;
-                    if (pctg % 20 == 0)
-                        Logger.Instance.Info("-> {0}%", pctg);
-                }
-
-                InstanceManager.AllBeatmaps = InstanceManager.AllBeatmaps.OrderBy(x => x.Artist).ToList<Beatmap.Mapset>();
-                InstanceManager.Instance.IntancedBeatmaps = true;
-            }
-        }
-
-        void mainWindow_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
-        {
-            if (Player.soundOut != null)
-                Player.soundOut.Dispose();
-            this.Exit();
-        }
-
-        void hideGameWindow()
+        
+        void loadEnviroment()
         {
             Logger.Instance.Info("Loading environment");
 
@@ -368,31 +153,125 @@ namespace ubeat
             ToggleVSync(Settings1.Default.VSync);
             ToggleFullscreen(Settings1.Default.FullScreen);
 
-            this.Graphics.ApplyChanges();
-
-
             /*
             this.graphics.PreferredBackBufferWidth = this.GraphicsDevice.Adapter.CurrentDisplayMode.Width;
             this.graphics.PreferredBackBufferHeight = this.GraphicsDevice.Adapter.CurrentDisplayMode.Height;
 
             */
+            System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(Window.Handle);
 
             if (srcm[Settings1.Default.ScreenMode].WindowMode != Screen.WindowDisposition.Windowed)
             {
 
-                System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(Window.Handle);
+              
 
                 FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
                 FormGame.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             }
 
 
-            GeneralVolume = Settings1.Default.Volume;
+          
             this.FistLoad = true;
-            ScreenManager.ChangeTo(MainScreen.Instance);
 
+#if DEBUG
+            Logger.Instance.Debug("!!!! GRAPHIC CARD !!!!");
+            Logger.Instance.Debug("======================");
+            Logger.Instance.Debug("");
+
+            Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.Description);
+            Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.DeviceName);
+            Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.VendorId.ToString());
+            Logger.Instance.Debug((Graphics.GraphicsDevice.Adapter.IsDefaultAdapter) ? "Default adapter: True" : "Default adapter: False");
+
+
+
+            Logger.Instance.Debug("");
+            Logger.Instance.Debug("======================");
+
+#endif
+
+            Graphics.PreferMultiSampling = true;
+            Graphics.ApplyChanges();
+            this.IsFixedTimeStep = true;
+
+        }
+
+        protected override void Initialize()
+        {
+
+
+            //LoadingWindow = new LoadingWindow();
+            //LoadingWindow.Show();
+            //System.Windows.Forms.Application.DoEvents();
+            base.Initialize();
+            loadEnviroment();
+
+           
+
+            VolDlg = new VolumeDlg();
+
+           
+            Player = new NPlayer();
 
             
+            //Loads Beatmaps
+            
+
+
+
+            //LoadingWindow.Close();
+            
+
+
+
+            //Loads main Screen
+
+
+            hideGameWindow();
+            GeneralVolume = Settings1.Default.Volume;
+        }
+
+        public void ToggleVSync(bool b)
+        {
+            //
+            Graphics.SynchronizeWithVerticalRetrace = b;
+
+            if (b)
+                ChangeFrameRate(60f);
+            else
+                ChangeFrameRate(Settings1.Default.FrameRate);
+
+        }
+
+       
+
+        void mainWindow_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
+        {
+            if (Player.soundOut != null)
+                Player.soundOut.Dispose();
+            this.Exit();
+        }
+
+        void hideGameWindow()
+        {
+            if (!Settings1.Default.QuestionVideo)
+            {
+                System.Windows.Forms.DialogResult drs = System.Windows.Forms.MessageBox.Show("Warning!\r\n\r\nLa presentacion que viene a continuacion contiene video, si no tienes un equipo 'potente', desactiva esa opcion, en serio, el video tiende a fallar e interfiere con el juego en equipos lentos.\r\n\r\n¿deseas activar el video?", "",System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
+                if(drs == System.Windows.Forms.DialogResult.No)
+                {
+                    Settings1.Default.Video = false;
+                    Settings1.Default.QuestionVideo = true;
+                    Settings1.Default.Save();
+                    System.Windows.Forms.MessageBox.Show("ubeat se reiniciará.");
+                    InstanceManager.Instance.Reload();
+                    return;
+                }
+                Settings1.Default.QuestionVideo = true;
+                Settings1.Default.Save();
+            }
+
+            ScreenManager.ChangeTo(new LoadScreen());
+          
         }
 
         void showMain()
@@ -650,7 +529,12 @@ namespace ubeat
 
             if (Player.PlayState == NAudio.Wave.PlaybackState.Playing)
             {
-                FormGame.Text = "ubeat - Playing: " + SelectedBeatmap.Artist + " - " + SelectedBeatmap.Title;
+               
+                if(SelectedBeatmap != null)
+                {
+                    FormGame.Text = "ubeat - Playing: " + SelectedBeatmap.Artist + " - " + SelectedBeatmap.Title;
+                }
+                
             }
             else
             {
@@ -741,9 +625,6 @@ namespace ubeat
 
 
             this.Graphics.ApplyChanges();
-
-            if (ScreenManager.ActualScreen != null)
-                ScreenManager.ActualScreen.Redraw();
 
         }
 

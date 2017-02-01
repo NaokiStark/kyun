@@ -21,6 +21,7 @@ namespace osuBMParser
         public float PixelLength { get; set; }
         public int EdgeHitSound { get; set; }
         public List<int> EdgeAddition { get; set; }
+        public TimingPoint SliderTimingPoint { get; set; }
         #endregion
 
         #region constructors

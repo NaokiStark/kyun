@@ -115,7 +115,7 @@ namespace ubeat.GameScreen
 
             
 
-            string[] bgs = { "bg2.png", "bg.png" };
+            string[] bgs = { "bg2.png", "bg.jpg" };
             float[] mspb = {483.90999274135f,428f};
 
             if (UbeatGame.Instance.ppyMode)
@@ -129,7 +129,7 @@ namespace ubeat.GameScreen
 
             ubeatBeatMap mainBm = new ubeatBeatMap()
             {
-                Artist = (!UbeatGame.Instance.ppyMode)?"Jingle Punks":"Nekodex",
+                Artist = (!UbeatGame.Instance.ppyMode)?"Mitchie M":"Nekodex",
                 BPM = mspb[song],
                 SongPath = AppDomain.CurrentDomain.BaseDirectory + @"\Assets\"+songs[2],
                 ApproachRate=10,
@@ -138,7 +138,7 @@ namespace ubeat.GameScreen
                 OverallDifficulty=10,
                 Version="",
                 SleepTime=0,
-                Title = (!UbeatGame.Instance.ppyMode) ? "On the Bach" : "Circles",
+                Title = (!UbeatGame.Instance.ppyMode) ? "Amazing Magician" : "Circles",
                 
             };
 

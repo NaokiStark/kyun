@@ -13,6 +13,8 @@ namespace osuBMParser
         #region fields
         private Beatmap beatmap;
         private string path;
+        private TimingPoint actualTimmingPoint;
+
         #endregion
 
         #region constructors
@@ -316,6 +318,8 @@ namespace osuBMParser
 
             //Specific stuff
 
+            actualTimmingPoint = getActualTimingPoint(hitObject.Time);
+
             if (hitObject is HitCircle)
             {
 
@@ -328,7 +332,7 @@ namespace osuBMParser
 
             if (hitObject is HitSlider)
             {
-
+                ((HitSlider)hitObject).SliderTimingPoint = actualTimmingPoint;
                 if (tokens.Length >= 6 && tokens[5] != null) //SliderType and HitSliderSegments
                 {
                     string[] hitSliderSegments = tokens[5].Split('|');
@@ -389,6 +393,15 @@ namespace osuBMParser
 
         }
 
+        private TimingPoint getActualTimingPoint(int time)
+        {
+            for (var i = beatmap.TimingPoints.Count - 1; i >= 0; i--)
+            {
+                if (beatmap.TimingPoints[i].Offset <= time && !beatmap.TimingPoints[i].Inherited) { return beatmap.TimingPoints[i]; }
+            }
+            return beatmap.TimingPoints[0];
+        }
+
         private int[] getAdditionsAsIntArray(string additionToken)
         {
 
@@ -414,7 +427,15 @@ namespace osuBMParser
 
         private float toFloat(string data)
         {
-            return float.Parse(data, NumberFormatInfo.InvariantInfo);
+            try
+            {
+                return float.Parse(data, NumberFormatInfo.InvariantInfo);
+            }
+            catch
+            {
+                return 0f;
+            }
+            
         }
 
         private bool toBool(string data)

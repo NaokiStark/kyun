@@ -65,14 +65,14 @@ namespace ubeat.GameScreen
             
             UbeatGame.Instance.KeyBoardManager.Enabled = false;
 
-            //UbeatGame.Instance.GameStart(lBDff.Items[lBDff.selectedIndex], this.AMode);
-
+            UbeatGame.Instance.GameStart(lBDff.Items[lBDff.selectedIndex], this.AMode);
+            /*
             if (ClassicModeScreen.Instance == null)
                 ClassicModeScreen.Instance = new ClassicModeScreen();
 
             ClassicModeScreen.GetInstance().Play(lBDff.Items[lBDff.selectedIndex], (AMode) ? GameModes.GameMod.Auto : GameModes.GameMod.None);
             ScreenManager.ChangeTo(ClassicModeScreen.GetInstance());
-            
+            */
 
         }
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using ubeat.GameScreen.SUI;
 using ubeat.GameScreen.UI;
 using ubeat.Screen;
 using ubeat.Utils;

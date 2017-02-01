@@ -180,19 +180,32 @@ namespace ubeat.OsuUtils
                         }
                         else if (ho is osuBMParser.HitSlider)
                         {
-                            //TimingPoint tmpO = GetTimingPointFor(osbm, (HitSlider)ho, true);
-                            TimingPoint tmpO = tm;
-                            decimal totalLength = 0;
-                            /*
-                            decimal totalLength = (decimal)Math.Abs((decimal)tmpO.MsPerBeat) * (decimal)((decimal)((osuBMParser.HitSlider)ho).PixelLength / (decimal)osbm.SliderMultiplier) / (decimal)100;
-                            totalLength = totalLength * (decimal)((osuBMParser.HitSlider)ho).Repeat;*/
-                            totalLength = (decimal)getSliderTime(osbm.SliderMultiplier, tmpO.MsPerBeat, ((osuBMParser.HitSlider)ho).PixelLength);
-                            totalLength = totalLength * (decimal)((osuBMParser.HitSlider)ho).Repeat;
-                            IHitObj obj = new HitHolder()
+                        
+                        HitSlider slider = (HitSlider)ho;
+                       
+                        float sliderVelocityInOsuFormat = slider.SliderTimingPoint.MsPerBeat;
+
+                        if (sliderVelocityInOsuFormat >= 0)
+                        {
+                            sliderVelocityInOsuFormat = -100f; //DEFAUL VALUE FOR OSU
+                        }
+
+                        decimal velocity = (decimal)Math.Abs(100 / sliderVelocityInOsuFormat);
+
+                        decimal pxPerBeat = (decimal)osbm.SliderMultiplier * 100 * velocity;
+                                                                       
+                        decimal beatsNumber = ((decimal)slider.PixelLength * (decimal)slider.Repeat) / pxPerBeat;
+                       
+                        TimingPoint tmc = getTimingPoint(slider.Time, osbm);
+
+                        //THE FINAL FUCKING LENGTH TIME FOR THIS SHITTY SLIDER
+                        long Length = Math.Abs((long)(beatsNumber * (decimal)tmc.MsPerBeat));
+
+                        IHitObj obj = new HitHolder()
                             {
                                 StartTime = ho.Time,
-                                Length = totalLength,
-                                EndTime = (totalLength) + (decimal)ho.Time,
+                                Length = Length,
+                                EndTime = (Length) + (decimal)ho.Time,
                                 BeatmapContainer = tmpbm,
                                 //Location = lasN = GetRnd(97, 106, lasN)
                                 Location = ((osbm.Source!="ubeat")?lasN = GetRnd(97, 106, lasN):fL + 96)
@@ -318,5 +331,18 @@ namespace ubeat.OsuUtils
 
             return bm.TimingPoints[0];
         }
+
+
+        public static TimingPoint getTimingPoint(int time, osuBMParser.Beatmap beatmap)
+        {
+            for (var i = beatmap.TimingPoints.Count - 1; i >= 0; i--)
+            {
+                if (beatmap.TimingPoints[i].Offset <= time && beatmap.TimingPoints[i].Inherited) { return beatmap.TimingPoints[i]; }
+            }
+            return beatmap.TimingPoints[0];
+        }
+
     }
+
+
 }

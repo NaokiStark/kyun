@@ -7,7 +7,7 @@ namespace ubeat.Video
 {
     public class VideoDecoder : IDisposable
     {
-        private const int PIXEL_FORMAT = 6;
+        private int PIXEL_FORMAT = 6;
         private IntPtr buffer;
         public int BufferSize;
         private FFmpeg.AVCodecContext codecCtx;
@@ -88,10 +88,14 @@ namespace ubeat.Video
 
         public VideoDecoder(int bufferSize)
         {
+            //PIXEL_FORMAT = (int)FFmpeg.PixelFormat.PIX_FMT_BGR32;
             this.BufferSize = bufferSize;
             this.FrameBufferTimes = new double[this.BufferSize];
             this.FrameBuffer = new byte[this.BufferSize][];
-            ubeat.Video.FFmpeg.av_register_all();
+
+            FFmpeg.av_register_all();
+            FFmpeg.avcodec_register_all();
+
             this.videoOpened = false;
         }
 
@@ -182,7 +186,7 @@ namespace ubeat.Video
             string path = "memory:" + ptr + "|" + bytes.Length;
 
             int ret = FFmpeg.av_open_input_file(out pFormatCtx, path, IntPtr.Zero, bytes.Length, IntPtr.Zero);
-
+            
             if (ret != 0)
                 throw new Exception("Couldn't open input file");
 
@@ -228,6 +232,7 @@ namespace ubeat.Video
             if (FFmpeg.avcodec_open(pCodecCtx, pCodec) < 0)
                 throw new Exception("couldn't open codec");
 
+            
             pFrame = FFmpeg.avcodec_alloc_frame();
             pFrameRGB = FFmpeg.avcodec_alloc_frame();
 
@@ -259,8 +264,8 @@ namespace ubeat.Video
                 {
                     gotNewFrame = false;
 
-                    lock (this)
-                    {
+                    /*lock (this)
+                    {*/
                         while (writeCursor - readCursor < BufferSize && (decodingFinished = (FFmpeg.av_read_frame(pFormatCtx, packet) < 0)) == false)
                         {
                             if (Marshal.ReadInt32(packet, 24) == videoStream)
@@ -275,7 +280,8 @@ namespace ubeat.Video
 
                                 if (frameFinished != 0 && Marshal.ReadIntPtr(packet, 16) != IntPtr.Zero)
                                 {
-                                    int correct = FFmpeg.img_convert(pFrameRGB, PIXEL_FORMAT, pFrame,
+                                    
+                                    int correct = FFmpeg.img_convert(pFrameRGB, (int)FFmpeg.PixelFormat.PIX_FMT_RGB32, pFrame,
                                                                      (int)codecCtx.pix_fmt, codecCtx.width,
                                                                      codecCtx.height);
 
@@ -287,6 +293,7 @@ namespace ubeat.Video
                                         FrameBufferTimes[writeCursor % BufferSize] = (dts - stream.start_time) * FrameDelay * 1000;
 
                                         bgraToRgba(frameData, frameData.Length);
+                                    
 
                                         writeCursor++;
 
@@ -299,10 +306,10 @@ namespace ubeat.Video
                                 }
                             }
                         }
-                    }
+                    //}
 
                     if (!gotNewFrame)
-                        Thread.Sleep(15);
+                        Thread.Sleep(1);
                 }
             }
             catch (ThreadAbortException)
@@ -315,6 +322,8 @@ namespace ubeat.Video
             }
         }
 
+       
+
         public bool OpenStream(Stream inStream)
         {
             byte[] numArray = new byte[inStream.Length];
@@ -324,6 +333,7 @@ namespace ubeat.Video
 
         public byte[] GetFrame(int time)
         {
+
             while (this.readCursor < this.writeCursor - 1 && this.FrameBufferTimes[(this.readCursor + 1) % this.BufferSize] <= (double)time)
                 ++this.readCursor;
             if (this.readCursor >= this.writeCursor)
@@ -335,6 +345,7 @@ namespace ubeat.Video
 
         private static unsafe void bgraToRgba(byte[] data, int length)
         {
+            
             fixed (byte* dPtr = &data[0])
             {
                 byte* sp = dPtr;
@@ -343,6 +354,7 @@ namespace ubeat.Video
                 while (sp < ep)
                 {
                     *(uint*)sp = (uint)(*(sp + 2) | *(sp + 1) << 8 | *sp << 16 | *(sp + 3) << 24);
+
                     sp += 4;
                 }
             }
@@ -350,6 +362,7 @@ namespace ubeat.Video
 
         public void Seek(int time)
         {
+            
             lock (this)
             {
                 int local_0 = 0;

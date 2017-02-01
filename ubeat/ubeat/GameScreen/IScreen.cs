@@ -6,16 +6,20 @@ namespace ubeat.GameScreen
 {
     public interface IScreen
     {
-        Texture2D Background { get; set; }
-        void Update(GameTime tm);
-        void Render();
-        void Redraw();
-        IScreen ScreenInstance { get; set; }
-        List<UIObjectBase> Controls { get; set; }
+        string Name { get; set; }
         bool Visible { get; set; }
         float Opacity { get; set; }
+
+        Texture2D Background { get; set; }
+        IScreen ScreenInstance { get; set; }
+        List<UIObjectBase> Controls { get; set; }
+
+        void Update(GameTime tm);
+        void Render();
+                
+        //TODO: useless?
         void BackPressed(IScreen screen);
         void OnLoadScreen();
-        string Name { get; set; }
+        
     }
 }

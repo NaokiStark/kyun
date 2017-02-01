@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using ubeat.GameScreen.SUI;
 using ubeat.Screen;
 using ubeat.GameScreen.UI;
 using ubeat.Notifications;
@@ -283,36 +282,8 @@ namespace ubeat.GameScreen
 
             combodisplayMode.Text = combodisplayMode.Items[Settings1.Default.ScreenMode].ToString();
         }
-
-        public override void Redraw()
-        {
-            var modes = ScreenModeManager.GetSupportedModes();
-            var actualMode = modes[Settings1.Default.ScreenMode];
-
-            var center = new Vector2(actualMode.Width / 2, actualMode.Height / 2);
-
-            Logo.Position = new Vector2(
-               center.X - (Logo.Texture.Width / 2),
-               center.Y - (Logo.Texture.Height / 2) - Logo.Texture.Height + 15);
-
-            filledRect1 = null;///q
-
-            filledRect1 = new FilledRectangle(
-               new Vector2(actualMode.Width, actualMode.Height),
-               Color.Black * 0.5f);
-
-            filledRect1.Position = Vector2.Zero;
-
-            comboLang.Position = new Vector2(center.X, Logo.Position.Y + globalMarginBottom + Logo.Texture.Height);
-
-            combodisplayMode.Position = new Vector2(
-                    center.X,
-                    comboLang.Position.Y + globalMarginBottom + SpritesContent.Instance.ListboxFont.MeasureString("a").Y + 5);
-        }
-
-       
-
-        public override void UpdateControls()
+        
+        internal override void UpdateControls()
         {
             bool restrictedUpdate = false;
 

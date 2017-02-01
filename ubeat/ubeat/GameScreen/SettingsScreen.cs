@@ -1,10 +1,10 @@
 ﻿using System;
 using ubeat.Screen;
-using ubeat.GameScreen.SUI;
 using System.Collections.Generic;
 using System.Windows;
 using ubeat.Utils;
 using ubeat.Notifications;
+using ubeat.GameScreen.UI;
 
 namespace ubeat.GameScreen
 {

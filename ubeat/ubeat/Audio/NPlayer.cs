@@ -160,7 +160,7 @@ namespace ubeat.Audio
             waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 2);
             audioFile = fromStream;
             meterSampleProvider = new MeteringSampleProvider(audioFile);
-            meterSampleProvider.SamplesPerNotification = 60;
+            meterSampleProvider.SamplesPerNotification = 1024;
             meterSampleProvider.StreamVolume += MeterSampleProvider_StreamVolume;
 
             audioFile.Volume = vol;
@@ -194,7 +194,7 @@ namespace ubeat.Audio
             audioFile = new AudioFileReader(ActualSong);
 
             meterSampleProvider = new MeteringSampleProvider(audioFile);
-            meterSampleProvider.SamplesPerNotification = 120;
+            meterSampleProvider.SamplesPerNotification = 1024;
             
             //meterSampleProvider.StreamVolume += MeterSampleProvider_StreamVolume;
             meterSampleProvider.StreamVolume += MeterSampleProvider_StreamVolume;
