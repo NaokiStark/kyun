@@ -19,12 +19,18 @@ namespace ubeat.Video
         VideoPlayer videoplayer;
 
         byte[] nextFrame;
+
+
         long nextTime = 0;
 
+        bool FillBuffer = true;
 
         public NPlayer audioplayer;
 
         Texture2D bg;
+
+        byte[][] bbuffer = new byte[1][];
+        int nF = 0;
 
         public AudioVideoPlayer()
         {
@@ -49,7 +55,11 @@ namespace ubeat.Video
             Audio = audio;
             Video = video;
 
-            videoplayer.Play(video);
+            if (UbeatGame.Instance.VideoEnabled)
+            {
+                videoplayer.Play(video);
+            }           
+
             audioplayer.Play(audio);
 
         }
@@ -66,12 +76,16 @@ namespace ubeat.Video
             {            
                
                 long position = audioplayer.Position;
-                if (nextTime <  position)
-                {
-                    byte[] frame = videoplayer.GetFrame(position);             
-                    nextFrame = frame;
-                    nextTime = position + 1;
-                }
+                //if (nextTime <  position)
+                //{
+                //    byte[] frame = videoplayer.GetFrame(position);             
+                //    nextFrame = frame;
+                //    nextTime = position + 1;
+                //}
+
+               
+
+                
             }
         }
 
@@ -98,26 +112,71 @@ namespace ubeat.Video
 
             Rectangle screenVideoRectangle = new Rectangle();
 
-            
-            if (nextFrame != null)
+            long position = audioplayer.Position;
+
+            /*
+            if (frameBuffer.Count > 0)
+            {
+                nextFrame = frameBuffer.Dequeue();
+            }*/
+
+            float pos = 0;
+            nF++;
+            if (nF >= bbuffer.Length)
             {
 
-                UbeatGame.Instance.SpriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
+                nF = 0;
+                //FillBuffer = false;
+                /*
+                while (frameBuffer.Count < 2)
+                {
+                    System.Threading.Thread.Sleep(1);
+                    int offset = (int)audioplayer.Position;
 
-                Texture2D texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, videoplayer.vdc.width, videoplayer.vdc.height, false,SurfaceFormat.Color);
-                screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)texture.Width / (float)texture.Height) * (float)screenHeight), screenHeight);
-
-                texture.SetData(nextFrame);
-
-                UbeatGame.Instance.SpriteBatch.Draw(texture, screenVideoRectangle, null, Color.White, 0, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 0);
-
-                texture.Dispose();
-
+                    byte[] frame = videoplayer.GetFrame((int)((float)offset + pos));
+                    if (frame != null)
+                    {
+                        frameBuffer.Enqueue(frame, 1);
+                    }
+                    pos+=50f;
+                }*/
+                lock (bbuffer)
+                {
+                    for (int a = 0; a < bbuffer.Length; a++)
+                    {
+                        
+                        byte[] frame = videoplayer.GetFrame((int)((float)position + pos));
+                        if (frame != null)
+                        {
+                            bbuffer[a] = frame;
+                        }
+                        pos += 120f;
+                    }
+                }
             }
-            else
-            {
-                UbeatGame.Instance.SpriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
-            }
+
+
+            lock (bbuffer)
+            {            
+                if(bbuffer[nF] == null)
+                {
+                    UbeatGame.Instance.SpriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
+                    return;
+                }
+                lock (bbuffer[nF])
+                {
+                    UbeatGame.Instance.SpriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
+
+                    Texture2D texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, videoplayer.vdc.width, videoplayer.vdc.height, false, SurfaceFormat.Color);
+                    screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)texture.Width / (float)texture.Height) * (float)screenHeight), screenHeight);
+
+                    texture.SetData(bbuffer[nF]);
+
+                    UbeatGame.Instance.SpriteBatch.Draw(texture, screenVideoRectangle, null, Color.White, 0, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 0);
+
+                    texture.Dispose();
+                }
+            }           
         }
     }
 }

@@ -110,11 +110,13 @@ namespace ubeat.Utils
 
         private void LoadFonts(SpriteBatch spriteBatch)
         {
+            
             DefaultFont = Content.Load<SpriteFont>("SpriteFont1");
             GeneralBig = Content.Load<SpriteFont>("General");
             ListboxFont = Content.Load<SpriteFont>("Listbox");
             SettingsFont = Content.Load<SpriteFont>("SettingsDisplayFont");
             TitleFont = Content.Load<SpriteFont>("TitleFont");
+            StandardButtonsFont = Content.Load<SpriteFont>("StandardButtonFont");
         }
 
         private void LoadSprites(SpriteBatch spriteBatch, GraphicsDevice graphics)
@@ -156,6 +158,8 @@ namespace ubeat.Utils
             StartButton = Content.Load<Texture2D>("PlayMain");
             ExitButton = Content.Load<Texture2D>("ExitMain");
             ConfigButton = Content.Load<Texture2D>("ConfigMain");
+            ButtonStandard = Content.Load<Texture2D>("ButtonStandard");
+
         }
 
         #endregion
@@ -188,6 +192,7 @@ namespace ubeat.Utils
         public Texture2D TopEffect { get; set; }
         public Texture2D DefaultBackground { get; set; }
         public Texture2D LoadingSpinnerTx { get; set; }
+        public Texture2D ButtonStandard { get; set; }
         #endregion
 
         #region FontsVars
@@ -196,6 +201,7 @@ namespace ubeat.Utils
         public SpriteFont ListboxFont { get; set; }
         public SpriteFont SettingsFont { get; set; }
         public SpriteFont TitleFont { get; set; }
+        public SpriteFont StandardButtonsFont { get; set; }
         #endregion
 
         #region AudiosVars

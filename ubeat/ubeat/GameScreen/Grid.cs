@@ -11,6 +11,7 @@ using ubeat.Score;
 using ubeat.GameScreen.UI;
 using ubeat.Screen;
 using ubeat.Utils;
+using ubeat.GameScreen.UI.Buttons;
 
 namespace ubeat.GameScreen
 {
@@ -95,17 +96,33 @@ namespace ubeat.GameScreen
 
             ScreenMode ActualMode = scmL[Settings1.Default.ScreenMode];
 
-            Vector2 meas = SpritesContent.Instance.DefaultFont.MeasureString("ubeat") * .85f;
+            Vector2 meas = SpritesContent.Instance.StandardButtonsFont.MeasureString("ubeat");
 
-            Vector2 fSize = SpritesContent.Instance.DefaultFont.MeasureString("00000000") * 1.5f;
+            Vector2 sm = ScoreDispl.getMeasuredText() * 1.5f;
 
-            songProgress = new ProgressBar((int)fSize.X+30-2,7);
+            songProgress = new ProgressBar((int)sm.X - 5, 7);
             songProgress.Position = new Vector2(ScoreDispl.Position.X+1, ScoreDispl.Position.Y + 44);
 
             FPSMetter = new Label();
-            FPSMetter.Text = "fps";
-            FPSMetter.Scale = .75f;
-            FPSMetter.Position = new Vector2(0, ActualMode.Height - meas.Y);
+            //FPSMetter.Text = "fps";
+            FPSMetter.Scale = 1f;
+            FPSMetter.Position = new Vector2(0, ActualMode.Height - meas.Y-5);
+            FPSMetter.Font = SpritesContent.Instance.StandardButtonsFont;
+
+            backButton = new ButtonStandard(Color.DarkRed)
+            {
+                ForegroundColor = Color.White,
+                Caption = "Pause",
+                Position = new Vector2(30, ((ActualMode.Height - 100) + 100 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
+                
+            };
+
+            backButton.Click += (e, nn) =>
+             {
+                 Pause();
+             };
+
+            Controls.Add(backButton);
         }
         #endregion  
 
@@ -303,8 +320,8 @@ namespace ubeat.GameScreen
                 return;
 
             int fpsm = (int)Math.Round((double)UbeatGame.Instance.frameCounter.AverageFramesPerSecond, 0);
-            FPSMetter.Text = fpsm.ToString("0", CultureInfo.InvariantCulture) + " FPS";
-            FPSMetter.Update();
+            //FPSMetter.Text = fpsm.ToString("0", CultureInfo.InvariantCulture) + " FPS";
+            //FPSMetter.Update();
             UpdatePeak();
             if (Waiting)
             {
@@ -319,6 +336,15 @@ namespace ubeat.GameScreen
                         SpaceAlredyPressed = false;
                         Skip();
                     }
+                }
+                ScreenMode cmode = ScreenModeManager.GetActualMode();
+                Rectangle rg = new Rectangle(cmode.Width - (SpritesContent.Instance.SpaceSkip.Width / 2),
+                        cmode.Height - (SpritesContent.Instance.SpaceSkip.Height / 2),
+                        SpritesContent.Instance.SpaceSkip.Width / 2,
+                        SpritesContent.Instance.SpaceSkip.Height / 2);
+                if (UbeatGame.Instance.touchHandler.TouchIntersecs(rg))
+                {
+                    Skip();
                 }
             }
 
@@ -356,6 +382,7 @@ namespace ubeat.GameScreen
             Health.Update();
             ScoreDispl.Update();
             ComboDspl.Update();
+            backButton.Update();
 
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
@@ -515,6 +542,43 @@ namespace ubeat.GameScreen
                         }
                     }
                 }
+
+                Rectangle allScr = new Rectangle(0, 0, ActualScreenMode.Width, ActualScreenMode.Height);
+
+                if (UbeatGame.Instance.touchHandler.TouchIntersecs(allScr))
+                {
+                    if (UbeatGame.Instance.touchHandler.GetPointsCount() > 1)
+                    {
+                        Logger.Instance.Info("Exit Game");
+                        Health.Stop();
+                        nomoreobjectsplsm8 = true;
+                        inGame = false;
+                        Background = null;
+                        UbeatGame.Instance.Player.Paused = false;
+                        Paused = false;
+                        ScreenManager.ChangeTo(BeatmapScreen.Instance);
+
+                        videoplayer.Stop();
+                    }
+                    else if(UbeatGame.Instance.touchHandler.GetPointsCount() == 1)
+                    {
+                        if (failed)
+                        {
+                            for (int a = 0; a < bemap.HitObjects.Count; a++)
+                            {
+                                bemap.HitObjects[a].Reset();
+                            }
+                            videoplayer.Stop();
+                            //UbeatGame.Instance.GameStart(this.bemap);
+                            Play(null, autoMode);
+                        }
+                        else
+                        {
+                            Pause();
+                        }
+                    }
+                }
+
             }
 
         }
@@ -676,7 +740,8 @@ namespace ubeat.GameScreen
 
             if (onbreak) DrawBreak();
 
-            FPSMetter.Render();
+            //FPSMetter.Render();
+            backButton.Render();
         }
 
         void RenderVideoFrame()
@@ -759,7 +824,7 @@ namespace ubeat.GameScreen
                 }
 
                 RenderVideoFrame();
-                FPSMetter.Render();
+                //FPSMetter.Render();
 
                 UbeatGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.SpaceSkip,
                     new Rectangle(screenWidth - (SpritesContent.Instance.SpaceSkip.Width / 2),
@@ -883,6 +948,7 @@ namespace ubeat.GameScreen
         float op;
         long lastBreak = 0;
         private ProgressBar songProgress;
+        private ButtonStandard backButton;
         #endregion
 
         public bool SpaceAlredyPressed { get; set; }

@@ -15,6 +15,8 @@ namespace ubeat.GameScreen
         public delegate void KeyEventHandler(object sender, InputEvents.KeyPressEventArgs args);
         public event KeyEventHandler onKeyPress;
 
+        public event TouchHandler.TouchEventHandler onTouch;
+
         private KeyboardState keyboardOldState;
 
         public ScreenBase(string name = "BaseScreen")
@@ -24,6 +26,13 @@ namespace ubeat.GameScreen
             Name = name;
             OnLoad += _OnLoad;
             Controls = new List<UIObjectBase>();
+            UbeatGame.Instance.touchHandler.onTouchScreen += ScreenBase_onTouch;
+        }
+
+        private void ScreenBase_onTouch(object sender, ubeatTouchEventArgs e)
+        {
+            if(Visible)
+                onTouch?.Invoke(this, e);
         }
 
         internal void RenderBg()
@@ -87,7 +96,7 @@ namespace ubeat.GameScreen
             }
 
             checkKeyboardEvents(keyboardOldState, actualState);
-
+           
             UpdateControls();
 
             UpdatePeak();

@@ -1,38 +1,34 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ubeat.GameScreen;
 using ubeat.UIObjs;
 using ubeat.Utils;
 
 namespace ubeat.Score
 {
-    public class ComboDisplay : IUIObject
+    public class ComboDisplay : UIObjectBase
     {
 
-        public Vector2 Position { get; set; }
+        Vector2 MeasuredString { get; set; }
 
-        public Texture2D Texture { get; set; }
+        int oldLength = 0;
 
-        public bool IsActive { get; set; }
+        int textLength = 0;
 
-        public bool Died { get; set; }
-
-        Vector2 size { get; set; }
-
-        static int max_size = 200;
-
-        int lastCD=0;
+        int lastCD = 0;
 
         public ComboDisplay()
         {
-            size = new Vector2(200,60);
-            
-            this.Texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, (int)size.X, (int)size.Y);
-            Color[] data = new Color[((int)size.X * (int)size.Y)];
+
+            Scale = 1;
+            this.Texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, 50, 50);
+            Color[] data = new Color[50 * 50];
             for (int i = 0; i < data.Length; ++i) data[i] = Color.Black;
             this.Texture.SetData(data);
         }
 
-        public void Update()
+        public override void Update()
         {
             if (!IsActive) return;
             
@@ -40,7 +36,8 @@ namespace ubeat.Score
 
             if (lastCD < Combo.Instance.ActualMultiplier)
             {
-                size = new Vector2(400, (60f / 200f) * 400f);
+                textLength = Combo.Instance.ActualMultiplier.ToString().Length;
+                Scale = 1.4f;
                 
             }
             lastCD = (int)Combo.Instance.ActualMultiplier;
@@ -48,34 +45,50 @@ namespace ubeat.Score
 
         void reduce()
         {
-            //float newWidth = size.X / 1.01f;
-            float newWidth = size.X - (float)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * .2f;
-
-            if (newWidth > 300)
-            {                
-                float newHeight = (60f / 200f) * newWidth;
-                size = new Vector2(newWidth, newHeight);
+           
+            if(Scale - (float)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * .001f > 1)
+            {
+                Scale -= ((float)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * .001f);
             }
+
         }
 
-        public void Render()
+        public override void Render()
         {
             if (!IsActive) return;
             if (lastCD < 2) return;
 
-            int sWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-            int sHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+            Screen.ScreenMode actualScreenMode = Screen.ScreenModeManager.GetActualMode();
 
-            Vector2 origin = (SpritesContent.Instance.DefaultFont.MeasureString(lastCD.ToString() + "x") * (size.X / 200f)) / 2;
+            Vector2 textSize = getMeasuredText() * Scale;
 
-            float posX = sWidth - (SpritesContent.Instance.DefaultFont.MeasureString(lastCD.ToString() + "x") * (size.X / 200f)).X;
+            Rectangle rg = new Rectangle(actualScreenMode.Width - (int)textSize.X - 10,
+                actualScreenMode.Height - (int)textSize.Y - 8,
+                (int)textSize.X + 35,
+                (int)textSize.Y + 8);
 
-            Vector2 fsize= SpritesContent.Instance.DefaultFont.MeasureString(lastCD.ToString() + "x") * (size.X / 200f);
+            Rectangle rgbox = new Rectangle(rg.X - 3,
+                rg.Y + 5,
+                rg.X,
+                rg.Y);
 
-            Rectangle rg = new Rectangle((int)posX - 20, (int)(sHeight- 20), (int)fsize.X + 30, (int)fsize.Y);
+            UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rgbox, null, Color.White * .75f, 0, Vector2.Zero, SpriteEffects.None, 0);
+            UbeatGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.TitleFont, lastCD.ToString() + "x", new Vector2(rg.X + 3, rg.Y + 5), Color.White, 0, Vector2.Zero, Scale, SpriteEffects.None, 0);
+        }
 
-            UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rg, null, Color.White * .75f, 0, new Vector2(0, origin.Y), SpriteEffects.None, 0);
-            UbeatGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.DefaultFont, lastCD.ToString() + "x", new Vector2(posX-10,rg.Y), Color.WhiteSmoke, 0, new Vector2(0,fsize.Y/3), (float)(size.X / 200f), SpriteEffects.None, 0);
+        private Vector2 getMeasuredText()
+        {
+            if(oldLength != textLength)
+            {
+                MeasuredString = SpritesContent.Instance.TitleFont.MeasureString(lastCD.ToString()+"x");
+                oldLength = textLength = lastCD.ToString().Length;
+            }
+
+            if(MeasuredString == null)
+            {
+                MeasuredString = SpritesContent.Instance.TitleFont.MeasureString("1x");
+            }
+            return MeasuredString;
         }
     }
 }

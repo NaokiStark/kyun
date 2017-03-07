@@ -29,6 +29,8 @@ namespace ubeat.Video
         public bool Stopped = true;
         public VideoDecoder vdc;
 
+        
+
         public VideoPlayer()
         {
             

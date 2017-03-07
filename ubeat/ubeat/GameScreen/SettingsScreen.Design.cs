@@ -7,6 +7,7 @@ using ubeat.Screen;
 using ubeat.GameScreen.UI;
 using ubeat.Notifications;
 using ubeat.Utils;
+using ubeat.GameScreen.UI.Buttons;
 
 namespace ubeat.GameScreen
 {
@@ -171,6 +172,14 @@ namespace ubeat.GameScreen
 
             filledRect1.Position = Vector2.Zero;
 
+            backButton = new ButtonStandard(Color.DarkRed)
+            {
+                ForegroundColor = Color.White,
+                Caption = "Back",
+                Position = new Vector2(15, ((actualMode.Height-100) + 100 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
+            };
+            backButton.Click += BackButton_Click;
+
             OnBackSpacePress += (sender, args) =>
              {
                  //BackPressed(new MainScreen(false));
@@ -195,11 +204,18 @@ namespace ubeat.GameScreen
             Controls.Add(combodisplayMode);
             Controls.Add(lcomboLang);
             Controls.Add(comboLang);
+            Controls.Add(backButton);
             Controls.Add(notifier);
+            
 
             UbeatGame.Instance.IsMouseVisible = true;
 
             OnLoadScreen();
+        }
+
+        private void BackButton_Click(object sender, EventArgs e)
+        {
+            BackPressed(MainScreen.Instance);
         }
 
         private void CheckInGameVideo_CheckChanged(object sender, EventArgs e)
@@ -335,6 +351,7 @@ namespace ubeat.GameScreen
         private Label lcheckVSync;
         private Label lcheckInGameVideo;
         private Notifier notifier;
+        private ButtonStandard backButton;
 
         public ComboBox comboLang { get; set; }
 

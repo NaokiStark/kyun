@@ -29,7 +29,6 @@ namespace osuBMParser
 
         internal void parse()
         {
-
             
             string[] lines;
             try
@@ -237,22 +236,33 @@ namespace osuBMParser
 
             if (tokens[1] != null) timingPoint.MsPerBeat = toFloat(tokens[1]);
 
-            try
+            if(tokens.Length > 2)
             {
                 if (tokens[2] != null) timingPoint.Meter = toInt(tokens[2]);
                 if (tokens[3] != null) timingPoint.SampleType = toInt(tokens[3]);
                 if (tokens[4] != null) timingPoint.SampleSet = toInt(tokens[4]);
                 if (tokens[5] != null) timingPoint.Volume = toInt(tokens[5]);
-                if (tokens[6] != null) timingPoint.Inherited = toBool(tokens[6]);
-                //if (tokens[6] != null) timingPoint.Inherited = (timingPoint.MsPerBeat > 0);
-                if (tokens[7] != null) timingPoint.KiaiMode = toBool(tokens[7]);
-            }
-            catch
-            {
-                //Old beatmap
 
+                if (tokens.Length > 6)
+                {
+                    if (tokens[6] != null) timingPoint.Inherited = toBool(tokens[6]);
+                }
+                else
+                {
+                    timingPoint.Inherited = (timingPoint.MsPerBeat > 0)? true : false;
+                }
+                
+                //if (tokens[6] != null) timingPoint.Inherited = (timingPoint.MsPerBeat > 0);
+                if(tokens.Length > 7)
+                {
+                    if (tokens[7] != null) timingPoint.KiaiMode = toBool(tokens[7]);
+                }
+                else
+                {
+                    timingPoint.KiaiMode = false;
+                }
+               
             }
-            
 
             beatmap.TimingPoints.Add(timingPoint);
 
@@ -275,6 +285,8 @@ namespace osuBMParser
         {
 
             string[] tokens = data.Split(',');
+
+            bool isManiaLongNote = false;
 
             if (tokens.Length < 5)
             {
@@ -304,9 +316,24 @@ namespace osuBMParser
             }
             else
             {
+                int type = toInt(tokens[3]);
+
+                if(type == 128)
+                {
+                    hitObject = new HitSlider();
+                    isManiaLongNote = true;
+                }
+                else
+                {
+                    return;
+                }
+
                 //Debug.WriteLine("osuBMParser: Invalid HitObject line at timestamp: " + tokens[2] + " | Type = " + tokens[3]);
-                return; //This type does not exist
+                //return; //This type does not exist
             }
+
+            //mania
+
 
             //Parse all information for the hitObject
 
@@ -332,11 +359,25 @@ namespace osuBMParser
 
             if (hitObject is HitSlider)
             {
+
+
                 ((HitSlider)hitObject).SliderTimingPoint = actualTimmingPoint;
                 if (tokens.Length >= 6 && tokens[5] != null) //SliderType and HitSliderSegments
                 {
                     string[] hitSliderSegments = tokens[5].Split('|');
                     ((HitSlider)hitObject).Type = HitSlider.parseSliderType(hitSliderSegments[0]);
+
+                    //MANIA LONG NOTE
+                    if (isManiaLongNote) {
+                        ((HitSlider)hitObject).Type = HitSlider.SliderType.LONGNOTE;
+
+                        int endtime = toInt(tokens[5].Split(':')[0].Trim());
+                        //Console.WriteLine(tokens[5].Split(':')[0].Trim());
+                        
+                        ((HitSlider)hitObject).EndTime = endtime;
+                    }
+                    
+
                     foreach (string hitSliderSegmentPosition in hitSliderSegments.Skip(1))
                     {
                         string[] positionTokens = hitSliderSegmentPosition.Split(':');
@@ -354,7 +395,14 @@ namespace osuBMParser
 
                 if (tokens.Length >= 8 && tokens[7] != null)
                 {
-                    ((HitSlider)hitObject).PixelLength = toFloat(tokens[7]);
+                    if(tokens[7].Length > 6)
+                    {
+                        ((HitSlider)hitObject).PixelLength = toFloat(tokens[7].Remove(6, tokens[7].Length-6));
+                    }
+                    else
+                    {
+                        ((HitSlider)hitObject).PixelLength = toFloat(tokens[7]);
+                    }
                 }
 
                 if (tokens.Length >= 9 && tokens[8] != null)

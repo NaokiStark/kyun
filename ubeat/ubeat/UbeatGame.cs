@@ -12,6 +12,7 @@ using ubeat.Audio;
 using ubeat.GameScreen;
 using ubeat.Utils;
 using NAudio.Wave.SampleProviders;
+using ubeat.GameScreen.UI;
 
 namespace ubeat
 {
@@ -270,6 +271,25 @@ namespace ubeat
                 Settings1.Default.Save();
             }
 
+            Screen.ScreenMode acmode = Screen.ScreenModeManager.GetActualMode();
+            uLabelVer = new GameScreen.UI.Label(.1f);
+            uLabelVer.Text = "ubeat Project alpha";
+            uLabelVer.Centered = true;
+            uLabelVer.Position = new Vector2(acmode.Width / 2, acmode.Height - 55);
+
+            uLabelVer.Font = SpritesContent.Instance.TitleFont;
+            uLabelVer.Scale = .75f;
+            uLabelVer.ForegroundColor = Color.WhiteSmoke * .75f;
+
+            uLabelMsgVer = new GameScreen.UI.Label(.1f);
+            uLabelMsgVer.Text = "Unstable comp 070317";
+            
+            uLabelMsgVer.Centered = true;
+            uLabelMsgVer.Position = new Vector2(acmode.Width / 2, acmode.Height - 25);
+            uLabelMsgVer.Font = SpritesContent.Instance.StandardButtonsFont;
+            uLabelMsgVer.Scale = .75f;
+            uLabelMsgVer.ForegroundColor = Color.WhiteSmoke * .75f;
+
             ScreenManager.ChangeTo(new LoadScreen());
           
         }
@@ -285,66 +305,15 @@ namespace ubeat
         }
 
         #region TEXTURES
-        //public Texture2D buttonDefault;
-        //public Texture2D buttonHolder;
-        //public Texture2D buttonDefault_0;
-        //public Texture2D buttonHolder_0;
-
-        //public Texture2D waitDefault;
-        //public Texture2D waitDefault_0;
-
-        //public Texture2D HolderFillDeff;
-        //public Texture2D HolderFillDeff_0;
-
-        //public Texture2D radiance;
-        //public Texture2D PauseSplash;
-        //public Texture2D PerfectTx;
-        //public Texture2D ExcellentTx;
-        //public Texture2D GoodTx;
-        //public Texture2D MissTx;
-        //public SoundEffect HitHolderFilling;
-        //// public SoundEffect HolderTick;
-        //public SoundEffect HolderHit;
-        ////public SoundEffect ComboBreak;
-        ////public SoundEffect ButtonHit;
-        //public Texture2D FailSplash;
-        //public Texture2D Push;
-        //public Texture2D Hold;
-        //public Texture2D StartButton;
-        //public Texture2D ExitButton;
-        //public Texture2D ConfigButton;
-        //public Texture2D AutoModeButton;
-        //public Texture2D AutoModeButtonSel;
-        //public Texture2D Logo;
-        //public Texture2D SpaceSkip;
-        //public Texture2D TopEffect;
-        //public Texture2D DefaultBackground;
-
-
-        ////public SoundEffect ButtonOver;
-        //public SpriteFont GeneralBig;
-        //public SpriteFont ListboxFont;
-        //public SpriteFont SettingsFont;
-        //public SpriteFont TitleFont;
-        ///*update NAudio*/
-
-        //public CachedSound ButtonHit;
-        //public CachedSound ComboBreak;
-        //public CachedSound ButtonOver;
-        //public CachedSound HitButton;
-        //public CachedSound HitHolder;
-        //public CachedSound HolderFilling;
-        //public CachedSound HolderTick;
-        //public CachedSound SelectorHit;
-        //public CachedSound ScrollHit;
-        //public CachedSound SeeyaOsu;
-
+        
 
         public CachedSound WelcomeToOsuXd;
 
         List<CachedSound> SoundsEff = new List<CachedSound>();
         List<Texture2D> Textures = new List<Texture2D>();
         public TouchHandler touchHandler;
+        private Label uLabelVer;
+        private Label uLabelMsgVer;
 
         protected override void LoadContent()
         {
@@ -360,101 +329,6 @@ namespace ubeat
             SpriteBatch = new SpriteBatch(GraphicsDevice);
 
 
-            //buttonDefault = Content.Load<Texture2D>("button_0");
-            //buttonHolder = Content.Load<Texture2D>("holder_0");
-            //waitDefault = Content.Load<Texture2D>("approachv2");
-            //HolderFillDeff = Content.Load<Texture2D>("HolderFill");
-
-
-            //buttonDefault_0 = Content.Load<Texture2D>("button_0.5");
-            //buttonHolder_0 = Content.Load<Texture2D>("holder_0.5");
-            //waitDefault_0 = Content.Load<Texture2D>("approach0.5");
-            //HolderFillDeff_0 = Content.Load<Texture2D>("HolderFill0.5");
-
-            //TopEffect = Content.Load<Texture2D>("BackgroundEffect" + (((float)actmode.Width / (float)actmode.Height == 1.3f)?"@1-3":""));
-
-
-
-            //radiance = Content.Load<Texture2D>("radiance");
-            //PauseSplash = Content.Load<Texture2D>("pausesplash");
-            //PerfectTx = Content.Load<Texture2D>("Perfect");
-            //ExcellentTx = Content.Load<Texture2D>("Excellent");
-            //GoodTx = Content.Load<Texture2D>("Good");
-            //MissTx = Content.Load<Texture2D>("Miss");
-            //FailSplash = Content.Load<Texture2D>("failsplash");
-            //Push = Content.Load<Texture2D>("push");
-            //Hold = Content.Load<Texture2D>("hold");
-            //Logo = Content.Load<Texture2D>("logo");
-            //AutoModeButton = Content.Load<Texture2D>("autoBtn");
-            //AutoModeButtonSel = Content.Load<Texture2D>("autoBtnSel");
-            //SpaceSkip = Content.Load<Texture2D>("SpaceSkip");
-
-            //using (var fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"\Assets\bg.png", FileMode.Open, FileAccess.Read))
-            //{
-            //    DefaultBackground = Texture2D.FromStream(GraphicsDevice, fs);
-            //}
-
-            ////test
-            //StartButton = Content.Load<Texture2D>("PlayMain");
-            //ExitButton = Content.Load<Texture2D>("ExitMain");
-            //ConfigButton = Content.Load<Texture2D>("ConfigMain");
-
-            //defaultFont = Content.Load<SpriteFont>("SpriteFont1");
-            //GeneralBig = Content.Load<SpriteFont>("General");
-            //ListboxFont = Content.Load<SpriteFont>("Listbox");
-            //SettingsFont = Content.Load<SpriteFont>("SettingsDisplayFont");
-            //TitleFont = Content.Load<SpriteFont>("TitleFont");
-
-            //Textures.Add(StartButton);
-            //Textures.Add(ExitButton);
-            //Textures.Add(ConfigButton);
-
-            //Textures.Add(buttonDefault);
-            //Textures.Add(buttonHolder);
-            //Textures.Add(waitDefault);
-            //Textures.Add(HolderFillDeff);
-            //Textures.Add(buttonDefault_0);
-            //Textures.Add(buttonHolder_0);
-            //Textures.Add(waitDefault_0);
-            //Textures.Add(HolderFillDeff_0);
-            //Textures.Add(radiance);
-            //Textures.Add(PauseSplash);
-            //Textures.Add(PerfectTx);
-            //Textures.Add(ExcellentTx);
-            //Textures.Add(GoodTx);
-            //Textures.Add(MissTx);
-            //Textures.Add(FailSplash);
-            //Textures.Add(Push);
-            //Textures.Add(Hold);
-            //Textures.Add(Logo);
-            //Textures.Add(AutoModeButton);
-            //Textures.Add(AutoModeButtonSel);
-            //Textures.Add(buttonDefault);
-            //Textures.Add(SpaceSkip);
-
-
-            //HolderFilling = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\HolderFilling.wav");
-            //HitButton = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\HitButton.wav");
-            //HitHolder = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\HitHolder.wav");
-            //HolderTick = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\HolderTick.wav");
-            //ComboBreak = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\ComboBreak.wav");
-            //ButtonOver = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\ButtonOver.wav");
-            //ButtonHit = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\ButtonHit.wav");
-            //SelectorHit = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\SelectorHit.wav");
-            //ScrollHit = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\Scroll.wav");
-            //WelcomeToOsuXd = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\welcome.mp3");
-            //SeeyaOsu = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + "\\Assets\\Effects\\seeya.mp3");
-
-
-            //SoundsEff.Add(HolderFilling);
-            //SoundsEff.Add(HitButton);
-            //SoundsEff.Add(HitHolder);
-            //SoundsEff.Add(HolderTick);
-            //SoundsEff.Add(ComboBreak);
-            //SoundsEff.Add(ButtonOver);
-            //SoundsEff.Add(ButtonHit);
-            //SoundsEff.Add(SelectorHit);
-            //SoundsEff.Add(ScrollHit);
 
             SpritesContent.Instance.LoadContent(SpriteBatch, GraphicsDevice);
 
@@ -557,6 +431,8 @@ namespace ubeat
             KeyBoardManager.Update(gameTime);
             ScreenManager.Update(gameTime);
 
+            uLabelVer.Update();
+            uLabelMsgVer.Update();
 
             base.Update(gameTime);
             frameCounter.Update(gameTime);
@@ -571,12 +447,14 @@ namespace ubeat
             GraphicsDevice.Clear(Color.Black);
 
 
-            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, DepthStencilState.None, RasterizerState.CullCounterClockwise);
+            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
 
 
 
             ScreenManager.Render();
 
+            uLabelVer.Render();
+            uLabelMsgVer.Render();
 
             touchHandler?.Render();
             //spriteBatch.Draw(TopEffect, new Rectangle(0, 0, TopEffect.Width, TopEffect.Height), Color.White*.145f);

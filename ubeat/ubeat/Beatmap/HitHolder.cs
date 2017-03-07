@@ -59,13 +59,8 @@ namespace ubeat.Beatmap
         {
 
             ticked = false;
-            tmrApproachOpacity = null;
-            tmrApproachOpacity = new System.Windows.Forms.Timer()
-            {
-                Interval = 2
-            };
-            tmrApproachOpacity.Start();
-            tmrApproachOpacity.Tick += tmrApproachOpacity_Tick;
+           
+            //tmrApproachOpacity.Tick += tmrApproachOpacity_Tick;
             isActive = true;
             Died = false;
             isFilling = false;
@@ -90,24 +85,30 @@ namespace ubeat.Beatmap
             apo = null;
         }
 
-        private void tmrApproachOpacity_Tick(object sender, EventArgs e)
+        private void tmrApproachOpacity_Tick()
         {
+            /*
             int appr = (int)(1950 - BeatmapContainer.ApproachRate * 150);
             float percentg = (float)(1f / ((float)appr)) * 100f;
-
             if (opacity + percentg > 1)
             {
-                tmrApproachOpacity.Stop();
-                tmrApproachOpacity.Dispose();
                 return;
             }
-
-
             this.opacity = opacity + percentg;
+            */
+            if (opacity + (UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * .004f) < 1)
+            {
+                opacity += (UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * .004f);
+            }
+            else
+            {
+                opacity = 1;
+            }
         }
 
         public void Update(long Position, Vector2 p)
         {
+            tmrApproachOpacity_Tick();
             if (holdFld != null)
             {
 
@@ -189,9 +190,11 @@ namespace ubeat.Beatmap
                 else
                 {
                     bool mouseDown = (Mouse.GetState().LeftButton == ButtonState.Pressed) || (Mouse.GetState().RightButton == ButtonState.Pressed);
-                    Rectangle MousePos = new Rectangle((int)UbeatGame.Instance.touchHandler.LastPosition.X, (int)UbeatGame.Instance.touchHandler.LastPosition.Y, 10, 10);
+                    //Rectangle MousePos = new Rectangle((int)UbeatGame.Instance.touchHandler.LastPosition.X, (int)UbeatGame.Instance.touchHandler.LastPosition.Y, 10, 10);
+
                     Rectangle ActualPos = new Rectangle((int)p.X, (int)p.Y, Texture.Bounds.Width, Texture.Bounds.Height);
-                    bool intersecs = MousePos.Intersects(ActualPos);
+
+                    bool intersecs = UbeatGame.Instance.touchHandler.TouchIntersecs(ActualPos);
 
                     bool mouseUp = Mouse.GetState().LeftButton == ButtonState.Released || Mouse.GetState().RightButton == ButtonState.Released;
 
@@ -201,7 +204,7 @@ namespace ubeat.Beatmap
                         isActive = false;
                         PressedAt = Position;
                     }
-                    if ((Keyboard.GetState().IsKeyDown((Keys)Location) || (UbeatGame.Instance.touchHandler.TouchDown && intersecs)) && !hasAlredyPressed)
+                    if ((Keyboard.GetState().IsKeyDown((Keys)Location) || (/*UbeatGame.Instance.touchHandler.TouchDown &&*/ intersecs)) && !hasAlredyPressed)
                     {
                         if (Position > StartTime - BeatmapContainer.Timing50)
                         {
@@ -232,7 +235,7 @@ namespace ubeat.Beatmap
                     bool kup = Keyboard.GetState().IsKeyUp((Keys)Location);
                     if (kup && hasAlredyPressed)
                     {
-                        if (UbeatGame.Instance.touchHandler.TouchUp)
+                        if (/*UbeatGame.Instance.touchHandler.TouchUp*/ !intersecs)
                         {
                             isFilling = false;
                             LeaveAt = Position;

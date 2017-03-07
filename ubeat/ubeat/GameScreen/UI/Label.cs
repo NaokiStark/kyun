@@ -14,15 +14,22 @@ namespace ubeat.GameScreen.UI
         public Vector2 Size { get; set; }
         public Vector2 TotalSize { get; set; }
         public float BackgroundOpacity { get; set; }
+        public Color ForegroundColor { get; set; }
 
         string lastStr ="";
-            
+
+        int lastLength = 0;
+        int textLength = 0;
+
+        Vector2 messStr { get; set; }
+
         public Label(float backgroundOpacity = 0.8f)
         {
             this.Text = ""; //WTF NULL
             BackgroundOpacity = backgroundOpacity;
             generateTexture(1, 1);
             Scale = 1;
+            ForegroundColor = Color.White;
         }
 
         private void generateTexture(int w, int h)
@@ -38,23 +45,27 @@ namespace ubeat.GameScreen.UI
 
         public override void Update()
         {
+
+
             if (Disposing) return;
 
             if (!Visible)
                 return;
 
-            if (lastStr != Text) {
-                Vector2 messStr;
+            textLength = Text.Length;
+
+            if (lastLength != textLength) {
+                
                 if (Font == null)
                     messStr = SpritesContent.Instance.DefaultFont.MeasureString(this.Text) * Scale;
                 else
                     messStr = Font.MeasureString(this.Text) * Scale;
 
                 messStr = new Vector2(messStr.X + 15, messStr.Y + 10);
-                generateTexture((int)messStr.X, (int)messStr.Y);    
+                generateTexture((int)messStr.X, (int)messStr.Y);
+                textLength = lastLength = Text.Length;
             }        
 
-            lastStr = Text;
             base.Update(); //Update Events
         }
 
@@ -64,14 +75,16 @@ namespace ubeat.GameScreen.UI
                 return;
 
             //base.Render(); //Nope
+            /*
             Vector2 messStr;
             if(Font==null)
                 messStr = SpritesContent.Instance.DefaultFont.MeasureString(this.Text) * Scale;
             else
                 messStr = Font.MeasureString(this.Text) * Scale;
 
+            
             messStr = new Vector2(messStr.X + 15, messStr.Y + 10);
-
+            */
             Vector2 pos = Position;
 
             if (Centered)
@@ -91,7 +104,7 @@ namespace ubeat.GameScreen.UI
                 TotalSize = Size; //TODO: Make this better
             }
 
-            UbeatGame.Instance.SpriteBatch.DrawString((Font == null) ? SpritesContent.Instance.DefaultFont : Font, this.Text, new Vector2(pos.X + 5, pos.Y + 5), Color.White, 0,
+            UbeatGame.Instance.SpriteBatch.DrawString((Font == null) ? SpritesContent.Instance.DefaultFont : Font, this.Text, new Vector2(pos.X + 5, pos.Y + 5), ForegroundColor, 0,
                 Vector2.Zero,this.Scale,SpriteEffects.None,0);
         }
 

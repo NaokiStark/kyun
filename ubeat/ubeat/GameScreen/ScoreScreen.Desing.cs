@@ -6,12 +6,13 @@ using Microsoft.Xna.Framework.Input;
 using ubeat.GameScreen.UI;
 using ubeat.Screen;
 using ubeat.Utils;
+using ubeat.GameScreen.UI.Buttons;
 
 namespace ubeat.GameScreen
 {
     public partial class ScoreScreen: ScreenBase
     {
-
+        private ButtonStandard backButton;
 
         public void LoadInterface()
         {
@@ -87,7 +88,16 @@ namespace ubeat.GameScreen
                 Font = SpritesContent.Instance.GeneralBig,
                 Centered = true
             };
-            
+
+            backButton = new ButtonStandard(Color.DarkRed)
+            {
+                ForegroundColor = Color.White,
+                Caption = "Back",
+                Position = new Vector2(15, ((ActualMode.Height - 100) + 100 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
+            };
+
+            backButton.Click += BackButton_Click;
+
             Controls.Add(filledRect1);
             Controls.Add(lblTitleDesc);
             Controls.Add(lblScore);
@@ -97,6 +107,8 @@ namespace ubeat.GameScreen
             Controls.Add(lblMiss);
             Controls.Add(lblAccuracy);
             Controls.Add(lblCombo);
+            Controls.Add(backButton);
+
             
             OnLoad += ScoreScreen_OnLoad;
 
@@ -106,7 +118,12 @@ namespace ubeat.GameScreen
 
             OnLoadScreen();
         }
-       
+
+        private void BackButton_Click(object sender, EventArgs e)
+        {
+            BackPressed(BeatmapScreen.Instance);
+        }
+
         public FilledRectangle filledRect1 { get; set; }
 
         public Label lblTitleDesc { get; set; }

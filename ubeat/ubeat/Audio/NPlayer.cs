@@ -190,6 +190,8 @@ namespace ubeat.Audio
                 ActualSong = fileName;
 
             waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 2);
+            //waveOut = new DirectSoundOut(50);
+   
             
             audioFile = new AudioFileReader(ActualSong);
 

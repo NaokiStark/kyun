@@ -20,7 +20,7 @@
     <ApplicationIcon>Game.ico</ApplicationIcon>
     <Thumbnail>GameThumbnail.png</Thumbnail>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>publicar\</PublishUrl>
+    <PublishUrl>C:\Users\Fabi\ubuild\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -29,10 +29,12 @@
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
+    <MapFileExtensions>false</MapFileExtensions>
+    <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -70,6 +72,15 @@
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>037F5008070B3FAA454B2043B466505DE31F4952</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>ubeat_ClaveTemporal.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
@@ -84,6 +95,9 @@
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Nuclex.Fonts.Content.TrueTypeImporter">
+      <HintPath>..\..\lib\Nuclex.Fonts.Content.TrueTypeImporter.dll</HintPath>
     </Reference>
     <Reference Include="PommaLabs.Thrower, Version=4.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Thrower.4.0.5\lib\net40\PommaLabs.Thrower.dll</HintPath>
@@ -140,6 +154,7 @@
     <Compile Include="GameModes\Midi\MidiModeScreen.cs" />
     <Compile Include="GameScreen\InputEvents\KeyPressEventArgs.cs" />
     <Compile Include="GameScreen\LoadScreen.cs" />
+    <Compile Include="GameScreen\UI\Buttons\ButtonStandard.cs" />
     <Compile Include="GameScreen\UI\InputControl.cs" />
     <Compile Include="GameScreen\VideoScreenBase.cs" />
     <Compile Include="Settings\Settings.cs">
@@ -164,7 +179,7 @@
     <Compile Include="GameScreen\IScreen.cs" />
     <Compile Include="GameScreen\ScreenBase.cs" />
     <Compile Include="GameScreen\ScreenManager.cs" />
-    <Compile Include="GameScreen\ScreenUIObject.cs" />
+    <Compile Include="GameScreen\UIObjectBase.cs" />
     <Compile Include="GameScreen\SettingsScreen.cs" />
     <Compile Include="GameScreen\SettingsScreen.Design.cs" />
     <Compile Include="GameScreen\UI\Button.cs" />
@@ -228,6 +243,7 @@
     </Compile>
     <Compile Include="Video\AudioVideoPlayer.cs" />
     <Compile Include="Video\FFmpeg.cs" />
+    <Compile Include="Video\FrameBuffer.cs" />
     <Compile Include="Video\VideoDecoder.cs" />
     <Compile Include="Video\VideoPlayer.cs" />
     <Compile Include="VolumeDlg.cs">
@@ -298,6 +314,7 @@
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings1.Designer.cs</LastGenOutput>
     </None>
+    <None Include="ubeat_ClaveTemporal.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Extensions\" />

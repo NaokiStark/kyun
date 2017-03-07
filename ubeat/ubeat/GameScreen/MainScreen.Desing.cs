@@ -57,7 +57,7 @@ namespace ubeat.GameScreen
             Controls.Add(ExtBtn);
             Controls.Add(Logo);
             Controls.Add(Label1);
-            Controls.Add(FPSMetter);
+            //Controls.Add(FPSMetter);
             Controls.Add(ntfr);
 
             UbeatGame.Instance.IsMouseVisible = true;

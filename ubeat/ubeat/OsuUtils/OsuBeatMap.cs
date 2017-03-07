@@ -71,6 +71,31 @@ namespace ubeat.OsuUtils
                 int row1 = 640 / 3;
                 int row2 = (640 / 3) * 2;
 
+                if(osbm.HitObjects == null)
+                {
+                    //WTF
+                    osbm.HitObjects = new List<HitObject>();
+                    osbm.HitObjects.Add(new HitCircle
+                    {
+                        Time = 0,
+                        Position = new Vector2(0, 0),
+                        HitSound = 0,
+                        Addition = new List<int>(),
+                        IsNewCombo = true
+                    });
+                }
+                else if (osbm.HitObjects.Count < 1)
+                {
+                    osbm.HitObjects.Add(new HitCircle
+                    {
+                        Time = 0,
+                        Position = new Vector2(0, 0),
+                        HitSound = 0,
+                        Addition = new List<int>(),
+                        IsNewCombo = true
+                    });
+                }
+
                 // Check this shit 
                 if (osbm.HitObjects[0].Time < 2500)
                     leadIn = 2500;
@@ -84,16 +109,16 @@ namespace ubeat.OsuUtils
                     if(tmCount < osbm.TimingPoints.Count){
                         if ((ho.Time - leadIn) < osbm.TimingPoints[tmCount].Offset)
                         {
-                            try
-                            {
-                                tmCount++;
-                                tm = osbm.TimingPoints[tmCount];
-                            }
-                            catch
+                            
+                            tmCount++;
+                            if(tmCount >= osbm.TimingPoints.Count)
                             {
                                 tm = osbm.TimingPoints[0];
                             }
-                                                    
+                            else
+                            {
+                                tm = osbm.TimingPoints[tmCount];
+                            }              
                         }
                     }
 
@@ -153,9 +178,9 @@ namespace ubeat.OsuUtils
                                     lastCh = obj.Location;
                                     if (hitObjs.Last() is HitHolder)
                                     {
-                                        if (hitObjs.Last().EndTime > obj.StartTime || Math.Abs(hitObjs.Last().EndTime - obj.StartTime) < 2)
+                                        if (hitObjs.Last().EndTime > obj.StartTime  || Math.Abs(hitObjs.Last().EndTime - obj.StartTime) < 150)
                                         {
-                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location)
+                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location )
                                             {
                                                 lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
                                             }
@@ -163,9 +188,9 @@ namespace ubeat.OsuUtils
                                     }
                                     else if (hitObjs.Last() is HitButton)
                                     {
-                                        if (hitObjs.Last().StartTime == obj.StartTime || Math.Abs(hitObjs.Last().StartTime - obj.StartTime)<2)
+                                        if (hitObjs.Last().StartTime == obj.StartTime || Math.Abs(hitObjs.Last().StartTime - obj.StartTime) < 150)
                                         {
-                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location)
+                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location )
                                             {
                                                 lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
                                             }
@@ -201,6 +226,8 @@ namespace ubeat.OsuUtils
                         //THE FINAL FUCKING LENGTH TIME FOR THIS SHITTY SLIDER
                         long Length = Math.Abs((long)(beatsNumber * (decimal)tmc.MsPerBeat));
 
+
+
                         IHitObj obj = new HitHolder()
                             {
                                 StartTime = ho.Time,
@@ -211,6 +238,24 @@ namespace ubeat.OsuUtils
                                 Location = ((osbm.Source!="ubeat")?lasN = GetRnd(97, 106, lasN):fL + 96)
                             };
 
+                        //MANIA LONGNOTE
+                        if(slider.Type == HitSlider.SliderType.LONGNOTE)
+                        {
+                            if(slider.EndTime < obj.StartTime)
+                            {
+                                ((HitHolder)obj).Length = slider.EndTime;
+                                ((HitHolder)obj).EndTime = obj.StartTime + ((HitHolder)obj).Length;
+                            }
+                            else
+                            {
+                                ((HitHolder)obj).EndTime = slider.EndTime;
+                                ((HitHolder)obj).Length = Math.Abs(obj.StartTime - slider.EndTime);
+                            }
+
+                           
+                            
+                            
+                        }
 
                             int lastCh = 0;
 
@@ -221,9 +266,9 @@ namespace ubeat.OsuUtils
                                     lastCh = obj.Location;
                                     if (hitObjs.Last() is HitHolder)
                                     {
-                                        if (hitObjs.Last().EndTime > obj.StartTime || Math.Abs(hitObjs.Last().EndTime - obj.StartTime) < 2)
+                                        if (hitObjs.Last().EndTime > obj.StartTime || Math.Abs(hitObjs.Last().EndTime - obj.StartTime) < 150)
                                         {
-                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location)
+                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location )
                                             {
                                                 lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
                                             }
@@ -231,9 +276,9 @@ namespace ubeat.OsuUtils
                                     }
                                     else if (hitObjs.Last() is HitButton)
                                     {
-                                        if (hitObjs.Last().StartTime == obj.StartTime || Math.Abs(hitObjs.Last().StartTime - obj.StartTime) < 2)
+                                        if (hitObjs.Last().StartTime == obj.StartTime || Math.Abs(hitObjs.Last().StartTime - obj.StartTime) < 150)
                                         {
-                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location)
+                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location )
                                             {
                                                 lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
                                             }
@@ -258,9 +303,9 @@ namespace ubeat.OsuUtils
 
                             };
 
-                            int lastCh = 0;
+                        int lastCh = 0;
 
-                            if (hitObjs.Count > 0)
+                        if (hitObjs.Count > 0)
                             {
                                 if (hitObjs.Last().Location == obj.Location)
                                 {
@@ -269,7 +314,7 @@ namespace ubeat.OsuUtils
                                     {
                                         if (hitObjs.Last().EndTime > obj.StartTime || Math.Abs(hitObjs.Last().EndTime - obj.StartTime) < 2)
                                         {
-                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location)
+                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location )
                                             {
                                                 lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
                                             }
@@ -279,7 +324,7 @@ namespace ubeat.OsuUtils
                                     {
                                         if (hitObjs.Last().StartTime == obj.StartTime || Math.Abs(hitObjs.Last().StartTime - obj.StartTime) < 2)
                                         {
-                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location)
+                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location )
                                             {
                                                 lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
                                             }

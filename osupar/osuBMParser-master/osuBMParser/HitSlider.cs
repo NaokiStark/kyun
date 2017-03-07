@@ -11,7 +11,8 @@ namespace osuBMParser
             BREZIER,
             CATMULL,
             LINEAR,
-            PASSTHROUGH
+            PASSTHROUGH,
+            LONGNOTE
         }
 
         #region fields
@@ -22,6 +23,7 @@ namespace osuBMParser
         public int EdgeHitSound { get; set; }
         public List<int> EdgeAddition { get; set; }
         public TimingPoint SliderTimingPoint { get; set; }
+        public long EndTime { get; set; }
         #endregion
 
         #region constructors

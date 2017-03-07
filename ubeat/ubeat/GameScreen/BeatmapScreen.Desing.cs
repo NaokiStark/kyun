@@ -46,14 +46,21 @@ namespace ubeat.GameScreen
 
             Vector2 lPos = new Vector2(0, 100);
 
-            lbox = new Listbox(lPos, actualMode.Width / 2, actualMode.Height - 100, SpritesContent.Instance.ListboxFont);
+            lbox = new Listbox(lPos, actualMode.Width / 2, actualMode.Height - 200, SpritesContent.Instance.ListboxFont);
             
             lbox.IndexChanged += lbox_IndexChanged;
             
-            lBDff = new ListboxDiff(new Vector2(lbox.width, lbox.Position.Y), 200, 500, SpritesContent.Instance.ListboxFont);
 
             filledRect1 = new FilledRectangle(new Vector2(actualMode.Width, 4), Color.SpringGreen);
             filledRect1.Position = new Vector2(0, 96);
+
+            filledRectBottom = new FilledRectangle(new Vector2(actualMode.Width, 100), Color.Black * .8f);
+            filledRectBottom.Position = new Vector2(0, actualMode.Height - 100);
+
+            filledRectBottomClr = new FilledRectangle(new Vector2(actualMode.Width, 4), Color.OrangeRed);
+            filledRectBottomClr.Position = filledRectBottom.Position;
+
+            lBDff = new ListboxDiff(new Vector2(lbox.width, lbox.Position.Y), 200, (actualMode.Height - 96 - 104), SpritesContent.Instance.ListboxFont);
 
             lblTitleDesc = new Label(.98f) {
                 Scale = 1f,
@@ -73,19 +80,31 @@ namespace ubeat.GameScreen
             };
 
             autoBtn = new AutoModeButton() {
-                Position = new Vector2(actualMode.Width - SpritesContent.Instance.AutoModeButton.Width-20, actualMode.Height - SpritesContent.Instance.AutoModeButton.Height-20),
+                Position = new Vector2(actualMode.Width - SpritesContent.Instance.AutoModeButton.Width-20, (filledRectBottom.Position.Y + 100 / 2) - SpritesContent.Instance.AutoModeButton.Height/2),
                 Scale=.85f,
                 PlayHit=true
             };
 
+            backButton = new ButtonStandard(Color.DarkRed)
+            {
+                ForegroundColor = Color.White,
+                Caption = "Back",
+                Position = new Vector2(15, (filledRectBottom.Position.Y + 100/2) - (SpritesContent.Instance.ButtonStandard.Height/2)),
+            };
+
+            backButton.Click += BackButton_Click;
+
             autoBtn.Click += autoBtn_Click;
 
+            Controls.Add(filledRectBottom);
+            Controls.Add(filledRectBottomClr);
             Controls.Add(lbox);
             Controls.Add(lBDff);
             Controls.Add(filledRect1);
             Controls.Add(lblTitleDesc);
             Controls.Add(autoBtn);
             Controls.Add(lblSearch);
+            Controls.Add(backButton);
 
             OnLoad += BeatmapScreen_OnLoad;
             OnBackSpacePress += BeatmapScreen_OnBackSpacePress;
@@ -94,6 +113,11 @@ namespace ubeat.GameScreen
             addTextureG();
 
             OnLoadScreen();
+        }
+
+        private void BackButton_Click(object sender, EventArgs e)
+        {
+            BackPressed(MainScreen.Instance);
         }
 
         private void BeatmapScreen_OnBackSpacePress(object sender, EventArgs e)
@@ -130,6 +154,9 @@ namespace ubeat.GameScreen
 
         private Texture2D lastFrameOfVid;
         private Texture2D bg;
+        private FilledRectangle filledRectBottom;
+        private FilledRectangle filledRectBottomClr;
+        private ButtonStandard backButton;
 
         public override void Update(GameTime tm)
         {

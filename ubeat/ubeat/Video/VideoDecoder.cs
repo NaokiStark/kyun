@@ -39,7 +39,7 @@ namespace ubeat.Video
         {
             get
             {
-                return new VideoDecoder(3);
+                return new VideoDecoder(50);
             }
         }
 
@@ -264,8 +264,8 @@ namespace ubeat.Video
                 {
                     gotNewFrame = false;
 
-                    /*lock (this)
-                    {*/
+                    lock (this)
+                    {
                         while (writeCursor - readCursor < BufferSize && (decodingFinished = (FFmpeg.av_read_frame(pFormatCtx, packet) < 0)) == false)
                         {
                             if (Marshal.ReadInt32(packet, 24) == videoStream)
@@ -306,7 +306,7 @@ namespace ubeat.Video
                                 }
                             }
                         }
-                    //}
+                    }
 
                     if (!gotNewFrame)
                         Thread.Sleep(1);

@@ -14,7 +14,12 @@ namespace ubeat.Utils
     public class TouchHandler : UIObjectBase
     {
 
+        public delegate void TouchEventHandler(object sender, ubeatTouchEventArgs e);
+        public event TouchEventHandler onTouchScreen;
+
         static TouchHandler instance = null;
+
+        List<TouchPoint> points = new List<TouchPoint>();
 
         public static TouchHandler Instance
         {
@@ -76,9 +81,14 @@ namespace ubeat.Utils
             touchHandler = Windows7.Multitouch.WinForms.Factory.CreateHandler<Windows7.Multitouch.TouchHandler>(handle);
             touchHandler.TouchDown += TouchHandler_TouchDown;
             touchHandler.TouchUp += TouchHandler_TouchUp;
+            touchHandler.TouchMove += TouchHandler_TouchMove;
+            
+           
             screenScaling = getScalingFactor();
 
         }
+
+   
 
         public override void Update()
         {
@@ -94,11 +104,28 @@ namespace ubeat.Utils
 #endif
         }
 
+
+
         private void TouchHandler_TouchUp(object sender, Windows7.Multitouch.TouchEventArgs e)
         {
+
             touchDown = false;
             touchUp = true;
             roundedRect.Visible = false;
+            removePoint(new TouchPoint
+            {
+                Id = e.Id,
+                Location = new Vector2(e.Location.X * screenScaling, e.Location.Y * screenScaling)
+            });
+        }
+
+        private void TouchHandler_TouchMove(object sender, Windows7.Multitouch.TouchEventArgs e)
+        {
+            movePoint(new TouchPoint
+            {
+                Id = e.Id,
+                Location = new Vector2(e.Location.X * screenScaling, e.Location.Y * screenScaling)
+            });
         }
 
         private void TouchHandler_TouchDown(object sender, Windows7.Multitouch.TouchEventArgs e)
@@ -112,6 +139,114 @@ namespace ubeat.Utils
             touchUp = false;
             roundedRect.Visible = true;
             roundedRect.Position = LastPosition;
+
+            TouchPoint tcp = new TouchPoint
+            {
+                Location = LastPosition,
+                Id = e.Id
+            };
+
+            addPoint(tcp);
+
+            onTouchScreen?.Invoke(this, new ubeatTouchEventArgs {
+                Point = tcp
+            });
+            
+        }
+
+        private void addPoint(TouchPoint tcp)
+        {
+            bool hasPoint = false;
+            for (int a = 0; a < points.Count; a++)
+            {
+                if (points[a].Id == tcp.Id)
+                {
+                    hasPoint = true;
+
+                    movePoint(tcp);
+
+                }
+            }
+
+            if (!hasPoint){
+                points.Add(tcp);
+            }
+        }
+
+        private void movePoint(TouchPoint tcp)
+        {
+            for (int a = 0; a < points.Count; a++)
+            {
+                if(points[a].Id == tcp.Id)
+                {
+                    points[a].Location = tcp.Location;
+                }
+            }
+        }
+
+        private void removePoint(TouchPoint tcp)
+        {
+            for (int a = 0; a < points.Count; a++)
+            {
+                if(points[a].Id == tcp.Id)
+                {
+                    points.Remove(points[a]);
+                }
+            }
+        }
+
+        public bool TouchIntersecs(Rectangle rg)
+        {
+
+            for(int a = 0; a < points.Count; a++)
+            {
+                Rectangle touchBox = new Rectangle((int)points[a].Location.X, (int)points[a].Location.Y, 10, 10);
+
+                if (touchBox.Intersects(rg))
+                {
+                    return true;
+                }
+
+            }
+
+            return false;
+        }
+
+        public int GetPointsCount()
+        {
+            return points.Count;
+        }
+
+        public List<TouchPoint> GetAllPointsIntersecs(Rectangle rg)
+        {
+            var touchpnt = new List<TouchPoint>();
+
+            for (int a = 0; a < points.Count; a++)
+            {
+                Rectangle touchBox = new Rectangle((int)points[a].Location.X, (int)points[a].Location.Y, 10, 10);
+
+                if (touchBox.Intersects(rg))
+                {
+                    touchpnt.Add(points[a]);
+                }
+            }
+            return touchpnt;
+        }
+
+        public TouchPoint GetTouchIntersecs(Rectangle rg)
+        {
+            for (int a = 0; a < points.Count; a++)
+            {
+                Rectangle touchBox = new Rectangle((int)points[a].Location.X, (int)points[a].Location.Y, 10, 10);
+
+                if (touchBox.Intersects(rg))
+                {
+                    return points[a];
+                }
+
+            }
+
+            return null;
         }
 
         private float getScalingFactor()
@@ -122,4 +257,14 @@ namespace ubeat.Utils
         }
     }
 
+    public class TouchPoint
+    {
+        public Vector2 Location { get; set; }
+        public int Id { get; set; }
+    }
+
+    public class ubeatTouchEventArgs
+    {
+        public TouchPoint Point { get; set; }
+    }
 }

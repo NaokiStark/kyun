@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 using ubeat.GameScreen.UI;
+using ubeat.Utils;
 
 namespace ubeat.GameScreen
 {
@@ -29,6 +31,7 @@ namespace ubeat.GameScreen
         public event EventHandler MouseUp;
         public event EventHandler MouseDoubleClick;
         public event ScrollEventHandler OnScroll;
+        public event Utils.TouchHandler.TouchEventHandler OnTouch;
 
 
         int lastScrollVal = 0;
@@ -36,6 +39,10 @@ namespace ubeat.GameScreen
         int dClick = 2000;
         int clickC = 0;
         int clickCount = 0;
+        private int lastScrollTouchValue;
+        private bool alredyTouched;
+        private bool mouseEventsCancelled;
+        private bool scrollInvoked;
 
         public UIObjectBase()
         {
@@ -52,10 +59,83 @@ namespace ubeat.GameScreen
             Rectangle cursor = new Rectangle((int)Mouse.GetState().X, (int)Mouse.GetState().Y, 1, 1);
             Rectangle tcursor = new Rectangle((int)UbeatGame.Instance.touchHandler.LastPosition.X, (int)UbeatGame.Instance.touchHandler.LastPosition.Y, 1, 1);
 
+            UpdateTouchEvents(rg);
 
             if (System.Windows.Forms.Form.ActiveForm != (System.Windows.Forms.Control.FromHandle(UbeatGame.Instance.Window.Handle) as System.Windows.Forms.Form)) return;
 
             if (!UbeatGame.Instance.IsActive) return; //Fix events
+
+            if (this is Listbox || this is ListboxDiff || this is ObjectListbox)
+            {
+                //int actualScrollTouchValue = 0;
+                int actualScrollVal = Mouse.GetState().ScrollWheelValue;
+                TouchHandler touch = UbeatGame.Instance.touchHandler;
+                List<TouchPoint> touchPoints = touch.GetAllPointsIntersecs(rg);
+
+                if (actualScrollVal > lastScrollVal)
+                {
+                    if (cursor.Intersects(rg))
+                    {
+                        OnScroll?.Invoke(this, true);
+                    }
+
+                }
+                else if (actualScrollVal < lastScrollVal)
+                {
+                    if (cursor.Intersects(rg))
+                    {
+
+                        OnScroll?.Invoke(this, false);
+
+                    }
+                }
+                else if (touchPoints.Count > 0)
+                {
+
+
+                    TouchPoint first = touchPoints[0];
+                    if (!alredyTouched)
+                    {
+                        lastScrollTouchValue = (int)first.Location.Y;
+                        alredyTouched = true;
+                        scrollInvoked = false;
+                    }
+                    else
+                    {
+                        if ((int)first.Location.Y > lastScrollTouchValue + 50)
+                        {
+                            lastScrollTouchValue = (int)first.Location.Y;
+                            mouseEventsCancelled = true;
+                            OnScroll?.Invoke(this, true);
+                            scrollInvoked = true;
+
+                        }
+                        else if ((int)first.Location.Y < lastScrollTouchValue - 50)
+                        {
+                            lastScrollTouchValue = (int)first.Location.Y;
+                            mouseEventsCancelled = true;
+                            OnScroll?.Invoke(this, false);
+                            scrollInvoked = true;
+                        }
+                       
+                    }
+
+                }
+                else if (touchPoints.Count < 1)
+                {
+
+                    alredyTouched = false;
+                }
+
+                if (mouseEventsCancelled && scrollInvoked)
+                {
+                    return;
+                }
+
+                lastScrollVal = actualScrollVal;
+
+            }
+
 
             clickC += (int)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds;
             if (clickC > dClick)
@@ -118,28 +198,18 @@ namespace ubeat.GameScreen
                 }
             }
 
-            if (this is Listbox || this is ListboxDiff || this is ObjectListbox)
+
+         
+        }
+
+        internal void UpdateTouchEvents(Rectangle rg)
+        {
+            if (UbeatGame.Instance.touchHandler.TouchIntersecs(rg))
             {
-                int actualScrollVal = Mouse.GetState().ScrollWheelValue;
-                if (actualScrollVal > lastScrollVal)
+                OnTouch?.Invoke(this, new Utils.ubeatTouchEventArgs
                 {
-                    if (cursor.Intersects(rg))
-                    {
-                        OnScroll?.Invoke(this, true);
-                    }
-
-                }
-                else if (actualScrollVal < lastScrollVal)
-                {
-                    if (cursor.Intersects(rg))
-                    {
-
-                        OnScroll?.Invoke(this, false);
-
-                    }
-                }
-                lastScrollVal = actualScrollVal;
-
+                    Point = UbeatGame.Instance.touchHandler.GetTouchIntersecs(rg)
+                });
             }
         }
 

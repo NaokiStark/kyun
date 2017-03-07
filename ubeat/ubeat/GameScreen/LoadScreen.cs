@@ -86,6 +86,7 @@ namespace ubeat.GameScreen
             Controls.Add(LoadingSpinner);
 
             onKeyPress += LoadScreen_onKeyPress;
+            onTouch += LoadScreen_onTouch;
 
             System.Windows.Forms.Application.DoEvents();
             Thread tr = new Thread(new ThreadStart(loadBeatmaps));
@@ -100,6 +101,19 @@ namespace ubeat.GameScreen
             UbeatGame.Instance.IsMouseVisible = true;
         }
 
+        private void LoadScreen_onTouch(object sender, ubeatTouchEventArgs e)
+        {
+            Rectangle rg = new Rectangle((int)rectanglexd.Position.X, (int)rectanglexd.Position.Y, rectanglexd.Texture.Width, rectanglexd.Texture.Height);
+            if (UbeatGame.Instance.touchHandler.TouchIntersecs(rg))
+            {
+                if (loadDone)
+                {
+                    auplayer.Stop();
+                    ScreenManager.ChangeTo(MainScreen.Instance);
+                }
+            }
+        }
+
         private void LoadScreen_onKeyPress(object sender, InputEvents.KeyPressEventArgs args)
         {
             if(args.Key == Microsoft.Xna.Framework.Input.Keys.Space)
@@ -111,6 +125,8 @@ namespace ubeat.GameScreen
                 }
             }
         }
+
+
 
         private void checkToEnd()
         {
@@ -138,7 +154,7 @@ namespace ubeat.GameScreen
 
         public override void Render()
         {
-            //RenderBg();
+            RenderBg();
             float elapsed = (float)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalSeconds*12;
             spinnerRotation += elapsed;
 
