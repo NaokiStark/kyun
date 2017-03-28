@@ -9,16 +9,8 @@ using ubeat.GameModes.Classic;
 
 namespace ubeat.UIObjs
 {
-    public class OldApproachObj : IUIObject
+    public class OldApproachObj : UIObjectBase
     {
-        public Vector2 Position { get; set; }
-
-        public Texture2D Texture { get; set; }
-
-        public bool IsActive { get; set; }
-
-        public bool Died { get; set; }
-
         float width = 0;
         float height = 0;
         float opacity = 1;
@@ -87,7 +79,7 @@ namespace ubeat.UIObjs
             Update();
         }
         float RotationAngle=0;
-        public void Render()
+        public override void Render()
         {
             if (Died)
                 return;
@@ -107,7 +99,7 @@ namespace ubeat.UIObjs
               //  Game1.Instance.spriteBatch.Draw(this.Texture, new Rectangle((int)Position.X + (int)Texture.Bounds.Width / 2, (int)Position.Y + (int)Texture.Bounds.Height / 2, (int)Texture.Bounds.Width, (int)Texture.Bounds.Height), null, Color.White * opacity, 0, new Vector2(Texture.Bounds.Width / 2, Texture.Bounds.Height / 2), Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0);
         }
 
-        public void Update()
+        public override void Update()
         {
             if(!Died)
                 tickSize_Tick();

@@ -5,11 +5,11 @@ using ubeat.UIObjs;
 
 namespace ubeat.Score
 {
-    public class HealthBar : IUIObject
+    public class HealthBar : UIObjectBase
     {
         public delegate void GmEv();
         public event GmEv OnFail;
-
+        
         Texture2D BgBar;
 
         float overallDiff;
@@ -19,8 +19,7 @@ namespace ubeat.Score
             int width = UbeatGame.Instance.GraphicsDevice.Viewport.Width / 2;
             width = width - (width / 3);
             int height = 40;
-            //int width = 40;
-            //int height = -(((int)Grid.GetPositionFor(1).Y ) - ((int)Grid.GetPositionFor(7).Y) - Game1.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight) +35;
+            
             this.Texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, width, height);
             Color[] data = new Color[width * height];
             for (int i = 0; i < data.Length; ++i) data[i] = Color.WhiteSmoke;
@@ -82,7 +81,7 @@ namespace ubeat.Score
                 this.Value -= value;
         }
 
-        public void Update()
+        public override void Update()
         {
             HltTmr_Tick();
             if (Grid.Instance.inGame && !Grid.Instance.Paused && IsActive)
@@ -92,7 +91,7 @@ namespace ubeat.Score
                             OnFail?.Invoke();
         }
 
-        public void Render()
+        public override void Render()
         {
 
             if (!Enabled) return;
@@ -134,10 +133,6 @@ namespace ubeat.Score
         }
 
         public bool Enabled { get; set; }
-        public Vector2 Position { get; set; }
-        public Texture2D Texture { get; set; }
-        public bool IsActive { get; set; }
-        public bool Died { get; set; }
         public float Value { get; private set; }
     }
 }

@@ -9,6 +9,7 @@ namespace ubeat.GameModes
     public interface IScreenGameMode
     {
         bool InGame { get; set; }
+        long GamePosition { get; set; }
 
         void Play(IBeatmap Beatmap, GameMod GameMods = GameMod.None);
     }

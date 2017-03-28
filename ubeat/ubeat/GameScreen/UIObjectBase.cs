@@ -11,6 +11,8 @@ namespace ubeat.GameScreen
     {
         public bool Disposing { get; set; }
 
+        public float Opacity { get; set; }
+
         public float Scale = 1;
 
         public Vector2 Position { get; set; }
@@ -47,6 +49,7 @@ namespace ubeat.GameScreen
         public UIObjectBase()
         {
             Visible = true;
+            Opacity = 1;
         }
 
 
@@ -219,7 +222,7 @@ namespace ubeat.GameScreen
                 return;
             
             Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, (int)(this.Texture.Width*Scale), (int)(this.Texture.Height*Scale));
-            UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rg, Color.White);
+            UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rg, Color.White * Opacity);
         }
 
         public void _OnClick()

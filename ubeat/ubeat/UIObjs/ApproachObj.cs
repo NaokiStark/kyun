@@ -6,28 +6,20 @@ using ubeat.GameScreen;
 using ubeat.Screen;
 using ubeat.Utils;
 using ubeat.GameModes.Classic;
+using ubeat.GameModes;
 
 namespace ubeat.UIObjs
 {
-    public class ApproachObj : IUIObject
+    public class ApproachObj : UIObjectBase
     {
-        public Vector2 Position { get; set; }
-
-        public Texture2D Texture { get; set; }
-
-        public bool IsActive { get; set; }
-
-        public bool Died { get; set; }
-
         float width = 0;
         float height = 0;
-        float opacity = 1;
         float approachrate = 0;
         decimal starttime;
 
-        ClassicModeScreen ClassicInstance;
+        GameModeScreenBase ClassicInstance;
         
-        public ApproachObj(Vector2 position, float approachRate, decimal startTime, ClassicModeScreen Instance)
+        public ApproachObj(Vector2 position, float approachRate, decimal startTime, GameModeScreenBase Instance)
         {
             ClassicInstance = Instance;
             ScreenMode mode = ScreenModeManager.GetActualMode();
@@ -61,7 +53,7 @@ namespace ubeat.UIObjs
 
 
             float percentg = gtime * 1/*/100f*/;
-            
+            /*
             if (opacity > -1)
             {
                 opacity =  percentg + .2f;
@@ -69,7 +61,8 @@ namespace ubeat.UIObjs
             else
             {
                 opacity = 0;
-            }
+            }*/
+
             width = percentgg;
             height = percentgg;
             if (width < 0)
@@ -86,18 +79,18 @@ namespace ubeat.UIObjs
             //RotationAngle = RotationAngle % circle;
             Update();
         }
-        float RotationAngle=0;
-        public void Render()
+
+        public override void Render()
         {
             if (Died)
                 return;
+
+
             //if(width <= Texture.Bounds.Width)
-                
-
-
+            
             UbeatGame.Instance.SpriteBatch.Draw(this.Texture,
                     new Rectangle((int)Position.X + (int)Texture.Bounds.Width / 2,(int)Position.Y + (int)Texture.Bounds.Height / 2, (int)width, (int)height),
-                    null, Color.White * opacity,
+                    null, Color.White * Opacity,
                     //RotationAngle,
                     0,
                     new Vector2(Texture.Bounds.Width / 2, Texture.Bounds.Height / 2),
@@ -105,9 +98,10 @@ namespace ubeat.UIObjs
                     0);
            // else
               //  Game1.Instance.spriteBatch.Draw(this.Texture, new Rectangle((int)Position.X + (int)Texture.Bounds.Width / 2, (int)Position.Y + (int)Texture.Bounds.Height / 2, (int)Texture.Bounds.Width, (int)Texture.Bounds.Height), null, Color.White * opacity, 0, new Vector2(Texture.Bounds.Width / 2, Texture.Bounds.Height / 2), Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0);
+              
         }
 
-        public void Update()
+        public override void Update()
         {
             if(!Died)
                 tickSize_Tick();

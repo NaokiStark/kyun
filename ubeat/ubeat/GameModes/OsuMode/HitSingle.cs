@@ -7,7 +7,7 @@ using ubeat.Beatmap;
 using ubeat.UIObjs;
 using ubeat.Utils;
 
-namespace ubeat.GameModes.Classic
+namespace ubeat.GameModes.OsuMode
 {
     public class HitSingle : HitBase
     {
@@ -16,7 +16,7 @@ namespace ubeat.GameModes.Classic
 
         internal ApproachObj approachObj;
 
-        internal ClassicModeScreen screenInstance;
+        internal OsuMode screenInstance;
         private bool startShow;
 
         public long Time
@@ -41,7 +41,7 @@ namespace ubeat.GameModes.Classic
         /// New Instance of HitSingle
         /// </summary>
         /// <param name="hitObject">HitObject</param>
-        public HitSingle(IHitObj hitObject, IBeatmap beatmap, ClassicModeScreen Instance)
+        public HitSingle(IHitObj hitObject, IBeatmap beatmap, OsuMode Instance)
             : base((Screen.ScreenModeManager.GetActualMode().Height < 650)?
                   SpritesContent.Instance.ButtonDefault_0 :
                   SpritesContent.Instance.ButtonDefault)
@@ -54,11 +54,33 @@ namespace ubeat.GameModes.Classic
 
             Screen.ScreenMode scm = Screen.ScreenModeManager.GetActualMode();
 
-            Vector2 cent = new Vector2(OsuUtils.OsuBeatMap.rnd.Next(Texture.Width / 2, scm.Width - Texture.Width), OsuUtils.OsuBeatMap.rnd.Next(Texture.Height / 2, scm.Height - Texture.Height));
+            //Vector2 cent = new Vector2(OsuUtils.OsuBeatMap.rnd.Next(Texture.Width / 2, scm.Width - Texture.Width), OsuUtils.OsuBeatMap.rnd.Next(Texture.Height / 2, scm.Height - Texture.Height));
 
-            Position = cent;
+            Position = CalculatePosition(hitObject.OsuLocation);
             approachObj.Position = Position;
             approachObj.Opacity = 0;
+        }
+
+        private Vector2 CalculatePosition(Vector2 pos)
+        {
+            
+            Screen.ScreenMode actualMode = Screen.ScreenModeManager.GetActualMode();
+
+            int heightNoScaled = actualMode.Height - Texture.Height;
+
+            int widthScaled = (int)((512f / 384f) * (float)heightNoScaled);
+            int widthScaledForPosition = (int)((512f / 384f) * (float)actualMode.Height);
+
+            int heigthScaled = heightNoScaled;
+
+            float porcx = 100f / 512f * pos.X;
+            float porcy = 100f / 384f * pos.Y;
+
+            int posX = (int)(porcx * (float)widthScaled / 100f);
+            int posY = (int)(porcy * (float)heigthScaled / 100f);
+            posX += ((actualMode.Width / 2) - (widthScaledForPosition / 2));
+
+            return new Vector2(posX, posY);
         }
 
         public void Show()
@@ -91,7 +113,7 @@ namespace ubeat.GameModes.Classic
             
             if (screenInstance.GamePosition > Time)
             {
-                Audio.AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HitHolder);
+                Audio.AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.OsuHit);
                 Died = true;
                 
             }

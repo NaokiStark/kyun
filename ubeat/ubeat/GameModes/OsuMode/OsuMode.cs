@@ -7,22 +7,23 @@ using ubeat.Beatmap;
 using ubeat.GameScreen;
 using System.Threading;
 
-namespace ubeat.GameModes.Classic
+namespace ubeat.GameModes.OsuMode
 {
-    public class ClassicModeScreen : GameModeScreenBase
+    public class OsuMode : GameModeScreenBase
     {
 
         int lastIndex = 0;
-
         List<HitBase> hitbaseObjects = new List<HitBase>();
-        
-        public static ClassicModeScreen GetInstance()
+        bool End = false;
+
+
+        public static OsuMode GetInstance()
         {
-            return (ClassicModeScreen)Instance;
+            return (OsuMode)Instance;
         }
 
-        public ClassicModeScreen()
-            : base("ClassicModeScreen")
+        public OsuMode()
+            : base("OsuMode")
         {
             ChangeBackground(UbeatGame.Instance.SelectedBeatmap.Background);
             onKeyPress += (obj, args) => {
@@ -54,7 +55,7 @@ namespace ubeat.GameModes.Classic
             lastIndex = 0;
             ChangeBackground(UbeatGame.Instance.SelectedBeatmap.Background);
             hitbaseObjects.Clear();
-                        
+           
         }
 
         private void togglePause()
@@ -122,13 +123,25 @@ namespace ubeat.GameModes.Classic
             if (!Visible || isDisposing) return;
             checkObjectsInTime();
             base.Update(tm);
+
+            if (lastIndex >= Beatmap.HitObjects.Count && hitbaseObjects.Count < 1)
+            {
+                End = true;
+            }
+
+            if (End)
+            {
+                ScreenManager.ChangeTo(BeatmapScreen.Instance);
+                UbeatGame.Instance.Player.Play(Beatmap.SongPath);
+                End = false;
+            }
         }
 
         public override void Render()
         {
             base.Render();
 
-            for (int a = 0; a < hitbaseObjects.Count; a++)
+            for (int a = hitbaseObjects.Count - 1; a > -1; a--)
             {
                 hitbaseObjects[a].Render();
             }

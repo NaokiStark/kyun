@@ -73,18 +73,7 @@ namespace ubeat.GameScreen.UI
         {
             if (!Visible)
                 return;
-
-            //base.Render(); //Nope
-            /*
-            Vector2 messStr;
-            if(Font==null)
-                messStr = SpritesContent.Instance.DefaultFont.MeasureString(this.Text) * Scale;
-            else
-                messStr = Font.MeasureString(this.Text) * Scale;
-
-            
-            messStr = new Vector2(messStr.X + 15, messStr.Y + 10);
-            */
+                      
             Vector2 pos = Position;
 
             if (Centered)

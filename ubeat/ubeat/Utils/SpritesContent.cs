@@ -106,6 +106,7 @@ namespace ubeat.Utils
             ScrollHit = loadSound("Effects\\Scroll.wav");
             WelcomeToOsuXd = loadSound("Effects\\welcome.mp3");
             SeeyaOsu = loadSound("Effects\\seeya.mp3");
+            OsuHit = loadSound("Effects\\OsuModeHit.wav");
         }
 
         private void LoadFonts(SpriteBatch spriteBatch)
@@ -215,6 +216,7 @@ namespace ubeat.Utils
         public CachedSound SelectorHit { get; set; }
         public CachedSound ScrollHit { get; set; }
         public CachedSound SeeyaOsu { get; set; }
+        public CachedSound OsuHit { get; set; }
         public CachedSound WelcomeToOsuXd { get; set; }
         #endregion
 

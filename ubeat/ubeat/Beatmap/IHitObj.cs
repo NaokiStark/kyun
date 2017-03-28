@@ -26,5 +26,6 @@ namespace ubeat.Beatmap
         Score.ScoreType GetScore();
         float GetAccuracyPercentage();
         OldApproachObj apo { get; set; }
+        Vector2 OsuLocation { get; set; }
     }
 }

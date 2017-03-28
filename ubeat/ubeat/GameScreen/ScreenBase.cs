@@ -81,12 +81,10 @@ namespace ubeat.GameScreen
 
             KeyboardState actualState = Keyboard.GetState();
 
-            var keyboardState = Keyboard.GetState();
-
-            if (keyboardState.IsKeyDown(Keys.Escape))
+            if (actualState.IsKeyDown(Keys.Escape))
                 EscapeAlredyPressed = true;
 
-            if (keyboardState.IsKeyUp(Keys.Escape))
+            if (actualState.IsKeyUp(Keys.Escape))
             {
                 if (EscapeAlredyPressed)
                 {
@@ -101,7 +99,7 @@ namespace ubeat.GameScreen
 
             UpdatePeak();
 
-            actualState = keyboardOldState;
+            
         }
 
         private void checkKeyboardEvents(KeyboardState kbOldState, KeyboardState kbActualState)
@@ -122,6 +120,8 @@ namespace ubeat.GameScreen
                     });
                 }
             }
+
+            keyboardOldState = kbActualState;
         }
 
         internal void RenderPeak()

@@ -11,9 +11,13 @@ namespace ubeat.GameModes
     {
         public IBeatmap Beatmap;
 
+        
+
         internal GameMod gameMod { get; set; }
 
         public bool InGame { get; set; }
+
+        public long GamePosition { get; set; }
 
         public static IScreenGameMode Instance;
 

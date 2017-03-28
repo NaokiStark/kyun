@@ -76,16 +76,6 @@ namespace ubeat.Video
             {            
                
                 long position = audioplayer.Position;
-                //if (nextTime <  position)
-                //{
-                //    byte[] frame = videoplayer.GetFrame(position);             
-                //    nextFrame = frame;
-                //    nextTime = position + 1;
-                //}
-
-               
-
-                
             }
         }
 
@@ -101,7 +91,7 @@ namespace ubeat.Video
             if (!UbeatGame.Instance.VideoEnabled)
                 return;
 
-            if (videoplayer.Stopped)
+            if (audioplayer.PlayState == NAudio.Wave.PlaybackState.Stopped)
                 return;
 
 
@@ -113,33 +103,14 @@ namespace ubeat.Video
             Rectangle screenVideoRectangle = new Rectangle();
 
             long position = audioplayer.Position;
-
-            /*
-            if (frameBuffer.Count > 0)
-            {
-                nextFrame = frameBuffer.Dequeue();
-            }*/
-
+            
             float pos = 0;
             nF++;
             if (nF >= bbuffer.Length)
             {
 
                 nF = 0;
-                //FillBuffer = false;
-                /*
-                while (frameBuffer.Count < 2)
-                {
-                    System.Threading.Thread.Sleep(1);
-                    int offset = (int)audioplayer.Position;
 
-                    byte[] frame = videoplayer.GetFrame((int)((float)offset + pos));
-                    if (frame != null)
-                    {
-                        frameBuffer.Enqueue(frame, 1);
-                    }
-                    pos+=50f;
-                }*/
                 lock (bbuffer)
                 {
                     for (int a = 0; a < bbuffer.Length; a++)

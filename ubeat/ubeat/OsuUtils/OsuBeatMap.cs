@@ -104,6 +104,7 @@ namespace ubeat.OsuUtils
 
                 foreach (osuBMParser.HitObject ho in osbm.HitObjects)
                 {
+
                     ho.Time += offset;
                     ho.Time += leadIn;
                     if(tmCount < osbm.TimingPoints.Count){
@@ -161,13 +162,14 @@ namespace ubeat.OsuUtils
 
                         if (ho is osuBMParser.HitCircle)
                         {
-                            IHitObj obj = new HitButton()
-                            {
-                                StartTime = ho.Time,
-                                BeatmapContainer = tmpbm,
-                                //Location = lasN = GetRnd(97, 106,lasN)
-                                Location = ((osbm.Source != "ubeat") ? lasN = GetRnd(97, 106, lasN) : fL + 96)
-                            };
+                        IHitObj obj = new HitButton()
+                        {
+                            StartTime = ho.Time,
+                            BeatmapContainer = tmpbm,
+                            //Location = lasN = GetRnd(97, 106,lasN)
+                            Location = ((osbm.Source != "ubeat") ? lasN = GetRnd(97, 106, lasN) : fL + 96),
+                            OsuLocation = new Microsoft.Xna.Framework.Vector2(ho.Position.x, ho.Position.y)
+                        };
 
                             int lastCh = 0;
 
@@ -229,14 +231,15 @@ namespace ubeat.OsuUtils
 
 
                         IHitObj obj = new HitHolder()
-                            {
-                                StartTime = ho.Time,
-                                Length = Length,
-                                EndTime = (Length) + (decimal)ho.Time,
-                                BeatmapContainer = tmpbm,
-                                //Location = lasN = GetRnd(97, 106, lasN)
-                                Location = ((osbm.Source!="ubeat")?lasN = GetRnd(97, 106, lasN):fL + 96)
-                            };
+                        {
+                            StartTime = ho.Time,
+                            Length = Length,
+                            EndTime = (Length) + (decimal)ho.Time,
+                            BeatmapContainer = tmpbm,
+                            //Location = lasN = GetRnd(97, 106, lasN)
+                            Location = ((osbm.Source!="ubeat")?lasN = GetRnd(97, 106, lasN):fL + 96),
+                            OsuLocation = new Microsoft.Xna.Framework.Vector2(ho.Position.x, ho.Position.y)
+                        };
 
                         //MANIA LONGNOTE
                         if(slider.Type == HitSlider.SliderType.LONGNOTE)
@@ -299,8 +302,8 @@ namespace ubeat.OsuUtils
                                 EndTime = (decimal)((HitSpinner)ho).EndTime + offset + leadIn,
                                 //Location = lasN = GetRnd(97, 106,lasN),
                                 Location = ((osbm.Source != "ubeat") ? lasN = GetRnd(97, 106, lasN) : fL + 96),
-                                BeatmapContainer = tmpbm
-
+                                BeatmapContainer = tmpbm,
+                                OsuLocation = new Microsoft.Xna.Framework.Vector2(640/2, 480/2)
                             };
 
                         int lastCh = 0;

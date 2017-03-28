@@ -142,6 +142,10 @@
     <Compile Include="Beatmap\Mapset.cs" />
     <Compile Include="Beatmap\ubeatBeatMap.cs" />
     <Compile Include="Dialog\DialogLayer.cs" />
+    <Compile Include="GameModes\OsuMode\OsuMode.cs" />
+    <Compile Include="GameModes\OsuMode\HitHolder.cs" />
+    <Compile Include="GameModes\OsuMode\HitSingle.cs" />
+    <Compile Include="GameModes\OsuMode\ModeConstants.cs" />
     <Compile Include="GameModes\Classic\ClassicModeScreen.cs" />
     <Compile Include="GameModes\Classic\HitHolder.cs" />
     <Compile Include="GameModes\Classic\HitSingle.cs" />
@@ -314,7 +318,6 @@
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings1.Designer.cs</LastGenOutput>
     </None>
-    <None Include="ubeat_ClaveTemporal.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Extensions\" />

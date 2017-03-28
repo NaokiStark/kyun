@@ -191,7 +191,7 @@ namespace ubeat
 
 #endif
 
-            Graphics.PreferMultiSampling = true;
+            //Graphics.PreferMultiSampling = false;
             Graphics.ApplyChanges();
             this.IsFixedTimeStep = true;
 
@@ -214,19 +214,7 @@ namespace ubeat
            
             Player = new NPlayer();
 
-            
-            //Loads Beatmaps
-            
-
-
-
-            //LoadingWindow.Close();
-            
-
-
-
-            //Loads main Screen
-
+          
 
             hideGameWindow();
             GeneralVolume = Settings1.Default.Volume;
@@ -466,9 +454,6 @@ namespace ubeat
 
             
         }
-
-        
-
 
         #endregion
 

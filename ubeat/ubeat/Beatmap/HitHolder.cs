@@ -39,6 +39,7 @@ namespace ubeat.Beatmap
         public IBeatmap BeatmapContainer { get; set; }
         public int Location { get; set; }
         public decimal EndTime { get; set; }
+        public Vector2 OsuLocation { get; set; }
         #endregion
 
         #region PrivateVars

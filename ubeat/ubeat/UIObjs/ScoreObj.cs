@@ -6,13 +6,9 @@ using ubeat.Utils;
 
 namespace ubeat.UIObjs
 {
-    public class ScoreObj : IUIObject
+    public class ScoreObj : UIObjectBase
     {
-        public Vector2 Position { get; set; }
-        public Texture2D Texture { get; set; }
-        public bool IsActive { get; set; }
-        public bool Died { get; set; }
-        float Opacity = 1f;
+
         public Score.ScoreType scoreType { get; set; }
         private float RotationAngle;
 
@@ -23,7 +19,7 @@ namespace ubeat.UIObjs
 
         }
 
-        public void Update()
+        public override void Update()
         {
             if (Died)
             {
@@ -51,7 +47,7 @@ namespace ubeat.UIObjs
             Opacity = Opacity - (elapsed * .6f);
         }
 
-        public void Render()
+        public override void Render()
         {
             if (Died)
                 return;

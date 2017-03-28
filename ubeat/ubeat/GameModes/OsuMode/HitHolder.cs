@@ -5,14 +5,14 @@ using System.Text;
 using ubeat.Beatmap;
 using ubeat.Utils;
 
-namespace ubeat.GameModes.Classic
+namespace ubeat.GameModes.OsuMode
 {
     public class HitHolder : HitSingle
     {
 
         bool holding;
             
-        public HitHolder(IHitObj hitObject, IBeatmap beatmap, ClassicModeScreen Instance)
+        public HitHolder(IHitObj hitObject, IBeatmap beatmap, OsuMode Instance)
             :base(hitObject, beatmap, Instance)
         {
             Texture = (Screen.ScreenModeManager.GetActualMode().Height < 650) ?
@@ -32,12 +32,12 @@ namespace ubeat.GameModes.Classic
             if (screenInstance.GamePosition > Time && !holding)
             {
                 holding = true;
-                Audio.AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HitHolder);
+                Audio.AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.OsuHit);
             }
 
             if(holding && screenInstance.GamePosition > EndTime)
             {
-                Audio.AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HitHolder);
+                Audio.AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.OsuHit);
                 Died = true;
             }
 

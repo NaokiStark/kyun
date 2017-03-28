@@ -19,6 +19,7 @@ namespace ubeat.Beatmap
         public long PressedAt { get; set; }
         public bool isActive { get; set; }
         public long ActualPos { get; set; }
+        public Vector2 OsuLocation { get; set; }
         public bool Died { get; set; }
         public bool hasAlredyPressed { get; set; }
         public int Y = 0;
