@@ -5,11 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ubeat.Audio;
-using ubeat.Beatmap;
-using ubeat.Utils;
+using kyun.Audio;
+using kyun.Beatmap;
+using kyun.Utils;
 
-namespace ubeat.GameScreen.UI
+namespace kyun.GameScreen.UI
 {
     public class ObjectListbox : InputControl
     {
@@ -56,7 +56,7 @@ namespace ubeat.GameScreen.UI
 
             int pwidth = (int)width;
             int pheight = (int)height;
-            this.Texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, pwidth, pheight);
+            this.Texture = new Texture2D(KyunGame.Instance.GraphicsDevice, pwidth, pheight);
             Color[] dataBar = new Color[pwidth * pheight];
             for (int i = 0; i < dataBar.Length; ++i) dataBar[i] = Color.Black * .8f;
             this.Texture.SetData(dataBar);
@@ -64,7 +64,8 @@ namespace ubeat.GameScreen.UI
 
         void Listbox_OnScroll(object sender, bool Up)
         {
-            AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.ScrollHit);
+            //AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.ScrollHit);
+            EffectsPlayer.PlayEffect(SpritesContent.Instance.ScrollHit);
             if (!Up)
             {
                 vertOffset++;
@@ -140,7 +141,7 @@ namespace ubeat.GameScreen.UI
              horizontalOffset = 0;
 
              Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, (int)width, (int)height);
-             UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rg, Color.White);
+             KyunGame.Instance.SpriteBatch.Draw(this.Texture, rg, Color.White);
 
             for (int i = 0; i < maxCanHold && i + vertOffset < Items.Count; i++)
             {
@@ -162,7 +163,7 @@ namespace ubeat.GameScreen.UI
                     textColor = Color.Yellow;
                 }
 
-                UbeatGame.Instance.SpriteBatch.DrawString(textFont, o, drawTextPos, textColor, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0);
+                KyunGame.Instance.SpriteBatch.DrawString(textFont, o, drawTextPos, textColor, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0);
 
                 startBoxPos.Y += perEntryHeight;
                 drawTextPos.Y += perEntryHeight;

@@ -2,12 +2,12 @@
 using System.Windows.Forms;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using ubeat.GameScreen;
-using ubeat.Screen;
-using ubeat.Utils;
-using ubeat.GameModes.Classic;
+using kyun.GameScreen;
+using kyun.Screen;
+using kyun.Utils;
+using kyun.GameModes.Classic;
 
-namespace ubeat.UIObjs
+namespace kyun.UIObjs
 {
     public class OldApproachObj : UIObjectBase
     {
@@ -17,9 +17,9 @@ namespace ubeat.UIObjs
         float approachrate = 0;
         decimal starttime;
 
-        Grid GridInstance;
+        GameScreen.Grid GridInstance;
         
-        public OldApproachObj(Vector2 position, float approachRate, decimal startTime, Grid Instance)
+        public OldApproachObj(Vector2 position, float approachRate, decimal startTime, GameScreen.Grid Instance)
         {
             GridInstance = Instance;
             ScreenMode mode = ScreenModeManager.GetActualMode();
@@ -87,7 +87,7 @@ namespace ubeat.UIObjs
                 
 
 
-            UbeatGame.Instance.SpriteBatch.Draw(this.Texture,
+            KyunGame.Instance.SpriteBatch.Draw(this.Texture,
                     new Rectangle((int)Position.X + (int)Texture.Bounds.Width / 2,(int)Position.Y + (int)Texture.Bounds.Height / 2, (int)width, (int)height),
                     null, Color.White * opacity,
                     //RotationAngle,

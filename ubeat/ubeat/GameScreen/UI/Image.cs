@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using kyun.Utils;
+using kyun.Audio;
 
-namespace ubeat.GameScreen.UI
+namespace kyun.GameScreen.UI
 {
     public class Image : UIObjectBase
     {
@@ -9,14 +11,20 @@ namespace ubeat.GameScreen.UI
         public bool BeatReact = false;
 
         long nextBeat = 0;
+        long maxTimeMs = 1000 * 20;
+        long actualTimeMs = 0;
+        float maxPeak = 0;
+
+        float ScaleSelect = 1;
+
+        public Vector2 Size { get; set; }
+
 
 
         public Image(Texture2D texture)
         {
             this.Texture = texture;
-            UbeatGame.Instance.Player.OnStopped += () => {
-                nextBeat = 0;
-            };
+            Opacity = 1;
             BeatReact = true;
         }
 
@@ -43,9 +51,15 @@ namespace ubeat.GameScreen.UI
 
              }*/
 
-            float pScale = UbeatGame.Instance.Player.PeakVol;
-            if (pScale > 0.7f) pScale = 1.15f;
-            if (pScale > 1.15) pScale = 1.15f;
+                     
+            float pScale = KyunGame.Instance.Player.PeakVol;
+            if (KyunGame.Instance.Player.PlayState != BassPlayState.Playing)
+            {
+                pScale = 0;
+            }
+
+            if (pScale >= KyunGame.Instance.maxPeak - 0.0001) pScale = 1.15f * ScaleSelect;
+            if (pScale > 1.15 * Scale) pScale = 1.15f * ScaleSelect;
 
 
             if (pScale < Scale) pScale = Scale;  
@@ -53,11 +67,16 @@ namespace ubeat.GameScreen.UI
 
             Scale = pScale;
 
-            if (Scale > 1f)
+            if ((Scale) > ScaleSelect)
             {
-                Scale -= (float)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.0004f);
+                Scale -= (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.0004f);
             }
 
+        }
+
+        public void ChangeScale(float scale)
+        {
+            Scale = ScaleSelect = scale;
         }
 
         public override void Update()
@@ -74,8 +93,18 @@ namespace ubeat.GameScreen.UI
         {
             if (!Visible)
                 return;
-            Rectangle rg = new Rectangle((int)this.Position.X + (this.Texture.Width/2), (int)this.Position.Y + (this.Texture.Height/2), (int)(this.Texture.Width * Scale), (int)(this.Texture.Height * Scale));
-            UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rg, null, Color.White, 0, new Vector2((this.Texture.Width / 2), (this.Texture.Height / 2)), SpriteEffects.None, 0);
+
+            Rectangle rg = new Rectangle();
+            if (Size != Vector2.Zero)
+            {
+                rg = new Rectangle((int)this.Position.X + ((int)this.Size.X / 2), (int)this.Position.Y + ((int)this.Size.Y / 2), (int)(this.Size.X * Scale), (int)(this.Size.Y * Scale));
+            }
+            else
+            {
+                rg = new Rectangle((int)this.Position.X + (this.Texture.Width / 2), (int)this.Position.Y + (this.Texture.Height / 2), (int)(this.Texture.Width * Scale), (int)(this.Texture.Height * Scale));
+
+            }
+            KyunGame.Instance.SpriteBatch.Draw(this.Texture, rg, null, Color.White * Opacity, AngleRotation, new Vector2((this.Texture.Width / 2), (this.Texture.Height / 2)), SpriteEffects.None, 0);
         }
     }
 }

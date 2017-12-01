@@ -2,10 +2,10 @@
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using ubeat.GameScreen.UI;
-using ubeat.Utils;
+using kyun.GameScreen.UI;
+using kyun.Utils;
 
-namespace ubeat.GameScreen
+namespace kyun.GameScreen
 {
     public class UIObjectBase : UIObjs.IUIObject, IDisposable
     {
@@ -26,6 +26,12 @@ namespace ubeat.GameScreen
         public delegate void ScrollEventHandler(object sender, bool Up);
 
         public bool Visible { get; set; }
+
+        public float AngleRotation { get; set; }
+
+        public Rectangle SourceRectangle = new Rectangle();
+
+        public Vector2 OriginRender = Vector2.Zero;
 
         public event EventHandler Click;
         public event EventHandler Over;
@@ -58,21 +64,21 @@ namespace ubeat.GameScreen
             if (!Visible)
                 return;
 
-            Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, (int)this.Texture.Width, (int)this.Texture.Height);
+            Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, (int)(this.Texture.Width * Scale), (int)(this.Texture.Height * Scale));
             Rectangle cursor = new Rectangle((int)Mouse.GetState().X, (int)Mouse.GetState().Y, 1, 1);
-            Rectangle tcursor = new Rectangle((int)UbeatGame.Instance.touchHandler.LastPosition.X, (int)UbeatGame.Instance.touchHandler.LastPosition.Y, 1, 1);
+            Rectangle tcursor = new Rectangle((int)KyunGame.Instance.touchHandler.LastPosition.X, (int)KyunGame.Instance.touchHandler.LastPosition.Y, 1, 1);
 
             UpdateTouchEvents(rg);
 
-            if (System.Windows.Forms.Form.ActiveForm != (System.Windows.Forms.Control.FromHandle(UbeatGame.Instance.Window.Handle) as System.Windows.Forms.Form)) return;
+            if (System.Windows.Forms.Form.ActiveForm != (System.Windows.Forms.Control.FromHandle(KyunGame.Instance.Window.Handle) as System.Windows.Forms.Form)) return;
 
-            if (!UbeatGame.Instance.IsActive) return; //Fix events
+            if (!KyunGame.Instance.IsActive) return; //Fix events
 
             if (this is Listbox || this is ListboxDiff || this is ObjectListbox)
             {
                 //int actualScrollTouchValue = 0;
                 int actualScrollVal = Mouse.GetState().ScrollWheelValue;
-                TouchHandler touch = UbeatGame.Instance.touchHandler;
+                TouchHandler touch = KyunGame.Instance.touchHandler;
                 List<TouchPoint> touchPoints = touch.GetAllPointsIntersecs(rg);
 
                 if (actualScrollVal > lastScrollVal)
@@ -140,7 +146,7 @@ namespace ubeat.GameScreen
             }
 
 
-            clickC += (int)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds;
+            clickC += (int)KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds;
             if (clickC > dClick)
             {
                 clickC = clickCount = 0;
@@ -151,7 +157,7 @@ namespace ubeat.GameScreen
 
                 Over?.Invoke(this, new EventArgs());
 
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed || UbeatGame.Instance.touchHandler.TouchDown)
+                if (Mouse.GetState().LeftButton == ButtonState.Pressed || KyunGame.Instance.touchHandler.TouchDown)
                 {
                    
 
@@ -169,7 +175,7 @@ namespace ubeat.GameScreen
 
             if (Mouse.GetState().LeftButton == ButtonState.Released)
             {
-                if (UbeatGame.Instance.touchHandler.TouchUp)
+                if (KyunGame.Instance.touchHandler.TouchUp)
                 {                               
                     if (alredyPressed)
                     {
@@ -207,11 +213,11 @@ namespace ubeat.GameScreen
 
         internal void UpdateTouchEvents(Rectangle rg)
         {
-            if (UbeatGame.Instance.touchHandler.TouchIntersecs(rg))
+            if (KyunGame.Instance.touchHandler.TouchIntersecs(rg))
             {
                 OnTouch?.Invoke(this, new Utils.ubeatTouchEventArgs
                 {
-                    Point = UbeatGame.Instance.touchHandler.GetTouchIntersecs(rg)
+                    Point = KyunGame.Instance.touchHandler.GetTouchIntersecs(rg)
                 });
             }
         }
@@ -221,8 +227,13 @@ namespace ubeat.GameScreen
             if (!Visible)
                 return;
             
+
             Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, (int)(this.Texture.Width*Scale), (int)(this.Texture.Height*Scale));
-            UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rg, Color.White * Opacity);
+            SourceRectangle = new Rectangle(SourceRectangle.X, SourceRectangle.Y, (int)(SourceRectangle.Width * Scale), (int)(SourceRectangle.Height * Scale));
+            if (SourceRectangle != Rectangle.Empty)
+                KyunGame.Instance.SpriteBatch.Draw(this.Texture, rg, SourceRectangle, Color.White * Opacity, AngleRotation, OriginRender, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0);
+            else
+                KyunGame.Instance.SpriteBatch.Draw(this.Texture, rg, null, Color.White * Opacity, AngleRotation, OriginRender, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0);
         }
 
         public void _OnClick()

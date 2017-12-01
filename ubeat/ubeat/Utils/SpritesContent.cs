@@ -3,11 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ubeat.Audio;
+using kyun.Audio;
 using Microsoft.Xna.Framework.Content;
 using System.IO;
+using Microsoft.Xna.Framework;
+using Un4seen.Bass;
 
-namespace ubeat.Utils
+namespace kyun.Utils
 {
     public class SpritesContent
     {
@@ -44,8 +46,14 @@ namespace ubeat.Utils
 
         public SpritesContent()
         {
+            Un4seen.Bass.BassNet.Registration("nikumi@hotmail.com", "2X14292918312422");
+            Bass.BASS_PluginLoad(AppDomain.CurrentDomain.BaseDirectory + "bass_fx.dll");
+
+            Bass.BASS_Init(1, 44100, BASSInit.BASS_DEVICE_STEREO, IntPtr.Zero);
+
+
             _fullpath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ASSETS_PATH);
-            Content = UbeatGame.Instance.Content;
+            Content = KyunGame.Instance.Content;
             actualMode = Screen.ScreenModeManager.GetActualMode();
 
         }
@@ -89,24 +97,71 @@ namespace ubeat.Utils
         {
             return new CachedSound(getPath(asset));
         }
+
+        private int LoadSoundBass(string asset)
+        {
+            //int sample = Bass.BASS_StreamCreateFile(getPath(asset), 0, 0, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_ASYNCFILE);
+
+            byte[] data = null;
+
+            int sample = Bass.BASS_SampleCreate(0, 44100, 2, 8, BASSFlag.BASS_SAMPLE_OVER_POS);
+            try
+            {
+                using (Stream stream = File.OpenRead(getPath(asset)))
+                {
+                    if (stream != null)
+                    {
+                        data = new byte[stream.Length];
+                        stream.Read(data, 0, data.Length);
+                        stream.Close();
+                    }
+
+                }
+
+                sample = Bass.BASS_SampleLoad(data, 0, data.Length, 8, BASSFlag.BASS_SAMPLE_OVER_POS);
+
+                if (sample != 0)
+                {
+
+                }
+                else
+                {
+                    Logger.Instance.Warn($"Error loading: {asset}");
+                }
+
+                return sample;
+            }
+            catch
+            {
+                Logger.Instance.Warn($"Error loading: {asset}");
+                return 0;
+            }
+        }
         #endregion
 
         #region Loader
 
         private void LoadAudios()
         {
-            HolderFilling = loadSound("Effects\\HolderFilling.wav");
-            HitButton = loadSound("Effects\\HitButton.wav");
-            HitHolder = loadSound("Effects\\HitHolder.wav");
-            HolderTick = loadSound("Effects\\HolderTick.wav");
-            ComboBreak = loadSound("Effects\\ComboBreak.wav");
-            ButtonOver = loadSound("Effects\\ButtonOver.wav");
-            ButtonHit = loadSound("Effects\\ButtonHit.wav");
-            SelectorHit = loadSound("Effects\\SelectorHit.wav");
-            ScrollHit = loadSound("Effects\\Scroll.wav");
-            WelcomeToOsuXd = loadSound("Effects\\welcome.mp3");
-            SeeyaOsu = loadSound("Effects\\seeya.mp3");
-            OsuHit = loadSound("Effects\\OsuModeHit.wav");
+            HolderFilling = LoadSoundBass("Effects\\HolderFilling.wav");
+            HitButton = LoadSoundBass("Effects\\HitButton.wav");
+            HitHolder = LoadSoundBass("Effects\\HitHolder.wav");
+            HolderTick = LoadSoundBass("Effects\\HolderTick.wav");
+            ComboBreak = LoadSoundBass("Effects\\ComboBreak.wav");
+            ButtonOver = LoadSoundBass("Effects\\ButtonOver.wav");
+            ButtonHit = LoadSoundBass("Effects\\ButtonHit.wav");
+            SelectorHit = LoadSoundBass("Effects\\SelectorHit.wav");
+            ScrollHit = LoadSoundBass("Effects\\Scroll.wav");
+            WelcomeToOsuXd = LoadSoundBass("Effects\\welcome.mp3");
+            SeeyaOsu = LoadSoundBass("Effects\\seeya.mp3");
+            OsuHit = LoadSoundBass("Effects\\OsuModeHit.wav");
+
+            Hitwhistle = LoadSoundBass("Effects\\Hitwhistle.wav");
+            Hitfinish = LoadSoundBass("Effects\\Hitfinish.wav");
+            Hitclap = LoadSoundBass("Effects\\Hitclap.wav");
+
+
+            Applause = LoadSoundBass("Effects\\applause.wav");
         }
 
         private void LoadFonts(SpriteBatch spriteBatch)
@@ -118,6 +173,7 @@ namespace ubeat.Utils
             SettingsFont = Content.Load<SpriteFont>("SettingsDisplayFont");
             TitleFont = Content.Load<SpriteFont>("TitleFont");
             StandardButtonsFont = Content.Load<SpriteFont>("StandardButtonFont");
+            ScoreBig = Content.Load<SpriteFont>("scorebig");
         }
 
         private void LoadSprites(SpriteBatch spriteBatch, GraphicsDevice graphics)
@@ -127,6 +183,8 @@ namespace ubeat.Utils
             ButtonHolder = Content.Load<Texture2D>("holder_0");
             WaitDefault = Content.Load<Texture2D>("approachv2");
             HolderFillDeff = Content.Load<Texture2D>("HolderFill");
+            Fill_1 = Content.Load<Texture2D>("Fill_1");
+
 
 
             ButtonDefault_0 = Content.Load<Texture2D>("button_0.5");
@@ -138,17 +196,24 @@ namespace ubeat.Utils
 
             Radiance = Content.Load<Texture2D>("radiance");
             PauseSplash = Content.Load<Texture2D>("pausesplash");
-            PerfectTx = Content.Load<Texture2D>("Perfect");
-            ExcellentTx = Content.Load<Texture2D>("Excellent");
-            GoodTx = Content.Load<Texture2D>("Good");
-            MissTx = Content.Load<Texture2D>("Miss");
+            PerfectTx = Content.Load<Texture2D>("perfect");
+            ExcellentTx = Content.Load<Texture2D>("great");
+            GoodTx = Content.Load<Texture2D>("bad");
+            MissTx = Content.Load<Texture2D>("miss");
             FailSplash = Content.Load<Texture2D>("failsplash");
             Push = Content.Load<Texture2D>("push");
             Hold = Content.Load<Texture2D>("hold");
-            Logo = Content.Load<Texture2D>("logo");
+            Logo = Content.Load<Texture2D>("kyun_logo");
+            LogoAtTwo = Content.Load<Texture2D>("kyun_logo_500");
+            IsoLogo = Content.Load<Texture2D>("kyunlogo");
+            IsoLogoAtTwo = Content.Load<Texture2D>("kyunlogo@2");
+
             AutoModeButton = Content.Load<Texture2D>("autoBtn");
             AutoModeButtonSel = Content.Load<Texture2D>("autoBtnSel");
             SpaceSkip = Content.Load<Texture2D>("SpaceSkip");
+
+            ClassicBackground = Content.Load<Texture2D>("ClassicBackground");
+            ClassicBackground_0 = Content.Load<Texture2D>("ClassicBackground_0.5");
 
             using (var fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"\Assets\bg.jpg", FileMode.Open, FileAccess.Read))
             {
@@ -161,6 +226,158 @@ namespace ubeat.Utils
             ConfigButton = Content.Load<Texture2D>("ConfigMain");
             ButtonStandard = Content.Load<Texture2D>("ButtonStandard");
 
+            MenuSnow = Content.Load<Texture2D>("menu-snow");
+
+            ScrollListBeatmap = Content.Load<Texture2D>("ScrollListBeatmap");
+            SongDescBox = Content.Load<Texture2D>("SongDescBox");
+            ScrollListBeatmap_alt = Content.Load<Texture2D>("Wheel-Bar");
+
+            /*
+            SquareParticle = new Texture2D(UbeatGame.Instance.GraphicsDevice, 500, 500);
+            Color[] sColor = new Color[500 * 500];
+
+            for(int a = 0; a < 500 * 500; a++)
+            {
+                sColor[a] = Color.White;
+            }
+            SquareParticle.SetData(sColor);          */
+
+            SquareParticle = Content.Load<Texture2D>("ParticleSquare");
+
+
+            SPRITE = Content.Load<Texture2D>("SPRITE");
+
+            //SquareParticle = MenuSnow = SPRITE;
+
+            RankingPanel = Content.Load<Texture2D>("ranking-panel");
+
+
+        }
+
+        public static System.Drawing.Bitmap ResizeImage(System.Drawing.Image image, int width, int height)
+        {
+            var destRect = new System.Drawing.Rectangle(0, 0, width, height);
+            var destImage = new System.Drawing.Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = System.Drawing.Graphics.FromImage(destImage))
+            {
+                
+                graphics.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+                graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new System.Drawing.Imaging.ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(System.Drawing.Drawing2D.WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, System.Drawing.GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
+
+        public static System.Drawing.Bitmap cropAtRect(System.Drawing.Bitmap b, System.Drawing.Rectangle r)
+        {
+            // An empty bitmap which will hold the cropped image
+            System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(r.Width, r.Height);
+
+            System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp);
+
+
+            System.Drawing.Rectangle rg = new System.Drawing.Rectangle(0, 0, r.Width,  r.Height);
+            // Draw the given area (section) of the source image
+            // at location 0,0 on the empty bitmap (bmp)
+            g.DrawImage(b, rg, r, System.Drawing.GraphicsUnit.Pixel);
+
+            return bmp;
+        }
+
+        public static MemoryStream BitmapToStream(System.Drawing.Bitmap image)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            image.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+            return memoryStream;
+        }
+
+        public static Texture2D RoundCorners(Texture2D texture, float radius)
+        {
+            Texture2D texturex = new Texture2D(KyunGame.Instance.GraphicsDevice, texture.Width, texture.Height);
+
+            Color[] colorData = new Color[texture.Width * texture.Height];
+            Color[] colorDataTx = new Color[texture.Width * texture.Height];
+
+            texture.GetData<Color>(colorDataTx);
+
+            for (int x = 0; x < texture.Width; x++)
+            {
+                for (int y = 0; y < texture.Height; y++)
+                {
+
+                    int index = y * texture.Width + x;
+
+                    Rectangle internalRectangle = new Rectangle((int)radius, (int)(radius), (int)((float)texture.Width + 1 - 2f * radius), (int)(texture.Height +1 - 2f * radius));
+
+                    Vector2 origin = Vector2.Zero;
+                    Vector2 point = new Vector2(x, y);
+
+                    if (x < radius)
+                    {
+                        if (y < radius)
+                            origin = new Vector2(radius , radius );
+                        else if (y > texture.Height - (radius ))
+                            origin = new Vector2(radius , texture.Height - (radius ));
+                        else
+                            origin = new Vector2(radius , y);
+                    }
+                    else if (x > texture.Width - (radius ))
+                    {
+                        if (y < radius )
+                            origin = new Vector2(texture.Width - (radius ), radius );
+                        else if (y > texture.Height - (radius ))
+                            origin = new Vector2(texture.Width - (radius ), texture.Height - (radius ));
+                        else
+                            origin = new Vector2(texture.Width - (radius ), y);
+                    }
+                    else
+                    {
+                        if (y < radius )
+                            origin = new Vector2(x, radius );
+                        else if (y > texture.Height - (radius ))
+                            origin = new Vector2(x, texture.Height - (radius ));
+                    }
+
+                    if (!origin.Equals(Vector2.Zero))
+                    {
+                        float distance = Vector2.Distance(point, origin);
+
+                        if (distance > radius)
+                        {
+                            colorData[index] = Color.Transparent;
+                        }
+                        else
+                        {
+                            colorData[index] = colorDataTx[index];
+                        }
+                    }
+
+                    if (internalRectangle.Contains(x, y))
+                    {
+                        colorData[index] = colorDataTx[index];
+                    }
+
+
+                    //colorData[index] = colorDataTx[index];
+
+                    //colorData[index] = Color.Transparent;
+                }
+            }
+
+            texturex.SetData(colorData);
+            return texturex;
         }
 
         #endregion
@@ -189,11 +406,29 @@ namespace ubeat.Utils
         public Texture2D AutoModeButton { get; set; }
         public Texture2D AutoModeButtonSel { get; set; }
         public Texture2D Logo { get; set; }
+        public Texture2D LogoAtTwo { get; set; }
         public Texture2D SpaceSkip { get; set; }
         public Texture2D TopEffect { get; set; }
         public Texture2D DefaultBackground { get; set; }
         public Texture2D LoadingSpinnerTx { get; set; }
         public Texture2D ButtonStandard { get; set; }
+        public Texture2D MenuSnow { get; set; }
+        public Texture2D ClassicBackground { get; set; }
+        public Texture2D ClassicBackground_0 { get; private set; }
+        public Texture2D Fill_1 { get; set; }
+        public Texture2D Fill_2 { get; set; }
+        public Texture2D Fill_3 { get; set; }
+        public Texture2D Fill_4 { get; set; }
+        public Texture2D Fill_5 { get; set; }
+        public Texture2D Fill_6 { get; set; }
+        public Texture2D ScrollListBeatmap { get; set; }
+        public Texture2D ScrollListBeatmap_alt { get; set; }
+        public Texture2D SongDescBox { get; set; }
+        public Texture2D SquareParticle { get; set; }
+        public Texture2D SPRITE { get; set; }
+        public Texture2D IsoLogoAtTwo { get; private set; }
+        public Texture2D IsoLogo { get; private set; }
+        public Texture2D RankingPanel { get; private set; }
         #endregion
 
         #region FontsVars
@@ -203,21 +438,27 @@ namespace ubeat.Utils
         public SpriteFont SettingsFont { get; set; }
         public SpriteFont TitleFont { get; set; }
         public SpriteFont StandardButtonsFont { get; set; }
+        public SpriteFont ScoreBig { get; set; }
         #endregion
 
         #region AudiosVars
-        public CachedSound ButtonHit { get; set; }
-        public CachedSound ComboBreak { get; set; }
-        public CachedSound ButtonOver { get; set; }
-        public CachedSound HitButton { get; set; }
-        public CachedSound HitHolder { get; set; }
-        public CachedSound HolderFilling { get; set; }
-        public CachedSound HolderTick { get; set; }
-        public CachedSound SelectorHit { get; set; }
-        public CachedSound ScrollHit { get; set; }
-        public CachedSound SeeyaOsu { get; set; }
-        public CachedSound OsuHit { get; set; }
-        public CachedSound WelcomeToOsuXd { get; set; }
+        public int ButtonHit { get; set; }
+        public int ComboBreak { get; set; }
+        public int ButtonOver { get; set; }
+        public int HitButton { get; set; }
+        public int HitHolder { get; set; }
+        public int HolderFilling { get; set; }
+        public int HolderTick { get; set; }
+        public int SelectorHit { get; set; }
+        public int ScrollHit { get; set; }
+        public int SeeyaOsu { get; set; }
+        public int OsuHit { get; set; }
+        public int WelcomeToOsuXd { get; set; }
+        public int Hitwhistle { get; internal set; }
+        public int Hitfinish { get; internal set; }
+        public int Hitclap { get; internal set; }
+        public int Applause { get; internal set; }
+
         #endregion
 
 

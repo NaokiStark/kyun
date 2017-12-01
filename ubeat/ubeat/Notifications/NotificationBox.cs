@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using ubeat.GameScreen;
-using ubeat.GameScreen.UI;
-using ubeat.Utils;
+using kyun.GameScreen;
+using kyun.GameScreen.UI;
+using kyun.Utils;
 
-namespace ubeat.Notifications
+namespace kyun.Notifications
 {
     public class NotificationBox : UIObjectBase, IDisposable
     {
@@ -77,7 +77,7 @@ namespace ubeat.Notifications
 
             if (!Visible) return;
 
-            RemainingMilliseconds -= UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds;
+            RemainingMilliseconds -= KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds;
             
             if(RemainingMilliseconds < 0)
                 Dispose();

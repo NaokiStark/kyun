@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ubeat.GameScreen;
-using ubeat.UIObjs;
-using ubeat.Utils;
+using kyun.GameScreen;
+using kyun.UIObjs;
+using kyun.Utils;
 
-namespace ubeat.Score
+namespace kyun.Score
 {
     public class ComboDisplay : UIObjectBase
     {
@@ -22,7 +22,7 @@ namespace ubeat.Score
         {
 
             Scale = 1;
-            this.Texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, 50, 50);
+            this.Texture = new Texture2D(KyunGame.Instance.GraphicsDevice, 50, 50);
             Color[] data = new Color[50 * 50];
             for (int i = 0; i < data.Length; ++i) data[i] = Color.Black;
             this.Texture.SetData(data);
@@ -46,9 +46,9 @@ namespace ubeat.Score
         void reduce()
         {
            
-            if(Scale - (float)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * .001f > 1)
+            if(Scale - (float)KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * .001f > 1)
             {
-                Scale -= ((float)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * .001f);
+                Scale -= ((float)KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * .001f);
             }
 
         }
@@ -72,8 +72,8 @@ namespace ubeat.Score
                 rg.X,
                 rg.Y);
 
-            UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rgbox, null, Color.White * .75f, 0, Vector2.Zero, SpriteEffects.None, 0);
-            UbeatGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.TitleFont, lastCD.ToString() + "x", new Vector2(rg.X + 3, rg.Y + 5), Color.White, 0, Vector2.Zero, Scale, SpriteEffects.None, 0);
+            KyunGame.Instance.SpriteBatch.Draw(this.Texture, rgbox, null, Color.White * .75f, 0, Vector2.Zero, SpriteEffects.None, 0);
+            KyunGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.TitleFont, lastCD.ToString() + "x", new Vector2(rg.X + 3, rg.Y + 5), Color.White, 0, Vector2.Zero, Scale, SpriteEffects.None, 0);
         }
 
         private Vector2 getMeasuredText()

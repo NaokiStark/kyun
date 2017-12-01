@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ubeat.Beatmap;
-using ubeat.UIObjs;
-using ubeat.Utils;
+using kyun.Beatmap;
+using kyun.UIObjs;
+using kyun.Utils;
 
-namespace ubeat.GameModes.OsuMode
+namespace kyun.GameModes.OsuMode
 {
     public class HitSingle : HitBase
     {
@@ -92,7 +92,7 @@ namespace ubeat.GameModes.OsuMode
         {
             if (!startShow) return;
 
-            GameTime gt = UbeatGame.Instance.GameTimeP;
+            GameTime gt = KyunGame.Instance.GameTimeP;
 
             float toAdd = 0.009f * (float)gt.ElapsedGameTime.Milliseconds;
 
@@ -113,7 +113,7 @@ namespace ubeat.GameModes.OsuMode
             
             if (screenInstance.GamePosition > Time)
             {
-                Audio.AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.OsuHit);
+                //Audio.AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.OsuHit);
                 Died = true;
                 
             }

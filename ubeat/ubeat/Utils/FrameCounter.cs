@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ubeat.Utils
+namespace kyun.Utils
 {
     public class FrameCounter
     {

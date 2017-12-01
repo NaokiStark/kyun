@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using ubeat.GameScreen;
-using ubeat.Utils;
+using kyun.GameScreen;
+using kyun.Utils;
 
-namespace ubeat.UIObjs
+namespace kyun.UIObjs
 {
     public class ScoreObj : UIObjectBase
     {
@@ -27,13 +27,13 @@ namespace ubeat.UIObjs
             }
 
             if (scoreType != Score.ScoreType.Miss)
-                Position = new Vector2(Position.X, (float)Position.Y - (float)((double)UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.5d));
+                Position = new Vector2(Position.X, (float)Position.Y - (float)((double)KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.5d));
             else
-                Position = new Vector2((float)Position.X + (float)((double)UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.45d), (float)Position.Y + (float)((double)UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.5d));
+                Position = new Vector2((float)Position.X + (float)((double)KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.45d), (float)Position.Y + (float)((double)KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.5d));
 
             float circle = (float)Math.PI * 2;
 
-            float elapsed = (float)UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalSeconds;
+            float elapsed = (float)KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalSeconds;
             elapsed = elapsed * 2;
             RotationAngle += elapsed;
             RotationAngle = RotationAngle % circle;
@@ -59,16 +59,16 @@ namespace ubeat.UIObjs
             switch (this.scoreType)
             {
                 case Score.ScoreType.Miss:
-                    UbeatGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.MissTx, tcR, null, Color.White * Opacity, RotationAngle, origin, SpriteEffects.None, 0);
+                    KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.MissTx, tcR, null, Color.White * Opacity, RotationAngle, origin, SpriteEffects.None, 0);
                     break;
                 case Score.ScoreType.Perfect:
-                    UbeatGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.PerfectTx, tcR, null, Color.White * Opacity, RotationAngle, origin, SpriteEffects.None, 0);
+                    KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.PerfectTx, tcR, null, Color.White * Opacity, RotationAngle, origin, SpriteEffects.None, 0);
                     break;
                 case Score.ScoreType.Excellent:
-                    UbeatGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.ExcellentTx, tcR, null, Color.White * Opacity, RotationAngle, origin, SpriteEffects.None, 0);
+                    KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.ExcellentTx, tcR, null, Color.White * Opacity, RotationAngle, origin, SpriteEffects.None, 0);
                     break;
                 case Score.ScoreType.Good:
-                    UbeatGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.GoodTx, tcR, null, Color.White * Opacity, RotationAngle, origin, SpriteEffects.None, 0);
+                    KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.GoodTx, tcR, null, Color.White * Opacity, RotationAngle, origin, SpriteEffects.None, 0);
                     break;
 
             }

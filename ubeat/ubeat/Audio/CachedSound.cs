@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ubeat.Audio
+namespace kyun.Audio
 {
     public class CachedSound : IDisposable
     {

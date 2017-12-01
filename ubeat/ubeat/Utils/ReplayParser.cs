@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace ubeat.Utils
+namespace kyun.Utils
 {
     public class ReplayParser
     {

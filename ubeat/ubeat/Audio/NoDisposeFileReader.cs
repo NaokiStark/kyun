@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace ubeat.Audio
+namespace kyun.Audio
 {
     public class NoDisposeFileReader : ISampleProvider, IDisposable
     {

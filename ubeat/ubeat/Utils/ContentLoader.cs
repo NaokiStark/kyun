@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
-namespace ubeat.Utils
+namespace kyun.Utils
 {
     public static class ContentLoader
     {
@@ -21,7 +21,7 @@ namespace ubeat.Utils
 
             using (FileStream fs = new FileStream(fInfo.FullName, FileMode.Open))
             {
-                tx = Texture2D.FromStream(UbeatGame.Instance.GraphicsDevice, fs);
+                tx = Texture2D.FromStream(KyunGame.Instance.GraphicsDevice, fs);
             }
 
             return tx;
@@ -39,7 +39,7 @@ namespace ubeat.Utils
 
             using (FileStream fs = new FileStream(fInfo.FullName, FileMode.Open))
             {
-                tx = Texture2D.FromStream(UbeatGame.Instance.GraphicsDevice, fs);
+                tx = Texture2D.FromStream(KyunGame.Instance.GraphicsDevice, fs);
             }
 
             return tx;

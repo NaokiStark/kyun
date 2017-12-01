@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-namespace ubeat.Video
+namespace kyun.Video
 {
     public class VideoDecoder : IDisposable
     {
@@ -24,7 +25,7 @@ namespace ubeat.Video
         private IntPtr pFormatCtx;
         private IntPtr pFrame;
         private IntPtr pFrameRGB;
-        private ubeat.Video.FFmpeg.AVStream stream;
+        private kyun.Video.FFmpeg.AVStream stream;
         private GCHandle streamHandle;
         private bool videoOpened;
         private int videoStream;
@@ -35,13 +36,19 @@ namespace ubeat.Video
         private bool decodingFinished;
         private bool gotNewFrame;
 
+        private static VideoDecoder __instance;
+
         public static VideoDecoder Instance
         {
             get
             {
-                return new VideoDecoder(50);
+                if (__instance == null || __instance.Disposing)
+                    __instance = new VideoDecoder(50);
+                return __instance;
             }
         }
+
+        public bool Disposing;
 
         public double Length
         {
@@ -111,8 +118,10 @@ namespace ubeat.Video
 
         public void Dispose(bool disposing)
         {
+
             if (this.isDisposed)
                 return;
+            this.Disposing = true;
             this.isDisposed = true;
             if (this.decodingThread != null)
                 this.decodingThread.Abort();
@@ -128,8 +137,8 @@ namespace ubeat.Video
             }
             try
             {
-                ubeat.Video.FFmpeg.av_free(this.pFrameRGB);
-                ubeat.Video.FFmpeg.av_free(this.pFrame);
+                kyun.Video.FFmpeg.av_free(this.pFrameRGB);
+                kyun.Video.FFmpeg.av_free(this.pFrame);
             }
             catch
             {
@@ -148,8 +157,8 @@ namespace ubeat.Video
             {
                 if (this.pCodecCtx != IntPtr.Zero)
                 {
-                    ubeat.Video.FFmpeg.avcodec_close(this.pCodecCtx);
-                    ubeat.Video.FFmpeg.av_close_input_file(this.pFormatCtx);
+                    kyun.Video.FFmpeg.avcodec_close(this.pCodecCtx);
+                    kyun.Video.FFmpeg.av_close_input_file(this.pFormatCtx);
                 }
             }
             catch(System.AccessViolationException ex){
@@ -256,6 +265,7 @@ namespace ubeat.Video
             return true;
         }
 
+        [HandleProcessCorruptedStateExceptions]
         private void Decode()
         {
             try
@@ -280,10 +290,18 @@ namespace ubeat.Video
 
                                 if (frameFinished != 0 && Marshal.ReadIntPtr(packet, 16) != IntPtr.Zero)
                                 {
-                                    
-                                    int correct = FFmpeg.img_convert(pFrameRGB, (int)FFmpeg.PixelFormat.PIX_FMT_RGB32, pFrame,
+                                    int correct = 0;
+                                    try
+                                    {
+                                         FFmpeg.img_convert(pFrameRGB, (int)FFmpeg.PixelFormat.PIX_FMT_RGB32, pFrame,
                                                                      (int)codecCtx.pix_fmt, codecCtx.width,
                                                                      codecCtx.height);
+                                    }
+                                    catch(AccessViolationException ex)
+                                    {
+                                        correct = -1;
+                                    }
+                                    
 
                                     //if (Marshal.ReadIntPtr(packet, 16) != IntPtr.Zero) // packet->data != null
                                     if (correct == 0)
@@ -340,7 +358,7 @@ namespace ubeat.Video
                 return (byte[])null;
             this.currentDisplayTime = this.FrameBufferTimes[this.readCursor % this.BufferSize];
            
-            return this.FrameBuffer[this.readCursor % this.BufferSize];;
+            return this.FrameBuffer[this.readCursor % this.BufferSize];
         }
 
         private static unsafe void bgraToRgba(byte[] data, int length)
@@ -369,7 +387,7 @@ namespace ubeat.Video
                 double local_1 = (double)time / 1000.0 / this.FrameDelay + (double)this.stream.start_time;
                 if (local_1 < this.lastPts)
                     local_0 = 1;
-                ubeat.Video.FFmpeg.av_seek_frame(this.pFormatCtx, this.videoStream, (long)local_1, local_0);
+                kyun.Video.FFmpeg.av_seek_frame(this.pFormatCtx, this.videoStream, (long)local_1, local_0);
                 this.readCursor = 0;
                 this.writeCursor = 0;
             }

@@ -1,12 +1,12 @@
 ﻿using System;
-using ubeat.Screen;
+using kyun.Screen;
 using System.Collections.Generic;
 using System.Windows;
-using ubeat.Utils;
-using ubeat.Notifications;
-using ubeat.GameScreen.UI;
+using kyun.Utils;
+using kyun.Notifications;
+using kyun.GameScreen.UI;
 
-namespace ubeat.GameScreen
+namespace kyun.GameScreen
 {
     public partial class SettingsScreen : ScreenBase
     {
@@ -35,18 +35,20 @@ namespace ubeat.GameScreen
             LoadInterface();
 
             OnLoad += SettingsScreen_OnLoad;
-            ChangeBackground(UbeatGame.Instance.SelectedBeatmap.Background);
 
             combodisplayMode.Click += (obj, args) =>
             {
                 if (combodisplayMode.IsListVisible)
                     notifier.ShowDialog("This will restart ubeat", 5000, NotificationType.Warning);
             };
+
+            Background = SpritesContent.Instance.DefaultBackground;
         }
 
         private void SettingsScreen_OnLoad(object sender, EventArgs e)
         {
-            base.ChangeBackground(UbeatGame.Instance.SelectedBeatmap.Background);
+            //base.ChangeBackground(UbeatGame.Instance.SelectedBeatmap.Background);
+
         }
 
         private void CombodisplayMode_IndexChaged(object sender, EventArgs e)

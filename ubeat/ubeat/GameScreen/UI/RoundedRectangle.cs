@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using System.Collections.Generic;
-using ubeat.Utils;
+using kyun.Utils;
 
-namespace ubeat.GameScreen.UI {
+namespace kyun.GameScreen.UI {
 
     public class RoundedRectangle : FilledRectangle
     {
@@ -26,7 +26,7 @@ namespace ubeat.GameScreen.UI {
             //borderShadow = borderThickness;
 
             this.Texture = ContentLoader.CreateRoundedRectangleTexture(
-                UbeatGame.Instance.GraphicsDevice,
+                KyunGame.Instance.GraphicsDevice,
                 (int)Size.X,
                 (int)Size.Y,
                 borderThickness,

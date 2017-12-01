@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
-using ubeat.Utils;
+using kyun.Utils;
 using Microsoft.Xna.Framework;
 
-namespace ubeat.GameScreen.UI.Buttons
+namespace kyun.GameScreen.UI.Buttons
 {
     public class ButtonStandard : Button
     {
@@ -41,7 +41,7 @@ namespace ubeat.GameScreen.UI.Buttons
         public ButtonStandard(Color color) : base(SpritesContent.Instance.ButtonStandard)
         {
             _color = color;
-            TextureOverlay = new Texture2D(UbeatGame.Instance.GraphicsDevice, SpritesContent.Instance.ButtonStandard.Width, SpritesContent.Instance.ButtonStandard.Height);
+            TextureOverlay = new Texture2D(KyunGame.Instance.GraphicsDevice, SpritesContent.Instance.ButtonStandard.Width, SpritesContent.Instance.ButtonStandard.Height);
             Color[] colors = new Color[SpritesContent.Instance.ButtonStandard.Width * SpritesContent.Instance.ButtonStandard.Height];
             for(int a = 0; a < colors.Length; a++)
             {
@@ -57,13 +57,23 @@ namespace ubeat.GameScreen.UI.Buttons
             base.Render();
 
             Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, (int)(TextureOverlay.Width * Scale), (int)(TextureOverlay.Height * Scale));
-            UbeatGame.Instance.SpriteBatch.Draw(TextureOverlay, rg, Color.White);
+            KyunGame.Instance.SpriteBatch.Draw(TextureOverlay, rg, Color.White);
 
             Vector2 _mesStr = mesStr * Scale;
 
             Vector2 txZ = new Vector2(TextureOverlay.Width * Scale, TextureOverlay.Height * Scale);
 
-            UbeatGame.Instance.SpriteBatch.DrawString((Font == null) ? SpritesContent.Instance.StandardButtonsFont : Font,
+            KyunGame.Instance.SpriteBatch.DrawString((Font == null) ? SpritesContent.Instance.StandardButtonsFont : Font,
+                this.Caption,
+                new Vector2(Position.X + ((txZ.X / 2) - (_mesStr.X / 2)), Position.Y + ((txZ.Y / 2) - (_mesStr.Y / 2)) + 2),
+                Color.Black * 0.5f,
+                0,
+                Vector2.Zero,
+                this.Scale,
+                SpriteEffects.None,
+                0);
+
+            KyunGame.Instance.SpriteBatch.DrawString((Font == null) ? SpritesContent.Instance.StandardButtonsFont : Font,
                 this.Caption,
                 new Vector2(Position.X + ((txZ.X/2) - (_mesStr.X / 2)), Position.Y + ((txZ.Y/2) - (_mesStr.Y / 2))),
                 (ForegroundColor == null)? Color.White : ForegroundColor,

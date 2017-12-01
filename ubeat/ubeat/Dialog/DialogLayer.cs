@@ -1,7 +1,7 @@
 ﻿using System;
-using ubeat.GameScreen;
+using kyun.GameScreen;
 
-namespace ubeat.Dialog
+namespace kyun.Dialog
 {
     public class DialogLayer : ScreenBase
     {

@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using ubeat.Utils;
+using kyun.Utils;
 
-namespace ubeat
+namespace kyun
 {
 #if WINDOWS || XBOX
     internal static class Program
@@ -28,7 +28,7 @@ namespace ubeat
             Logger.Instance.Info("");
             Logger.Instance.Info("=====================================");
             Logger.Instance.Info("=                                   =");
-            Logger.Instance.Info("=          Welcome to ubeat!        =");
+            Logger.Instance.Info("=           Welcome to kyun!        =");
             Logger.Instance.Info("=       Developed by Fabi With ♥    =");
             Logger.Instance.Info("=                                   =");
             Logger.Instance.Info("=====================================");

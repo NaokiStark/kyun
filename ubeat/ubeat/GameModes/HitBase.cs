@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ubeat.GameModes
+namespace kyun.GameModes
 {
     /// <summary>
     /// Hit Control Base

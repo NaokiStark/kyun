@@ -5,11 +5,11 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Input;
-using ubeat.GameScreen;
-using ubeat.GameScreen.UI;
+using kyun.GameScreen;
+using kyun.GameScreen.UI;
 using Windows7.Multitouch;
 
-namespace ubeat.Utils
+namespace kyun.Utils
 {
     public class TouchHandler : UIObjectBase
     {
@@ -68,10 +68,13 @@ namespace ubeat.Utils
 
         public TouchHandler(System.Windows.Forms.Control handle)
         {
-
+            
             roundedRect = new RoundedRectangle(new Vector2(10, 10), Color.Green, 1, 1, Color.Transparent);
             roundedRect.Visible = false;
             roundedRect.IsActive = true;
+
+            if (KyunGame.RunningOverWine)
+                return;
 
             touchDown = false;
             touchUp = true;
@@ -197,7 +200,8 @@ namespace ubeat.Utils
 
         public bool TouchIntersecs(Rectangle rg)
         {
-
+            if (KyunGame.RunningOverWine)
+                return false;
             for(int a = 0; a < points.Count; a++)
             {
                 Rectangle touchBox = new Rectangle((int)points[a].Location.X, (int)points[a].Location.Y, 10, 10);
@@ -219,6 +223,9 @@ namespace ubeat.Utils
 
         public List<TouchPoint> GetAllPointsIntersecs(Rectangle rg)
         {
+            if (KyunGame.RunningOverWine)
+                return new List<TouchPoint>();
+
             var touchpnt = new List<TouchPoint>();
 
             for (int a = 0; a < points.Count; a++)
@@ -235,6 +242,9 @@ namespace ubeat.Utils
 
         public TouchPoint GetTouchIntersecs(Rectangle rg)
         {
+            if (KyunGame.RunningOverWine)
+                return new TouchPoint();
+
             for (int a = 0; a < points.Count; a++)
             {
                 Rectangle touchBox = new Rectangle((int)points[a].Location.X, (int)points[a].Location.Y, 10, 10);

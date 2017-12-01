@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using ubeat.GameScreen;
-using ubeat.Screen;
+using kyun.GameScreen;
+using kyun.Screen;
 
-namespace ubeat.Notifications
+namespace kyun.Notifications
 {
     public class Notifier : UIObjectBase
     {
@@ -31,9 +31,9 @@ namespace ubeat.Notifications
 
                 int boxPositionEnd = mode.Width - box.Size.Width - 5;
 
-                if (box.ActualPosition - UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.02 > boxPositionEnd)
+                if (box.ActualPosition - KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.02 > boxPositionEnd)
                 {
-                    box.ActualPosition -= (int)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 1.5);
+                    box.ActualPosition -= (int)(KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 1.5);
 
                 }
                 else

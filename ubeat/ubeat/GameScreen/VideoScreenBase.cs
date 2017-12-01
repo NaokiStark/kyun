@@ -10,7 +10,7 @@ using System.Text;
  * 
  */
 
-namespace ubeat.GameScreen
+namespace kyun.GameScreen
 {
     class VideoScreenBase : ScreenBase
     {

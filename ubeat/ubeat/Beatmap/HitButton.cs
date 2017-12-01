@@ -3,14 +3,14 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Windows.Forms;
-using ubeat.UIObjs;
-using ubeat.GameScreen;
-using ubeat.Score;
-using ubeat.Audio;
-using ubeat.Screen;
-using ubeat.Utils;
+using kyun.UIObjs;
+using kyun.GameScreen;
+using kyun.Score;
+using kyun.Audio;
+using kyun.Screen;
+using kyun.Utils;
 
-namespace ubeat.Beatmap
+namespace kyun.Beatmap
 {
     public class HitButton : IHitObj
     {
@@ -29,6 +29,7 @@ namespace ubeat.Beatmap
         public int Location { get; set; }
         public decimal EndTime { get; set; }
         public OldApproachObj apo { get; set; }
+        public int HitSound { get; set; }
 
         #endregion
 
@@ -83,9 +84,9 @@ namespace ubeat.Beatmap
             this.opacity = opacity + percentg;
             */
 
-            if(opacity + (UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * .004f) < 1)
+            if(opacity + (KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * .004f) < 1)
             {
-                opacity += (UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * .004f);
+                opacity += (KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * .004f);
             }
             else
             {
@@ -123,7 +124,7 @@ namespace ubeat.Beatmap
 
                     Rectangle ActualPos = new Rectangle((int)ps.X, (int)ps.Y, Texture.Bounds.Width, Texture.Bounds.Height);
 
-                    bool intersecs = UbeatGame.Instance.touchHandler.TouchIntersecs(ActualPos);
+                    bool intersecs = KyunGame.Instance.touchHandler.TouchIntersecs(ActualPos);
 
                     bool mouseUp = Mouse.GetState().LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Released || Mouse.GetState().RightButton == Microsoft.Xna.Framework.Input.ButtonState.Released;
 
@@ -183,7 +184,8 @@ namespace ubeat.Beatmap
                         SoundEffectInstance ins = Game1.Instance.soundEffect.CreateInstance();
                         ins.Volume = Game1.Instance.GeneralVolume;
                         ins.Play();*/
-                    AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HitButton);
+                    //AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HitButton);
+                    EffectsPlayer.PlayEffect(SpritesContent.Instance.HitButton);
 
                     Combo.Instance.Add();
                 }
@@ -193,7 +195,7 @@ namespace ubeat.Beatmap
                     Grid.Instance.FailsCount++;
                     if (Combo.Instance.ActualMultiplier > 10)
                     {
-                        AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.ComboBreak);
+                        //AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.ComboBreak);
                         /*
                         SoundEffectInstance ins = Game1.Instance.ComboBreak.CreateInstance();
                         ins.Volume = Game1.Instance.GeneralVolume;
@@ -237,14 +239,14 @@ namespace ubeat.Beatmap
                     //UbeatGame.Instance.spriteBatch.Draw(UbeatGame.Instance.radiance, new Microsoft.Xna.Framework.Rectangle((int)position.X - 2, (int)position.Y - 2, UbeatGame.Instance.radiance.Bounds.Width + 2, UbeatGame.Instance.radiance.Bounds.Height + 2), Color.White * opac);
 
                 }
-                UbeatGame.Instance.SpriteBatch.Draw(this.Texture, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
+                KyunGame.Instance.SpriteBatch.Draw(this.Texture, new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
                 if (ccc >= StartTime - BeatmapContainer.Timing50)
                 {
                     ScreenMode mode = ScreenModeManager.GetActualMode();
                     bool isSmallRes = mode.Height < 720;
 
                     float perct = (float)(ccc / (StartTime - BeatmapContainer.Timing300)) * 1f;
-                    UbeatGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.Push,
+                    KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.Push,
                         new Rectangle(
                             (int)position.X,
                             (int)position.Y,

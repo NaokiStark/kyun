@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ubeat.Utils;
+using kyun.Utils;
 
-namespace ubeat.GameScreen.UI.Buttons
+namespace kyun.GameScreen.UI.Buttons
 {
     public class ConfigButton:Button
     {

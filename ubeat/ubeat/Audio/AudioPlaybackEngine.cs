@@ -2,7 +2,7 @@
 using NAudio.Wave.SampleProviders;
 using System;
 
-namespace ubeat.Audio
+namespace kyun.Audio
 {
     class AudioPlaybackEngine : IDisposable
     {
@@ -13,6 +13,7 @@ namespace ubeat.Audio
         {
             //outputDevice = new WaveOutEvent();
             outputDevice = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 2);
+            outputDevice = new DirectSoundOut();
 
             mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channelCount));
             vsp = new VolumeSampleProvider(mixer);
@@ -24,7 +25,7 @@ namespace ubeat.Audio
         public void PlaySound(string fileName)
         {
             var input = new AudioFileReader(fileName);
-            input.Volume = UbeatGame.Instance.GeneralVolume;
+            input.Volume = KyunGame.Instance.GeneralVolume;
             AddMixerInput(new AutoDisposeFileReader(input));
         }
 
@@ -69,7 +70,7 @@ namespace ubeat.Audio
         {
             try
             {
-                vsp.Volume = 90f*UbeatGame.Instance.GeneralVolume/100f;
+                vsp.Volume = 80f*KyunGame.Instance.GeneralVolume/100f;
                 mixer.AddMixerInput(ConvertToRightChannelCount(input));
                 
             }

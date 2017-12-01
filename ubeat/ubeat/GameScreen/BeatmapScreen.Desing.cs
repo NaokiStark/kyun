@@ -1,14 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using ubeat.Screen;
-using ubeat.GameScreen.UI;
+using kyun.Screen;
+using kyun.GameScreen.UI;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using ubeat.GameScreen.UI.Buttons;
-using ubeat.Utils;
+using kyun.GameScreen.UI.Buttons;
+using kyun.Utils;
+using System.IO;
 
-namespace ubeat.GameScreen
+namespace kyun.GameScreen
 {
     public partial class BeatmapScreen : ScreenBase
     {
@@ -19,7 +20,7 @@ namespace ubeat.GameScreen
             {
                 if (instance == null)
                     instance = new BeatmapScreen();
-                UbeatGame.Instance.KeyBoardManager.Enabled = true;
+                KyunGame.Instance.KeyBoardManager.Enabled = true;
                 return instance;
             }
             set
@@ -29,7 +30,7 @@ namespace ubeat.GameScreen
         }
 
        
-        Listbox lbox;
+        public Listbox lbox;
         ListboxDiff lBDff;
         FilledRectangle filledRect1;
         Label lblTitleDesc = new Label();
@@ -39,36 +40,73 @@ namespace ubeat.GameScreen
 
         public void LoadInterface()
         {
-            UbeatGame.Instance.IsMouseVisible = true;
+            KyunGame.Instance.IsMouseVisible = true;
             Controls = new List<UIObjectBase>();
 
             ScreenMode actualMode = ScreenModeManager.GetActualMode();
 
-            Vector2 lPos = new Vector2(0, 100);
-
-            lbox = new Listbox(lPos, actualMode.Width / 2, actualMode.Height - 200, SpritesContent.Instance.ListboxFont);
-            
-            lbox.IndexChanged += lbox_IndexChanged;
-            
-
-            filledRect1 = new FilledRectangle(new Vector2(actualMode.Width, 4), Color.SpringGreen);
-            filledRect1.Position = new Vector2(0, 96);
-
-            filledRectBottom = new FilledRectangle(new Vector2(actualMode.Width, 100), Color.Black * .8f);
-            filledRectBottom.Position = new Vector2(0, actualMode.Height - 100);
-
-            filledRectBottomClr = new FilledRectangle(new Vector2(actualMode.Width, 4), Color.OrangeRed);
-            filledRectBottomClr.Position = filledRectBottom.Position;
-
-            lBDff = new ListboxDiff(new Vector2(lbox.width, lbox.Position.Y), 200, (actualMode.Height - 96 - 104), SpritesContent.Instance.ListboxFont);
-
-            lblTitleDesc = new Label(.98f) {
+            lblTitleDesc = new Label(.8f)
+            {
                 Scale = 1f,
                 Text = "",
                 Position = new Vector2(0, 0),
-                Size = new Vector2(actualMode.Width, 96),
-                Font = SpritesContent.Instance.TitleFont
+                Size = new Vector2(actualMode.Width, 50),
+                Font = SpritesContent.Instance.StandardButtonsFont
             };
+
+            filledRect1 = new FilledRectangle(new Vector2(actualMode.Width, 4), Color.FromNonPremultiplied(34, 92, 173, 255));
+            filledRect1.Position = new Vector2(0, lblTitleDesc.Size.Y);
+
+            filledRectBottom = new FilledRectangle(new Vector2(actualMode.Width, 75), Color.Black * .8f);
+            filledRectBottom.Position = new Vector2(0, actualMode.Height - 75);
+
+            filledRectBottomClr = new FilledRectangle(new Vector2(actualMode.Width, 4), Color.FromNonPremultiplied(34, 92, 173, 255));
+            filledRectBottomClr.Position = filledRectBottom.Position;
+
+            Vector2 lPos = new Vector2(0, lblTitleDesc.Size.Y + filledRect1.Texture.Height - 5);
+
+            lbox = new Listbox(lPos, 400, actualMode.Height - filledRectBottom.Texture.Height - 80, SpritesContent.Instance.SettingsFont);
+            
+            lbox.IndexChanged += lbox_IndexChanged;
+
+            lbox.autoAdjust = false;
+
+            songDescImg = new Image(SpritesContent.Instance.SongDescBox) {
+                Position = new Vector2(actualMode.Width - SpritesContent.Instance.SongDescBox.Width, lblTitleDesc.Size.Y + filledRect1.Texture.Height),
+                BeatReact = false
+            };
+
+
+            coverSize = songDescImg.Texture.Width - 50;
+
+            MemoryStream mms = new MemoryStream();
+            SpritesContent.Instance.DefaultBackground.SaveAsPng(mms, SpritesContent.Instance.DefaultBackground.Width, SpritesContent.Instance.DefaultBackground.Height);
+            System.Drawing.Image cimg = System.Drawing.Image.FromStream(mms);//avoid null 
+        
+
+            System.Drawing.Bitmap cbimg = SpritesContent.ResizeImage(cimg, (int)(((float)cimg.Width / (float)cimg.Height) * coverSize), (int)coverSize);
+
+            System.Drawing.Bitmap ccbimg;
+            MemoryStream istream;
+            if (true)
+            {
+                ccbimg = SpritesContent.cropAtRect(cbimg, new System.Drawing.Rectangle((int)((cbimg.Width - coverSize) / 2), (int)((cbimg.Height - coverSize / 2.2f) / 2f), (int)coverSize, (int)(coverSize / 2.2f)));
+                istream = SpritesContent.BitmapToStream(ccbimg);
+            }
+            else
+            {
+                istream = SpritesContent.BitmapToStream(cbimg);
+            }
+
+            coverimg = new Image(SpritesContent.RoundCorners(Texture2D.FromStream(KyunGame.Instance.GraphicsDevice, (Stream)istream), 5))
+            {
+                BeatReact = false,
+                Position = new Vector2(songDescImg.Position.X + (songDescImg.Texture.Width / 2 - coverSize/2) , songDescImg.Position.Y + 20),
+            };
+
+
+            lBDff = new ListboxDiff(new Vector2(songDescImg.Position.X + 15, songDescImg.Position.Y + 30 + coverimg.Texture.Height), songDescImg.Texture.Width - 5 , songDescImg.Texture.Height - coverimg.Texture.Height - 30, SpritesContent.Instance.SettingsFont);
+
 
             lblSearch = new Label(0f)
             {
@@ -89,22 +127,25 @@ namespace ubeat.GameScreen
             {
                 ForegroundColor = Color.White,
                 Caption = "Back",
-                Position = new Vector2(15, (filledRectBottom.Position.Y + 100/2) - (SpritesContent.Instance.ButtonStandard.Height/2)),
+                Position = new Vector2(15, (filledRectBottom.Position.Y + 75/2) - (SpritesContent.Instance.ButtonStandard.Height/2)),
             };
 
             backButton.Click += BackButton_Click;
 
             autoBtn.Click += autoBtn_Click;
 
-            Controls.Add(filledRectBottom);
-            Controls.Add(filledRectBottomClr);
             Controls.Add(lbox);
+            Controls.Add(filledRectBottom);
+            Controls.Add(filledRectBottomClr);            
+            Controls.Add(songDescImg);
             Controls.Add(lBDff);
             Controls.Add(filledRect1);
             Controls.Add(lblTitleDesc);
             Controls.Add(autoBtn);
             Controls.Add(lblSearch);
             Controls.Add(backButton);
+            Controls.Add(coverimg);
+            
 
             OnLoad += BeatmapScreen_OnLoad;
             OnBackSpacePress += BeatmapScreen_OnBackSpacePress;
@@ -144,7 +185,7 @@ namespace ubeat.GameScreen
         {
             int wid = (SpritesContent.Instance.ButtonDefault.Bounds.Width + 20) * 3;
             int hei = (SpritesContent.Instance.ButtonDefault.Bounds.Height + 20) * 3;
-            bg = new Texture2D(UbeatGame.Instance.GraphicsDevice, wid, hei);
+            bg = new Texture2D(KyunGame.Instance.GraphicsDevice, wid, hei);
 
             Color[] data = new Color[wid * hei];
             for (int i = 0; i < data.Length; ++i) data[i] = Color.Black;
@@ -152,23 +193,64 @@ namespace ubeat.GameScreen
 
         }
 
-        private Texture2D lastFrameOfVid;
+        private void changeCoverDisplay(string image)
+        {
+
+
+            System.Drawing.Image cimg;
+
+            if (!File.Exists(image))
+            {
+                MemoryStream mms = new MemoryStream();
+                SpritesContent.Instance.DefaultBackground.SaveAsPng(mms, SpritesContent.Instance.DefaultBackground.Width, SpritesContent.Instance.DefaultBackground.Height);
+                cimg = System.Drawing.Image.FromStream(mms);
+            }
+            else if (File.GetAttributes(image) == FileAttributes.Directory)
+            {
+                MemoryStream mms = new MemoryStream();
+                SpritesContent.Instance.DefaultBackground.SaveAsPng(mms, SpritesContent.Instance.DefaultBackground.Width, SpritesContent.Instance.DefaultBackground.Height);
+                cimg = System.Drawing.Image.FromStream(mms);
+            }
+            else
+            {
+                cimg = System.Drawing.Image.FromFile(image);
+            }
+
+
+            System.Drawing.Bitmap cbimg = SpritesContent.ResizeImage(cimg, (int)(((float)cimg.Width / (float)cimg.Height) * coverSize), (int)coverSize);
+
+            System.Drawing.Bitmap ccbimg;
+            MemoryStream istream;
+            if (true)
+            {
+                ccbimg = SpritesContent.cropAtRect(cbimg, new System.Drawing.Rectangle((int)((cbimg.Width - coverSize) / 2), (int)((cbimg.Height - coverSize / 2.2f) / 2f), (int)coverSize, (int)(coverSize/2.2f)));
+                istream = SpritesContent.BitmapToStream(ccbimg);
+            }
+            else
+            {
+                istream = SpritesContent.BitmapToStream(cbimg);
+            }
+
+            coverimg.Texture = SpritesContent.RoundCorners(Texture2D.FromStream(KyunGame.Instance.GraphicsDevice, istream), 5);
+
+            ((MainScreen)MainScreen.Instance).changeCoverDisplay(image);
+
+            
+        }
+
         private Texture2D bg;
         private FilledRectangle filledRectBottom;
         private FilledRectangle filledRectBottomClr;
         private ButtonStandard backButton;
+        private Image songDescImg;
+        private Image coverimg;
+        private int coverSize;
 
         public override void Update(GameTime tm)
         {
             if (isDisposing) return;
                         
-
-            if(UbeatGame.Instance.Player.PlayState == NAudio.Wave.PlaybackState.Stopped)
-            {
-                videoPlayer?.Stop();
-            }
-            
-            if (!UbeatGame.Instance.IsMouseVisible) UbeatGame.Instance.IsMouseVisible = true;
+            if (!KyunGame.Instance.IsMouseVisible) KyunGame.Instance.IsMouseVisible = true;
 
             base.Update(tm);
 
@@ -177,75 +259,16 @@ namespace ubeat.GameScreen
         public override void Render()
         {
             if (!Visible || isDisposing) return;
+                     
 
-            if (Background != null)
-            {
-                int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-                int screenHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+            RenderBg();
 
-                Rectangle screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
 
-                UbeatGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
-            }
+            //foreach (UIObjectBase ctr in Controls)
+            //    ctr.Render();
 
-            //RenderVideoFrame();
+            RenderObjects();
 
-            foreach (UIObjectBase ctr in Controls)
-                ctr.Render();
-
-        }
-
-        void RenderVideoFrame()
-        {
-
-            int screenWidth = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-            int screenHeight = UbeatGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
-
-            if (UbeatGame.Instance.VideoEnabled)
-            {
-                Rectangle screenVideoRectangle = new Rectangle();
-                if (!videoPlayer.Stopped)
-                {
-                    if (VidFrame % Settings1.Default.VideoFrameSkip != 0 || Settings1.Default.VideoMode == 0)
-                    {
-                        byte[] frame = videoPlayer.GetFrame(UbeatGame.Instance.Player.Position + UbeatGame.Instance.SelectedBeatmap.SleepTime);
-                        if (frame != null)
-                        {
-
-                            UbeatGame.Instance.SpriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
-
-                            Texture2D texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, videoPlayer.vdc.width, videoPlayer.vdc.height);
-                            screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)texture.Width / (float)texture.Height) * (float)screenHeight), screenHeight);
-                            texture.SetData(frame);
-                            lastFrameOfVid = texture;
-                            UbeatGame.Instance.SpriteBatch.Draw(texture, screenVideoRectangle, null, Color.White, 0, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 0);
-                            if (Settings1.Default.VideoMode > 0)
-                                VidFrame++;
-                            if (Settings1.Default.VideoMode == 0)
-                                texture.Dispose();
-                        }
-
-                    }
-                    else
-                    {
-                        VidFrame = 1;
-                        if (lastFrameOfVid != null)
-                        {
-                            try
-                            {
-                                UbeatGame.Instance.SpriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
-                                screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)lastFrameOfVid.Width / (float)lastFrameOfVid.Height) * (float)screenHeight), screenHeight);
-                                UbeatGame.Instance.SpriteBatch.Draw(lastFrameOfVid, screenVideoRectangle, null, Color.White, 0, new Vector2(lastFrameOfVid.Width / 2, lastFrameOfVid.Height / 2), SpriteEffects.None, 0);
-                                lastFrameOfVid.Dispose();
-                            }
-                            catch
-                            {
-                                ///???
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         public Label lblSearch { get; set; }

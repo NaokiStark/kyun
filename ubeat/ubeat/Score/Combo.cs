@@ -1,4 +1,4 @@
-﻿namespace ubeat.Score
+﻿namespace kyun.Score
 {
     public class Combo
     {

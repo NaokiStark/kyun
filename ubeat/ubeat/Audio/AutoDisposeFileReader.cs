@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ubeat.Audio
+namespace kyun.Audio
 {
     class AutoDisposeFileReader : ISampleProvider
     {

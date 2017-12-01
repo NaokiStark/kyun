@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 
-namespace ubeat.GameScreen
+namespace kyun.GameScreen
 {
     public class LeaveScreen : ScreenBase
     {
@@ -12,7 +12,7 @@ namespace ubeat.GameScreen
         {
             ///base.Update(tm);
             if (!Visible) return;
-            UbeatGame.Instance.Exit();
+            KyunGame.Instance.Exit();
         }
 
     }

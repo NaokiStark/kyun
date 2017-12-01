@@ -1,8 +1,8 @@
 ﻿using System;
-using ubeat.Beatmap;
-using ubeat.GameScreen;
+using kyun.Beatmap;
+using kyun.GameScreen;
 
-namespace ubeat.GameModes
+namespace kyun.GameModes
 {
     /// <summary>
     /// Base for GameMode Screen

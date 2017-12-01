@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ubeat {
+namespace kyun {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

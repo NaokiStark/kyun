@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json.Linq;
-using ubeat.UIObjs;
+using kyun.UIObjs;
 
-namespace ubeat.Beatmap
+namespace kyun.Beatmap
 {
     public class ubeatBeatMap : IBeatmap
     {
@@ -87,9 +87,10 @@ namespace ubeat.Beatmap
                 {
                     tmpHitObj = new HitButton()
                     {
-                        StartTime=int.Parse(jamap[a]["start"].ToString()),
+                        StartTime = int.Parse(jamap[a]["start"].ToString()),
                         Location = int.Parse(jamap[a]["location"].ToString()),
-                        BeatmapContainer = tmpmap
+                        BeatmapContainer = tmpmap,
+                        HitSound = 0
                     };
                 }
                 else
@@ -100,7 +101,8 @@ namespace ubeat.Beatmap
                         EndTime = int.Parse(jamap[a]["end"].ToString()),
                         Length=int.Parse(jamap[a]["length"].ToString()),
                         Location=int.Parse(jamap[a]["location"].ToString()),
-                        BeatmapContainer = tmpmap
+                        BeatmapContainer = tmpmap,
+                        HitSound = 0
                     };
                 }
                 tmoHitObjs.Add(tmpHitObj);

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace ubeat.ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas
+namespace kyun.ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas
 {
     public partial class Settings : Form
     {
@@ -67,7 +67,7 @@ namespace ubeat.ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas
 
         void chkFullScreen_CheckStateChanged(object sender, EventArgs e)
         {
-            UbeatGame.Instance.ToggleFullscreen(chkFullScreen.Checked);
+            KyunGame.Instance.ToggleFullscreen(chkFullScreen.Checked);
             Settings1.Default.FullScreen = chkFullScreen.Checked;
             Settings1.Default.Save();
         }
@@ -75,7 +75,7 @@ namespace ubeat.ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas
         void VSyncChk_CheckStateChanged(object sender, EventArgs e)
         {
             comboFrameRate.Enabled = !((CheckBox)sender).Checked;
-            UbeatGame.Instance.ToggleVSync(((CheckBox)sender).Checked);
+            KyunGame.Instance.ToggleVSync(((CheckBox)sender).Checked);
             Logger.Instance.Info("Setting VSync: " + ((CheckBox)sender).Checked.ToString());
             Settings1.Default.VSync = ((CheckBox)sender).Checked;
             Settings1.Default.Save();
@@ -84,7 +84,7 @@ namespace ubeat.ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas
         void checkVideo_CheckStateChanged(object sender, EventArgs e)
         {
             Logger.Instance.Info("Setting Video: " + ((CheckBox)sender).Checked.ToString());
-            UbeatGame.Instance.VideoEnabled = ((CheckBox)sender).Checked;
+            KyunGame.Instance.VideoEnabled = ((CheckBox)sender).Checked;
             Settings1.Default.Video = ((CheckBox)sender).Checked;
             Settings1.Default.Save();
         }
@@ -94,7 +94,7 @@ namespace ubeat.ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas
             Logger.Instance.Info("Setting Display Mode: {0}", ((ComboBox)sender).Items[((ComboBox)sender).SelectedIndex]);
             Settings1.Default.ScreenMode = ((ComboBox)sender).SelectedIndex;
             Settings1.Default.Save();
-            UbeatGame.Instance.ChangeResolution(scrnm[((ComboBox)sender).SelectedIndex]);
+            KyunGame.Instance.ChangeResolution(scrnm[((ComboBox)sender).SelectedIndex]);
         }
 
         void comboFrameRate_SelectedIndexChanged(object sender, EventArgs e)
@@ -102,7 +102,7 @@ namespace ubeat.ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas
             Logger.Instance.Info("Setting Frame Rate: {0}", ((ComboBox)sender).Items[((ComboBox)sender).SelectedIndex].ToString());
             Settings1.Default.FrameRate = float.Parse(((ComboBox)sender).Items[((ComboBox)sender).SelectedIndex].ToString());
             Settings1.Default.Save();
-            UbeatGame.Instance.ChangeFrameRate(float.Parse(((ComboBox)sender).Items[((ComboBox)sender).SelectedIndex].ToString()));
+            KyunGame.Instance.ChangeFrameRate(float.Parse(((ComboBox)sender).Items[((ComboBox)sender).SelectedIndex].ToString()));
         }
 
         private void button2_Click(object sender, EventArgs e)

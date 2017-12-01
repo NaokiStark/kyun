@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using ubeat.GameScreen.UI;
-using ubeat.Screen;
-using ubeat.Utils;
-using ubeat.GameScreen.UI.Buttons;
+using kyun.GameScreen.UI;
+using kyun.Screen;
+using kyun.Utils;
+using kyun.GameScreen.UI.Buttons;
 
-namespace ubeat.GameScreen
+namespace kyun.GameScreen
 {
     public partial class ScoreScreen: ScreenBase
     {
@@ -16,7 +16,7 @@ namespace ubeat.GameScreen
 
         public void LoadInterface()
         {
-            UbeatGame.Instance.IsMouseVisible = true;
+            KyunGame.Instance.IsMouseVisible = true;
             Controls = new List<UIObjectBase>();
 
             ScreenMode ActualMode = ScreenModeManager.GetActualMode();

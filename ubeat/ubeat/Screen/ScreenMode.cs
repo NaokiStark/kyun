@@ -1,4 +1,4 @@
-﻿namespace ubeat.Screen
+﻿namespace kyun.Screen
 {
     public class ScreenMode
     {

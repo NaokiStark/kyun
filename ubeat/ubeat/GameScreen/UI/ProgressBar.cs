@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ubeat.GameScreen.UI
+namespace kyun.GameScreen.UI
 {
     public class ProgressBar : UIObjectBase
     {
@@ -12,11 +12,14 @@ namespace ubeat.GameScreen.UI
 
         public float Value { get; set; }
 
+        public Color BarColor { get; set; }
+
         FilledRectangle Background;
         public ProgressBar(int maxWidth, int height)
         {
+            BarColor = Color.WhiteSmoke;
             MaxWidth = maxWidth;
-            Background = new FilledRectangle(new Vector2(1, height), Color.WhiteSmoke);
+            Background = new FilledRectangle(new Vector2(1, height), Color.White);
         }
 
         public override void Update()
@@ -28,7 +31,7 @@ namespace ubeat.GameScreen.UI
         {
 
             int finalWidth = (int)(Value * MaxWidth / 100f);
-            UbeatGame.Instance.SpriteBatch.Draw(Background.Texture, new Rectangle((int)Position.X, (int)Position.Y, finalWidth, Background.Texture.Height), Color.White);
+            KyunGame.Instance.SpriteBatch.Draw(Background.Texture, new Rectangle((int)Position.X, (int)Position.Y, finalWidth, Background.Texture.Height), BarColor * Opacity);
             
         }
     }

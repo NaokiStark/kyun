@@ -8,16 +8,16 @@ using System.Linq;
 using System.Text;
 using Troschuetz.Random;
 using Troschuetz.Random.Generators;
-using ubeat.Audio;
-using ubeat.Beatmap;
-using ubeat.GameScreen;
-using ubeat.OsuUtils;
-using ubeat.Score;
-using ubeat.Screen;
-using ubeat.UIObjs;
-using ubeat.Utils;
+using kyun.Audio;
+using kyun.Beatmap;
+using kyun.GameScreen;
+using kyun.OsuUtils;
+using kyun.Score;
+using kyun.Screen;
+using kyun.UIObjs;
+using kyun.Utils;
 
-namespace ubeat.Beatmap
+namespace kyun.Beatmap
 {
     public class HitHolder : IHitObj
     {
@@ -40,6 +40,7 @@ namespace ubeat.Beatmap
         public int Location { get; set; }
         public decimal EndTime { get; set; }
         public Vector2 OsuLocation { get; set; }
+        public int HitSound { get; set; }
         #endregion
 
         #region PrivateVars
@@ -97,9 +98,9 @@ namespace ubeat.Beatmap
             }
             this.opacity = opacity + percentg;
             */
-            if (opacity + (UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * .004f) < 1)
+            if (opacity + (KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * .004f) < 1)
             {
-                opacity += (UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * .004f);
+                opacity += (KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * .004f);
             }
             else
             {
@@ -158,7 +159,7 @@ namespace ubeat.Beatmap
                         ins.Volume = Game1.Instance.GeneralVolume;
                         ins.Play();
                          */
-                        AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HitHolder);
+                        //AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HitHolder);
 
                         hasAlredyPressed = true;
                         isFilling = true;
@@ -195,7 +196,7 @@ namespace ubeat.Beatmap
 
                     Rectangle ActualPos = new Rectangle((int)p.X, (int)p.Y, Texture.Bounds.Width, Texture.Bounds.Height);
 
-                    bool intersecs = UbeatGame.Instance.touchHandler.TouchIntersecs(ActualPos);
+                    bool intersecs = KyunGame.Instance.touchHandler.TouchIntersecs(ActualPos);
 
                     bool mouseUp = Mouse.GetState().LeftButton == ButtonState.Released || Mouse.GetState().RightButton == ButtonState.Released;
 
@@ -216,7 +217,7 @@ namespace ubeat.Beatmap
                             ins.Play();
                              * 
                              */
-                            AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HitHolder);
+                            //AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HitHolder);
 
                             hasAlredyPressed = true;
                             PressedAt = Position;
@@ -256,7 +257,7 @@ namespace ubeat.Beatmap
                 {
                     ticked = true;
 
-                    AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HolderTick);
+                    //AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HolderTick);
 
                     //SoundEffectInstance TickSnd = Game1.Instance.HolderTick.CreateInstance();
                     Grid.Instance.Health.Add(1f * BeatmapContainer.OverallDifficulty);
@@ -279,7 +280,7 @@ namespace ubeat.Beatmap
                 Score.ScoreValue score = GetScoreValue();
                 if ((int)score > (int)Score.ScoreValue.Miss)
                 {
-                    AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HitHolder);
+                    //AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.HitHolder);
                     Grid.Instance.FailsCount = 0;
                     float healthToAdd = (BeatmapContainer.OverallDifficulty / 2) + Math.Abs(this.LeaveAt - PressedAt) / 100;
                     Grid.Instance.Health.Add(healthToAdd);
@@ -301,7 +302,7 @@ namespace ubeat.Beatmap
                         SoundEffectInstance ins = Game1.Instance.ComboBreak.CreateInstance();
                         ins.Volume = Game1.Instance.GeneralVolume;
                         ins.Play();*/
-                        AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.ComboBreak);
+                        //AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.ComboBreak);
 
                     }
                     Combo.Instance.Miss();
@@ -345,7 +346,7 @@ namespace ubeat.Beatmap
                     }
 
                 }
-                UbeatGame.Instance.SpriteBatch.Draw(this.Texture, new Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
+                KyunGame.Instance.SpriteBatch.Draw(this.Texture, new Rectangle((int)position.X, (int)position.Y, Texture.Bounds.Width, Texture.Bounds.Height), Color.White * opacity);
                 if (ccc >= StartTime - BeatmapContainer.Timing50 && !isFilling)
                 {
                     float perct = (float)(ccc / (StartTime - BeatmapContainer.Timing300)) * 1f;
@@ -353,7 +354,7 @@ namespace ubeat.Beatmap
                     ScreenMode mode = ScreenModeManager.GetActualMode();
                     bool isSmallRes = mode.Height < 720;
 
-                    UbeatGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.Hold,
+                    KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.Hold,
                         new Rectangle(
                             (int)position.X,
                             (int)position.Y,
@@ -393,9 +394,9 @@ namespace ubeat.Beatmap
                     float percen = initSize * positionPercent / 100f;
 
                     if(!(isSmallRes))
-                        UbeatGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.Radiance, new Rectangle((int)position.X , (int)position.Y, SpritesContent.Instance.Radiance.Bounds.Width, SpritesContent.Instance.Radiance.Bounds.Height), Color.White * 0.5f);
+                        KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.Radiance, new Rectangle((int)position.X , (int)position.Y, SpritesContent.Instance.Radiance.Bounds.Width, SpritesContent.Instance.Radiance.Bounds.Height), Color.White * 0.5f);
 
-                    UbeatGame.Instance.SpriteBatch.Draw((isSmallRes) ? SpritesContent.Instance.HolderFillDeff_0 : SpritesContent.Instance.HolderFillDeff,
+                    KyunGame.Instance.SpriteBatch.Draw((isSmallRes) ? SpritesContent.Instance.HolderFillDeff_0 : SpritesContent.Instance.HolderFillDeff,
                       new Rectangle((int)position.X + (this.Texture.Width / 2) - (int)(percen/2), (int)position.Y + (this.Texture.Height/2) - (int)(percen / 2), (int)percen, (int)percen),
                       null,
                       Color.White,
@@ -410,8 +411,8 @@ namespace ubeat.Beatmap
                     Vector2 bgS = measureSize * 1.1f;
 
 
-                    UbeatGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.DefaultFont, secondsTo, new Vector2((position.X + Texture.Width / 2) + 1, (position.Y + Texture.Height / 2) + 1), Color.Black, 0, bgS / 2, 1.1f, SpriteEffects.None, 0);
-                    UbeatGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.DefaultFont, secondsTo, new Vector2(position.X + Texture.Width / 2, position.Y + Texture.Height / 2), Color.White, 0, measureSize / 2, 1f, SpriteEffects.None, 0);
+                    KyunGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.DefaultFont, secondsTo, new Vector2((position.X + Texture.Width / 2) + 1, (position.Y + Texture.Height / 2) + 1), Color.Black, 0, bgS / 2, 1.1f, SpriteEffects.None, 0);
+                    KyunGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.DefaultFont, secondsTo, new Vector2(position.X + Texture.Width / 2, position.Y + Texture.Height / 2), Color.White, 0, measureSize / 2, 1f, SpriteEffects.None, 0);
 
 
                 }

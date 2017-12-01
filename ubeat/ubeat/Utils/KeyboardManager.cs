@@ -6,6 +6,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Design;
 using Microsoft.Xna.Framework.Content;
+using kyun;
+using kyun.Audio;
+using kyun.Utils;
 
 namespace Redux.Utilities.Managers
 {
@@ -27,21 +30,102 @@ namespace Redux.Utilities.Managers
         public event KeyEvents OnKeyDown;
         public event KeyEvents OnKeyUp;
 
+        System.Windows.Forms.Form gameForm;
+
         public KeyboardManager(Game game) :
-            base(game) {  }
+            base(game) {
+
+            gameForm = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(game.Window.Handle);
+            gameForm.KeyPreview = true;
+            gameForm.KeyUp += GameForm_KeyUp;
+
+        }
+
+        private void GameForm_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (!Enabled)
+                return;
+
+           if(e.KeyCode == System.Windows.Forms.Keys.Back || e.KeyCode == System.Windows.Forms.Keys.Enter || e.KeyCode == System.Windows.Forms.Keys.Space)
+            {
+
+                switch (e.KeyCode)
+                {
+                    case System.Windows.Forms.Keys.Back:
+
+                        if (Text.Length < 1)
+                        {
+                            break;
+                        }                            
+
+                        Text = Text.Remove(Text.Length - 1, 1);
+                        break;
+                    case System.Windows.Forms.Keys.Enter:
+                        Text += (char)e.KeyCode;
+                        break;
+                    case System.Windows.Forms.Keys.Space:
+                        Text += " ";
+                        break;
+                }
+
+                //kyun.Audio.AudioPlaybackEngine.Instance.PlaySound(kyun.Utils.SpritesContent.Instance.ButtonOver);
+                EffectsPlayer.PlayEffect(SpritesContent.Instance.ButtonOver);
+                OnKeyPress?.Invoke();
+
+                return;
+            }
+
+            
+            if((char.IsLetterOrDigit((char)e.KeyCode) || char.IsPunctuation((char)e.KeyCode) || char.IsWhiteSpace((char)e.KeyCode)))
+            {
+                if (!(e.KeyCode >= System.Windows.Forms.Keys.D0 && e.KeyCode <= System.Windows.Forms.Keys.Z))
+                {
+                    return;
+                }
+
+                string input = ((char)e.KeyValue).ToString();
+
+                if (e.Shift)
+                {
+                    input = input.ToUpper();
+                }
+                else
+                {
+                    input = input.ToLower();
+                }
+
+
+                Text += input;
+
+                //kyun.Audio.AudioPlaybackEngine.Instance.PlaySound(kyun.Utils.SpritesContent.Instance.ButtonOver);
+                EffectsPlayer.PlayEffect(SpritesContent.Instance.ButtonOver);
+                OnKeyPress?.Invoke();
+            }
+
+            
+        }
+
+        private void GameForm_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        {
+
+
+        }
 
         DateTime prevUpdate = DateTime.Now;
         public override void Update(GameTime gameTime)
         {
+
             if (!Enabled)
                 return;
+
+            return;
 
             mainState = Keyboard.GetState();
             string input = Convert(mainState.GetPressedKeys());
             string prevInput = Convert(prevState.GetPressedKeys());
             DateTime now = DateTime.Now;
             //make sure 100ms (with a few measurements) has passed
-            int time = MustPass;
+            int time = MustPass+50;
             if (input == "\b")
                 time -= 25;
             if (Text == null)

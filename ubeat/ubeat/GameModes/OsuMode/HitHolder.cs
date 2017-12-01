@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ubeat.Beatmap;
-using ubeat.Utils;
+using kyun.Beatmap;
+using kyun.Utils;
 
-namespace ubeat.GameModes.OsuMode
+namespace kyun.GameModes.OsuMode
 {
     public class HitHolder : HitSingle
     {
@@ -32,12 +32,12 @@ namespace ubeat.GameModes.OsuMode
             if (screenInstance.GamePosition > Time && !holding)
             {
                 holding = true;
-                Audio.AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.OsuHit);
+                //Audio.AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.OsuHit);
             }
 
             if(holding && screenInstance.GamePosition > EndTime)
             {
-                Audio.AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.OsuHit);
+                //Audio.AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.OsuHit);
                 Died = true;
             }
 

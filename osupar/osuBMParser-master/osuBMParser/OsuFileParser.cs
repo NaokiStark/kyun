@@ -314,23 +314,19 @@ namespace osuBMParser
             {
                 hitObject = new HitSpinner();
             }
+            else if(typeBits[7])
+            {
+            hitObject = new HitSlider();
+            isManiaLongNote = true;
+            }
             else
             {
-                int type = toInt(tokens[3]);
-
-                if(type == 128)
-                {
-                    hitObject = new HitSlider();
-                    isManiaLongNote = true;
-                }
-                else
-                {
-                    return;
-                }
+                return;
+            }
 
                 //Debug.WriteLine("osuBMParser: Invalid HitObject line at timestamp: " + tokens[2] + " | Type = " + tokens[3]);
                 //return; //This type does not exist
-            }
+            
 
             //mania
 
@@ -340,7 +336,7 @@ namespace osuBMParser
             //Global stuff first
             hitObject.Position = new Vector2(toFloat(tokens[0]), toFloat(tokens[1]));
             hitObject.Time = toInt(tokens[2]);
-            //hitObject.HitSound = toInt(tokens[4]);
+            hitObject.HitSound = toInt(tokens[4]);
             hitObject.IsNewCombo = typeBits[2];
 
             //Specific stuff

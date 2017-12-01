@@ -5,8 +5,10 @@ using NAudio;
 using NAudio.Wave;
 using System.IO;
 using NAudio.Wave.SampleProviders;
+using kyun.Audio.Effects;
+using VarispeedDemo.SoundTouch;
 
-namespace ubeat.Audio
+namespace kyun.Audio
 {
     public class NPlayer : IDisposable
     {
@@ -15,11 +17,15 @@ namespace ubeat.Audio
         MeteringSampleProvider meterSampleProvider;
 
         public delegate void PlayerEvents();
+        bool playing = false;
         public event PlayerEvents OnStopped;
 
         public float PeakVol = 0;
 
-
+        private long pausedTime = 0;
+        private DateTime startPause;
+        private DateTime stopPause;
+        private long lastPaused=0;
         /// <summary>
         /// Adapt to old code
         /// </summary>
@@ -35,6 +41,8 @@ namespace ubeat.Audio
 
         public static NPlayer Instance = null;
 
+        public float Velocity {get; private set;}
+
         public long Position
         {
             get
@@ -45,7 +53,27 @@ namespace ubeat.Audio
                     {
                         try
                         {
-                            return (long)audioFile.CurrentTime.TotalMilliseconds;
+                            //return (long)audioFile.CurrentTime.TotalMilliseconds - 8;
+                            
+                            if (Paused)
+                            {
+                                return lastPaused - pausedTime;
+                            }
+                            else
+                            {/*
+                                long cms = (long)(DateTime.Now - startTime).TotalMilliseconds;
+                                long ctm = (long)audioFile.CurrentTime.TotalMilliseconds;
+
+                                if (Math.Abs(cms - ctm) > 30){
+                                    startTime = DateTime.Now - audioFile.CurrentTime; //Fuck sync?
+                                }
+
+                                cms = (long)(DateTime.Now - startTime).TotalMilliseconds;
+                                */
+                                long cms = (long)(DateTime.Now - startTime).TotalMilliseconds;
+                                return (long)((cms) * Velocity) ;
+                            }
+                            
                         }
                         catch { return 0; }
                     }
@@ -85,12 +113,23 @@ namespace ubeat.Audio
                     if (value)
                     {
                         if (waveOut.PlaybackState != PlaybackState.Paused && waveOut.PlaybackState == PlaybackState.Playing)
+                        {
                             waveOut.Pause();
+                            startPause = DateTime.Now;
+                            lastPaused = (long)(startPause - startTime).TotalMilliseconds;
+                        }
+                            
                     }
                     else
                     {
                         if (waveOut.PlaybackState == PlaybackState.Paused)
+                        {
+                            startTime = DateTime.Now - audioFile.CurrentTime;
                             waveOut.Play();
+                            
+                            //pausedTime += (long)(DateTime.Now - startPause).TotalMilliseconds;
+                        }
+                            
                     }
                 }
             }
@@ -126,6 +165,7 @@ namespace ubeat.Audio
         }
 
         float vol = 0;
+        private DateTime startTime;
 
         public string ActualSong { get; private set; }
 
@@ -146,28 +186,37 @@ namespace ubeat.Audio
         public NPlayer()
         {
             Instance = this;
+            Velocity = 1;
         }
 
 
         public void Play(AudioFileReader fromStream)
         {
+            pausedTime = 0;
             fromStream.Position = 0;
             if (waveOut != null)
             {
+                playing = true;
                 Stop();
-            }            
+            }
 
+            
             waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 2);
             audioFile = fromStream;
             meterSampleProvider = new MeteringSampleProvider(audioFile);
             meterSampleProvider.SamplesPerNotification = 1024;
             meterSampleProvider.StreamVolume += MeterSampleProvider_StreamVolume;
 
+            var offsetSampleProv = new OffsetSampleProvider(meterSampleProvider);
+
             audioFile.Volume = vol;
-            waveOut.Init(meterSampleProvider);
+            //waveOut.Init(meterSampleProvider);
+            waveOut.Init(offsetSampleProv);
+
             /*if (Loop)
                 waveOut.PlaybackStopped += waveOut_PlaybackStopped;*/
             waveOut.Play();
+            playing = false;
         }
 
         private void MeterSampleProvider_StreamVolume(object sender, StreamVolumeEventArgs e)
@@ -175,11 +224,18 @@ namespace ubeat.Audio
             PeakVol = Normalize(e.MaxSampleValues[0]);
         }
 
-        public void Play(string fileName = null)
-        {
-            if (waveOut != null)
-                Stop();
 
+
+        public void Play(string fileName = null, float velocity = 1, float pitch = 1, bool fadeIn = false)
+        {
+            pausedTime = 0;
+            if (waveOut != null)
+            {
+                playing = true;
+                Stop();
+            }
+
+            
             if (fileName == null && ActualSong == "")
             {
                 Logger.Instance.Severe("No song to play");
@@ -189,22 +245,85 @@ namespace ubeat.Audio
             if (fileName != null)
                 ActualSong = fileName;
 
-            waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 2);
-            //waveOut = new DirectSoundOut(50);
-   
-            
-            audioFile = new AudioFileReader(ActualSong);
+            //waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 2);
 
-            meterSampleProvider = new MeteringSampleProvider(audioFile);
-            meterSampleProvider.SamplesPerNotification = 1024;
-            
-            //meterSampleProvider.StreamVolume += MeterSampleProvider_StreamVolume;
-            meterSampleProvider.StreamVolume += MeterSampleProvider_StreamVolume;
+            waveOut = new DirectSoundOut(50);
 
-            audioFile.Volume = vol;
-            waveOut.Init(meterSampleProvider);
-            waveOut.PlaybackStopped += waveOut_PlaybackStopped;
-            waveOut.Play();
+            try
+            {
+                audioFile = new AudioFileReader(ActualSong);
+                
+
+                meterSampleProvider = new MeteringSampleProvider(audioFile);
+                meterSampleProvider.SamplesPerNotification = 1024;
+
+                //meterSampleProvider.StreamVolume += MeterSampleProvider_StreamVolume;
+                meterSampleProvider.StreamVolume += MeterSampleProvider_StreamVolume;
+
+                var offsetSampleProv = new OffsetSampleProvider(meterSampleProvider);
+
+                //offsetSampleProv.SkipOverSamples = 1000;
+                TimePitchEff TimePitchEffProv;
+                Effects.FadeInOutSampleProvider cc = null;
+                if (velocity != 1)
+                {
+                    var ct = new VarispeedSampleProvider(offsetSampleProv, 10, new SoundTouchProfile(true, true));
+                    ct.PlaybackRate = velocity;
+                    this.Velocity = velocity;
+                   
+                    if (fadeIn)
+                    {
+                        cc = new Effects.FadeInOutSampleProvider(ct);
+                        TimePitchEffProv = new TimePitchEff(cc);
+                    }
+                    else
+                    {
+                        TimePitchEffProv = new TimePitchEff(ct);
+                    }                    
+
+                    TimePitchEffProv.PitchFactor = pitch;
+
+                }
+                else
+                {
+
+                    if (fadeIn)
+                    {
+                        cc = new Effects.FadeInOutSampleProvider(offsetSampleProv);
+                        TimePitchEffProv = new TimePitchEff(cc);
+                    }
+                    else
+                    {
+                        TimePitchEffProv = new TimePitchEff(offsetSampleProv);
+                    }
+
+                    TimePitchEffProv.PitchFactor = pitch;
+                }
+
+                               
+                audioFile.Volume = vol;
+                                               
+                if(pitch != 1)
+                {
+                    pausedTime = 200;
+                }
+                //waveOut.Init(meterSampleProvider);
+                waveOut.Init(TimePitchEffProv);
+                waveOut.PlaybackStopped += waveOut_PlaybackStopped;
+                waveOut.Play();
+                cc?.BeginFadeIn(5000);
+
+                startTime = DateTime.Now - audioFile.CurrentTime;
+
+            }
+            catch
+            {
+                //
+            }
+            finally
+            {
+                playing = false;
+            }
         }
 
         public float Normalize(float value)
@@ -215,7 +334,8 @@ namespace ubeat.Audio
 
         void waveOut_PlaybackStopped(object sender, StoppedEventArgs e)
         {
-            OnStopped?.Invoke();
+            if(!playing)
+                OnStopped?.Invoke();
         }
 
         public void Stop()
@@ -231,11 +351,15 @@ namespace ubeat.Audio
             }
             else
             {
+                
                 lock (waveOut)
                 {
-                    waveOut.Stop();
+
+                    waveOut.Stop();                    
+
                     waveOut.Dispose();
-                }
+                 }
+                 
             }         
         }
 

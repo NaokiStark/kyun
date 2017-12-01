@@ -3,11 +3,11 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using Troschuetz.Random.Generators;
-using ubeat.Beatmap;
-using ubeat.UIObjs;
+using kyun.Beatmap;
+using kyun.UIObjs;
 using osuBMParser;
 
-namespace ubeat.OsuUtils
+namespace kyun.OsuUtils
 {
     public class OsuBeatMap : ubeatBeatMap
     {
@@ -55,13 +55,15 @@ namespace ubeat.OsuUtils
                 TimingPoint tm = osbm.TimingPoints[0];
                 int tmCount = 0;
                 int fVer = int.Parse(osbm.FormatVersion);
-
+                
                 int offset = 0;
+                /*
                 offset = ((fVer >= 14 && osbm.Mode == 0) ? 63 : 53);
-                offset -= 35;
-               /* 
+                offset -= 35;*/
+               
+               /*
                if (fVer > 9)
-                    offset -= 125;
+                    offset -= 98;
                 else if (fVer < 10)
                     offset -= 50;*/
 
@@ -168,7 +170,8 @@ namespace ubeat.OsuUtils
                             BeatmapContainer = tmpbm,
                             //Location = lasN = GetRnd(97, 106,lasN)
                             Location = ((osbm.Source != "ubeat") ? lasN = GetRnd(97, 106, lasN) : fL + 96),
-                            OsuLocation = new Microsoft.Xna.Framework.Vector2(ho.Position.x, ho.Position.y)
+                            OsuLocation = new Microsoft.Xna.Framework.Vector2(ho.Position.x, ho.Position.y),
+                            HitSound = ho.HitSound
                         };
 
                             int lastCh = 0;
@@ -238,9 +241,10 @@ namespace ubeat.OsuUtils
                             BeatmapContainer = tmpbm,
                             //Location = lasN = GetRnd(97, 106, lasN)
                             Location = ((osbm.Source!="ubeat")?lasN = GetRnd(97, 106, lasN):fL + 96),
-                            OsuLocation = new Microsoft.Xna.Framework.Vector2(ho.Position.x, ho.Position.y)
+                            OsuLocation = new Microsoft.Xna.Framework.Vector2(ho.Position.x, ho.Position.y),
+                            HitSound = ho.HitSound
                         };
-
+                        
                         //MANIA LONGNOTE
                         if(slider.Type == HitSlider.SliderType.LONGNOTE)
                         {
@@ -303,7 +307,8 @@ namespace ubeat.OsuUtils
                                 //Location = lasN = GetRnd(97, 106,lasN),
                                 Location = ((osbm.Source != "ubeat") ? lasN = GetRnd(97, 106, lasN) : fL + 96),
                                 BeatmapContainer = tmpbm,
-                                OsuLocation = new Microsoft.Xna.Framework.Vector2(640/2, 480/2)
+                                OsuLocation = new Microsoft.Xna.Framework.Vector2(640/2, 480/2),
+                                HitSound = ho.HitSound
                             };
 
                         int lastCh = 0;

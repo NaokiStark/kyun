@@ -1,4 +1,4 @@
-﻿namespace ubeat
+﻿namespace kyun
 {
     partial class VolumeDlg
     {
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.label1 = new System.Windows.Forms.Label();
-            this.progressBar1 = new ubeat.Utils.VerticalProgressBar();
+            this.progressBar1 = new kyun.Utils.VerticalProgressBar();
             this.SuspendLayout();
             // 
             // label1
@@ -74,7 +74,7 @@
 
         #endregion
 
-        private ubeat.Utils.VerticalProgressBar progressBar1;
+        private kyun.Utils.VerticalProgressBar progressBar1;
         private System.Windows.Forms.Label label1;
     }
 }

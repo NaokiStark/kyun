@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System.Threading;
 
-namespace ubeat.GameScreen
+namespace kyun.GameScreen
 {
     public class ScreenManager
     {
@@ -23,7 +23,7 @@ namespace ubeat.GameScreen
         {
             Screen.ScreenMode actmode = Screen.ScreenModeManager.GetActualMode();
 
-            TopEffect = new Texture2D(UbeatGame.Instance.GraphicsDevice, actmode.Width, actmode.Height);
+            TopEffect = new Texture2D(KyunGame.Instance.GraphicsDevice, actmode.Width, actmode.Height);
 
             Color[] txClr = new Color[actmode.Width * actmode.Height];
             for (int a = 0; a < txClr.Length; a++)
@@ -45,15 +45,15 @@ namespace ubeat.GameScreen
             {
 
 
-                if (UbeatGame.Instance.Player.Volume > (float)(UbeatGame.Instance.GeneralVolume/2))
+                if (KyunGame.Instance.Player.Volume > (float)(KyunGame.Instance.GeneralVolume/2))
                 {
-                    UbeatGame.Instance.Player.Volume -= (float)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f);
+                    KyunGame.Instance.Player.Volume -= (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f);
                 }
 
                 if (Opacity < 1f)
                 {
                     
-                    Opacity += (float)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f);
+                    Opacity += (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f);
 
                 }
                 else
@@ -70,13 +70,13 @@ namespace ubeat.GameScreen
             {
                 if (Opacity > 0f)
                 {
-                    Opacity -= (float)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f);
+                    Opacity -= (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f);
                 }
 
 
-                if (UbeatGame.Instance.Player.Volume < UbeatGame.Instance.GeneralVolume)
+                if (KyunGame.Instance.Player.Volume < KyunGame.Instance.GeneralVolume)
                 {
-                    UbeatGame.Instance.Player.Volume += (float)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f);
+                    KyunGame.Instance.Player.Volume += (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f);
                 }
 
             }
@@ -92,7 +92,7 @@ namespace ubeat.GameScreen
 
             if(Opacity > 0.00001)
             {
-                UbeatGame.Instance.SpriteBatch.Draw(TopEffect, new Rectangle(0, 0, TopEffect.Width, TopEffect.Height), Color.White * Opacity);
+                KyunGame.Instance.SpriteBatch.Draw(TopEffect, new Rectangle(0, 0, TopEffect.Width, TopEffect.Height), Color.White * Opacity);
             }
 
         }

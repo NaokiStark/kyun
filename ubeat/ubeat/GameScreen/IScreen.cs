@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace ubeat.GameScreen
+namespace kyun.GameScreen
 {
     public interface IScreen
     {

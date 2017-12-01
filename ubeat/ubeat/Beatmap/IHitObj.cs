@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ubeat.UIObjs;
+using kyun.UIObjs;
 
-namespace ubeat.Beatmap
+namespace kyun.Beatmap
 {
     public interface IHitObj
     {
@@ -22,6 +22,7 @@ namespace ubeat.Beatmap
         decimal EndTime { get; set; }
         Texture2D Texture { get; set; }
         long PressedAt { get; set; }
+        int HitSound { get; set; }
         Score.ScoreValue GetScoreValue();
         Score.ScoreType GetScore();
         float GetAccuracyPercentage();

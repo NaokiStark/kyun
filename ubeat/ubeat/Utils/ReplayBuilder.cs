@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using ubeat.UIObjs;
-using ubeat.Beatmap;
+using kyun.UIObjs;
+using kyun.Beatmap;
 
-namespace ubeat.Utils
+namespace kyun.Utils
 {
     public class ReplayBuilder
     {

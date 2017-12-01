@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ubeat.Utils
+namespace kyun.Utils
 {
     public static class BeatmapSearchEngine
     {
@@ -24,7 +24,7 @@ namespace ubeat.Utils
                 {
                     var maps = new List<Beatmap.Mapset>();
 
-                    Beatmap.Mapset[] mapsetArr = InstanceManager.AllBeatmaps.ToArray<ubeat.Beatmap.Mapset>();
+                    Beatmap.Mapset[] mapsetArr = InstanceManager.AllBeatmaps.ToArray<kyun.Beatmap.Mapset>();
 
                     var searchedMaps = from Mapset in mapsetArr
                                        where Mapset.Title.ToLower().Contains(keyword)

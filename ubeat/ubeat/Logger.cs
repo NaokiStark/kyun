@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
-namespace ubeat
+namespace kyun
 {
     public class Logger
     {

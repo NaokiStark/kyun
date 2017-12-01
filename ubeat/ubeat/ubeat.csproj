@@ -7,8 +7,8 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ubeat</RootNamespace>
-    <AssemblyName>ubeat</AssemblyName>
+    <RootNamespace>kyun</RootNamespace>
+    <AssemblyName>kyun</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -17,7 +17,7 @@
     <XnaProfile>Reach</XnaProfile>
     <XnaCrossPlatformGroupID>5bc963bd-2ab0-480f-8c9b-03d363619a6f</XnaCrossPlatformGroupID>
     <XnaOutputType>Game</XnaOutputType>
-    <ApplicationIcon>Game.ico</ApplicationIcon>
+    <ApplicationIcon>kyunico.ico</ApplicationIcon>
     <Thumbnail>GameThumbnail.png</Thumbnail>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>C:\Users\Fabi\ubuild\</PublishUrl>
@@ -82,6 +82,9 @@
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Bass.Net">
+      <HintPath>..\..\lib\Bass.Net.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
@@ -132,8 +135,19 @@
   <ItemGroup>
     <Compile Include="Audio\AudioPlaybackEngine.cs" />
     <Compile Include="Audio\AutoDisposeFileReader.cs" />
+    <Compile Include="Audio\BPlayer.cs" />
     <Compile Include="Audio\CachedSound.cs" />
     <Compile Include="Audio\CachedSoundSampleProvider.cs" />
+    <Compile Include="Audio\EffectsPlayer.cs" />
+    <Compile Include="Audio\Effects\FadeInOutSampleProvider.cs" />
+    <Compile Include="Audio\Effects\SmbPitchShifter.cs" />
+    <Compile Include="Audio\Effects\SoundTouch.cs" />
+    <Compile Include="Audio\Effects\SoundTouchInterop32.cs" />
+    <Compile Include="Audio\Effects\SoundTouchInterop64.cs" />
+    <Compile Include="Audio\Effects\SoundTouchProfile.cs" />
+    <Compile Include="Audio\Effects\SoundTouchSettings.cs" />
+    <Compile Include="Audio\Effects\TCOR.cs" />
+    <Compile Include="Audio\Effects\TimePitchEff.cs" />
     <Compile Include="Audio\NoDisposeFileReader.cs" />
     <Compile Include="Audio\NPlayer.cs" />
     <Compile Include="Beatmap\Break.cs" />
@@ -142,6 +156,8 @@
     <Compile Include="Beatmap\Mapset.cs" />
     <Compile Include="Beatmap\ubeatBeatMap.cs" />
     <Compile Include="Dialog\DialogLayer.cs" />
+    <Compile Include="GameModes\Classic\Grid.cs" />
+    <Compile Include="GameModes\Classic\ScorePanel.cs" />
     <Compile Include="GameModes\OsuMode\OsuMode.cs" />
     <Compile Include="GameModes\OsuMode\HitHolder.cs" />
     <Compile Include="GameModes\OsuMode\HitSingle.cs" />
@@ -158,8 +174,13 @@
     <Compile Include="GameModes\Midi\MidiModeScreen.cs" />
     <Compile Include="GameScreen\InputEvents\KeyPressEventArgs.cs" />
     <Compile Include="GameScreen\LoadScreen.cs" />
+    <Compile Include="GameScreen\LogoScreen.cs" />
     <Compile Include="GameScreen\UI\Buttons\ButtonStandard.cs" />
     <Compile Include="GameScreen\UI\InputControl.cs" />
+    <Compile Include="GameScreen\UI\Particles\Particle.cs" />
+    <Compile Include="GameScreen\UI\Particles\ParticleEngine.cs" />
+    <Compile Include="GameScreen\UI\Particles\ParticleScore.cs" />
+    <Compile Include="GameScreen\UI\Particles\SquareParticle.cs" />
     <Compile Include="GameScreen\VideoScreenBase.cs" />
     <Compile Include="Settings\Settings.cs">
       <SubType>Form</SubType>
@@ -208,7 +229,7 @@
     <Compile Include="OsuUtils\OsuBeatMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="UbeatGame.cs" />
+    <Compile Include="KyunGame.cs" />
     <Compile Include="Resource1.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -237,6 +258,7 @@
     <Compile Include="Utils\FrameCounter.cs" />
     <Compile Include="Utils\InstanceManager.cs" />
     <Compile Include="Utils\KeyboardManager.cs" />
+    <Compile Include="Utils\SongInfo.cs" />
     <Compile Include="Utils\ReplayBuilder.cs" />
     <Compile Include="Utils\ReplayParser.cs" />
     <Compile Include="Utils\SpritesContent.cs" />
@@ -262,6 +284,7 @@
     <Content Include="GameThumbnail.png">
       <XnaPlatformSpecific>true</XnaPlatformSpecific>
     </Content>
+    <Content Include="kyunico.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\osupar\osuBMParser-master\osuBMParser\osuBMParser.csproj">

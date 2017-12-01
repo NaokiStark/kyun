@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace ubeat.Utils
+namespace kyun.Utils
 {
     public class InstanceManager : IDisposable
     {
-        UbeatGame ubeat;
+        KyunGame ubeat;
+
+        public static float MaxPeak = 0.1f;
 
         public static List<Beatmap.Mapset> AllBeatmaps { get; set; }
 
@@ -24,7 +26,7 @@ namespace ubeat.Utils
 
         void StartInstance()
         {
-            using (ubeat = new UbeatGame())
+            using (ubeat = new KyunGame())
                 ubeat.Run();
         }
 

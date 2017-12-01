@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ubeat.Beatmap
+namespace kyun.Beatmap
 {
     public class Mapset : List<ubeatBeatMap>
     {

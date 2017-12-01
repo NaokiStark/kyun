@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace ubeat.ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas
+namespace kyun.ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas
 {
     public partial class SuperSecretSettings : Form
     {

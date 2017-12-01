@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace ubeat.UIObjs
+namespace kyun.UIObjs
 {
     public interface IUIObject
     {

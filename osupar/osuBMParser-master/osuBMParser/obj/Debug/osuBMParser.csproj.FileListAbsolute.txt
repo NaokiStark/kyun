@@ -1,0 +1,6 @@
+C:\Users\Fabi\ubeat\osupar\osuBMParser-master\osuBMParser\bin\Debug\osuBMParser.dll
+C:\Users\Fabi\ubeat\osupar\osuBMParser-master\osuBMParser\bin\Debug\osuBMParser.pdb
+C:\Users\Fabi\ubeat\osupar\osuBMParser-master\osuBMParser\obj\Debug\osuBMParser.dll
+C:\Users\Fabi\ubeat\osupar\osuBMParser-master\osuBMParser\obj\Debug\osuBMParser.pdb
+C:\Users\Fabi\ubeat\osupar\osuBMParser-master\osuBMParser\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+C:\Users\Fabi\ubeat\osupar\osuBMParser-master\osuBMParser\obj\Debug\osuBMParser.csprojResolveAssemblyReference.cache

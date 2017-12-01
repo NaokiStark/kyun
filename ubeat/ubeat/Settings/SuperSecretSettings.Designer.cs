@@ -1,4 +1,4 @@
-﻿namespace ubeat.ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas
+﻿namespace kyun.ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas
 {
     partial class SuperSecretSettings
     {

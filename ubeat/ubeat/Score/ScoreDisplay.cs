@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ubeat.GameScreen;
-using ubeat.UIObjs;
-using ubeat.Utils;
+using kyun.GameScreen;
+using kyun.UIObjs;
+using kyun.Utils;
 
-namespace ubeat.Score
+namespace kyun.Score
 {
     public class ScoreDisplay : UIObjectBase
     {
@@ -18,7 +18,7 @@ namespace ubeat.Score
 
         ulong lScore = 0;
 
-        ulong RollingScore = 0;
+        float RollingScore = 0;
 
         Queue<int> lastAdds = new Queue<int>();
         private int oldLength;
@@ -37,6 +37,7 @@ namespace ubeat.Score
             score = 0;
             RollingScore = 0;
             lScore = 0;
+            IsActive = true;
         }
 
         private void updateRolling()
@@ -44,10 +45,10 @@ namespace ubeat.Score
             
             if (RollingScore < score)
             {
-                RollingScore += (ulong)((float)(score - lScore) * (float)(UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds / 100f));
+                RollingScore += ((float)(score - lScore) * (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds / 100f));
             }
 
-            float minus = (UbeatGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds / 100f)/5;
+            float minus = (KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds / 100f)/5;
 
             if (opa > 0)
             {
@@ -61,11 +62,15 @@ namespace ubeat.Score
             textLength = RollingScore.ToString("00000000").Length;
         }
 
-        public ScoreDisplay()
+        public ScoreDisplay(float scale = 1.5f)
         {
-            int width = 50;
-            int height = 50;
-            this.Texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, width, height);
+
+            Vector2 fSize = getMeasuredText() * scale;
+            Scale = scale;
+
+            int width = (int)fSize.X;
+            int height = (int)fSize.Y;
+            this.Texture = new Texture2D(KyunGame.Instance.GraphicsDevice, width, height);
             Color[] data = new Color[width * height];
             for (int i = 0; i < data.Length; ++i) data[i] = Color.Black;
             this.Texture.SetData(data);
@@ -74,7 +79,7 @@ namespace ubeat.Score
             //4 other things
             Screen.ScreenMode actualMode = Screen.ScreenModeManager.GetActualMode();
 
-            Vector2 fSize = getMeasuredText() * 1.5f;
+            
             
             Rectangle rect = new Rectangle(actualMode.Width - (int)fSize.X - 5, 0, (int)fSize.X + 5, (int)fSize.Y);
             Position = new Vector2(rect.X, rect.Y);
@@ -102,19 +107,19 @@ namespace ubeat.Score
 
             Screen.ScreenMode actualMode = Screen.ScreenModeManager.GetActualMode();
 
-            Vector2 fSize = getMeasuredText() * 1.5f;
+            Vector2 fSize = getMeasuredText() * Scale;
             
 
-            Rectangle rect = new Rectangle(actualMode.Width - (int)fSize.X - 5, 0, (int)fSize.X + 5, (int)fSize.Y);
+            Rectangle rect = new Rectangle((int)Position.X, (int)Position.Y, (int)fSize.X + 5, (int)fSize.Y);
 
-            Position = new Vector2(rect.X, rect.Y);
+            //Position = new Vector2(rect.X, rect.Y);
 
-            UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rect, Color.White * .75f);
+            KyunGame.Instance.SpriteBatch.Draw(this.Texture, rect, Color.White * .75f);
 
             //Draw score
-            UbeatGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.TitleFont, RollingScore.ToString("00000000"), new Vector2(rect.X + 15, 0), Color.WhiteSmoke, 0, new Vector2(0), 1.3f, SpriteEffects.None, 0);
+            KyunGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.TitleFont, RollingScore.ToString("00000000"), new Vector2(Position.X + 15, Position.Y), Color.WhiteSmoke, 0, new Vector2(0), Scale - 0.2f, SpriteEffects.None, 0);
 
-            UbeatGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.TitleFont, RollingScore.ToString("00000000"), new Vector2(rect.X + 15, 0), Color.Yellow*opa, 0, new Vector2(0), 1.3f, SpriteEffects.None, 0);
+            KyunGame.Instance.SpriteBatch.DrawString(SpritesContent.Instance.TitleFont, RollingScore.ToString("00000000"), new Vector2(Position.X + 15, Position.Y), Color.Yellow*opa, 0, new Vector2(0), Scale - 0.2f, SpriteEffects.None, 0);
         }
 
         public Vector2 getMeasuredText()

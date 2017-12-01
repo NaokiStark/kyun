@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace ubeat.Video
+namespace kyun.Video
 {
     public static class FFmpeg
     {
@@ -415,7 +415,7 @@ namespace ubeat.Video
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avcodec-51.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr avcodec_find_encoder(ubeat.Video.FFmpeg.CodecID id);
+        public static extern IntPtr avcodec_find_encoder(kyun.Video.FFmpeg.CodecID id);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avcodec-51.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -423,7 +423,7 @@ namespace ubeat.Video
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avcodec-51.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr avcodec_find_decoder(ubeat.Video.FFmpeg.CodecID id);
+        public static extern IntPtr avcodec_find_decoder(kyun.Video.FFmpeg.CodecID id);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avcodec-51.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -484,11 +484,11 @@ namespace ubeat.Video
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avcodec-51.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int avcodec_thread_execute(IntPtr pAVCodecContext, [MarshalAs(UnmanagedType.FunctionPtr)] ubeat.Video.FFmpeg.FuncCallback func, [MarshalAs(UnmanagedType.LPArray)] IntPtr[] arg, ref int ret, int count);
+        public static extern int avcodec_thread_execute(IntPtr pAVCodecContext, [MarshalAs(UnmanagedType.FunctionPtr)] kyun.Video.FFmpeg.FuncCallback func, [MarshalAs(UnmanagedType.LPArray)] IntPtr[] arg, ref int ret, int count);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avcodec-51.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int avcodec_default_execute(IntPtr pAVCodecContext, [MarshalAs(UnmanagedType.FunctionPtr)] ubeat.Video.FFmpeg.FuncCallback func, [MarshalAs(UnmanagedType.LPArray)] IntPtr[] arg, ref int ret, int count);
+        public static extern int avcodec_default_execute(IntPtr pAVCodecContext, [MarshalAs(UnmanagedType.FunctionPtr)] kyun.Video.FFmpeg.FuncCallback func, [MarshalAs(UnmanagedType.LPArray)] IntPtr[] arg, ref int ret, int count);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avcodec-51.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -544,7 +544,7 @@ namespace ubeat.Video
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avcodec-51.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int av_get_bits_per_sample(ubeat.Video.FFmpeg.CodecID codec_id);
+        public static extern int av_get_bits_per_sample(kyun.Video.FFmpeg.CodecID codec_id);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avcodec-51.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -658,7 +658,7 @@ namespace ubeat.Video
         {
             if (pAVPacket == IntPtr.Zero)
                 return;
-            ubeat.Video.FFmpeg.AVPacket avPacket = (ubeat.Video.FFmpeg.AVPacket)Marshal.PtrToStructure(pAVPacket, typeof(ubeat.Video.FFmpeg.AVPacket));
+            kyun.Video.FFmpeg.AVPacket avPacket = (kyun.Video.FFmpeg.AVPacket)Marshal.PtrToStructure(pAVPacket, typeof(kyun.Video.FFmpeg.AVPacket));
             if (avPacket.destruct == null)
                 return;
             avPacket.destruct(pAVPacket);
@@ -678,11 +678,11 @@ namespace ubeat.Video
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avformat-52.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern ubeat.Video.FFmpeg.CodecID av_guess_image2_codec([MarshalAs(UnmanagedType.LPTStr)] string filename);
+        public static extern kyun.Video.FFmpeg.CodecID av_guess_image2_codec([MarshalAs(UnmanagedType.LPTStr)] string filename);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avformat-52.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int av_read_image(IntPtr pByteIOContext, [MarshalAs(UnmanagedType.LPTStr)] string filename, IntPtr pAVImageFormat, [MarshalAs(UnmanagedType.FunctionPtr)] ubeat.Video.FFmpeg.AllocCBCallback alloc_cb, IntPtr opaque);
+        public static extern int av_read_image(IntPtr pByteIOContext, [MarshalAs(UnmanagedType.LPTStr)] string filename, IntPtr pAVImageFormat, [MarshalAs(UnmanagedType.FunctionPtr)] kyun.Video.FFmpeg.AllocCBCallback alloc_cb, IntPtr opaque);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avformat-52.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -706,7 +706,7 @@ namespace ubeat.Video
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avformat-52.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern ubeat.Video.FFmpeg.CodecID av_guess_codec(IntPtr pAVOutoutFormat, [MarshalAs(UnmanagedType.LPTStr)] string short_name, [MarshalAs(UnmanagedType.LPTStr)] string filename, [MarshalAs(UnmanagedType.LPTStr)] string mime_type, ubeat.Video.FFmpeg.CodecType type);
+        public static extern kyun.Video.FFmpeg.CodecID av_guess_codec(IntPtr pAVOutoutFormat, [MarshalAs(UnmanagedType.LPTStr)] string short_name, [MarshalAs(UnmanagedType.LPTStr)] string filename, [MarshalAs(UnmanagedType.LPTStr)] string mime_type, kyun.Video.FFmpeg.CodecType type);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("avformat-52.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -892,7 +892,7 @@ namespace ubeat.Video
         [DllImport("avutil-49.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void av_free(IntPtr ptr);
 
-        public static double av_q2d(ubeat.Video.FFmpeg.AVRational a)
+        public static double av_q2d(kyun.Video.FFmpeg.AVRational a)
         {
             return (double)a.num / (double)a.den;
         }
@@ -905,7 +905,7 @@ namespace ubeat.Video
 
         public delegate int EncodeCallback(IntPtr pAVCodecContext, IntPtr buf, int buf_size, IntPtr data);
 
-        public delegate int ExecuteCallback(IntPtr pAVCodecContext, [MarshalAs(UnmanagedType.FunctionPtr)] ubeat.Video.FFmpeg.FuncCallback func, [MarshalAs(UnmanagedType.LPArray)] IntPtr[] arg2, ref int ret, int count);
+        public delegate int ExecuteCallback(IntPtr pAVCodecContext, [MarshalAs(UnmanagedType.FunctionPtr)] kyun.Video.FFmpeg.FuncCallback func, [MarshalAs(UnmanagedType.LPArray)] IntPtr[] arg2, ref int ret, int count);
 
         public delegate int FilterCallback(IntPtr pAVBitStreamFilterContext, IntPtr pAVCodecContext, [MarshalAs(UnmanagedType.LPStr)] string args, [MarshalAs(UnmanagedType.LPArray)] IntPtr[] poutbuf, ref int poutbuf_size, IntPtr buf, int buf_size, int keyframe);
 
@@ -1156,7 +1156,7 @@ namespace ubeat.Video
             [MarshalAs(UnmanagedType.I4)]
             private int priv_data_size;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            private ubeat.Video.FFmpeg.FilterCallback filter;
+            private kyun.Video.FFmpeg.FilterCallback filter;
             private IntPtr next;
         }
 
@@ -1172,23 +1172,23 @@ namespace ubeat.Video
         {
             [MarshalAs(UnmanagedType.LPStr)]
             public string name;
-            public ubeat.Video.FFmpeg.CodecType type;
-            public ubeat.Video.FFmpeg.CodecID id;
+            public kyun.Video.FFmpeg.CodecType type;
+            public kyun.Video.FFmpeg.CodecID id;
             [MarshalAs(UnmanagedType.I4)]
             public int priv_data_size;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.InitCallback init;
+            public kyun.Video.FFmpeg.InitCallback init;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.EncodeCallback encode;
+            public kyun.Video.FFmpeg.EncodeCallback encode;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.CloseCallback close;
+            public kyun.Video.FFmpeg.CloseCallback close;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.DecodeCallback decode;
+            public kyun.Video.FFmpeg.DecodeCallback decode;
             [MarshalAs(UnmanagedType.I4)]
             public int capabilities;
             public IntPtr next;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.FlushCallback flush;
+            public kyun.Video.FFmpeg.FlushCallback flush;
             public IntPtr supported_framerates;
             public IntPtr pix_fmts;
         }
@@ -1209,7 +1209,7 @@ namespace ubeat.Video
             public IntPtr extradata;
             [MarshalAs(UnmanagedType.I4)]
             public int extradata_size;
-            public ubeat.Video.FFmpeg.AVRational time_base;
+            public kyun.Video.FFmpeg.AVRational time_base;
             [MarshalAs(UnmanagedType.I4)]
             public int width;
             [MarshalAs(UnmanagedType.I4)]
@@ -1220,12 +1220,12 @@ namespace ubeat.Video
             [MarshalAs(UnmanagedType.I4)]
             public int rate_emu;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.DrawhorizBandCallback draw_horiz_band;
+            public kyun.Video.FFmpeg.DrawhorizBandCallback draw_horiz_band;
             [MarshalAs(UnmanagedType.I4)]
             public int sample_rate;
             [MarshalAs(UnmanagedType.I4)]
             public int channels;
-            public ubeat.Video.FFmpeg.SampleFormat sample_fmt;
+            public kyun.Video.FFmpeg.SampleFormat sample_fmt;
             [MarshalAs(UnmanagedType.I4)]
             public int frame_size;
             [MarshalAs(UnmanagedType.I4)]
@@ -1261,7 +1261,7 @@ namespace ubeat.Video
             [MarshalAs(UnmanagedType.I4)]
             public int rtp_payload_size;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.RtpCallback rtp_callback;
+            public kyun.Video.FFmpeg.RtpCallback rtp_callback;
             [MarshalAs(UnmanagedType.I4)]
             public int mv_bits;
             [MarshalAs(UnmanagedType.I4)]
@@ -1283,8 +1283,8 @@ namespace ubeat.Video
             public IntPtr opaque;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
             public byte[] codec_name;
-            public ubeat.Video.FFmpeg.CodecType codec_type;
-            public ubeat.Video.FFmpeg.CodecID codec_id;
+            public kyun.Video.FFmpeg.CodecType codec_type;
+            public kyun.Video.FFmpeg.CodecID codec_id;
             [CLSCompliant(false)]
             [MarshalAs(UnmanagedType.U4)]
             public uint codec_tag;
@@ -1301,9 +1301,9 @@ namespace ubeat.Video
             [MarshalAs(UnmanagedType.I4)]
             public int error_resilience;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.GetBufferCallback get_buffer;
+            public kyun.Video.FFmpeg.GetBufferCallback get_buffer;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.ReleaseBufferCallback release_buffer;
+            public kyun.Video.FFmpeg.ReleaseBufferCallback release_buffer;
             [MarshalAs(UnmanagedType.I4)]
             public int has_b_frames;
             [MarshalAs(UnmanagedType.I4)]
@@ -1368,7 +1368,7 @@ namespace ubeat.Video
             public int bits_per_sample;
             [MarshalAs(UnmanagedType.I4)]
             public int prediction_method;
-            public ubeat.Video.FFmpeg.AVRational sample_aspect_ratio;
+            public kyun.Video.FFmpeg.AVRational sample_aspect_ratio;
             public IntPtr coded_frame;
             [MarshalAs(UnmanagedType.I4)]
             public int debug;
@@ -1401,7 +1401,7 @@ namespace ubeat.Video
             [MarshalAs(UnmanagedType.I4)]
             public int me_subpel_quality;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.GetFormatCallback get_format;
+            public kyun.Video.FFmpeg.GetFormatCallback get_format;
             [MarshalAs(UnmanagedType.I4)]
             public int dtg_active_format;
             [MarshalAs(UnmanagedType.I4)]
@@ -1442,7 +1442,7 @@ namespace ubeat.Video
             [MarshalAs(UnmanagedType.I4)]
             public int noise_reduction;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.RegetBufferCallback reget_buffer;
+            public kyun.Video.FFmpeg.RegetBufferCallback reget_buffer;
             [MarshalAs(UnmanagedType.I4)]
             public int rc_initial_buffer_occupancy;
             [MarshalAs(UnmanagedType.I4)]
@@ -1458,7 +1458,7 @@ namespace ubeat.Video
             [MarshalAs(UnmanagedType.I4)]
             public int thread_count;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.ExecuteCallback execute;
+            public kyun.Video.FFmpeg.ExecuteCallback execute;
             public IntPtr thread_opaque;
             [MarshalAs(UnmanagedType.I4)]
             public int me_threshold;
@@ -1498,8 +1498,8 @@ namespace ubeat.Video
             public int mb_lmax;
             [MarshalAs(UnmanagedType.I4)]
             public int me_penalty_compensation;
-            public ubeat.Video.FFmpeg.AVDiscard skip_loop_filter;
-            public ubeat.Video.FFmpeg.AVDiscard skip_frame;
+            public kyun.Video.FFmpeg.AVDiscard skip_loop_filter;
+            public kyun.Video.FFmpeg.AVDiscard skip_frame;
             [MarshalAs(UnmanagedType.I4)]
             public int bidir_refine;
             [MarshalAs(UnmanagedType.I4)]
@@ -1561,13 +1561,13 @@ namespace ubeat.Video
             [MarshalAs(UnmanagedType.I4)]
             public int priv_data_size;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.ParaerInitCallback parser_init;
+            public kyun.Video.FFmpeg.ParaerInitCallback parser_init;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.ParserParseCallback parser_parse;
+            public kyun.Video.FFmpeg.ParserParseCallback parser_parse;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.ParserCloseCallback parser_close;
+            public kyun.Video.FFmpeg.ParserCloseCallback parser_close;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.SplitCallback split;
+            public kyun.Video.FFmpeg.SplitCallback split;
             public IntPtr next;
         }
 
@@ -1707,7 +1707,7 @@ namespace ubeat.Video
             [MarshalAs(UnmanagedType.I4)]
             public int duration;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.DestructCallback destruct;
+            public kyun.Video.FFmpeg.DestructCallback destruct;
             public IntPtr priv;
             [MarshalAs(UnmanagedType.I8)]
             public long pos;
@@ -1733,7 +1733,7 @@ namespace ubeat.Video
 
         public struct AVFormatParameters
         {
-            public ubeat.Video.FFmpeg.AVRational time_base;
+            public kyun.Video.FFmpeg.AVRational time_base;
             public int sample_rate;
             public int channels;
             public int width;
@@ -1770,19 +1770,19 @@ namespace ubeat.Video
             [MarshalAs(UnmanagedType.LPStr)]
             public string extensions;
             public int priv_data_size;
-            public ubeat.Video.FFmpeg.CodecID audio_codec;
-            public ubeat.Video.FFmpeg.CodecID video_codec;
+            public kyun.Video.FFmpeg.CodecID audio_codec;
+            public kyun.Video.FFmpeg.CodecID video_codec;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.WriteHeader write_header;
+            public kyun.Video.FFmpeg.WriteHeader write_header;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.WritePacket write_packet;
+            public kyun.Video.FFmpeg.WritePacket write_packet;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.WriteTrailer write_trailer;
+            public kyun.Video.FFmpeg.WriteTrailer write_trailer;
             public int flags;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.SetParametersCallback set_parameters;
+            public kyun.Video.FFmpeg.SetParametersCallback set_parameters;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.InterleavePacketCallback interleave_packet;
+            public kyun.Video.FFmpeg.InterleavePacketCallback interleave_packet;
             public IntPtr nextAVOutputFormat;
         }
 
@@ -1810,25 +1810,25 @@ namespace ubeat.Video
             public string long_name;
             public int priv_data_size;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.ReadProbeCallback read_probe;
+            public kyun.Video.FFmpeg.ReadProbeCallback read_probe;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.ReadHeaderCallback read_header;
+            public kyun.Video.FFmpeg.ReadHeaderCallback read_header;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.ReadPacketCallback read_packet;
+            public kyun.Video.FFmpeg.ReadPacketCallback read_packet;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.ReadCloseCallback read_close;
+            public kyun.Video.FFmpeg.ReadCloseCallback read_close;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.ReadSeekCallback read_seek;
+            public kyun.Video.FFmpeg.ReadSeekCallback read_seek;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.ReadTimestampCallback read_timestamp;
+            public kyun.Video.FFmpeg.ReadTimestampCallback read_timestamp;
             public int flags;
             [MarshalAs(UnmanagedType.LPStr)]
             public string extensions;
             public int value;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.ReadPlayCallback read_play;
+            public kyun.Video.FFmpeg.ReadPlayCallback read_play;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.ReadPauseCallback read_pause;
+            public kyun.Video.FFmpeg.ReadPauseCallback read_pause;
             public IntPtr nextAVInputFormat;
         }
 
@@ -1848,17 +1848,17 @@ namespace ubeat.Video
             [MarshalAs(UnmanagedType.I4)]
             public int id;
             public IntPtr codec;
-            public ubeat.Video.FFmpeg.AVRational r_frame_rate;
+            public kyun.Video.FFmpeg.AVRational r_frame_rate;
             public IntPtr priv_data;
             [MarshalAs(UnmanagedType.I8)]
             public long codec_info_duration;
-            public ubeat.Video.FFmpeg.AVFrac pts;
-            public ubeat.Video.FFmpeg.AVRational time_base;
+            public kyun.Video.FFmpeg.AVFrac pts;
+            public kyun.Video.FFmpeg.AVRational time_base;
             [MarshalAs(UnmanagedType.I4)]
             public int pts_wrap_bits;
             [MarshalAs(UnmanagedType.I4)]
             public int stream_copy;
-            public ubeat.Video.FFmpeg.AVDiscard discard;
+            public kyun.Video.FFmpeg.AVDiscard discard;
             [MarshalAs(UnmanagedType.R4)]
             public float quality;
             [MarshalAs(UnmanagedType.I8)]
@@ -1933,7 +1933,7 @@ namespace ubeat.Video
             public IntPtr cur_ptr;
             [MarshalAs(UnmanagedType.I4)]
             public int cur_len;
-            public ubeat.Video.FFmpeg.AVPacket cur_pkt;
+            public kyun.Video.FFmpeg.AVPacket cur_pkt;
             [MarshalAs(UnmanagedType.I8)]
             public long data_offset;
             [MarshalAs(UnmanagedType.I4)]
@@ -1964,14 +1964,14 @@ namespace ubeat.Video
             [MarshalAs(UnmanagedType.U4)]
             public uint nb_programs;
             public IntPtr programs;
-            public ubeat.Video.FFmpeg.CodecID video_codec_id;
-            public ubeat.Video.FFmpeg.CodecID audio_codec_id;
-            public ubeat.Video.FFmpeg.CodecID subtitle_codec_id;
+            public kyun.Video.FFmpeg.CodecID video_codec_id;
+            public kyun.Video.FFmpeg.CodecID audio_codec_id;
+            public kyun.Video.FFmpeg.CodecID subtitle_codec_id;
         }
 
         public struct AVPacketList
         {
-            public ubeat.Video.FFmpeg.AVPacket pkt;
+            public kyun.Video.FFmpeg.AVPacket pkt;
             public IntPtr next;
         }
 
@@ -1984,14 +1984,14 @@ namespace ubeat.Video
             public int height;
             [MarshalAs(UnmanagedType.I4)]
             public int interleaved;
-            public ubeat.Video.FFmpeg.AVPicture pict;
+            public kyun.Video.FFmpeg.AVPicture pict;
         }
 
         public delegate int AllocCBCallback(IntPtr pVoid, IntPtr pAVImageInfo);
 
         public delegate int ImgProbeCallback(IntPtr pAVProbeData);
 
-        public delegate int ImgReadCallback(IntPtr pByteIOContext, [MarshalAs(UnmanagedType.FunctionPtr)] ubeat.Video.FFmpeg.AllocCBCallback alloc_cb, IntPtr pVoid);
+        public delegate int ImgReadCallback(IntPtr pByteIOContext, [MarshalAs(UnmanagedType.FunctionPtr)] kyun.Video.FFmpeg.AllocCBCallback alloc_cb, IntPtr pVoid);
 
         public delegate int ImgWriteCallback(IntPtr pByteIOContext, IntPtr pAVImageInfo);
 
@@ -2002,12 +2002,12 @@ namespace ubeat.Video
             [MarshalAs(UnmanagedType.LPTStr)]
             public string extensions;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.ImgProbeCallback img_probe;
+            public kyun.Video.FFmpeg.ImgProbeCallback img_probe;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.ImgReadCallback img_read;
+            public kyun.Video.FFmpeg.ImgReadCallback img_read;
             public int supported_pixel_formats;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.ImgWriteCallback img_write;
+            public kyun.Video.FFmpeg.ImgWriteCallback img_write;
             public int flags;
             public IntPtr next;
         }
@@ -2068,7 +2068,7 @@ namespace ubeat.Video
         {
             [MarshalAs(UnmanagedType.LPStr)]
             public string class_name;
-            public ubeat.Video.FFmpeg.ItemNameCallback item_name;
+            public kyun.Video.FFmpeg.ItemNameCallback item_name;
             public IntPtr pAVOption;
         }
 
@@ -2095,11 +2095,11 @@ namespace ubeat.Video
             public IntPtr buf_end;
             public IntPtr opaque;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.Read_PacketCallback read_packet;
+            public kyun.Video.FFmpeg.Read_PacketCallback read_packet;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.WritePacketCallback write_packet;
+            public kyun.Video.FFmpeg.WritePacketCallback write_packet;
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.SeekCallback seek;
+            public kyun.Video.FFmpeg.SeekCallback seek;
             [MarshalAs(UnmanagedType.I8)]
             public long pos;
             [MarshalAs(UnmanagedType.I4)]
@@ -2118,7 +2118,7 @@ namespace ubeat.Video
             public IntPtr checksum_ptr;
             [CLSCompliant(false)]
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            public ubeat.Video.FFmpeg.UpdateChecksumCallback update_checksum;
+            public kyun.Video.FFmpeg.UpdateChecksumCallback update_checksum;
             [MarshalAs(UnmanagedType.I4)]
             public int error;
         }

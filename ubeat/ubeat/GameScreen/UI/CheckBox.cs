@@ -2,7 +2,7 @@
 using System;
 
 
-namespace ubeat.GameScreen.UI
+namespace kyun.GameScreen.UI
 {
     public class CheckBox : InputControl
     {
@@ -34,7 +34,7 @@ namespace ubeat.GameScreen.UI
             box.Click += Box_Click;
             checkBoxRect.Visible = Checked;
 
-            Texture = null;
+            Texture = box.Texture;
         }
 
         private void Box_Click(object sender, EventArgs e)

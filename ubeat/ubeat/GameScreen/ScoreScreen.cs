@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using ubeat.Beatmap;
-using ubeat.Score;
+using kyun.Beatmap;
+using kyun.Score;
 
-namespace ubeat.GameScreen
+namespace kyun.GameScreen
 {
     public partial class ScoreScreen
     {

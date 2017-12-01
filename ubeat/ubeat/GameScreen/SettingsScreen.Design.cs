@@ -3,13 +3,13 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using ubeat.Screen;
-using ubeat.GameScreen.UI;
-using ubeat.Notifications;
-using ubeat.Utils;
-using ubeat.GameScreen.UI.Buttons;
+using kyun.Screen;
+using kyun.GameScreen.UI;
+using kyun.Notifications;
+using kyun.Utils;
+using kyun.GameScreen.UI.Buttons;
 
-namespace ubeat.GameScreen
+namespace kyun.GameScreen
 {
     public partial class SettingsScreen : ScreenBase
     {
@@ -25,7 +25,7 @@ namespace ubeat.GameScreen
 
             var center = new Vector2(actualMode.Width / 2, actualMode.Height / 2);
 
-            Logo = new UI.Image(SpritesContent.Instance.Logo) { BeatReact = true };
+            Logo = new UI.Image(SpritesContent.Instance.IsoLogo) { BeatReact = true };
 
             Logo.Position = 
                     new Vector2(
@@ -43,7 +43,7 @@ namespace ubeat.GameScreen
 
             comboLang.Text = "English";
             comboLang.Items.Add("English");
-            comboLang.Items.Add("Español");
+            //comboLang.Items.Add("Español");
 
             //Label Lang
 
@@ -182,9 +182,49 @@ namespace ubeat.GameScreen
 
             OnBackSpacePress += (sender, args) =>
              {
-                 //BackPressed(new MainScreen(false));
                  BackPressed(MainScreen.Instance);
-             };      
+             };
+
+
+            //Beatmaps selection
+
+            selectbm = new Label(1f)
+            {
+                Text = "[ Add osu! Beatmaps to ubeat! ] (just click here)",
+                Position = new Vector2(lcheckInGameVideo.Position.X, checkInGameVideo.Position.Y + 20 + checkInGameVideo.Texture.Height),
+                Font = SpritesContent.Instance.SettingsFont
+        };
+
+            selectbm.Click += (o,e)=> {
+                var isFullScreen = KyunGame.Instance.Graphics.IsFullScreen;
+
+                if(isFullScreen)
+                    KyunGame.Instance.ToggleFullscreen(false);
+
+                var fdlg = new System.Windows.Forms.FolderBrowserDialog();
+
+                System.Windows.Forms.DialogResult rst = fdlg.ShowDialog();
+
+                if(rst == System.Windows.Forms.DialogResult.Abort || rst == System.Windows.Forms.DialogResult.Cancel)
+                    return;
+
+                if (fdlg.SelectedPath.Length < 1)
+                    return;
+
+                if (!fdlg.SelectedPath.ToLower().EndsWith("songs\\") && !fdlg.SelectedPath.ToLower().EndsWith("songs"))
+                {
+                    notifier.ShowDialog("Hmm, This doesn't seem to be osu!'s songs folder.", 10000, NotificationType.Critical);
+                    return;
+                }
+
+                Settings1.Default.osuBeatmaps = fdlg.SelectedPath;
+                Settings1.Default.Save();
+
+                if(isFullScreen)
+                    KyunGame.Instance.ToggleFullscreen(true);
+
+                notifier.ShowDialog("ubeat needs to restart to add osu beatmaps, please, just do it.", 10000, NotificationType.Critical);
+            };
 
 
 
@@ -206,9 +246,10 @@ namespace ubeat.GameScreen
             Controls.Add(comboLang);
             Controls.Add(backButton);
             Controls.Add(notifier);
+            Controls.Add(selectbm);
             
 
-            UbeatGame.Instance.IsMouseVisible = true;
+            KyunGame.Instance.IsMouseVisible = true;
 
             OnLoadScreen();
         }
@@ -224,7 +265,7 @@ namespace ubeat.GameScreen
                 if(System.Windows.MessageBox.Show("This feature uses a lot of resources, is recommended for multicore processors and up to 2GB of RAM\r\n\r\nAre you sure you want to apply this change?", "ubeat", System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Warning) == System.Windows.MessageBoxResult.Yes)
                 {
                     Logger.Instance.Info("Setting Video: " + ((CheckBox)sender).Checked.ToString());
-                    UbeatGame.Instance.VideoEnabled = ((CheckBox)sender).Checked;
+                    KyunGame.Instance.VideoEnabled = ((CheckBox)sender).Checked;
                     Settings1.Default.Video = ((CheckBox)sender).Checked;
                     Settings1.Default.Save();
                 }
@@ -236,7 +277,7 @@ namespace ubeat.GameScreen
             else
             {
                 Logger.Instance.Info("Setting Video: " + ((CheckBox)sender).Checked.ToString());
-                UbeatGame.Instance.VideoEnabled = ((CheckBox)sender).Checked;
+                KyunGame.Instance.VideoEnabled = ((CheckBox)sender).Checked;
                 Settings1.Default.Video = ((CheckBox)sender).Checked;
                 Settings1.Default.Save();
             }
@@ -245,7 +286,7 @@ namespace ubeat.GameScreen
 
         private void CheckVSync_CheckChanged(object sender, EventArgs e)
         {
-            UbeatGame.Instance.ToggleVSync(((CheckBox)sender).Checked);
+            KyunGame.Instance.ToggleVSync(((CheckBox)sender).Checked);
             Logger.Instance.Info("Setting VSync: " + ((CheckBox)sender).Checked.ToString());
             Settings1.Default.VSync = ((CheckBox)sender).Checked;
             Settings1.Default.Save();
@@ -268,7 +309,7 @@ namespace ubeat.GameScreen
 
         private void CheckFullScr_CheckChanged(object sender, EventArgs e)
         {
-            UbeatGame.Instance.ToggleFullscreen(((CheckBox)sender).Checked);
+            KyunGame.Instance.ToggleFullscreen(((CheckBox)sender).Checked);
             Settings1.Default.FullScreen = ((CheckBox)sender).Checked;
             Settings1.Default.Save();
         }
@@ -278,7 +319,7 @@ namespace ubeat.GameScreen
             Logger.Instance.Info("Setting Frame Rate: {0}", ((ComboBox)sender).Items[((ComboBox)sender).SelectedIndex].ToString());
             Settings1.Default.FrameRate = float.Parse(((ComboBox)sender).Items[((ComboBox)sender).SelectedIndex].ToString());
             Settings1.Default.Save();
-            UbeatGame.Instance.ChangeFrameRate(float.Parse(((ComboBox)sender).Items[((ComboBox)sender).SelectedIndex].ToString()));
+            KyunGame.Instance.ChangeFrameRate(float.Parse(((ComboBox)sender).Items[((ComboBox)sender).SelectedIndex].ToString()));
         }
 
         private void fillComboDisplay()
@@ -352,6 +393,7 @@ namespace ubeat.GameScreen
         private Label lcheckInGameVideo;
         private Notifier notifier;
         private ButtonStandard backButton;
+        private Label selectbm;
 
         public ComboBox comboLang { get; set; }
 

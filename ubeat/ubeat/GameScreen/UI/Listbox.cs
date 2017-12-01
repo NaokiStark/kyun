@@ -5,11 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ubeat.Audio;
-using ubeat.Beatmap;
-using ubeat.Utils;
+using kyun.Audio;
+using kyun.Beatmap;
+using kyun.Utils;
 
-namespace ubeat.GameScreen.UI
+namespace kyun.GameScreen.UI
 {
     public class Listbox : InputControl
     {
@@ -28,7 +28,7 @@ namespace ubeat.GameScreen.UI
         public int vertOffset = 0;
         private int horizontalOffset = 0;
 
-        
+        float perEntryHeight = 0;
         List<string> objects = new List<string>();
 
         [Obsolete]
@@ -48,7 +48,19 @@ namespace ubeat.GameScreen.UI
 
         public List<Mapset> Items = new List<Mapset>();
 
-        public int selectedIndex = -1;
+        public int selectedIndex {
+            get{
+                return sIndex;
+            }
+            set
+            {
+                sIndex = value;
+               
+            }
+        }
+
+
+        private int sIndex = -1;
 
         public bool VertScrollBar = true;
         public bool HorizontalScrollBar = true;
@@ -56,6 +68,10 @@ namespace ubeat.GameScreen.UI
 
         public float width = 50;
         public float height = 250;
+
+        float measuredTextWidth = 0;
+
+        int stpsrnd = 2;
 
         public event EventHandler IndexChanged;
 
@@ -74,26 +90,82 @@ namespace ubeat.GameScreen.UI
 
             int pwidth = (int)width;
             int pheight = (int)height;
-            this.Texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, pwidth, pheight);
+            this.Texture = new Texture2D(KyunGame.Instance.GraphicsDevice, pwidth, pheight);
             Color[] dataBar = new Color[pwidth * pheight];
             for (int i = 0; i < dataBar.Length; ++i) dataBar[i] = Color.Black * .8f;
             this.Texture.SetData(dataBar);
+
+            perEntryHeight = 90;
+            maxCanHold = (int)(height / perEntryHeight);
+
+            measuredTextWidth = textFont.MeasureString("a").X;
+
         }
 
         void Listbox_OnScroll(object sender, bool Up)
         {
-            AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.ScrollHit);
+            //AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.ScrollHit);
+            EffectsPlayer.PlayEffect(SpritesContent.Instance.ScrollHit);
+
             if (!Up)
             {
-                vertOffset++;
+                if (vertOffset + (maxCanHold / 2) > Items.Count) return;
+
+                vertOffset += 1;
             }
             else
             {
+
                 if (vertOffset > 0)
-                    vertOffset--;
+                    if (vertOffset - 1 > 0)
+                        vertOffset -= 1;
+                    else
+                        vertOffset--;
             }
+
+            int rnd = new Random().Next(10, 20);
+            if (!Up)
+            {
+                rnd = -rnd;
+                stpsrnd = 5;
+            }
+            
         }
 
+        public void Select(bool up)
+        {
+            if (up)
+            {
+                if(selectedIndex < 1)
+                {
+                    return;
+                }
+
+                selectedIndex--;
+
+                if (selectedIndex < vertOffset)
+                {
+                    if(selectedIndex < vertOffset + (maxCanHold / 2))
+                        vertOffset--;
+                }
+            }
+            else
+            {
+                if(selectedIndex > Items.Count - 1)
+                {
+                    return;
+                }
+
+                selectedIndex++;
+                if(selectedIndex > vertOffset + maxCanHold - 1)
+                {
+                    vertOffset++;
+                }
+            }
+
+            
+        }
+        
         void Listbox_Click(object sender, EventArgs e)
         {
             computeSelected();
@@ -102,12 +174,13 @@ namespace ubeat.GameScreen.UI
         public void computeSelected()
         {
             Point mousePos = new Point(Mouse.GetState().X, Mouse.GetState().Y);
-            if (BoundBox.Contains(mousePos))
+            Rectangle mouseRect = new Rectangle(mousePos.X, mousePos.Y, 5, 5);
+            if (BoundBox.Intersects(mouseRect))
             {
                 if (mousePos.X - Position.X <= width)
                 {
                     float off = mousePos.Y - Position.Y;
-                    float which = off / 50;
+                    float which = off / perEntryHeight;
                     which = (float)Math.Floor(which);
                     int oldSel = selectedIndex;
                     selectedIndex = (int)(which + vertOffset);
@@ -132,7 +205,7 @@ namespace ubeat.GameScreen.UI
             {
                 //oops
 
-                object o = Items[i].Title + " - " + Items[i].Artist;
+                object o = Items[i].Title;
                 float oLength = textFont.MeasureString(o.ToString()).X;
                 int numChars = (int)(oLength / length);
                 if (numChars > numCharsAllowed)
@@ -144,16 +217,18 @@ namespace ubeat.GameScreen.UI
             return ret;
         }
 
+        public int maxCanHold;
+        
         public override void Render()
         {
-            float perEntryHeight = 50;
-            int maxCanHold = (int)(height / perEntryHeight);
+             
+
 
             //Take the width divided by the width of a monospace character in the current font, minus 1 (for spacing)
-            int maxCharsCanHold = (int)(width / textFont.MeasureString("a").X) - 1;
+            int maxCharsCanHold = (int)(width / measuredTextWidth) - 1;
 
-            Vector2 startBoxPos = Position + new Vector2(2, 2);
-            Vector2 drawTextPos = startBoxPos + new Vector2(10, -2);
+            Vector2 startBoxPos = Position + new Vector2(2, stpsrnd);
+            Vector2 drawTextPos = startBoxPos + new Vector2(0, -2);
             Vector2 bottomRightBoxPos = new Vector2(startBoxPos.X + (width - 4), startBoxPos.Y + perEntryHeight);
 
             
@@ -163,19 +238,43 @@ namespace ubeat.GameScreen.UI
              horizontalOffset = 0;
 
              Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, Texture.Width, Texture.Height);
-             UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rg, Color.White);
+            //UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rg, Color.White);
+            Rectangle mrg = new Rectangle(Mouse.GetState().X, Mouse.GetState().Y, 10, 10);
 
-            for (int i = 0; i < maxCanHold && i + vertOffset < Items.Count; i++)
+            for (int i = 0; i < maxCanHold + 1 && i + vertOffset < Items.Count; i++)
             {
-                string o2 = Items[i + vertOffset].Artist + " - " + Items[i + vertOffset].Title;
+                string o2 = Items[i + vertOffset].Title;
+
+
+                string oartistDrw = Items[i + vertOffset].Artist;
+                string artistDrw = "";
+                string omapCreator = Items[i + vertOffset].Creator;
+                string mapCreator = "";
+
+
                 string o = "";
                 for (int a = horizontalOffset; a < o2.Length && a < maxCharsCanHold + horizontalOffset; a++)
                 {
                     o += o2[a];
                 }
-                Color textColor = Color.White;
+
+                for (int a = horizontalOffset; a < oartistDrw.Length && a < maxCharsCanHold + horizontalOffset; a++)
+                {
+                    artistDrw += oartistDrw[a];
+                }
+
+                for (int a = horizontalOffset; a < omapCreator.Length && a < maxCharsCanHold + horizontalOffset; a++)
+                {
+                    mapCreator += omapCreator[a];
+                }
+
+
+                Color textColor = Color.FromNonPremultiplied(155, 155, 155, 255);
                 Color backColor = Color.Black;
                 Color selectedColor = Color.Brown;
+
+                bool drawFront = true;
+                Vector2 fBox = drawTextPos;
 
                 byte alpha = 200;
                 if (i % 2 == 0)
@@ -183,11 +282,43 @@ namespace ubeat.GameScreen.UI
                 if (i + vertOffset == selectedIndex)
                 {
                     textColor = Color.Yellow;
+                    //fBox += new Vector2(20, 0);
+                    drawFront = false;
                 }
 
-                UbeatGame.Instance.SpriteBatch.DrawString(textFont, o, drawTextPos, textColor, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0);
+                int middle = maxCanHold / 2;
+                if(i > middle)
+                {
+                    fBox += new Vector2(20 * (maxCanHold - i), 0);
+                }
+                else
+                {
+                    fBox += new Vector2(20 * i, 0);
+                }
+
+                fBox -= new Vector2(10 , 0);
+
+                Vector2 drTxPs = new Vector2(fBox.X + 30, fBox.Y + 10);
+
+                float pscale = 1;
+
+                if(mrg.Intersects(new Rectangle((int)fBox.X, (int)fBox.Y, SpritesContent.Instance.ScrollListBeatmap_alt.Width, SpritesContent.Instance.ScrollListBeatmap_alt.Height))){
+                    pscale = 1.01f;
+                }
+
+                
+                KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.ScrollListBeatmap_alt, fBox, null, Color.White, 0, Vector2.Zero, pscale ,SpriteEffects.None , 0);
+                if (drawFront)
+                    //KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.ScrollListBeatmap, fBox, Color.White*0.8f);
+                    KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.ScrollListBeatmap, fBox, null, Color.White, 0, Vector2.Zero, pscale, SpriteEffects.None, 0);
+
+
+                KyunGame.Instance.SpriteBatch.DrawString(textFont, o, drTxPs, textColor, 0f, Vector2.Zero, Scale * pscale, SpriteEffects.None, 0);
+                KyunGame.Instance.SpriteBatch.DrawString(textFont, artistDrw, drTxPs + new Vector2(10, 25), textColor, 0f, Vector2.Zero, Scale * .85f * pscale, SpriteEffects.None, 0);
+                KyunGame.Instance.SpriteBatch.DrawString(textFont, mapCreator, drTxPs + new Vector2(10, 25*2-5), textColor, 0f, Vector2.Zero, Scale * .75f * pscale, SpriteEffects.None, 0);
 
                 startBoxPos.Y += perEntryHeight;
+
                 drawTextPos.Y += perEntryHeight;
                 bottomRightBoxPos.Y += perEntryHeight;
             }
@@ -209,8 +340,9 @@ namespace ubeat.GameScreen.UI
                 foreach (Mapset o in Items)
                 {
                     string r = o.Artist + " - " + o.Title;
-                    Vector2 size = textFont.MeasureString(r);
-                    float w = size.X;
+                    //Vector2 size = textFont.MeasureString(r);
+                    //float w = size.X;
+                    float w = measuredTextWidth;
                     if (w > maxWidth)
                         maxWidth = w;
                 }
@@ -225,10 +357,13 @@ namespace ubeat.GameScreen.UI
                 if (IndexChanged != null)
                 {
                     oldSel = selectedIndex;
+                    vertOffset = Math.Max(selectedIndex - (maxCanHold / 2), 0);
                     IndexChanged(this, new EventArgs());
                 }
 
             oldSel = selectedIndex;
+            if (vertOffset < -1)
+                vertOffset = 0;
         }
     }
 }

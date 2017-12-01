@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 
-namespace ubeat.Video
+namespace kyun.Video
 {
     public class VideoPlayer
     {
@@ -45,7 +45,10 @@ namespace ubeat.Video
                 return;
             }
             Stopped = false;
+
+            VideoDecoder.Instance?.Dispose(); //CLEANUP SHIT BUFFER
             vdc = VideoDecoder.Instance;
+            
             bool oppenned = vdc.Open(VideoPath);
             //vdc.Seek(64); //TEST
             if (oppenned == false)
@@ -71,7 +74,7 @@ namespace ubeat.Video
             if (vdc == null) return null;
             if (Buffer.Count > 2) return null;
 
-            byte[] frame = vdc.GetFrame((int)UbeatGame.Instance.Player.Position);
+            byte[] frame = vdc.GetFrame((int)KyunGame.Instance.Player.Position);
             if (frame == null) return null;
             return frame;
         }

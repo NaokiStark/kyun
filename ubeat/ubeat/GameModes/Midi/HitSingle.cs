@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ubeat.GameModes.Midi
+namespace kyun.GameModes.Midi
 {
     class HitSingle
     {

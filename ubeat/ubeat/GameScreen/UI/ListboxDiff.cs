@@ -5,11 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ubeat.Audio;
-using ubeat.Beatmap;
-using ubeat.Utils;
+using kyun.Audio;
+using kyun.Beatmap;
+using kyun.Utils;
 
-namespace ubeat.GameScreen.UI
+namespace kyun.GameScreen.UI
 {
     public class ListboxDiff : InputControl
     {
@@ -25,9 +25,10 @@ namespace ubeat.GameScreen.UI
         SpriteFont textFont;
 
 
-        private int vertOffset = 0;
+        public int vertOffset = 0;
         private int horizontalOffset = 0;
 
+        float measuredTextWidth = 0;
 
         List<string> objects = new List<string>();
 
@@ -74,23 +75,35 @@ namespace ubeat.GameScreen.UI
 
             int pwidth = (int)width;
             int pheight = (int)height;
-            this.Texture = new Texture2D(UbeatGame.Instance.GraphicsDevice, pwidth, pheight);
+            this.Texture = new Texture2D(KyunGame.Instance.GraphicsDevice, pwidth, pheight);
             Color[] dataBar = new Color[pwidth * pheight];
             for (int i = 0; i < dataBar.Length; ++i) dataBar[i] = Color.Black * .8f;
             this.Texture.SetData(dataBar);
+
+            measuredTextWidth = textFont.MeasureString("a").X;
+            float perEntryHeight = 50;
+            maxCanHold = (int)(height / perEntryHeight);
+
         }
-        
+
         void Listbox_OnScroll(object sender, bool Up)
         {
-            AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.ScrollHit);
+            //AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.ScrollHit);
+            EffectsPlayer.PlayEffect(SpritesContent.Instance.ScrollHit);
             if (!Up)
             {
-                vertOffset++;
+                if (vertOffset + (maxCanHold / 2) > Items.Count) return;
+
+                vertOffset += 3;
             }
             else
             {
+
                 if (vertOffset > 0)
-                    vertOffset--;
+                    if (vertOffset - 3 > 0)
+                        vertOffset -= 3;
+                    else
+                        vertOffset--;
             }
         }
 
@@ -153,7 +166,7 @@ namespace ubeat.GameScreen.UI
             int maxCanHold = (int)(height / perEntryHeight);
 
             //Take the width divided by the width of a monospace character in the current font, minus 1 (for spacing)
-            int maxCharsCanHold = (int)(width / textFont.MeasureString("a").X) - 1;
+            int maxCharsCanHold = (int)(width / measuredTextWidth) - 1;
 
             Vector2 startBoxPos = Position + new Vector2(2, 2);
             Vector2 drawTextPos = startBoxPos + new Vector2(0, -2);
@@ -166,7 +179,7 @@ namespace ubeat.GameScreen.UI
             horizontalOffset = 0;
 
             Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, Texture.Width, Texture.Height);
-            UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rg, Color.White);
+            //UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rg, Color.White);
 
             for (int i = 0; i < maxCanHold && i + vertOffset < Items.Count; i++)
             {
@@ -189,7 +202,7 @@ namespace ubeat.GameScreen.UI
                 }
 
 
-                UbeatGame.Instance.SpriteBatch.DrawString(textFont, o, drawTextPos, textColor, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0);
+                KyunGame.Instance.SpriteBatch.DrawString(textFont, o, drawTextPos, textColor, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0);
 
                 startBoxPos.Y += perEntryHeight;
                 drawTextPos.Y += perEntryHeight;
@@ -198,6 +211,8 @@ namespace ubeat.GameScreen.UI
             //base.Draw(sb);
         }
         int oldSel = 1000;
+        private int maxCanHold;
+
         public override void Update()
         {
             base.Update(); //Events
@@ -207,8 +222,9 @@ namespace ubeat.GameScreen.UI
                 foreach (ubeatBeatMap o in Items)
                 {
                     string r = o.Version;
-                    Vector2 size = textFont.MeasureString(r);
-                    float w = size.X;
+                    //Vector2 size = textFont.MeasureString(r);
+                    //float w = size.X;
+                    float w = measuredTextWidth;
                     if (w > maxWidth)
                         maxWidth = w;
                 }

@@ -2,13 +2,13 @@
 using System.Windows.Forms;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using ubeat.GameScreen;
-using ubeat.Screen;
-using ubeat.Utils;
-using ubeat.GameModes.Classic;
-using ubeat.GameModes;
+using kyun.GameScreen;
+using kyun.Screen;
+using kyun.Utils;
+using kyun.GameModes.Classic;
+using kyun.GameModes;
 
-namespace ubeat.UIObjs
+namespace kyun.UIObjs
 {
     public class ApproachObj : UIObjectBase
     {
@@ -16,6 +16,7 @@ namespace ubeat.UIObjs
         float height = 0;
         float approachrate = 0;
         decimal starttime;
+
 
         GameModeScreenBase ClassicInstance;
         
@@ -49,10 +50,10 @@ namespace ubeat.UIObjs
 
             float pcrt = percen / twidth * 100;
 
-            float percentgg = percen;
+            float percentgg = percen + Texture.Bounds.Width;
 
 
-            float percentg = gtime * 1/*/100f*/;
+            float percentg = gtime * Texture.Bounds.Width/*/100f*/;
             /*
             if (opacity > -1)
             {
@@ -62,10 +63,10 @@ namespace ubeat.UIObjs
             {
                 opacity = 0;
             }*/
-
+            
             width = percentgg;
             height = percentgg;
-            if (width < 0)
+            if (width < Texture.Bounds.Width)
             {
                 Died = true;
             }
@@ -88,7 +89,7 @@ namespace ubeat.UIObjs
 
             //if(width <= Texture.Bounds.Width)
             
-            UbeatGame.Instance.SpriteBatch.Draw(this.Texture,
+            KyunGame.Instance.SpriteBatch.Draw(this.Texture,
                     new Rectangle((int)Position.X + (int)Texture.Bounds.Width / 2,(int)Position.Y + (int)Texture.Bounds.Height / 2, (int)width, (int)height),
                     null, Color.White * Opacity,
                     //RotationAngle,
@@ -96,6 +97,7 @@ namespace ubeat.UIObjs
                     new Vector2(Texture.Bounds.Width / 2, Texture.Bounds.Height / 2),
                     Microsoft.Xna.Framework.Graphics.SpriteEffects.None,
                     0);
+            //base.Render();
            // else
               //  Game1.Instance.spriteBatch.Draw(this.Texture, new Rectangle((int)Position.X + (int)Texture.Bounds.Width / 2, (int)Position.Y + (int)Texture.Bounds.Height / 2, (int)Texture.Bounds.Width, (int)Texture.Bounds.Height), null, Color.White * opacity, 0, new Vector2(Texture.Bounds.Width / 2, Texture.Bounds.Height / 2), Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0);
               

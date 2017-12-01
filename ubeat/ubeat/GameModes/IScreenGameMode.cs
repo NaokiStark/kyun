@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ubeat.Beatmap;
+using kyun.Beatmap;
 
-namespace ubeat.GameModes
+namespace kyun.GameModes
 {
     public interface IScreenGameMode
     {
