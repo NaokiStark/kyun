@@ -316,8 +316,8 @@ namespace osuBMParser
             }
             else if(typeBits[7])
             {
-            hitObject = new HitSlider();
-            isManiaLongNote = true;
+                hitObject = new HitSlider();
+                isManiaLongNote = true;
             }
             else
             {
@@ -471,15 +471,21 @@ namespace osuBMParser
 
         private float toFloat(string data)
         {
+            float n = 0f;
+            if (data.Contains("1E+"))
+            {
+                return 1;
+            }
+
             try
             {
-                return float.Parse(data, NumberFormatInfo.InvariantInfo);
+                n = float.Parse(data, NumberFormatInfo.InvariantInfo);
             }
             catch
             {
-                return 0f;
+                
             }
-            
+            return n;
         }
 
         private bool toBool(string data)
