@@ -58,6 +58,8 @@ namespace kyun.GameModes.Classic
             }
         }
 
+        public int ReplayId = 0;
+
         public int TimeToDie = 100;
         public bool first;
         public bool shared;
@@ -153,6 +155,19 @@ namespace kyun.GameModes.Classic
                 if (screenInstance.GamePosition >= Time)
                 {
                     pressedTime = screenInstance.GamePosition;
+                    calculateScore();
+                }
+
+                return;
+            }
+
+            if ((screenInstance.gameMod & GameMod.Replay) == GameMod.Replay)
+            {
+                var pressed = screenInstance.replay.Hits[ReplayId].PressedAt;
+
+                if (screenInstance.GamePosition >= pressed)
+                {
+                    pressedTime = pressed;
                     calculateScore();
                 }
 

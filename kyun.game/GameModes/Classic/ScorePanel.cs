@@ -1,5 +1,6 @@
 ﻿using kyun.Audio;
 using kyun.Beatmap;
+using kyun.game.GameModes.CatchIt;
 using kyun.GameScreen;
 using kyun.GameScreen.UI;
 using kyun.GameScreen.UI.Buttons;
@@ -16,7 +17,8 @@ namespace kyun.GameModes.Classic
     public class ScorePanel:ScreenBase
     {
 
-        
+        public static bool Displaying = false;
+
         public static ScorePanel Instance
         {
             get
@@ -55,11 +57,14 @@ namespace kyun.GameModes.Classic
 
         int cmargin = 65;
         private ButtonStandard backButton;
+        private ButtonStandard tryAgainBtn;
+        private ButtonStandard replayBtn;
+        public Replay rpl;
 
         public ScorePanel()
         {
 
-            mStr = SpritesContent.Instance.ScoreBig.MeasureString("la puta madre que pario");
+            mStr = SpritesContent.Instance.ScoreBig.MeasureString("la puta madre que te pario");
 
             var aMode = ActualScreenMode;
 
@@ -168,9 +173,20 @@ namespace kyun.GameModes.Classic
                 Position = new Vector2(15, aMode.Height - SpritesContent.Instance.ButtonStandard.Height - 10),
             };
 
-            
 
+            tryAgainBtn = new ButtonStandard(Color.Aquamarine)
+            {
+                ForegroundColor = Color.White,
+                Caption = "Rematch!",
+                Position = new Vector2(backButton.Position.X, backButton.Position.Y - SpritesContent.Instance.ButtonStandard.Height - 10),
+            };
 
+            replayBtn = new ButtonStandard(Color.Blue)
+            {
+                ForegroundColor = Color.White,
+                Caption = "Replay",
+                Position = new Vector2(tryAgainBtn.Position.X, tryAgainBtn.Position.Y - SpritesContent.Instance.ButtonStandard.Height - 10),
+            };
 
             Controls.Add(rankingPanel);
             Controls.Add(mapNameLabel);
@@ -189,8 +205,8 @@ namespace kyun.GameModes.Classic
             Controls.Add(missimg);
 
             Controls.Add(backButton);
-
-         
+            Controls.Add(tryAgainBtn);
+            Controls.Add(replayBtn);         
 
 
 
@@ -198,28 +214,55 @@ namespace kyun.GameModes.Classic
             {
                 if(args.Key == Microsoft.Xna.Framework.Input.Keys.Escape)
                 {
+                    Displaying = false;
                     EffectsPlayer.StopAll();
                     AVPlayer.audioplayer.Play();
                     ScreenManager.ChangeTo(BeatmapScreen.Instance);
+
                 }
                       
             };
 
             backButton.Click += (o, ar) =>
             {
+                Displaying = false;
                 EffectsPlayer.StopAll();
                 AVPlayer.audioplayer.Play();
                 ScreenManager.ChangeTo(BeatmapScreen.Instance);
             };
+
+            tryAgainBtn.Click += TryAgainBtn_Click;
+
+            replayBtn.Click += ReplayBtn_Click;
 
             //BackgroundDim = i.BackgroundDim;
 
             //EffectsPlayer.PlayEffect(SpritesContent.Instance.Applause);
         }
 
-        public void CalcScore(GameModeScreenBase i)
+        private void TryAgainBtn_Click(object sender, EventArgs e)
         {
+            Displaying = false;
+            EffectsPlayer.StopAll();
+            ScreenManager.ChangeTo(i);
+            i.Play(i.Beatmap, i.gameMod); //restart game
+        }
 
+        private void ReplayBtn_Click(object sender, EventArgs e)
+        {
+            Displaying = false;
+            EffectsPlayer.StopAll();
+            ScreenManager.ChangeTo(i);
+            i.Play(i.Beatmap, i.gameMod, rpl); //restart replay
+        }
+
+        public void CalcScore(GameModeScreenBase ins)
+        {
+            if (Displaying)
+                return;
+
+            Displaying = true;
+            i = ins;
             AVPlayer.audioplayer.SetVelocity(1);
             EffectsPlayer.PlayEffect(SpritesContent.Instance.Applause);
             Background = i.Background;
@@ -262,7 +305,7 @@ namespace kyun.GameModes.Classic
                 }
                 else if(hb is HitSingle)
                 {
-                    HitSingle bb = (HitHolder)hb;
+                    HitSingle bb = (HitSingle)hb;
                     score = bb.GetScore();
                 }
                 else if(hb is game.GameModes.CatchIt.HitObject)
@@ -291,14 +334,21 @@ namespace kyun.GameModes.Classic
                 }                                
             }
 
+            if (i is ClassicModeScreen)
+                rpl = Replay.Build(i.HitObjects, i.Beatmap);
+            else
+                rpl = Replay.Build(((CatchItMode)i).movements, i.Beatmap, false);
+                
+
             misslbl.Text = $"{missCount}";
             badlbl.Text = $"{badCount}";
             greatlbl.Text = $"{greatCount}";
             perfectlbl.Text = $"{perfectCount}";
             acclbl.Text = $"{((float)acc / (float)i.HitObjects.Count).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)}%";
 
-
+            
         }
+
         public override void Update(GameTime tm)
         {
             base.Update(tm);

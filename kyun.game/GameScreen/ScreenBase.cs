@@ -108,8 +108,16 @@ namespace kyun.GameScreen
                 int screenHeight = KyunGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
                 var screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
-
-                KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Microsoft.Xna.Framework.Color.White * BackgroundDim, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                try
+                {
+                    if(Background != null && !Background.IsDisposed)
+                        KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Microsoft.Xna.Framework.Color.White * BackgroundDim, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                }
+                catch
+                {
+                    //
+                }
+                
             }
 
             if (AllowVideo)

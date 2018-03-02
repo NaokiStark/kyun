@@ -12,7 +12,8 @@ namespace kyun.GameModes
     /// </summary>
     public class HitBase : GameScreen.UIObjectBase
     {
-        
+        public float MsPerBeat { get; set; }
+
         public HitBase(Texture2D texture)
         {
             Texture = texture;

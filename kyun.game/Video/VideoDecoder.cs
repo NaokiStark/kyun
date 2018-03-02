@@ -35,6 +35,7 @@ namespace kyun.Video
         private int readCursor;
         private bool decodingFinished;
         private bool gotNewFrame;
+        private bool decoding = true;
 
         private static VideoDecoder __instance;
 
@@ -124,7 +125,13 @@ namespace kyun.Video
             this.Disposing = true;
             this.isDisposed = true;
             if (this.decodingThread != null)
+            {
+                decoding = false;
+                decodingFinished = true;                
                 this.decodingThread.Abort();
+
+            }
+                            
             try
             {
                 Marshal.FreeHGlobal(this.packet);
@@ -270,12 +277,13 @@ namespace kyun.Video
         {
             try
             {
-                while (true)
+                while (decoding)
                 {
                     gotNewFrame = false;
 
                     lock (this)
                     {
+                        
                         while (writeCursor - readCursor < BufferSize && (decodingFinished = (FFmpeg.av_read_frame(pFormatCtx, packet) < 0)) == false)
                         {
                             if (Marshal.ReadInt32(packet, 24) == videoStream)
@@ -326,7 +334,6 @@ namespace kyun.Video
                         }
                     }
 
-                    if (!gotNewFrame)
                         Thread.Sleep(1);
                 }
             }
@@ -351,9 +358,9 @@ namespace kyun.Video
 
         public byte[] GetFrame(int time)
         {
-
+            time = Math.Max(1, time);
             while (this.readCursor < this.writeCursor - 1 && this.FrameBufferTimes[(this.readCursor + 1) % this.BufferSize] <= (double)time)
-                ++this.readCursor;
+                this.readCursor++;
             if (this.readCursor >= this.writeCursor)
                 return (byte[])null;
             this.currentDisplayTime = this.FrameBufferTimes[this.readCursor % this.BufferSize];
@@ -380,25 +387,24 @@ namespace kyun.Video
 
         public void Seek(int time)
         {
-            
-            lock (this)
+
+            time = Math.Max(1, time);
+            int local_0 = 0;
+            double local_1 = (double)time / 1000.0 / this.FrameDelay + (double)this.stream.start_time;
+            if (local_1 < this.lastPts)
+                local_0 = 1;
+            try
             {
-                int local_0 = 0;
-                double local_1 = (double)time / 1000.0 / this.FrameDelay + (double)this.stream.start_time;
-                if (local_1 < this.lastPts)
-                    local_0 = 1;
-                try
-                {
-                    kyun.Video.FFmpeg.av_seek_frame(this.pFormatCtx, this.videoStream, (long)local_1, local_0);
-                }
-                catch
-                {
-                    //Stupid bug
-                }
-                
-                this.readCursor = 0;
-                this.writeCursor = 0;
+                kyun.Video.FFmpeg.av_seek_frame(this.pFormatCtx, this.videoStream, (long)local_1, local_0);
             }
+            catch
+            {
+                //Stupid bug
+            }
+            
+            this.readCursor = 1;
+            this.writeCursor = 1;
+
         }
 
         public delegate void EndOfFileHandler();

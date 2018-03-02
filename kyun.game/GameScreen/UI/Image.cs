@@ -104,7 +104,8 @@ namespace kyun.GameScreen.UI
                 rg = new Rectangle((int)this.Position.X + (this.Texture.Width / 2), (int)this.Position.Y + (this.Texture.Height / 2), (int)(this.Texture.Width * Scale), (int)(this.Texture.Height * Scale));
 
             }
-            KyunGame.Instance.SpriteBatch.Draw(this.Texture, rg, null, TextureColor * Opacity, AngleRotation, new Vector2((this.Texture.Width / 2), (this.Texture.Height / 2)), SpriteEffects.None, 0);
+            if(Texture !=null && !Texture.IsDisposed)
+                KyunGame.Instance.SpriteBatch.Draw(this.Texture, rg, null, TextureColor * Opacity, AngleRotation, new Vector2((this.Texture.Width / 2), (this.Texture.Height / 2)), SpriteEffects.None, 0);
         }
     }
 }

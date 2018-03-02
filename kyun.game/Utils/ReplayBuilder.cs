@@ -5,15 +5,17 @@ using System.Text;
 using System.IO;
 using kyun.UIObjs;
 using kyun.Beatmap;
+using kyun.GameModes;
+using kyun.GameModes.Classic;
 
 namespace kyun.Utils
 {
     public class ReplayBuilder
     {
-        public static bool SaveReplay(Beatmap.ubeatBeatMap BeatmapComplete)
+        public static bool SaveReplay(List<HitBase> hits, ubeatBeatMap BeatmapComplete)
         {
             //I NEED MONEY
-
+            /*
             try
             {
                 string fDir = Path.Combine(System.Windows.Forms.Application.StartupPath, "Replays");
@@ -48,7 +50,7 @@ namespace kyun.Utils
             {
                 Logger.Instance.Warn("I can't save this replay");
                 return false;
-            }
+            }*/
 
             return true;
         }
@@ -85,6 +87,45 @@ namespace kyun.Utils
         /// I think I will need it sometime
         /// </summary>
         public int Id { get; set; }
+
+        public static Replay Build(List<HitBase> hits, IBeatmap Beatmap, bool classic = true)
+        {
+            var tmp = new Replay();
+            tmp.Hits = new List<ReplayObject>();
+            foreach(HitBase h in hits)
+            {
+                if (classic)
+                {
+                    HitSingle hitSingle = (HitSingle)h;
+                    var ho = new ReplayObject()
+                    {
+                        PressedAt = hitSingle.pressedTime,
+                        LeaveAt = (h is GameModes.Classic.HitHolder) ?((GameModes.Classic.HitHolder)h).leaveTime : 0
+                    };
+
+                    tmp.Hits.Add(ho);
+                }
+                else
+                {
+                    game.GameModes.CatchIt.HitObject hitobj = (game.GameModes.CatchIt.HitObject)h;
+
+                    var ho = new ReplayObject()
+                    {
+                        PressedAt = hitobj.PositionAtCollision,
+                        LeaveAt = hitobj.CollisionAt
+                    };
+                    tmp.Hits.Add(ho);
+                }                
+            }
+            return tmp;
+        }
+
+        public static Replay Build(List<ReplayObject> hits, IBeatmap Beatmap, bool classic = true)
+        {
+            var tmp = new Replay();
+            tmp.Hits = hits;
+            return tmp;
+        }
     }
 
     public class ReplayObject
@@ -93,6 +134,7 @@ namespace kyun.Utils
         /// Hit pressed at fucking specified time
         /// </summary>
         public long PressedAt { get; set; }
+        public long LeaveAt { get; set; }
     }
 
     public class ReplayHitHolder : ReplayObject
@@ -100,7 +142,8 @@ namespace kyun.Utils
         /// <summary>
         /// HitHolder key-up. Fuck.
         /// </summary>
-        public long LeaveAt { get; set; }
+       
+        //shit
     }
 
 }

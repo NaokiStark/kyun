@@ -19,6 +19,8 @@ using kyun.GameModes.Classic;
 using kyun.Overlay;
 using kyun.game.GameScreen.UI;
 using kyun.game;
+using kyun.game.Utils;
+using kyun.game.NikuClient;
 
 namespace kyun
 {
@@ -35,6 +37,7 @@ namespace kyun
 
         public static System.Windows.Forms.Form WinForm = null;
 
+
 #if !BETA
         public static string CompilationStatus = "Unstable";
 #else
@@ -44,40 +47,21 @@ namespace kyun
         public static string CompilationVersion = "";
 
         public event EventHandler OnPeak;
-
-        //Beatmaps
-
-        public bool ppyMode {
-            get
-            {
-                return fuckMode;
-            }
-            set
-            {
-                fuckMode = value;
-                peppyMode();
-            }
-        }
-
-        bool fuckMode;
-
+        public Discord_Handler discordHandler;
+        public float oVol = 0f;
         public SoundEffect soundEffect;
-
         public Beatmap.ubeatBeatMap SelectedBeatmap { get; set; }
         public Beatmap.Mapset SelectedMapset { get; set; }
-
         public float elapsed = 0;
         public bool VideoEnabled { get; set; }
         public Vector2 wSize = new Vector2(800, 600);
         public GameTime GameTimeP { get; set; }
-        [DllImport("user32.dll")]
-        private static extern bool ShowWindow(IntPtr hwnd, int nCmdShow);
-
-        //4 mainscreen
-
-        public bool FistLoad;
-
         private float _vol = Settings1.Default.Volume;
+        public FrameCounter frameCounter;
+        public static bool RunningOverWine;
+        public static bool xmas = false;
+        public float maxPeak { get; private set; }
+        public NikuClientApi server { get; set; }
 
         public float GeneralVolume
         {
@@ -102,19 +86,16 @@ namespace kyun
                 VolumeControl.Instance.Show();
             }
         }
-        public FrameCounter frameCounter;
-
-        public static bool RunningOverWine;
-
-        public static bool xmas = false;
 
         public KyunGame(bool softwareRendering = false)
         {
-            
-                
-            
 
-            xmas = (DateTime.Now.Month == 1 && (DateTime.Now.Day >= 1 && DateTime.Now.Day <= 3) || DateTime.Now.Month == 12 && (DateTime.Now.Day >= 8 && DateTime.Now.Day <= 31))?true:false;
+            if (Settings1.Default.Token != "" && Settings1.Default.User != "")
+                server = new NikuClientApi(Settings1.Default.User, Settings1.Default.Token);
+            else
+                Logger.Instance.Debug("[NikuServer] Offline");
+
+            xmas = (DateTime.Now.Month == 1 && (DateTime.Now.Day >= 1 && DateTime.Now.Day <= 3) || DateTime.Now.Month == 12 && (DateTime.Now.Day >= 8 && DateTime.Now.Day <= 31)) ? true : false;
 
 
             WinForm = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(Window.Handle);
@@ -122,13 +103,6 @@ namespace kyun
             RunningOverWine = false;
             if (Process.GetProcessesByName("winlogon").Count() < 1)
                 RunningOverWine = true; //A cup of wine
-
-            /*
-            if (RunningOverWine)
-                throw new NotSupportedException("kyun! is not compatible with Wine"); //I'm so sorry
-                */
-
-
 
             DateTime lastComp = File.GetLastWriteTime(Path.Combine(Environment.CurrentDirectory, "kyun.game.dll"));
 
@@ -147,8 +121,6 @@ namespace kyun
             GameTimeP = new GameTime();
 
             Content.RootDirectory = "Content";
-            
-
             this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 60.0f);
 
             KeyBoardManager = new KeyboardManager(this);
@@ -156,52 +128,16 @@ namespace kyun
 
             if (RunningOverWine)
             {
-
-                /*
-                System.Windows.Forms.Form thisForm = (System.Windows.Forms.Form)System.Windows.Forms.Form.FromHandle(this.Window.Handle);
-                thisForm.KeyPreview = true;
-                thisForm.MouseMove += MouseHandler.setMouseStateWinform;
-                thisForm.MouseUp += MouseHandler.setMouseStateWinform;
-                thisForm.MouseDown += MouseHandler.setMouseStateWinform;
-                thisForm.MouseWheel += MouseHandler.setMouseStateWinform;*/
-
                 m_GlobalHook = Hook.AppEvents();
-                
                 m_GlobalHook.MouseDown += MouseHandler.setMouseDownStateWinform;
                 m_GlobalHook.MouseUp += MouseHandler.setMouseUpStateWinform;
                 m_GlobalHook.MouseMove += MouseHandler.SetMousePosWinFrm;
                 m_GlobalHook.MouseWheel += MouseHandler.SetMouseWheelPos;
-
             }
+
+            discordHandler = new Discord_Handler();
         }
 
-        //Grid grid;
-        /*
-        public void GameStart(Beatmap.ubeatBeatMap bm, bool automode = false)
-        {
-            grid = new Grid(bm);
-            ScreenManager.ChangeTo(grid);
-            grid.Play(null, automode);
-        }*/
-
-        //public SpriteFont defaultFont;
-
-
-        void peppyMode()
-        {
-            if (fuckMode)
-            {
-                SpritesContent.Instance.Logo = ContentLoader.LoadTextureFromAssets("Losu.png");
-            }
-            else
-            {
-                SpritesContent.Instance.Logo = Content.Load<Texture2D>("logo");
-            }
-            
-
-        }
-
-        
         void loadEnviroment()
         {
 
@@ -228,90 +164,56 @@ namespace kyun
 
             ToggleVSync(Settings1.Default.VSync);
             ToggleFullscreen(Settings1.Default.FullScreen);
-            
 
-            /*
-            this.graphics.PreferredBackBufferWidth = this.GraphicsDevice.Adapter.CurrentDisplayMode.Width;
-            this.graphics.PreferredBackBufferHeight = this.GraphicsDevice.Adapter.CurrentDisplayMode.Height;
-
-            */
             System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(Window.Handle);
 
             if (srcm[Settings1.Default.ScreenMode].WindowMode != Screen.WindowDisposition.Windowed)
             {
-
-              
-
                 FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
                 FormGame.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             }
-
-
-          
-            this.FistLoad = true;
-
 #if DEBUG
-            Logger.Instance.Debug("!!!! GRAPHIC CARD !!!!");
+            Logger.Instance.Debug("!!!! GRAPHICS CARD !!!!");
             Logger.Instance.Debug("======================");
             Logger.Instance.Debug("");
-
             Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.Description);
             Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.DeviceName);
             Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.VendorId.ToString());
             Logger.Instance.Debug((Graphics.GraphicsDevice.Adapter.IsDefaultAdapter) ? "Default adapter: True" : "Default adapter: False");
-
-
-
             Logger.Instance.Debug("");
             Logger.Instance.Debug("======================");
 
 #endif
-            
-            //Graphics.PreferMultiSampling = false;
+
             Graphics.ApplyChanges();
-            //this.IsFixedTimeStep = true;
 
         }
 
         protected override void Initialize()
         {
-
-
-            //LoadingWindow = new LoadingWindow();
-            //LoadingWindow.Show();
-            //System.Windows.Forms.Application.DoEvents();
             base.Initialize();
             loadEnviroment();
-            
-                      
             Player = new BPlayer();
-
-          
-
             hideGameWindow();
             GeneralVolume = Settings1.Default.Volume;
         }
 
         public void ToggleVSync(bool b)
         {
-            //            
-
             if (b)
             {
-                IsFixedTimeStep = false;                
+                IsFixedTimeStep = false;
                 Graphics.SynchronizeWithVerticalRetrace = b;
             }
-            else{
+            else
+            {
                 Graphics.SynchronizeWithVerticalRetrace = b;
                 IsFixedTimeStep = true;
                 ChangeFrameRate(Settings1.Default.FrameRate);
             }
 
             Graphics.ApplyChanges();
-
         }
-
-       
 
         void mainWindow_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
         {
@@ -322,6 +224,7 @@ namespace kyun
 
         void hideGameWindow()
         {
+            /*
             if (!true)
             {
                 System.Windows.Forms.DialogResult drs = System.Windows.Forms.MessageBox.Show("Warning!\r\n\r\nLa presentacion que viene a continuacion contiene video, si no tienes un equipo 'potente', desactiva esa opcion, en serio, el video tiende a fallar e interfiere con el juego en equipos lentos.\r\n\r\n¿deseas activar el video?", "",System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
@@ -337,7 +240,7 @@ namespace kyun
                 Settings1.Default.Video = !false;
                 Settings1.Default.QuestionVideo = true;
                 Settings1.Default.Save();
-            }
+            }*/
 
             Screen.ScreenMode acmode = Screen.ScreenModeManager.GetActualMode();
             uLabelVer = new GameScreen.UI.Label(.1f);
@@ -351,14 +254,13 @@ namespace kyun
 
             uLabelMsgVer = new GameScreen.UI.Label(.1f);
             uLabelMsgVer.Text = CompilationVersion;
-            
+
             uLabelMsgVer.Centered = true;
             uLabelMsgVer.Position = new Vector2(acmode.Width / 2, acmode.Height - 25);
             uLabelMsgVer.Font = SpritesContent.Instance.StandardButtonsFont;
             uLabelMsgVer.Scale = .75f;
             uLabelMsgVer.ForegroundColor = Color.WhiteSmoke * .75f;
-        
-            
+
             FrameDisplay = new Label()
             {
                 Font = SpritesContent.Instance.GeneralBig,
@@ -368,27 +270,16 @@ namespace kyun
 
             ScreenManager.ChangeTo(new LogoScreen());
             EffectsPlayer.StartEngine();//Clear
-            Player.OnStopped += () => {
+            Player.OnStopped += () =>
+            {
                 maxPeak = 0.1f;
                 InstanceManager.MaxPeak = 0.1f;
             };
 
         }
 
-        void showMain()
-        {
+        #region TEXTURES
 
-            Logger.Instance.Info("");
-            Logger.Instance.Info("Kansei shimashita (/^-^)/!");
-            Logger.Instance.Info("");
-            Logger.Instance.Info("----------------");
-
-        }
-
-#region TEXTURES
-        
-
-        List<Texture2D> Textures = new List<Texture2D>();
         public TouchHandler touchHandler;
         private Label uLabelVer;
         private Label uLabelMsgVer;
@@ -396,9 +287,6 @@ namespace kyun
 
         protected override void LoadContent()
         {
-
-            
-
             Screen.ScreenMode actmode = Screen.ScreenModeManager.GetActualMode();
 
             ScreenManager.Start();
@@ -406,8 +294,6 @@ namespace kyun
             Logger.Instance.Info("Loading textures");
 
             SpriteBatch = new SpriteBatch(GraphicsDevice);
-
-
 
             SpritesContent.Instance.LoadContent(SpriteBatch, GraphicsDevice);
 
@@ -417,7 +303,7 @@ namespace kyun
             Logger.Instance.Info("");
             Logger.Instance.Info("----------------");
 
-
+            discordHandler.SetState("Awesome!", "Loading...");
         }
 
 
@@ -425,48 +311,19 @@ namespace kyun
         {
             if (Player != null)
                 Player.Dispose();
-            /*
-            try
-            {
-                ((ScreenBase)BeatmapScreen.Instance).Dispose();
-            }
-            catch
-            {
-
-            }
-            finally
-            {
-                BeatmapScreen.Instance = null;
-            }
-            */
-
-            //AudioPlaybackEngine.Instance.Dispose();
-
-
-            //AllBeatmaps.Clear();
-
-            //AllBeatmaps = null;
-
-
-            Textures.ForEach(new Action<Texture2D>((tx) =>
-            {
-                tx.Dispose();
-            }));
-
-            Textures.Clear();
 
             Player?.Dispose();
 
-            
+            Logger.Instance.Info("Shutdown DiscordRPC");
+            discordHandler.Shutdown();
 
             Logger.Instance.Info("Bye!");
         }
 
-#endregion
+        #endregion
 
         void updatePeak(GameTime gm)
         {
-            
             maxPeak -= (float)(gm.ElapsedGameTime.Milliseconds * 0.0004f);
 
             float actualPeak = Instance.Player.PeakVol;
@@ -477,21 +334,21 @@ namespace kyun
             {
                 if (actualPeak < 0.1) actualPeak = 0.1f;
                 maxPeak = actualPeak;
-                
+
             }
-            if(actualPeak > InstanceManager.MaxPeak)
+            if (actualPeak > InstanceManager.MaxPeak)
             {
                 InstanceManager.MaxPeak = actualPeak;
             }
 
-            if(actualPeak >= InstanceManager.MaxPeak - 0.001)
+            if (actualPeak >= InstanceManager.MaxPeak - 0.001)
             {
                 OnPeak?.Invoke(this, new EventArgs());
             }
 
         }
 
-#region GameUpdates
+        #region GameUpdates
         protected override void Update(GameTime gameTime)
         {
             //Update Gametime FIRST
@@ -504,12 +361,12 @@ namespace kyun
 
             if (Player.PlayState == BassPlayState.Playing)
             {
-               
-                if(SelectedBeatmap != null)
+
+                if (SelectedBeatmap != null)
                 {
                     FormGame.Text = "kyun! - Playing: " + SelectedBeatmap.Artist + " - " + SelectedBeatmap.Title;
                 }
-                
+
             }
             else
             {
@@ -517,10 +374,10 @@ namespace kyun
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Add))
-                GeneralVolume = GeneralVolume + (gameTime.ElapsedGameTime.Milliseconds)*.0005f;
+                GeneralVolume = GeneralVolume + (gameTime.ElapsedGameTime.Milliseconds) * .0005f;
 
             if (Keyboard.GetState().IsKeyDown(Keys.Subtract))
-                GeneralVolume = GeneralVolume -(gameTime.ElapsedGameTime.Milliseconds) * .0005f; 
+                GeneralVolume = GeneralVolume - (gameTime.ElapsedGameTime.Milliseconds) * .0005f;
 
             elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -531,13 +388,27 @@ namespace kyun
 
             uLabelVer.Update();
             uLabelMsgVer.Update();
-            
 
             base.Update(gameTime);
             frameCounter.Update(gameTime);
 
             FrameDisplay.Text = frameCounter.AverageFramesPerSecond.ToString("0", CultureInfo.InvariantCulture) + " FPS";
             FrameDisplay?.Update();
+
+            if (System.Windows.Forms.Form.ActiveForm == FormGame)
+            {
+                if (oVol != 0f)
+                    GeneralVolume = oVol;
+                oVol = 0;
+            }
+            else
+            {
+                if (oVol == 0f)
+                {
+                    oVol = GeneralVolume;
+                    GeneralVolume = GeneralVolume * 0.50f;
+                }
+            }
 
             VolumeControl.Instance.Update();
         }
@@ -546,19 +417,14 @@ namespace kyun
         {
             GraphicsDevice.Clear(Color.Black);
 
-
             SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone);
 
-            
             ScreenManager.Render();
 
-            //uLabelVer.Render();
 #if !BETA
             uLabelMsgVer.Render();
 #endif
-
             touchHandler?.Render();
-            //spriteBatch.Draw(TopEffect, new Rectangle(0, 0, TopEffect.Width, TopEffect.Height), Color.White*.145f);
 
             FrameDisplay?.Render();
 
@@ -566,24 +432,14 @@ namespace kyun
 
             SpriteBatch.End();
 
-
-
             base.Draw(gameTime);
-
-            
         }
 
-#endregion
-
-        //console
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool AllocConsole();
+        #endregion
 
         public void ChangeResolution(Screen.ScreenMode screenMode)
         {
-
-            this.SuppressDraw();
+            SuppressDraw();
 
             System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(Window.Handle);
 
@@ -605,7 +461,6 @@ namespace kyun
             this.Graphics.PreferredBackBufferWidth = (int)wSize.X;
             this.Graphics.PreferredBackBufferHeight = (int)wSize.Y;
 
-
             this.Graphics.ApplyChanges();
 
             ((ScreenBase)MainScreen.Instance)?.Dispose();
@@ -621,7 +476,7 @@ namespace kyun
             {
                 ScorePanel.Instance = null;
             }
-            
+
             ((ScreenBase)QuestionOverlay.Instance)?.Dispose();
             MainScreen.Instance = null;
             BeatmapScreen.Instance = null;
@@ -674,21 +529,11 @@ namespace kyun
                     FormGame.WindowState = System.Windows.Forms.FormWindowState.Maximized;
                 }
             }
-
-            
         }
-
-
 
         public void ChangeFrameRate(float fps)
         {
-          
-               
             TargetElapsedTime = TimeSpan.FromSeconds(1.0f / fps);
-  
         }
-
-        
-        public float maxPeak { get; private set; }
     }
 }

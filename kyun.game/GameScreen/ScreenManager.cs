@@ -1,4 +1,6 @@
-﻿using kyun.Overlay;
+﻿using kyun.Audio;
+using kyun.Overlay;
+using kyun.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -15,13 +17,21 @@ namespace kyun.GameScreen
         static IScreen ToBeChanged = null;
         static bool Changed = false;
 
+        static bool fadingIn = false;
+
         public static IOverlay Overlay = null;
 
         public static void ChangeTo(IScreen ToScreen)
         {
+                        
+            if (!(ToScreen == null))
+                if (!(ToScreen is LogoScreen))
+                    if (!(ToScreen is LoadScreen))
+                        if (!(ToScreen is GameModes.Classic.ScorePanel))
+                            EffectsPlayer.PlayEffect(SpritesContent.Instance.MenuTransition);
             showing = true;
-            ToBeChanged = ToScreen;           
-            
+            ToBeChanged = ToScreen;
+
         }
 
         public static void ShowOverlay(IOverlay _overlay)
@@ -90,19 +100,25 @@ namespace kyun.GameScreen
                 {
                     if(ActualScreen != null) ActualScreen.Visible = false;
                     ActualScreen = ToBeChanged;
-
+                    fadingIn = true;
                     showing = false;
                     ActualScreen.Visible = true;
                     
+                   
                 }
             }
             else
             {
-                if (Opacity > 0f)
+                
+                if (Opacity >= 0f)
                 {
                     Opacity -= (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f);
                 }
-
+                else
+                {
+                    fadingIn = false;        
+                }
+                
 
                 if (KyunGame.Instance.Player.Volume < KyunGame.Instance.GeneralVolume)
                 {

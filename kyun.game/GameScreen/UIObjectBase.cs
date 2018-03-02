@@ -35,6 +35,10 @@ namespace kyun.GameScreen
 
         public Vector2 OriginRender = Vector2.Zero;
 
+        public TimeSpan Elapsed { get; set; }
+
+        public Screen.ScreenMode ScreenMode { get; set; }
+
         public event EventHandler Click;
         public event EventHandler Over;
         public event EventHandler MouseDown;
@@ -42,6 +46,7 @@ namespace kyun.GameScreen
         public event EventHandler MouseDoubleClick;
         public event ScrollEventHandler OnScroll;
         public event Utils.TouchHandler.TouchEventHandler OnTouch;
+
 
 
         int lastScrollVal = 0;
@@ -56,6 +61,8 @@ namespace kyun.GameScreen
 
         public UIObjectBase()
         {
+            ScreenMode = Screen.ScreenModeManager.GetActualMode();
+            Elapsed = KyunGame.Instance.GameTimeP.ElapsedGameTime;
             TextureColor = Color.White;
             Visible = true;
             Opacity = 1;
@@ -69,6 +76,12 @@ namespace kyun.GameScreen
         public virtual void Update()
         {
             if (!Visible)
+                return;
+
+            Elapsed = KyunGame.Instance.GameTimeP.ElapsedGameTime;
+
+            //No Texture, no input update
+            if (Texture == null)
                 return;
 
             MouseEvent mouseState = MouseHandler.GetState();
@@ -246,9 +259,9 @@ namespace kyun.GameScreen
             rg.Y = (int)(rg.Y - ((Texture.Height * Scale) - Texture.Height) / 2);
             SourceRectangle = new Rectangle(SourceRectangle.X, SourceRectangle.Y, (int)(SourceRectangle.Width * Scale), (int)(SourceRectangle.Height * Scale));
             if (SourceRectangle != Rectangle.Empty)
-                KyunGame.Instance.SpriteBatch.Draw(this.Texture, rg, SourceRectangle, TextureColor * Opacity, AngleRotation, OriginRender, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0);
+                KyunGame.Instance.SpriteBatch.Draw(Texture, rg, SourceRectangle, TextureColor * Opacity, AngleRotation, OriginRender, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0);
             else
-                KyunGame.Instance.SpriteBatch.Draw(this.Texture, rg, null, TextureColor * Opacity, AngleRotation, OriginRender, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0);
+                KyunGame.Instance.SpriteBatch.Draw(Texture, rg, null, TextureColor * Opacity, AngleRotation, OriginRender, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0);
         }
 
         public void _OnClick()

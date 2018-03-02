@@ -81,6 +81,8 @@ namespace kyun.GameScreen
             onKeyPress += MainScreen_onKeyPress;
 
             KyunGame.Instance.OnPeak += Instance_OnPeak;
+
+            KyunGame.Instance.discordHandler.SetState("Idle", "Waiting for something...");
         }
 
 
@@ -273,8 +275,7 @@ namespace kyun.GameScreen
         void StrBtn_Click(object sender, EventArgs e)
         {
             leaving = true;
-            if(KyunGame.Instance.ppyMode) KyunGame.Instance.ppyMode = false;
-
+           
             ScreenManager.ChangeTo(BeatmapScreen.Instance);
         }
 
@@ -282,24 +283,8 @@ namespace kyun.GameScreen
         {
 
             leaving = true;
-
-            if (KyunGame.Instance.ppyMode)
-            {
-                Thread tr = new Thread(new ThreadStart(()=> {
-                    KyunGame.Instance.Player.Volume = .05f;
-                    //Audio.AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.SeeyaOsu);
-
-                    Thread.Sleep(1000);
-                    ScreenManager.ChangeTo(new LeaveScreen());
-                }));
-                tr.Start();
-            }
-            else
-            {
-                ScreenManager.ChangeTo(new LeaveScreen());
-            }
-
-            
+           
+          ScreenManager.ChangeTo(new LeaveScreen());
         }
 
         public void PlayUbeatMain()
@@ -391,6 +376,8 @@ namespace kyun.GameScreen
                 ((BeatmapScreen)BeatmapScreen.Instance).lbox.selectedIndex = mstIndex;
                 ((BeatmapScreen)BeatmapScreen.Instance).lbox.vertOffset = (mstIndex > 2) ? mstIndex - 1 : 0;
             }
+
+            KyunGame.Instance.discordHandler.SetState($"{ubm.Artist} - {ubm.Title}", "Playing music");
         }
 
         private void playSong(string path)
@@ -400,10 +387,12 @@ namespace kyun.GameScreen
             KyunGame.Instance.Player.Volume = KyunGame.Instance.GeneralVolume;
         }
 
-        public override void ChangeBeatmapDisplay(ubeatBeatMap bm, bool overrideBg = true)
+        public override void ChangeBeatmapDisplay(ubeatBeatMap bm, bool overrideBg = false)
         {
             changingSong = true;
-            base.ChangeBeatmapDisplay(bm, overrideBg);
+            base.ChangeBeatmapDisplay(bm, false);
+
+            Background = SpritesContent.Instance.DefaultBackground;
             changeCoverDisplay(bm.Background);
 
             float titleSize = SpritesContent.Instance.SettingsFont.MeasureString(bm.Title).X;
@@ -441,7 +430,7 @@ namespace kyun.GameScreen
             KyunGame.Instance.SelectedMapset = InstanceManager.AllBeatmaps[mstIndex];
             
             ChangeBeatmapDisplay(KyunGame.Instance.SelectedMapset[0]);
-
+            var ubm = KyunGame.Instance.SelectedMapset[0];
             //ChangeBackground(UbeatGame.Instance.SelectedMapset[0].Background);
             lastIndex = mstIndex;
 
@@ -450,7 +439,7 @@ namespace kyun.GameScreen
                 ((BeatmapScreen)BeatmapScreen.Instance).lbox.selectedIndex = mstIndex;
                 ((BeatmapScreen)BeatmapScreen.Instance).lbox.vertOffset = (mstIndex > 2) ? mstIndex - 1 : 0;
             }
-                
+            KyunGame.Instance.discordHandler.SetState($"{ubm.Artist} - {ubm.Title}", "Playing music");
         }
 
         private void _prev()
@@ -471,7 +460,7 @@ namespace kyun.GameScreen
             KyunGame.Instance.SelectedMapset = InstanceManager.AllBeatmaps[mstIndex];
            
             ChangeBeatmapDisplay(KyunGame.Instance.SelectedMapset[0]);
-
+            var ubm = KyunGame.Instance.SelectedMapset[0];
             //ChangeBackground(UbeatGame.Instance.SelectedMapset[0].Background);
             lastIndex = mstIndex;
             if (BeatmapScreen.Instance != null)
@@ -479,6 +468,7 @@ namespace kyun.GameScreen
                 ((BeatmapScreen)BeatmapScreen.Instance).lbox.selectedIndex = mstIndex;
                 ((BeatmapScreen)BeatmapScreen.Instance).lbox.vertOffset = (mstIndex > 2)? mstIndex - 1 : 0;
             }
+            KyunGame.Instance.discordHandler.SetState($"{ubm.Artist} - {ubm.Title}", "Playing music");
         }
 
         private void HideControls()

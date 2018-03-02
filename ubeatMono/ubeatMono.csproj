@@ -106,6 +106,10 @@
       <Project>{06cd9d47-bd50-443e-be33-ace5d110eec5}</Project>
       <Name>kyun.game</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kyun.Logger\kyun.Logger.csproj">
+      <Project>{8bb35046-3b18-4aec-b598-b84325d6f9c9}</Project>
+      <Name>kyun.Logger</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">

@@ -84,10 +84,9 @@ namespace kyun.GameScreen
             if(diff.TotalSeconds > 2)
             {
                 ScreenManager.ChangeTo(LoadScreen.Instance);
+                //ScreenManager.ChangeTo(game.GameModes.Test.TestScreen.GetInstance());
                 DONT_UPDATE = true;
             }
         }
-
-
     }
 }

@@ -30,6 +30,7 @@ namespace kyun.Beatmap
         public decimal EndTime { get; set; }
         public OldApproachObj apo { get; set; }
         public int HitSound { get; set; }
+        public float MsPerBeat { get; set; }
 
         #endregion
 

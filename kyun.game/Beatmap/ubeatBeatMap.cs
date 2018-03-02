@@ -24,6 +24,7 @@ namespace kyun.Beatmap
         public long VideoStartUp { get; set; }
         public int SleepTime { get; set; }
         public List<Break> Breaks { get; set; }
+        public int osuBeatmapType { get; set; }
 
         public int Timing300
         {

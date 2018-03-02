@@ -20,9 +20,14 @@ namespace kyun.game.GameModes.CatchIt
         internal IHitObj _hitButton;
         internal IBeatmap _beatmap;
 
+        public HitObject _parent;
+
         public Score.ScoreType score = ScoreType.Miss;
 
-        long CollisionAt = 0;
+        public long CollisionAt = 0;
+        public int PositionAtCollision = 1;
+
+        Screen.ScreenMode a = Screen.ScreenModeManager.GetActualMode();
 
         public int HitSound
         {
@@ -40,12 +45,17 @@ namespace kyun.game.GameModes.CatchIt
             }
         }
 
+        public int ReplayId = 1;
+
         bool _longNote;
 
         public int PositionInRow = 1;
 
-        public HitObject(IHitObj hitObject, IBeatmap beatmap, CatchItMode Instance, bool shared = false, bool longNote = false) : base(SpritesContent.Instance.SquareButton)
+        public HitObject(IHitObj hitObject, IBeatmap beatmap, CatchItMode Instance, bool shared = false, bool longNote = false, HitObject parent = null) : base(SpritesContent.Instance.CatchObject)
         {
+            float msTemp = (((OsuUtils.OsuBeatMap)beatmap).osuBeatmapType == 3)? hitObject.MsPerBeat / 1.5f: hitObject.MsPerBeat;
+            MsPerBeat = ((1680 - beatmap.ApproachRate * 150) * 10000) / ((60000 / msTemp) / 50);
+
             i = Instance;
             _hitButton = hitObject;
             _beatmap = beatmap;
@@ -54,6 +64,7 @@ namespace kyun.game.GameModes.CatchIt
             Visible = true;
             Opacity = 1;
 
+            _parent = parent;
 
             //384 = max value of Y in osu!
 
@@ -71,15 +82,36 @@ namespace kyun.game.GameModes.CatchIt
             inFieldPosition *= positionInRow;
 
             Position = new Vector2(i.ActualScreenMode.Width, inFieldPosition + i.FieldPosition.Y + ((i.PlayerSize.Y / 2) - (Texture.Height / 2)));
+
+            
+
+            switch (hitObject.HitSound)
+            {
+                case 2:
+                    TextureColor = Color.FromNonPremultiplied(0, 203, 255, 255);
+                    break;
+                case 4:
+                    TextureColor = Color.FromNonPremultiplied(9, 229, 27, 255);
+                    break;
+                case 8:
+                    TextureColor = Color.FromNonPremultiplied(255, 61, 58, 255);
+                    break;
+                default:
+                    TextureColor = Color.FromNonPremultiplied(255, 229, 244, 255);
+                    break;
+
+            }
         }
 
         internal void updatePosition()
         {
-            float twidth = i.ActualScreenMode.Width - i.PlayerSize.X;
 
-            Screen.ScreenMode a = Screen.ScreenModeManager.GetActualMode();
+            //Note: 1024 is for universal velocity, cuz, in higher resolution speeds are imposible
+            float twidth = 1024 - i.PlayerSize.X;
 
-            int appr = (int)(2000 - _beatmap.ApproachRate * 150) * (int)(1000f * ((float)a.Width / 500f));
+            
+
+            float appr = ((i.gameMod & GameMod.DoubleTime) != GameMod.DoubleTime)?MsPerBeat:MsPerBeat * 1.5f /*(int)(1000f * ((float)a.Width / 500f))*/;
 
 
             float stime = ((float)Time - (float)i.GamePosition);
@@ -96,13 +128,28 @@ namespace kyun.game.GameModes.CatchIt
             if((i.gameMod & GameMod.Auto) == GameMod.Auto)
             {
                 if (Position.X < catcherRg.Width + 10)
+                {
                     i.playerLinePosition = PositionInRow;
+                    i.movements.Add(new ReplayObject { PressedAt = PositionInRow, LeaveAt = i.GamePosition });
+                }
+                    
             }
+            /*
+            if ((i.gameMod & GameMod.Replay) == GameMod.Replay)
+            {
+                var playerPosition = (int)i.replay.Hits[ReplayId].PressedAt;
+                var collisionat = i.replay.Hits[ReplayId].LeaveAt;
+                if (i.GamePosition > collisionat)
+                    i.playerLinePosition = playerPosition;
+            }*/
 
             if (thisRg.Intersects(catcherRg))
             {
+
                 CollisionAt = i.GamePosition;
-                
+                if(!((i.gameMod & GameMod.Replay) == GameMod.Replay))
+                    PositionAtCollision = PositionInRow;
+
                 Combo.Instance.Add();
                 CheckScore();
                 playHitsound();
@@ -112,14 +159,23 @@ namespace kyun.game.GameModes.CatchIt
 
             if (Position.X < 0)
             {
-                CollisionAt = 1;
+                if (!((i.gameMod & GameMod.Replay) == GameMod.Replay))
+                    PositionAtCollision = i.playerLinePosition;
+
+                CollisionAt = i.GamePosition;
                 CheckScore();
                 i._healthbar.Substract((2 * _beatmap.OverallDifficulty) * i.FailsCount);
                 Combo.Instance.Miss();
                 //playHitsound();
                 Died = true;
             }
-                
+
+            
+        }
+
+        internal void updateOpacity()
+        {
+            Opacity = Math.Max(KyunGame.Instance.maxPeak, .7f);
         }
 
         internal virtual void CheckScore()
@@ -198,8 +254,17 @@ namespace kyun.game.GameModes.CatchIt
 
         public override void Update()
         {
+            updateOpacity();
             updatePosition();
             base.Update();
+        }
+
+        public override void Render()
+        {
+            if(_longNote && ((OsuUtils.OsuBeatMap)_beatmap).osuBeatmapType <= 1)
+                if(Position.X > i.Player.Position.X + i.PlayerSize.X)
+                    KyunGame.Instance.SpriteBatch.Draw(i.LongTail, new Rectangle((int)Position.X + Texture.Width/2, (int)Position.Y + (Texture.Height / 2) / 2, ((int)_parent.Position.X + Texture.Width) - (int)Position.X - Texture.Width, Texture.Height / 2), TextureColor * Opacity);
+            base.Render();
         }
     }
 }

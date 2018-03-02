@@ -22,6 +22,7 @@ namespace kyun.GameModes
         None = 0,
         Auto = 1 << 0,
         NoFail = 1 << 1,
-        DoubleTime = 1 << 2
+        DoubleTime = 1 << 2,
+        Replay = 1 << 3
     }
 }

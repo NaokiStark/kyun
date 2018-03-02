@@ -201,6 +201,8 @@ namespace kyun.GameScreen
             lBDff.Items = Mapset.OrderByDiff(lbox.Items[lbox.selectedIndex]);
             lBDff.selectedIndex = 0;
             lBDff.vertOffset = 0;
+
+            KyunGame.Instance.discordHandler.SetState("Picking beatmap", $"This or this?");
         }
 
         void orderByTitle()

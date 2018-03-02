@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("A rhythm game, made with love")]
 [assembly: AssemblyCompany("Fabi Corp.")]
 [assembly: AssemblyCopyright("Copyright © Fabi Corp")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("kyun!")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

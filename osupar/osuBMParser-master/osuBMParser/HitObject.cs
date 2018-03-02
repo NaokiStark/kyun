@@ -15,6 +15,7 @@ namespace osuBMParser
         public int HitSound { get; set; }
         public List<int> Addition { get; set; }
         public bool IsNewCombo { get; set; }
+     
         #endregion
 
         #region constructors

@@ -80,6 +80,7 @@ namespace kyun.Overlay
 
             btnNo.Click += (obj, args) => {
                 i.Play(i.Beatmap, i.gameMod); //restart game
+
                 Visible = false;
                 ScreenManager.RemoveOverlay();
             };

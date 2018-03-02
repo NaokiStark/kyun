@@ -22,7 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -105,6 +105,10 @@
       <HintPath>..\packages\Troschuetz.Random.4.2.0\lib\net45\Troschuetz.Random.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="websocket-sharp.clone, Version=1.0.2.39869, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\websocket-sharp.clone.3.0.0\lib\net45\websocket-sharp.clone.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Windows7.Multitouch, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Windows7.Multitouch.dll</HintPath>
@@ -144,6 +148,8 @@
     <Compile Include="GameModes\OsuMode\HitSingle.cs" />
     <Compile Include="GameModes\OsuMode\ModeConstants.cs" />
     <Compile Include="GameModes\OsuMode\OsuMode.cs" />
+    <Compile Include="GameModes\Test\TestPlayer.cs" />
+    <Compile Include="GameModes\Test\TestScreen.cs" />
     <Compile Include="GameScreen\BeatmapScreen.cs" />
     <Compile Include="GameScreen\BeatmapScreen.Desing.cs" />
     <Compile Include="GameScreen\Grid.cs" />
@@ -185,10 +191,15 @@
     <Compile Include="GameScreen\UI\Particles\SquareParticle.cs" />
     <Compile Include="GameScreen\UI\ProgressBar.cs" />
     <Compile Include="GameScreen\UI\RoundedRectangle.cs" />
+    <Compile Include="GameScreen\UI\UserBox.cs" />
     <Compile Include="GameScreen\UI\VolumeControl.cs" />
     <Compile Include="GameScreen\VideoScreenBase.cs" />
     <Compile Include="KyunGame.cs" />
-    <Compile Include="Logger.cs" />
+    <Compile Include="NikuClient\HttpQueryString.cs" />
+    <Compile Include="NikuClient\HttpRequest.cs" />
+    <Compile Include="NikuClient\NikuClientApi.cs" />
+    <Compile Include="NikuClient\ServerList.cs" />
+    <Compile Include="NikuClient\UserData.cs" />
     <Compile Include="Notifications\NotificationBox.cs" />
     <Compile Include="Notifications\Notifier.cs" />
     <Compile Include="OsuUtils\OsuBeatMap.cs" />
@@ -216,6 +227,7 @@
     <Compile Include="UIObjs\ScoreObj.cs" />
     <Compile Include="Utils\BeatmapSearchEngine.cs" />
     <Compile Include="Utils\ContentLoader.cs" />
+    <Compile Include="Utils\Discord_Handler.cs" />
     <Compile Include="Utils\FrameCounter.cs" />
     <Compile Include="Utils\InstanceManager.cs" />
     <Compile Include="Utils\KeyboardManager.cs" />
@@ -236,13 +248,55 @@
     <Compile Include="Video\FrameBuffer.cs" />
     <Compile Include="Video\VideoDecoder.cs" />
     <Compile Include="Video\VideoPlayer.cs" />
+    <Compile Include="Winforms\LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Winforms\LoginForm.Designer.cs">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resource1.resx" />
+    <EmbeddedResource Include="Winforms\LoginForm.resx">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="app.manifest" />
+    <Content Include="Assets\Effects\MenuTransition.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\1\Tenkitsune - To The Phantomile!.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\1\tenkitsune.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\2\tofubeats.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\2\tofubeats.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\3\a3843029910_16.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\3\UjicoSnail%27s House   Mystic Girl.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\4\DJ Noriken Magicalgirl_Syndrome.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\4\DJ Noriken.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\5\kan.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\5\KanooliAscensus.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Maps\129844 Diana Vickers - The Boy Who Murdered Love\Diana Vickers - The Boy Who Murdered Love %28Autumn%29 [Insane].osu">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -420,6 +474,24 @@
     <Content Include="Content\nn.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\songs\1\songinfo.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\2\songinfo.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\3\songinfo.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\4\songinfo.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\5\songinfo.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\CHitObject.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <None Include="Settings1.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -442,12 +514,6 @@
     <Content Include="Assets\Effects\ComboBreak.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Effects\HitButton.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Effects\HitButton2.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Assets\Effects\Hitclap.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -460,16 +526,10 @@
     <Content Include="Assets\Effects\Hitwhistle.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Effects\HolderFilling.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Assets\Effects\HolderTick.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Effects\HolderTick.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Effects\OsuModeHit.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Effects\Scroll.wav">
@@ -619,6 +679,14 @@
     <Folder Include="Extensions\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DiscordRPC\src\DiscordRpcNet\DiscordRpcNet.csproj">
+      <Project>{981827b2-076d-4047-a798-aec81054f1dd}</Project>
+      <Name>DiscordRpcNet</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kyun.Logger\kyun.Logger.csproj">
+      <Project>{8bb35046-3b18-4aec-b598-b84325d6f9c9}</Project>
+      <Name>kyun.Logger</Name>
+    </ProjectReference>
     <ProjectReference Include="..\osupar\osuBMParser-master\osuBMParser\osuBMParser.csproj">
       <Project>{92f06458-ccf1-4574-be26-a9ffe3b77310}</Project>
       <Name>osuBMParser</Name>

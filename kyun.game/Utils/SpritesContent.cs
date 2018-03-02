@@ -159,18 +159,18 @@ namespace kyun.Utils
 
         private void LoadAudios()
         {
-            HolderFilling = LoadSoundBass("Effects\\HolderFilling.wav");
-            HitButton = LoadSoundBass("Effects\\HitButton.wav");
+            //HolderFilling = LoadSoundBass("Effects\\HolderFilling.wav");
+            //HitButton = LoadSoundBass("Effects\\HitButton.wav");
             HitHolder = LoadSoundBass("Effects\\HitHolder.wav");
             HolderTick = LoadSoundBass("Effects\\HolderTick.wav");
             ComboBreak = LoadSoundBass("Effects\\ComboBreak.wav");
             ButtonOver = LoadSoundBass("Effects\\ButtonOver.wav");
-            ButtonHit = LoadSoundBass("Effects\\ButtonHit.wav");
+            //ButtonHit = LoadSoundBass("Effects\\ButtonHit.wav");
             SelectorHit = LoadSoundBass("Effects\\SelectorHit.wav");
-            ScrollHit = LoadSoundBass("Effects\\Scroll.wav");
+            ScrollHit = ButtonHit = LoadSoundBass("Effects\\Scroll.wav");
             WelcomeToOsuXd = LoadSoundBass("Effects\\welcome.mp3");
             SeeyaOsu = LoadSoundBass("Effects\\seeya.mp3");
-            OsuHit = LoadSoundBass("Effects\\OsuModeHit.wav");
+            //OsuHit = LoadSoundBass("Effects\\OsuModeHit.wav");
 
             Hitwhistle = LoadSoundBass("Effects\\Hitwhistle.wav");
             Hitfinish = LoadSoundBass("Effects\\Hitfinish.wav");
@@ -178,6 +178,8 @@ namespace kyun.Utils
 
 
             Applause = LoadSoundBass("Effects\\applause.wav");
+
+            MenuTransition = LoadSoundBass("Effects\\MenuTransition.mp3");
         }
 
         private void LoadFonts(SpriteBatch spriteBatch)
@@ -249,6 +251,7 @@ namespace kyun.Utils
             ConfigButton = Content.Load<Texture2D>("ConfigMain");
             ButtonStandard = Content.Load<Texture2D>("ButtonStandard");
             Catcher = Content.Load<Texture2D>("nn");
+            CatchObject = Content.Load<Texture2D>("CHitObject");
 
             MenuSnow = Content.Load<Texture2D>("menu-snow");
 
@@ -482,6 +485,7 @@ namespace kyun.Utils
         public System.Drawing.Image CroppedBg { get; set; }
         public System.Drawing.Image CroppedBgCover2 { get; set; }
         public Texture2D Catcher { get; set; }
+        public Texture2D CatchObject { get; set; }
         #endregion
 
         #region FontsVars
@@ -515,6 +519,7 @@ namespace kyun.Utils
         public Texture2D FillStartEnd { get; set; }
         public Texture2D Healthbar { get; set; }
         public string defaultbg { get; private set; }
+        public int MenuTransition { get; private set; }
 
         #endregion
 

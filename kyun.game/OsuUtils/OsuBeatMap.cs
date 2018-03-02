@@ -22,12 +22,12 @@ namespace kyun.OsuUtils
                 osuBMParser.Beatmap osbm = new osuBMParser.Beatmap(path);
                 string relPath = new FileInfo(path).DirectoryName;
 
-                
 
+                
                 OsuBeatMap tmpbm = new OsuBeatMap()
                 {
                     Artist = StringHelper.SanitizeUnicode(osbm.Artist),
-                    ApproachRate = (osbm.ApproachRate < 1)? osbm.OverallDifficulty: osbm.ApproachRate,
+                    ApproachRate = /*(osbm.ApproachRate < 1)? osbm.OverallDifficulty: ((osbm.Mode<1) ?osbm.ApproachRate:osbm.ApproachRate*1.2f)*/ osbm.ApproachRate,
                     BPM = 0,
                     Creator = StringHelper.SanitizeUnicode(osbm.Creator),
                     HPDrainRate = osbm.HpDrainRate,
@@ -39,6 +39,7 @@ namespace kyun.OsuUtils
                     SleepTime = osbm.AudioLeadIn,
                     Video = relPath + @"\" + osbm.Video,
                     VideoStartUp = osbm.VideoStartUp,
+                    osuBeatmapType = osbm.Mode
                 };
 
                 tmpbm.Breaks = new List<Beatmap.Break>();
@@ -205,6 +206,7 @@ namespace kyun.OsuUtils
                                 }
                             }
 
+                        obj.MsPerBeat = getTimingPoint((int)obj.StartTime, osbm).MsPerBeat;
 
                             hitObjs.Add(obj);
                         }
@@ -247,24 +249,28 @@ namespace kyun.OsuUtils
                             OsuLocation = new Microsoft.Xna.Framework.Vector2(ho.Position.x, ho.Position.y),
                             HitSound = ho.HitSound
                         };
-                        
+
+                        obj.MsPerBeat = tmc.MsPerBeat;
+
                         //MANIA LONGNOTE
-                        if(slider.Type == HitSlider.SliderType.LONGNOTE)
+                        if (slider.Type == HitSlider.SliderType.LONGNOTE)
                         {
                             if(slider.EndTime < slider.Time)
                             {
+                                /*
                                 ((HitHolder)obj).Length = slider.EndTime;
                                 ((HitHolder)obj).EndTime = slider.Time + slider.EndTime;
-                            }
-                            else
-                            {
+                                */
                                 ((HitHolder)obj).EndTime = slider.EndTime;
                                 ((HitHolder)obj).Length = Math.Abs(slider.EndTime - slider.Time);
                             }
-
-                           
-                            
-                            
+                            else
+                            {
+                               
+                                ((HitHolder)obj).EndTime = slider.EndTime;
+                                ((HitHolder)obj).Length = Math.Abs(slider.EndTime - slider.Time);
+                               
+                            }
                         }
 
                             int lastCh = 0;
@@ -314,6 +320,8 @@ namespace kyun.OsuUtils
                                 HitSound = ho.HitSound
                             };
 
+                        obj.MsPerBeat = getTimingPoint((int)obj.StartTime, osbm).MsPerBeat;
+
                         int lastCh = 0;
 
                         if (hitObjs.Count > 0)
@@ -351,7 +359,7 @@ namespace kyun.OsuUtils
                 }
 
                 tmpbm.HitObjects = hitObjs;
-                tmpbm.BPM = GetTimingPointFor(osbm,0).MsPerBeat; 
+                tmpbm.BPM = tm.MsPerBeat; 
                 return tmpbm;
             }
             catch

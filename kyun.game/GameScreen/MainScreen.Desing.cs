@@ -11,6 +11,7 @@ using System.IO;
 using kyun.GameScreen.UI;
 using Microsoft.Xna.Framework.Graphics;
 using kyun.Beatmap;
+using kyun.game.GameScreen.UI;
 
 namespace kyun.GameScreen
 {
@@ -51,7 +52,7 @@ namespace kyun.GameScreen
                 center.Y - (ExtBtn.Texture.Height / 2) + ExtBtn.Texture.Height + 2 + Logo.Texture.Height / 2);
             objectsInitialPosition[3] = ExtBtn.Position;
 
-
+            coverSize = 75;
 
             Vector2 meas = SpritesContent.Instance.DefaultFont.MeasureString("ubeat") * .85f;
             
@@ -70,37 +71,44 @@ namespace kyun.GameScreen
 
             int btnSize = SpritesContent.Instance.SquareButton.Width + 5;
 
-            btnNext = new SquareButton(Color.FromNonPremultiplied(89, 53, 122, 255))
-            {
-                ForegroundColor = Color.White,
-                Caption = ">>",
-                Position = new Vector2(ActualMode.Width - btnSize, 0)
-            };
-
             btnPrev = new SquareButton(Color.FromNonPremultiplied(89, 53, 122, 255))
             {
                 ForegroundColor = Color.White,
-                Caption = "<<",                
-                Position = new Vector2(ActualMode.Width - (btnSize * 5), 0)
-            };                
+                Caption = "<<",
+                Position = new Vector2(0, coverSize + 2)
+            };
+
             btnPlay = new SquareButton(Color.FromNonPremultiplied(89, 53, 122, 255))
             {
                 ForegroundColor = Color.White,
                 Caption = ">",
-                Position = new Vector2(ActualMode.Width - (btnSize * 4), 0)
-            };
-            btnStop = new SquareButton(Color.FromNonPremultiplied(89, 53, 122, 255))
-            {
-                ForegroundColor = Color.White,
-                Caption = "[-]",
-                Position = new Vector2(ActualMode.Width - (btnSize * 2), 0)
+                Position = new Vector2(btnPrev.Position.X + btnSize, btnPrev.Position.Y)
             };
             btnPause = new SquareButton(Color.FromNonPremultiplied(89, 53, 122, 255))
             {
                 ForegroundColor = Color.White,
                 Caption = "||",
-                Position = new Vector2(ActualMode.Width - (btnSize * 3), 0)
+                Position = new Vector2(btnPrev.Position.X + btnSize * 2, btnPrev.Position.Y)
             };
+
+            btnStop = new SquareButton(Color.FromNonPremultiplied(89, 53, 122, 255))
+            {
+                ForegroundColor = Color.White,
+                Caption = "[-]",
+                Position = new Vector2(btnPrev.Position.X + btnSize * 3, btnPrev.Position.Y)
+            };
+
+            btnNext = new SquareButton(Color.FromNonPremultiplied(89, 53, 122, 255))
+            {
+                ForegroundColor = Color.White,
+                Caption = ">>",
+                Position = new Vector2(btnPrev.Position.X + btnSize * 4, btnPrev.Position.Y)
+            };
+
+                  
+           
+
+
 
             filledRect1 = new UI.FilledRectangle(
                new Vector2(ActualMode.Width, ActualMode.Height),
@@ -123,18 +131,11 @@ namespace kyun.GameScreen
             }
             float[] mspb = { 483.90999274135f, 428f };
 
-            if (KyunGame.Instance.ppyMode)
-            {
-                songs[2] = "CirclesClick_xddd.mp3";
-                bgs[1] = "ppy.jpg";
-                mspb[1] = 326;
-            }
-
             int song = /*getRndNotRepeated(0, songs.Length - 1)*/0;
 
             mainBm = new ubeatBeatMap()
             {
-                Artist = (!KyunGame.Instance.ppyMode) ? "Junk" : "Nekodex",
+                Artist ="Junk",
                 BPM = mspb[song],
                 SongPath = AppDomain.CurrentDomain.BaseDirectory + @"\Assets\" + songs[song],
                 ApproachRate = 10,
@@ -145,11 +146,11 @@ namespace kyun.GameScreen
                 VideoStartUp = 0,
                 Version = "",
                 SleepTime = 0,
-                Title = (!KyunGame.Instance.ppyMode) ? "enchanted" : "Circles",
+                Title = "enchanted",
 
             };
 
-            coverSize = 75;
+           
 
             System.Drawing.Image cimg = System.Drawing.Image.FromFile(mainBm.Background);
 
@@ -196,6 +197,8 @@ namespace kyun.GameScreen
                 Scale = .6f
             };
 
+            userBox = UserBox.GetInstance();
+            userBox.Position = new Vector2(ActualMode.Width - 275, 0);
 
             Controls.Add(particleEngine);
             Controls.Add(filledRect1);
@@ -218,7 +221,8 @@ namespace kyun.GameScreen
             Controls.Add(coverimg);
             Controls.Add(coverLabel);
             Controls.Add(coverLabelArt);
-
+            Controls.Add(userBox);
+            
 
             KyunGame.Instance.IsMouseVisible = true;
             OnLoad += MainScreen_OnLoad;
@@ -511,6 +515,7 @@ namespace kyun.GameScreen
         public Label coverLabel;
         public Label coverLabelArt;
         public int coverSize;
+        private UserBox userBox;
 
         public ubeatBeatMap mainBm { get; private set; }
         #endregion

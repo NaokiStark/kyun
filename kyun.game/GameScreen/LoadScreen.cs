@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using kyun.GameScreen.UI;
 using kyun.GameScreen.UI.Particles;
@@ -16,7 +15,6 @@ using kyun.Audio;
 using kyun.Beatmap;
 using kyun.GameModes.Classic;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using kyun.game;
 
 namespace kyun.GameScreen

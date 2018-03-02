@@ -67,7 +67,7 @@ namespace kyun.Video
 
         public void SeekTime(int tm)
         {
-            videoplayer.vdc?.Seek(0);
+            videoplayer.vdc?.Seek(tm);
         }
 
         public void Play(string audio, string video = "", bool fadein = false, float opacity = 0.75f)

@@ -19,9 +19,11 @@ namespace kyun.GameModes.Classic
         bool holding;
         long position = 0;
         float porcent = 0;
-        private long leaveTime;
+        public long leaveTime;
         private bool hasLeaveKey;
         private int lastPorcentage = 0;
+
+        public int ReplayId = 0;
 
         private Texture2D fillCache;
 
@@ -63,6 +65,56 @@ namespace kyun.GameModes.Classic
                     leaveTime = EndTime;
                     calculateScore();
                     Died = true;
+                }
+
+                position = EndTime - screenInstance.GamePosition;
+
+                position = (EndTime - Time) - position;
+
+                porcent = (float)position / (float)(EndTime - Time) * 100f;
+
+                
+                return;
+            }
+
+            if((screenInstance.gameMod & GameMod.Replay) == GameMod.Replay)
+            {
+                var pressedd = screenInstance.replay.Hits[ReplayId].PressedAt;
+                var leaved = screenInstance.replay.Hits[ReplayId].LeaveAt;
+                if (screenInstance.GamePosition > pressedd && !holding)
+                {
+                    holding = pressed = true;
+                    pressedTime = pressedd;
+                    hasLeaveKey = false;
+                    playHitsound();
+                }
+
+                if (holding && screenInstance.GamePosition > leaved)
+                {
+                    leaveTime = leaved;
+                    hasLeaveKey = true;
+                }
+
+                if (screenInstance.GamePosition > EndTime - _beatmap.Timing50)
+                {
+
+                    if (screenInstance.GamePosition >= EndTime)
+                    {
+                        if (!hasLeaveKey)
+                            leaveTime = screenInstance.GamePosition;
+
+                        calculateScore();
+                    }
+                    /*
+                     * I think this will make bug
+                     * 
+                    if (!pressed)
+                    {
+                        //leaveTime = screenInstance.GamePosition;
+                        calculateScore();
+                    }   */
+
+
                 }
 
                 position = EndTime - screenInstance.GamePosition;

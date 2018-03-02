@@ -41,6 +41,8 @@ namespace kyun.Beatmap
         public decimal EndTime { get; set; }
         public Vector2 OsuLocation { get; set; }
         public int HitSound { get; set; }
+
+        public float MsPerBeat { get; set; }
         #endregion
 
         #region PrivateVars
