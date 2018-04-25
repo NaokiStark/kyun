@@ -2,6 +2,7 @@
 using System.IO;
 using Newtonsoft.Json.Linq;
 using kyun.UIObjs;
+using System;
 
 namespace kyun.Beatmap
 {
@@ -49,7 +50,9 @@ namespace kyun.Beatmap
                 return (int)((float)Score.ScoreType.Good - this.OverallDifficulty * 6f);
             }
         }
-        
+
+        public string FilePath { get; set; }
+
         public static ubeatBeatMap FromFile(string path)
         {
             StreamReader ubeatFile = new StreamReader(path);
@@ -73,6 +76,7 @@ namespace kyun.Beatmap
                 OverallDifficulty = float.Parse((string)jMap["overallDifficulty"]),
                 Video = (string)jMap["video"],
                 VideoStartUp = int.Parse(jMap["videoStartUp"].ToString()),
+                FilePath = path
             };
 
             string stringBM = (string)jMap["objects"];

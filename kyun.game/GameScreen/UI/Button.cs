@@ -42,24 +42,14 @@ namespace kyun.GameScreen.UI
         void updateScale()
         {
             
-            if (Uping && Scale < 1.1f)
+            if (Uping && Scale < 1.5f)
             {
-                Scale += (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f);
+                Scale = Math.Min(Scale + (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f), 1.5f);
             }
             else if (!Uping && Scale > 1f)
             {
-                Scale -= (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f);
+                Scale = Math.Max(Scale - (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f), 1f);
             }
-            else if (Uping && Scale + (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f) > 1.1f)
-            {
-                Scale = 1.1f;
-            }
-            else
-            {
-                Scale = 1f;
-            }
-
-            
         }
 
         public override void Update()
@@ -72,12 +62,13 @@ namespace kyun.GameScreen.UI
             Rectangle cursor = new Rectangle((int)MouseHandler.GetState().X, (int)MouseHandler.GetState().Y, 1, 1);
 
             //oie
-            if (System.Windows.Forms.Form.ActiveForm != (System.Windows.Forms.Control.FromHandle(KyunGame.Instance.Window.Handle) as System.Windows.Forms.Form)) return;
+            if (System.Windows.Forms.Form.ActiveForm != KyunGame.WinForm) return;
 
             if (!KyunGame.Instance.IsActive) return; //Fix events
 
-            if (cursor.Intersects(rg))
+            if (cursor.Intersects(rg) && !alredyIntersecs)
             {
+                alredyIntersecs = true;
                 Uping = true;
                 updateScale();
 
@@ -86,14 +77,14 @@ namespace kyun.GameScreen.UI
                     //AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.ButtonOver);
                     EffectsPlayer.PlayEffect(SpritesContent.Instance.ButtonOver);
                 }
-
-                alredyIntersecs = true;
+                                
             }
-            else
+            else if(!cursor.Intersects(rg))
             {
-                Uping = false;
-                updateScale();               
+                Uping = false;                            
                 alredyIntersecs = false;
+                if(Scale > 1f)
+                    updateScale();
             }
         }
     }

@@ -89,7 +89,7 @@ namespace kyun.game.GameScreen.UI
                 nickLabel.Text = "Login";
             }
 
-
+            displayBg.Opacity = nickLabel.Opacity = userAvatar.Opacity = Opacity;
             displayBg.Update();
             userAvatar.Update();
             nickLabel.Update();

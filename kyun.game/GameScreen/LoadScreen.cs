@@ -16,6 +16,7 @@ using kyun.Beatmap;
 using kyun.GameModes.Classic;
 using Newtonsoft.Json.Linq;
 using kyun.game;
+using kyun.game.GameScreen.UI;
 
 namespace kyun.GameScreen
 {
@@ -62,7 +63,7 @@ namespace kyun.GameScreen
             int mxg = Math.Min(g + 15, 255);
             int mxb = Math.Min(b + 15, 255);
 
-            return Color.FromNonPremultiplied(OsuBeatMap.rnd.Next(mr, mxr) , OsuBeatMap.rnd.Next(mg, mxg), OsuBeatMap.rnd.Next(mb, mxb), 255);
+            return Color.FromNonPremultiplied(OsuBeatMap.rnd.Next(mr, mxr), OsuBeatMap.rnd.Next(mg, mxg), OsuBeatMap.rnd.Next(mb, mxb), 255);
         }
 
         public LoadScreen()
@@ -105,18 +106,18 @@ namespace kyun.GameScreen
 
             try
             {
-
-                DirectoryInfo dr = sDirs[OsuBeatMap.rnd.Next(0, sDirs.Length - 1)];
+                int nxt = OsuBeatMap.rnd.Next(0, sDirs.Length - 1);
+                DirectoryInfo dr = sDirs[1];
 
                 FileInfo[] fls = dr.GetFiles();
-                    
+
                 foreach (FileInfo file in fls)
                 {
                     if (!file.Name.ToLower().EndsWith(".json"))
                         continue;
 
                     StreamReader streader = File.OpenText(file.FullName);
-                    
+
                     JObject jo = JObject.Parse(streader.ReadToEnd());
 
                     var songInfo = new SongInfo();
@@ -128,7 +129,7 @@ namespace kyun.GameScreen
 
                     streader.Close();
                     streader.Dispose();
-                    
+
                     break;
 
                 }
@@ -154,7 +155,7 @@ namespace kyun.GameScreen
             /**/
 
             auplayer = new AudioVideoPlayer();
-        
+
 
 
             Background = SpritesContent.Instance.DefaultBackground;
@@ -171,7 +172,7 @@ namespace kyun.GameScreen
                 Position = logoPosition,
                 BeatReact = false,
                 //Visible = false
-
+                
             };
 
             rectanglexd = new FilledRectangle(new Vector2(300, 150), Color.Black * .75f);
@@ -181,7 +182,8 @@ namespace kyun.GameScreen
             rectanglexd.Position = new Vector2((mode.Width / 2) - (rectanglexd.Texture.Width / 2), mode.Height - rectanglexd.Texture.Height);
 
 
-            labelLoadingText = new Label(0) {
+            labelLoadingText = new Label(0)
+            {
                 Text = "Loading",
                 Position = new Vector2(rectanglexd.Position.X + (rectanglexd.Texture.Width / 2), rectanglexd.Position.Y + 10),
                 Centered = true,
@@ -200,7 +202,8 @@ namespace kyun.GameScreen
 
 
 
-            labelEndLoad = new Label(0) {
+            labelEndLoad = new Label(0)
+            {
                 Text = "Click here to start!",
                 Position = new Vector2(LoadingSpinner.Position.X, LoadingSpinner.Position.Y - 20),
                 Centered = true,
@@ -209,7 +212,8 @@ namespace kyun.GameScreen
                 Visible = false
             };
 
-            lprgs = new ProgressBar(mode.Width, 4) {
+            lprgs = new ProgressBar(mode.Width, 4)
+            {
                 BarColor = Color.FromNonPremultiplied(109, 158, 237, 255)
             };
 
@@ -238,12 +242,8 @@ namespace kyun.GameScreen
                 Position = new Vector2(0, 4),
             };
 
-            coverBox = new FilledRectangle(new Vector2((SpritesContent.Instance.SettingsFont.MeasureString(selected_song.Title).X * .8f) + 20, coverSize), Color.Black * .8f)
+            coverLabel = new Label(0)
             {
-                Position = new Vector2(coverSize, coverimg.Position.Y)
-            };
-
-            coverLabel = new Label(0) {
                 Text = selected_song.Title,
                 Font = SpritesContent.Instance.SettingsFont,
                 Position = new Vector2(coverSize + 5, coverimg.Position.Y),
@@ -258,8 +258,26 @@ namespace kyun.GameScreen
                 Scale = .6f
             };
 
-            float titleSize = SpritesContent.Instance.SettingsFont.MeasureString(selected_song.Title).X;
-            float artSize = SpritesContent.Instance.SettingsFont.MeasureString(selected_song.Artist).X;
+            float titleSize = 1;
+            float artSize = 1;
+            try
+            {
+                titleSize = SpritesContent.Instance.SettingsFont.MeasureString(selected_song.Title).X;
+                artSize = SpritesContent.Instance.SettingsFont.MeasureString(selected_song.Artist).X;
+            }
+            catch
+            {
+                titleSize = SpritesContent.Instance.MSGothic2.MeasureString(selected_song.Title).X;
+                artSize = SpritesContent.Instance.MSGothic2.MeasureString(selected_song.Artist).X;
+            }
+
+
+            coverBox = new FilledRectangle(new Vector2(1), Color.Black * .8f)
+            {
+                Position = new Vector2(coverSize, coverimg.Position.Y)
+            };
+
+
 
             float maxSize = Math.Max(titleSize, artSize);
 
@@ -294,9 +312,10 @@ namespace kyun.GameScreen
             auplayer.Play(selected_song.Song);
             //bplayer.Play(selected_song[0]);
             //auplayer.Play(AppDomain.CurrentDomain.BaseDirectory + @"\Assets\Junk - enchanted.mp3", "", true);
-            
-            
+
+
             KyunGame.Instance.IsMouseVisible = true;
+            KyunGame.Instance.Notifications.ShowDialog("Free coffee!                  Find a easter egg in this version (no free coffee).                  Enjoy!", 15000, Notifications.NotificationType.Critical);
             //UbeatGame.Instance.OnPeak += Instance_OnPeak;
         }
 
@@ -319,13 +338,13 @@ namespace kyun.GameScreen
             int randomNumber = OsuUtils.OsuBeatMap.GetRnd(1, 10, -1);
 
             bool stwp = false;
-                        
+
             for (int a = 0; a < randomNumber; a++)
             {
                 int startLeft = 0;
                 if (KyunGame.xmas && stwp)
                 {
-                
+
                     int startTop = 0;
                     startTop = OsuUtils.OsuBeatMap.GetRnd(25, actualMode.Height - 25, -1);
                     startLeft = OsuUtils.OsuBeatMap.GetRnd(25, actualMode.Width + 500, -1);
@@ -363,7 +382,7 @@ namespace kyun.GameScreen
                 }
 
 
-                Color ccolor = (squareYesNo) ? 
+                Color ccolor = (squareYesNo) ?
                                 getColorRange(EnphasisColor[0], EnphasisColor[1], EnphasisColor[2]) :
                                 Color.FromNonPremultiplied(black_rand, black_rand, black_rand, 255);
 
@@ -390,10 +409,10 @@ namespace kyun.GameScreen
         private void LoadScreen_onClick(object sender, EventArgs e)
         {
             issueChange = true;
-            
+
             if (loadDone)
             {
-                
+
                 auplayer.Stop();
                 if (!Settings1.Default.Tutorial)
                     ScreenManager.ChangeTo(MainScreen.Instance);
@@ -405,7 +424,7 @@ namespace kyun.GameScreen
                 }
             }
         }
-        
+
 
         /*
         private void LoadScreen_onTouch(object sender, ubeatTouchEventArgs e)
@@ -446,7 +465,7 @@ namespace kyun.GameScreen
 
         private void checkToEnd()
         {
-            
+
             if (loadDone)
             {
                 LoadingSpinner.Visible = false;
@@ -455,7 +474,7 @@ namespace kyun.GameScreen
 
             }
 
-            if(loadDone && auplayer.audioplayer.PlayState == BassPlayState.Stopped && !issueChange)
+            if (loadDone && auplayer.audioplayer.PlayState == BassPlayState.Stopped && !issueChange)
             {
                 auplayer.Stop();
                 if (!Settings1.Default.Tutorial)
@@ -480,7 +499,7 @@ namespace kyun.GameScreen
         public override void Render()
         {
             RenderBg();
-            float elapsed = (float)KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalSeconds*12;
+            float elapsed = (float)KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalSeconds * 12;
             spinnerRotation += elapsed;
 
             float circle = MathHelper.Pi * 2;
@@ -499,7 +518,7 @@ namespace kyun.GameScreen
                         (int)LoadingSpinner.Position.Y,
                         LoadingSpinner.Texture.Width,
                         LoadingSpinner.Texture.Height
-                        ), null, Color.White, spinnerRotation, new Vector2(LoadingSpinner.Texture.Width /2, LoadingSpinner.Texture.Height/2), SpriteEffects.None, 0);
+                        ), null, Color.White, spinnerRotation, new Vector2(LoadingSpinner.Texture.Width / 2, LoadingSpinner.Texture.Height / 2), SpriteEffects.None, 0);
                     continue;
                 }
 
@@ -511,7 +530,7 @@ namespace kyun.GameScreen
             RenderPeak();
         }
 
-        int loadingValue=0;
+        int loadingValue = 0;
         private ProgressBar lprgs;
         private ParticleEngine particleEngine;
         private Image coverimg;
@@ -528,88 +547,94 @@ namespace kyun.GameScreen
             Logger.Instance.Info("");
 
 
-            if (!InstanceManager.Instance.IntancedBeatmaps)
+            if (InstanceManager.AllBeatmaps == null)
             {
                 InstanceManager.AllBeatmaps = new List<Beatmap.Mapset>();
-                if (Settings1.Default.osuBeatmaps != "")
+            }
+            else
+            {
+                InstanceManager.AllBeatmaps.Clear();
+            }
+
+            if (Settings1.Default.osuBeatmaps != "")
+            {
+
+                DirectoryInfo osuDirPath = new DirectoryInfo(Settings1.Default.osuBeatmaps);
+                if (osuDirPath.Exists)
                 {
+                    DirectoryInfo[] osuMapsDirs = osuDirPath.GetDirectories();
+                    int flieCnt = 0;
 
-                    DirectoryInfo osuDirPath = new DirectoryInfo(Settings1.Default.osuBeatmaps);
-                    if (osuDirPath.Exists)
+
+                    int fCount = osuMapsDirs.Length;
+                    int dCount = 0;
+
+                    foreach (DirectoryInfo odir in osuMapsDirs)
                     {
-                        DirectoryInfo[] osuMapsDirs = osuDirPath.GetDirectories();
-                        int flieCnt = 0;
+                        System.Windows.Forms.Application.DoEvents();
 
-
-                        int fCount = osuMapsDirs.Length;
-                        int dCount = 0;
-
-                        foreach (DirectoryInfo odir in osuMapsDirs)
+                        dCount++;
+                        FileInfo[] fils = odir.GetFiles();
+                        // Mapset
+                        Beatmap.Mapset bmms = null;
+                        foreach (FileInfo fff in fils)
                         {
-                            System.Windows.Forms.Application.DoEvents();
 
-                            dCount++;
-                            FileInfo[] fils = odir.GetFiles();
-                            // Mapset
-                            Beatmap.Mapset bmms = null;
-                            foreach (FileInfo fff in fils)
+                            if (fff.Extension.ToLower() == ".osu")
                             {
 
-                                if (fff.Extension.ToLower() == ".osu")
+                                flieCnt++;
+                                OsuUtils.OsuBeatMap bmp = OsuUtils.OsuBeatMap.FromFile(fff.FullName);
+                                if (bmp != null)
                                 {
 
-                                    flieCnt++;
-                                    OsuUtils.OsuBeatMap bmp = OsuUtils.OsuBeatMap.FromFile(fff.FullName);
-                                    if (bmp != null)
-                                    {
-
-                                        //Beatmaps.Add(bmp);
-                                        if (bmms == null)
-                                            bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator, bmp.Tags);
-                                        bmms.Add(bmp);
+                                    //Beatmaps.Add(bmp);
+                                    if (bmms == null)
+                                        bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator, bmp.Tags);
+                                    bmms.Add(bmp);
 
 
-                                    }
-
-                                    // Debug.WriteLine("File: {0}s", flieCnt);
                                 }
 
+                                // Debug.WriteLine("File: {0}s", flieCnt);
                             }
-                            if (bmms != null)
-                            {
-                                Beatmap.Mapset mapst = Beatmap.Mapset.OrderByDiff(bmms);
-
-                                InstanceManager.AllBeatmaps.Add(mapst);
-                            }
-                            float pctg = (float)dCount / (float)fCount * 100f;
-                            if ((int)pctg % 5 == 0)
-                            {
-
-                                if(loadingValue != (int)pctg)
-                                {
-                                    Logger.Instance.Info("-> {0}%", pctg.ToString("0"));
-                                    
-                                }
-                               
-                            }
-                            loadingValue = (int)pctg;
-
-                            lprgs.Value = pctg;
 
                         }
-                    }
-                    else
-                    {
-                        
-                        Logger.Instance.Warn("Could not find Osu! beatmaps folder, please, make sure that if exist.");
+                        if (bmms != null)
+                        {
+                            Beatmap.Mapset mapst = Beatmap.Mapset.OrderByDiff(bmms);
+
+                            InstanceManager.AllBeatmaps.Add(mapst);
+                        }
+                        float pctg = (float)dCount / (float)fCount * 100f;
+                        if ((int)pctg % 5 == 0)
+                        {
+
+                            if (loadingValue != (int)pctg)
+                            {
+                                Logger.Instance.Info("-> {0}%", pctg.ToString("0"));
+
+                            }
+
+                        }
+                        loadingValue = (int)pctg;
+
+                        lprgs.Value = pctg;
+
                     }
                 }
                 else
                 {
-                    Logger.Instance.Warn(Settings1.Default.osuBeatmaps);
-                    Logger.Instance.Warn("osu! beatmaps is not setted, if you have osu beatmaps, set folder in config and restart ubeat.");
+
+                    Logger.Instance.Warn("Could not find Osu! beatmaps folder, please, make sure that if exist.");
                 }
             }
+            else
+            {
+                Logger.Instance.Warn(Settings1.Default.osuBeatmaps);
+                Logger.Instance.Warn("osu! beatmaps is not setted, if you have osu beatmaps, set folder in config and restart ubeat.");
+            }
+
             loadLocalMaps();
             Logger.Instance.Info("");
             Logger.Instance.Info("Done.");
@@ -618,7 +643,7 @@ namespace kyun.GameScreen
             Logger.Instance.Info("");
 
             loadDone = true;
-            
+
         }
 
 
@@ -658,7 +683,7 @@ namespace kyun.GameScreen
                             OsuUtils.OsuBeatMap bmp = OsuUtils.OsuBeatMap.FromFile(fff.FullName);
                             if (bmp != null)
                             {
-                                if(bmp.Title.Contains("kyun! Tutorial"))
+                                if (bmp.Title.Contains("kyun! Tutorial"))
                                 {
                                     TutorialBeatmap = bmp;
                                 }
@@ -690,18 +715,18 @@ namespace kyun.GameScreen
                 InstanceManager.Instance.IntancedBeatmaps = true;
             }
 
-           // Settings1.Default.Reset();
+            // Settings1.Default.Reset();
 
             if (Settings1.Default.Tutorial)
             {
                 if (TutorialBeatmap == null)
                 {
                     Settings1.Default.Tutorial = false; //Skip tutorial :/
-                    
+
                     return;
                 }
-                    
-                 
+
+
                 KyunGame.Instance.SelectedBeatmap = TutorialBeatmap;
                 if (ClassicModeScreen.Instance == null)
                     ClassicModeScreen.Instance = new ClassicModeScreen();

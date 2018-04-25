@@ -72,15 +72,17 @@ namespace osuBMParser
         #endregion
         #endregion
         public string Background { get; set; }
+        public bool parseObj { get; set; }
         #region constructors
         private Beatmap()
         {
             init();
         }
 
-        public Beatmap(string path) : this()
+        public Beatmap(string path, bool parseObjects = false) : this()
         {
-            OsuFileParser parser = new OsuFileParser(path, this);
+            parseObj = parseObjects;
+            OsuFileParser parser = new OsuFileParser(path, this, parseObjects);
             parser.parse();
         }
 

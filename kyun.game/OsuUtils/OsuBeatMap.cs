@@ -12,18 +12,17 @@ namespace kyun.OsuUtils
     public class OsuBeatMap : ubeatBeatMap
     {
 
-        public static new OsuBeatMap FromFile(string path)
+        public static OsuBeatMap FromFile(string path, bool loadHitobjects = false)
         {
             try
             {
-                
+
                 int leadIn = 0;
-                Random cRnd= new Random(DateTime.Now.Millisecond);
-                osuBMParser.Beatmap osbm = new osuBMParser.Beatmap(path);
+                Random cRnd = new Random(DateTime.Now.Millisecond);
+                osuBMParser.Beatmap osbm = new osuBMParser.Beatmap(path, loadHitobjects);
                 string relPath = new FileInfo(path).DirectoryName;
-
-
                 
+
                 OsuBeatMap tmpbm = new OsuBeatMap()
                 {
                     Artist = StringHelper.SanitizeUnicode(osbm.Artist),
@@ -39,7 +38,8 @@ namespace kyun.OsuUtils
                     SleepTime = osbm.AudioLeadIn,
                     Video = relPath + @"\" + osbm.Video,
                     VideoStartUp = osbm.VideoStartUp,
-                    osuBeatmapType = osbm.Mode
+                    osuBeatmapType = osbm.Mode,
+                    FilePath = path //Added
                 };
 
                 tmpbm.Breaks = new List<Beatmap.Break>();
@@ -55,26 +55,26 @@ namespace kyun.OsuUtils
 
                 TimingPoint tm = osbm.TimingPoints[0];
                 int tmCount = 0;
-                int fVer = int.Parse((osbm.FormatVersion == null)? "14" : osbm.FormatVersion);
-                
+                int fVer = int.Parse((osbm.FormatVersion == null) ? "14" : osbm.FormatVersion);
+
                 int offset = 0;
                 /*
                 offset = ((fVer >= 14 && osbm.Mode == 0) ? 63 : 53);
                 offset -= 35;*/
-               
-               /*
-               if (fVer > 9)
-                    offset -= 98;
-                else if (fVer < 10)
-                    offset -= 50;*/
+
+                /*
+                if (fVer > 9)
+                     offset -= 98;
+                 else if (fVer < 10)
+                     offset -= 50;*/
 
                 int col1 = 480 / 3;
-                int col2 = (480 / 3)*2;
+                int col2 = (480 / 3) * 2;
 
                 int row1 = 640 / 3;
                 int row2 = (640 / 3) * 2;
 
-                if(osbm.HitObjects == null)
+                if (osbm.HitObjects == null)
                 {
                     //WTF
                     osbm.HitObjects = new List<HitObject>();
@@ -105,28 +105,38 @@ namespace kyun.OsuUtils
 
                 tmpbm.SleepTime = leadIn; // audio-Video
 
+                tmpbm.BPM = tm.MsPerBeat;
+
+                if (!loadHitobjects)
+                {
+                    tmpbm.HitObjects = hitObjs;
+                    return tmpbm;
+                }
+
+
                 foreach (osuBMParser.HitObject ho in osbm.HitObjects)
                 {
 
                     ho.Time += offset;
                     ho.Time += leadIn;
-                    if(tmCount < osbm.TimingPoints.Count){
+                    if (tmCount < osbm.TimingPoints.Count)
+                    {
                         if ((ho.Time - leadIn) < osbm.TimingPoints[tmCount].Offset)
                         {
-                            
+
                             tmCount++;
-                            if(tmCount >= osbm.TimingPoints.Count)
+                            if (tmCount >= osbm.TimingPoints.Count)
                             {
                                 tm = osbm.TimingPoints[0];
                             }
                             else
                             {
                                 tm = osbm.TimingPoints[tmCount];
-                            }              
+                            }
                         }
                     }
 
-                    int[] location = {0,0};
+                    int[] location = { 0, 0 };
 
                     if (ho.Position.x < row1)
                         location[1] = 1;
@@ -163,8 +173,8 @@ namespace kyun.OsuUtils
                     else if (location[0] == 3 && location[1] == 3)
                         fL = 3;
 
-                        if (ho is osuBMParser.HitCircle)
-                        {
+                    if (ho is osuBMParser.HitCircle)
+                    {
                         IHitObj obj = new HitButton()
                         {
                             StartTime = ho.Time,
@@ -175,46 +185,46 @@ namespace kyun.OsuUtils
                             HitSound = ho.HitSound
                         };
 
-                            int lastCh = 0;
+                        int lastCh = 0;
 
-                            if (hitObjs.Count > 0)
+                        if (hitObjs.Count > 0)
+                        {
+                            if (hitObjs.Last().Location == obj.Location)
                             {
-                                if (hitObjs.Last().Location == obj.Location)
+                                lastCh = obj.Location;
+                                if (hitObjs.Last() is HitHolder)
                                 {
-                                    lastCh = obj.Location;
-                                    if (hitObjs.Last() is HitHolder)
+                                    if (hitObjs.Last().EndTime > obj.StartTime || Math.Abs(hitObjs.Last().EndTime - obj.StartTime) < 150)
                                     {
-                                        if (hitObjs.Last().EndTime > obj.StartTime  || Math.Abs(hitObjs.Last().EndTime - obj.StartTime) < 150)
+                                        while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count - 2].Location)
                                         {
-                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location )
-                                            {
-                                                lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
-                                            }
+                                            lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
                                         }
                                     }
-                                    else if (hitObjs.Last() is HitButton)
-                                    {
-                                        if (hitObjs.Last().StartTime == obj.StartTime || Math.Abs(hitObjs.Last().StartTime - obj.StartTime) < 150)
-                                        {
-                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location )
-                                            {
-                                                lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
-                                            }
-                                        }
-                                    }
-
                                 }
+                                else if (hitObjs.Last() is HitButton)
+                                {
+                                    if (hitObjs.Last().StartTime == obj.StartTime || Math.Abs(hitObjs.Last().StartTime - obj.StartTime) < 150)
+                                    {
+                                        while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count - 2].Location)
+                                        {
+                                            lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
+                                        }
+                                    }
+                                }
+
                             }
+                        }
 
                         obj.MsPerBeat = getTimingPoint((int)obj.StartTime, osbm).MsPerBeat;
 
-                            hitObjs.Add(obj);
-                        }
-                        else if (ho is osuBMParser.HitSlider)
-                        {
-                        
+                        hitObjs.Add(obj);
+                    }
+                    else if (ho is osuBMParser.HitSlider)
+                    {
+
                         HitSlider slider = (HitSlider)ho;
-                       
+
                         float sliderVelocityInOsuFormat = slider.SliderTimingPoint.MsPerBeat;
 
                         if (sliderVelocityInOsuFormat >= 0)
@@ -228,9 +238,9 @@ namespace kyun.OsuUtils
                             osbm.SliderMultiplier = 1f;
 
                         decimal pxPerBeat = (decimal)osbm.SliderMultiplier * 100 * velocity;
-                                                                       
+
                         decimal beatsNumber = ((decimal)slider.PixelLength * (decimal)slider.Repeat) / pxPerBeat;
-                       
+
                         TimingPoint tmc = getTimingPoint(slider.Time, osbm);
 
                         //THE FINAL FUCKING LENGTH TIME FOR THIS SHITTY SLIDER
@@ -245,7 +255,7 @@ namespace kyun.OsuUtils
                             EndTime = (Length) + (decimal)ho.Time,
                             BeatmapContainer = tmpbm,
                             //Location = lasN = GetRnd(97, 106, lasN)
-                            Location = ((osbm.Source!="ubeat")?lasN = GetRnd(97, 106, lasN):fL + 96),
+                            Location = ((osbm.Source != "ubeat") ? lasN = GetRnd(97, 106, lasN) : fL + 96),
                             OsuLocation = new Microsoft.Xna.Framework.Vector2(ho.Position.x, ho.Position.y),
                             HitSound = ho.HitSound
                         };
@@ -255,7 +265,7 @@ namespace kyun.OsuUtils
                         //MANIA LONGNOTE
                         if (slider.Type == HitSlider.SliderType.LONGNOTE)
                         {
-                            if(slider.EndTime < slider.Time)
+                            if (slider.EndTime < slider.Time)
                             {
                                 /*
                                 ((HitHolder)obj).Length = slider.EndTime;
@@ -266,100 +276,100 @@ namespace kyun.OsuUtils
                             }
                             else
                             {
-                               
+
                                 ((HitHolder)obj).EndTime = slider.EndTime;
                                 ((HitHolder)obj).Length = Math.Abs(slider.EndTime - slider.Time);
-                               
+
                             }
                         }
 
-                            int lastCh = 0;
+                        int lastCh = 0;
 
-                            if (hitObjs.Count > 0)
+                        if (hitObjs.Count > 0)
+                        {
+                            if (hitObjs.Last().Location == obj.Location)
                             {
-                                if (hitObjs.Last().Location == obj.Location)
+                                lastCh = obj.Location;
+                                if (hitObjs.Last() is HitHolder)
                                 {
-                                    lastCh = obj.Location;
-                                    if (hitObjs.Last() is HitHolder)
+                                    if (hitObjs.Last().EndTime > obj.StartTime || Math.Abs(hitObjs.Last().EndTime - obj.StartTime) < 150)
                                     {
-                                        if (hitObjs.Last().EndTime > obj.StartTime || Math.Abs(hitObjs.Last().EndTime - obj.StartTime) < 150)
+                                        while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count - 2].Location)
                                         {
-                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location )
-                                            {
-                                                lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
-                                            }
+                                            lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
                                         }
                                     }
-                                    else if (hitObjs.Last() is HitButton)
+                                }
+                                else if (hitObjs.Last() is HitButton)
+                                {
+                                    if (hitObjs.Last().StartTime == obj.StartTime || Math.Abs(hitObjs.Last().StartTime - obj.StartTime) < 150)
                                     {
-                                        if (hitObjs.Last().StartTime == obj.StartTime || Math.Abs(hitObjs.Last().StartTime - obj.StartTime) < 150)
+                                        while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count - 2].Location)
                                         {
-                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location )
-                                            {
-                                                lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
-                                            }
+                                            lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
                                         }
                                     }
                                 }
                             }
-
-                            hitObjs.Add(obj);
                         }
-                        else if (ho is osuBMParser.HitSpinner)
-                        {
 
-                            IHitObj obj = new HitHolder()
-                            {
-                                StartTime = (decimal)((HitSpinner)ho).Time,
-                                Length = (decimal)(((HitSpinner)ho).EndTime+offset+leadIn) - (decimal)((HitSpinner)ho).Time,
-                                EndTime = (decimal)((HitSpinner)ho).EndTime + offset + leadIn,
-                                //Location = lasN = GetRnd(97, 106,lasN),
-                                Location = ((osbm.Source != "ubeat") ? lasN = GetRnd(97, 106, lasN) : fL + 96),
-                                BeatmapContainer = tmpbm,
-                                OsuLocation = new Microsoft.Xna.Framework.Vector2(640/2, 480/2),
-                                HitSound = ho.HitSound
-                            };
+                        hitObjs.Add(obj);
+                    }
+                    else if (ho is osuBMParser.HitSpinner)
+                    {
+
+                        IHitObj obj = new HitHolder()
+                        {
+                            StartTime = (decimal)((HitSpinner)ho).Time,
+                            Length = (decimal)(((HitSpinner)ho).EndTime + offset + leadIn) - (decimal)((HitSpinner)ho).Time,
+                            EndTime = (decimal)((HitSpinner)ho).EndTime + offset + leadIn,
+                            //Location = lasN = GetRnd(97, 106,lasN),
+                            Location = ((osbm.Source != "ubeat") ? lasN = GetRnd(97, 106, lasN) : fL + 96),
+                            BeatmapContainer = tmpbm,
+                            OsuLocation = new Microsoft.Xna.Framework.Vector2(640 / 2, 480 / 2),
+                            HitSound = ho.HitSound
+                        };
 
                         obj.MsPerBeat = getTimingPoint((int)obj.StartTime, osbm).MsPerBeat;
 
                         int lastCh = 0;
 
                         if (hitObjs.Count > 0)
+                        {
+                            if (hitObjs.Last().Location == obj.Location)
                             {
-                                if (hitObjs.Last().Location == obj.Location)
+                                lastCh = obj.Location;
+                                if (hitObjs.Last() is HitHolder)
                                 {
-                                    lastCh = obj.Location;
-                                    if (hitObjs.Last() is HitHolder)
+                                    if (hitObjs.Last().EndTime > obj.StartTime || Math.Abs(hitObjs.Last().EndTime - obj.StartTime) < 2)
                                     {
-                                        if (hitObjs.Last().EndTime > obj.StartTime || Math.Abs(hitObjs.Last().EndTime - obj.StartTime) < 2)
+                                        while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count - 2].Location)
                                         {
-                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location )
-                                            {
-                                                lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
-                                            }
+                                            lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
                                         }
                                     }
-                                    else if (hitObjs.Last() is HitButton)
-                                    {
-                                        if (hitObjs.Last().StartTime == obj.StartTime || Math.Abs(hitObjs.Last().StartTime - obj.StartTime) < 2)
-                                        {
-                                            while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count-2].Location )
-                                            {
-                                                lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
-                                            }
-                                        }
-                                    }
-
                                 }
-                            }
+                                else if (hitObjs.Last() is HitButton)
+                                {
+                                    if (hitObjs.Last().StartTime == obj.StartTime || Math.Abs(hitObjs.Last().StartTime - obj.StartTime) < 2)
+                                    {
+                                        while (lastCh == hitObjs.Last().Location && lastCh == hitObjs[hitObjs.Count - 2].Location)
+                                        {
+                                            lastCh = obj.Location = lasN = GetRnd(97, 106, lasN);
+                                        }
+                                    }
+                                }
 
-                            hitObjs.Add(obj);
+                            }
                         }
+
+                        hitObjs.Add(obj);
+                    }
 
                 }
 
                 tmpbm.HitObjects = hitObjs;
-                tmpbm.BPM = tm.MsPerBeat; 
+                tmpbm.BPM = tm.MsPerBeat;
                 return tmpbm;
             }
             catch
@@ -367,10 +377,10 @@ namespace kyun.OsuUtils
                 return null;
             }
         }
-        
+
         //public static Random rnd = new Random(DateTime.Now.Millisecond);
         public static NR3Generator rnd = new NR3Generator();
-        public static int GetRnd(int min,int max,int last)
+        public static int GetRnd(int min, int max, int last)
         {
 
             int rnddd = rnd.Next(min, max);
@@ -378,16 +388,16 @@ namespace kyun.OsuUtils
 
             return rnddd;
         }
-        public static float getSliderTime(float sliderMultiplier, float beatLength,float pixelLength)
+        public static float getSliderTime(float sliderMultiplier, float beatLength, float pixelLength)
         {
             return beatLength * (pixelLength / sliderMultiplier) / 100f;
         }
-        public static TimingPoint GetTimingPointFor(osuBMParser.Beatmap bm, long Time, bool inherit =false)
+        public static TimingPoint GetTimingPointFor(osuBMParser.Beatmap bm, long Time, bool inherit = false)
         {
 
-            for (int a = bm.TimingPoints.Count-1; a >= 0; a--)
+            for (int a = bm.TimingPoints.Count - 1; a >= 0; a--)
             {
-                if (bm.TimingPoints[a].Offset <= Time && (!inherit == (bm.TimingPoints[a].MsPerBeat>0)))
+                if (bm.TimingPoints[a].Offset <= Time && (!inherit == (bm.TimingPoints[a].MsPerBeat > 0)))
                 {
                     return bm.TimingPoints[a];
                 }

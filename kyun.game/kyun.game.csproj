@@ -40,6 +40,10 @@
       <HintPath>..\packages\MouseKeyHook.5.4.0\lib\net40\Gma.System.MouseKeyHook.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Lidgren.Network, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\Lidgren.Network.dll</HintPath>
@@ -148,10 +152,13 @@
     <Compile Include="GameModes\OsuMode\HitSingle.cs" />
     <Compile Include="GameModes\OsuMode\ModeConstants.cs" />
     <Compile Include="GameModes\OsuMode\OsuMode.cs" />
+    <Compile Include="GameModes\Test\Egg.cs" />
     <Compile Include="GameModes\Test\TestPlayer.cs" />
     <Compile Include="GameModes\Test\TestScreen.cs" />
+    <Compile Include="GameScreen\BeatmapLoader.cs" />
     <Compile Include="GameScreen\BeatmapScreen.cs" />
     <Compile Include="GameScreen\BeatmapScreen.Desing.cs" />
+    <Compile Include="GameScreen\GameLoader.cs" />
     <Compile Include="GameScreen\Grid.cs" />
     <Compile Include="GameScreen\InputEvents\KeyPressEventArgs.cs" />
     <Compile Include="GameScreen\IScreen.cs" />
@@ -191,6 +198,7 @@
     <Compile Include="GameScreen\UI\Particles\SquareParticle.cs" />
     <Compile Include="GameScreen\UI\ProgressBar.cs" />
     <Compile Include="GameScreen\UI\RoundedRectangle.cs" />
+    <Compile Include="GameScreen\UI\Tooltip.cs" />
     <Compile Include="GameScreen\UI\UserBox.cs" />
     <Compile Include="GameScreen\UI\VolumeControl.cs" />
     <Compile Include="GameScreen\VideoScreenBase.cs" />
@@ -209,6 +217,11 @@
     <Compile Include="Overlay\QuestionOverlay.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resource1.Designer.cs" />
+    <Compile Include="Resource11.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource1.resx</DependentUpon>
+    </Compile>
     <Compile Include="Score\Combo.cs" />
     <Compile Include="Score\ComboDisplay.cs" />
     <Compile Include="Score\HealthBar.cs" />
@@ -248,6 +261,12 @@
     <Compile Include="Video\FrameBuffer.cs" />
     <Compile Include="Video\VideoDecoder.cs" />
     <Compile Include="Video\VideoPlayer.cs" />
+    <Compile Include="Winforms\FailForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Winforms\FailForm.Designer.cs">
+      <DependentUpon>FailForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Winforms\LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -256,7 +275,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resource1.resx" />
+    <EmbeddedResource Include="Resource1.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource11.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Winforms\FailForm.resx">
+      <DependentUpon>FailForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Winforms\LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -267,16 +292,22 @@
     <Content Include="Assets\Effects\MenuTransition.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Effects\Notification.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Effects\tristan-lohengrin_8bit-introduction.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\songs\1\Tenkitsune - To The Phantomile!.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\songs\1\tenkitsune.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\songs\2\tofubeats.jpg">
+    <Content Include="Assets\songs\2\cover.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\songs\2\tofubeats.mp3">
+    <Content Include="Assets\songs\2\pepensow.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\songs\3\a3843029910_16.jpg">
@@ -285,16 +316,25 @@
     <Content Include="Assets\songs\3\UjicoSnail%27s House   Mystic Girl.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\songs\4\DJ Noriken Magicalgirl_Syndrome.mp3">
+    <Content Include="Assets\songs\4\cover.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\songs\4\DJ Noriken.jpg">
+    <Content Include="Assets\songs\4\Digital Math - Journey %28Part 2%29 [Argofox].mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\songs\5\kan.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\songs\5\KanooliAscensus.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\6\kan.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\6\KanooliAscensus.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\test.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Maps\129844 Diana Vickers - The Boy Who Murdered Love\Diana Vickers - The Boy Who Murdered Love %28Autumn%29 [Insane].osu">
@@ -490,6 +530,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\CHitObject.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\6\songinfo.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\MSGothic1.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\MSGothic2.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />

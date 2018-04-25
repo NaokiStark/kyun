@@ -23,7 +23,7 @@ namespace kyun.game.NikuClient
         {
             //Note: Less hardcoded?
             //svrs.AddServer("localhost/onics2");
-            svrs.AddServer("onics.club");
+            svrs.AddServer("mokyu.pw");
 
             if (!tokenLogin)
                 CheckConnection(user, pass, svrs.GetServer(0).Value);

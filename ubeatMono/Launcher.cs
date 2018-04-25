@@ -12,6 +12,8 @@ namespace kyunMono
     public partial class Launcher : Form
     {
         public static Launcher Instance;
+
+        public static string UpdateBase = "http://kyun.mokyu.pw/";
         
         public Launcher()
         {
@@ -77,7 +79,7 @@ namespace kyunMono
                     }
                 };
 
-                wc.DownloadDataAsync(new Uri("http://kyun.onics.club/lastVersion.json"));
+                wc.DownloadDataAsync(new Uri($"{UpdateBase}lastVersion.json"));
             }
             catch
             {
@@ -117,7 +119,7 @@ namespace kyunMono
             }
             
 
-            DownloadFile("http://kyun.onics.club/update/kyun.game.zip", Path.Combine(localPath, "kyun.game.zip"),
+            DownloadFile($"{UpdateBase}update/kyun.game.zip", Path.Combine(localPath, "kyun.game.zip"),
                 new DownloadProgressChangedEventHandler((obj, args)=> {
                     DownloadProgressChangedEventArgs e = args;
                     lDsp.Text = $"Downloading update {e.ProgressPercentage}%";
@@ -130,7 +132,6 @@ namespace kyunMono
                     {
                         Close();
 
-                        //Dispose();
                         return;
                     }
                     lDsp.Text = "Installing update";
@@ -138,24 +139,26 @@ namespace kyunMono
                     FastZip fz = new FastZip();
 
                     string updatePath = Path.Combine(localPath, "l");
+                    Update();
                     fz.ExtractZip(Path.Combine(localPath, "kyun.game.zip"), updatePath, null);
-
+                    Update();
                     DirectoryInfo df = new DirectoryInfo(updatePath);
 
                     CopyFilesRecursively(df, new DirectoryInfo(Application.StartupPath));
-                    /*
-                    FileInfo[] files = df.GetFiles();
+                   
+                    //Cleanup
 
-                    foreach(FileInfo file in files)
+                    try
                     {
-                        if (file.Extension == ".pdb" || file.Name.ToLower().EndsWith("vshost.exe"))
-                            continue;
+                        Directory.Delete(updatePath);
+                    }
+                    catch
+                    {
+                        //
+                        Console.WriteLine("Error trying to cleanup, delete update folder manually.");
+                    }
 
-                        var destFile = Path.Combine(Application.StartupPath, file.Name);
-                        File.Copy(file.FullName, destFile, true);
-                    }*/
 
-                    //Program.DoReload();
                     Close(); //Yay new fresh without reload
 
 
@@ -192,14 +195,8 @@ namespace kyunMono
 
         private void DownloadProgress(object sender, DownloadProgressChangedEventArgs e)
         {
-            /*
-            // Displays the operation identifier, and the transfer progress.
-            Console.WriteLine("{0}    downloaded {1} of {2} bytes. {3} % complete...",
-                (string)e.UserState,
-                e.BytesReceived,
-                e.TotalBytesToReceive,
-                e.ProgressPercentage);
-                */
+            
+            Update();
             lDsp.Text = $"Downloading update {e.ProgressPercentage}%";
 
         }

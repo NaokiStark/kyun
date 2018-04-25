@@ -8,6 +8,8 @@ using kyun.GameScreen;
 using System.Threading;
 using kyun.Utils;
 using kyun.Audio;
+using Microsoft.Xna.Framework.Input;
+using kyun.GameScreen.UI.Particles;
 
 namespace kyun.GameModes.OsuMode
 {
@@ -19,6 +21,13 @@ namespace kyun.GameModes.OsuMode
         bool End = false;
 
         static OsuMode Instance;
+        private int timeToLeave;
+        private bool mousePressedLeft;
+        private bool mousePressedRight;
+        private bool keypressedZ;
+        private bool keypressedX;
+        public ParticleEngine _particleEngine { get; private set; }
+
 
         public static OsuMode GetInstance()
         {
@@ -26,16 +35,17 @@ namespace kyun.GameModes.OsuMode
                 Instance = new OsuMode();
             return Instance;
         }
-        
+
 
         public OsuMode()
-            :base("OsuMode")
+            : base("OsuMode")
         {
 
             Instance = this;
-            
+
             ChangeBackground(KyunGame.Instance.SelectedBeatmap.Background);
-            onKeyPress += (obj, args) => {
+            onKeyPress += (obj, args) =>
+            {
 
                 if (args.Key == Microsoft.Xna.Framework.Input.Keys.Escape)
                 {
@@ -48,15 +58,21 @@ namespace kyun.GameModes.OsuMode
                 }
 
             };
+            _particleEngine = new ParticleEngine();
+            Controls.Add(_particleEngine);
         }
 
-        
+
         /// <summary>
         /// Start game
         /// </summary>
         /// <param name="beatmap"></param>
         public override void Play(IBeatmap beatmap, GameMod GameMods = GameMod.None)
         {
+            AllowVideo = true;
+            End = false;
+
+            BackgroundDim = ((ScreenBase)game.GameScreen.GameLoader.GetInstance()).BackgroundDim;
             clearObjects();
             base.gameMod = GameMods;
             KyunGame.Instance.Player.Stop();
@@ -65,8 +81,16 @@ namespace kyun.GameModes.OsuMode
             InGame = true;
             lastIndex = 0;
             ChangeBackground(KyunGame.Instance.SelectedBeatmap.Background);
-            //hitbaseObjects.Clear();
-           
+            hitbaseObjects.Clear();
+            if (game.Settings1.Default.Video)
+            {
+                if (!AVPlayer.videoplayer.Stopped)
+                {
+                    avp.videoplayer.vdc?.Dispose();
+                    
+                    avp.videoplayer.Play(beatmap.Video);
+                }
+            }
         }
 
         private void clearObjects()
@@ -94,7 +118,7 @@ namespace kyun.GameModes.OsuMode
                 KyunGame.Instance.Player.Play(Beatmap.SongPath);
                 KyunGame.Instance.Player.Volume = KyunGame.Instance.GeneralVolume;
             }
-            
+
 
             if (lastIndex >= Beatmap.HitObjects.Count)
             {
@@ -104,10 +128,10 @@ namespace kyun.GameModes.OsuMode
 
             long actualTime = GamePosition;
 
-            
+
             IHitObj lastObject = Beatmap.HitObjects[lastIndex];
 
-            long approachStart = (long)(ModeConstants.APPROACH_TIME_BASE - Beatmap.ApproachRate * 150f)+500;
+            long approachStart = (long)(ModeConstants.APPROACH_TIME_BASE - Beatmap.ApproachRate * 150f) + 500;
 
             long nextObjStart = (long)lastObject.StartTime - approachStart;
 
@@ -119,14 +143,14 @@ namespace kyun.GameModes.OsuMode
                 {
                     var obj = new HitSingle(lastObject, Beatmap, this);
                     obj.Opacity = 0;
-                    //hitbaseObjects.Add(obj);
+                    hitbaseObjects.Add(obj);
                     Controls.Add(obj);
                 }
                 else
                 {
                     var obj = new HitHolder(lastObject, Beatmap, this);
                     obj.Opacity = 0;
-                    //hitbaseObjects.Add(obj);
+                    hitbaseObjects.Add(obj);
                     Controls.Add(obj);
                 }
 
@@ -135,21 +159,43 @@ namespace kyun.GameModes.OsuMode
 
 
         }
-        
-        
-        
+
+
+
         public override void Update(GameTime tm)
         {
             if (!Visible || isDisposing) return;
             checkObjectsInTime();
             base.Update(tm);
 
-            if (lastIndex >= Beatmap.HitObjects.Count && hitbaseObjects.Count < 1)
+            int leaveTime = 3000;
+
+            if (lastIndex >= Beatmap.HitObjects.Count)
             {
-                End = true;
+                if (Beatmap.HitObjects.Last() is kyun.Beatmap.HitHolder)
+                {
+                    if (GamePosition > ((HitHolder)hitbaseObjects.Last()).EndTime)
+                    {
+                        End = true;
+                    }
+                }
+                else
+                {
+                    if (GamePosition > ((HitSingle)hitbaseObjects.Last()).Time)
+                    {
+                        End = true;
+                    }
+                }
             }
 
+
+
             if (End)
+            {
+                timeToLeave += tm.ElapsedGameTime.Milliseconds;
+            }
+
+            if (End && timeToLeave > leaveTime)
             {
                 ScreenManager.ChangeTo(BeatmapScreen.Instance);
                 KyunGame.Instance.Player.Play(Beatmap.SongPath);
@@ -163,6 +209,8 @@ namespace kyun.GameModes.OsuMode
             {
                 foreach (UIObjectBase obj in Controls.Reverse<UIObjectBase>())
                 {
+                    if (obj == null)
+                        continue; //wtf
                     if (obj.Texture != null)
                     {
                         if (obj.Texture == SpritesContent.Instance.TopEffect)
@@ -193,19 +241,60 @@ namespace kyun.GameModes.OsuMode
 
         }
 
-        internal override void UpdateControls()
+        private bool keypressed(int key)
         {
-
-            foreach (UIObjectBase control in Controls)
+            switch (key)
             {
-                control.Update();
+                case 1:
+                    mousePressedLeft = MouseHandler.GetState().LeftButton == ButtonState.Pressed;
+                    return mousePressedLeft;
+                    break;
+                case 2:
+                    mousePressedRight = MouseHandler.GetState().RightButton == ButtonState.Pressed;
+                    return mousePressedRight;
+                    break;
+                case 3:
+                    keypressedZ = Keyboard.GetState().IsKeyDown(Keys.Z);
+                    return keypressedZ;
+                    break;
+                case 4:
+                    keypressedX = Keyboard.GetState().IsKeyDown(Keys.X);
+                    return keypressedX;
+                    break;
             }
 
+            return false;
+        }
+
+        internal override void UpdateControls()
+        {
+            Controls.RemoveAll(item => item == null); //wtf
             Controls.RemoveAll(item => item.Died);
+            bool first = false;
+            foreach (UIObjectBase control in Controls)
+            {              
+
+                if(control is HitBase)
+                {
+                    
+                    if (!first)
+                    {
+                        if (!control.Died)
+                            ((HitSingle)control).IsFirst = first = true;
+                    }
+                }
+
+                control.Update();
+
+                if(control is HitBase)
+                {
+                    ((HitSingle)control).keyPressed = Keyboard.GetState().GetPressedKeys().ToList();
+                }
+            }
 
             
         }
 
-        
+
     }
 }

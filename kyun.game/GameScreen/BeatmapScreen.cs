@@ -8,6 +8,7 @@ using kyun.GameModes.OsuMode;
 using kyun.Utils;
 using kyun.game.GameModes;
 using kyun.game.GameModes.CatchIt;
+using kyun.game.GameScreen;
 
 namespace kyun.GameScreen
 {
@@ -51,6 +52,10 @@ namespace kyun.GameScreen
                     break;
                 case Microsoft.Xna.Framework.Input.Keys.Enter:
                     lBDff_MouseDoubleClick(new object(), new EventArgs());
+                    break;
+                case Keys.F5:
+                    LoadScreen.Instance = null;
+                    ScreenManager.ChangeTo(LoadScreen.Instance);
                     break;
             }
 
@@ -142,18 +147,23 @@ namespace kyun.GameScreen
                    
                     ClassicModeScreen.GetInstance().Play(lBDff.Items[lBDff.selectedIndex], modes);
 
-                    ScreenManager.ChangeTo(ClassicModeScreen.GetInstance());
+                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items[lBDff.selectedIndex], ClassicModeScreen.GetInstance(), modes);
                     break;
                 case GameMode.Osu:
-                    
+
+                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items[lBDff.selectedIndex], OsuMode.GetInstance(), modes);
+                    /*
                     OsuMode.GetInstance().Play(lBDff.Items[lBDff.selectedIndex], modes);
 
-                    ScreenManager.ChangeTo(OsuMode.GetInstance());
+                    ScreenManager.ChangeTo(OsuMode.GetInstance());*/
                     break;
                 case GameMode.CatchIt:
+
+                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items[lBDff.selectedIndex], CatchItMode.GetInstance(), modes);
+                    /*
                     CatchItMode.GetInstance().Play(lBDff.Items[lBDff.selectedIndex], modes);
 
-                    ScreenManager.ChangeTo(CatchItMode.GetInstance());
+                    ScreenManager.ChangeTo(CatchItMode.GetInstance());*/
                     break;
             }
 
@@ -203,6 +213,11 @@ namespace kyun.GameScreen
             lBDff.vertOffset = 0;
 
             KyunGame.Instance.discordHandler.SetState("Picking beatmap", $"This or this?");
+        }
+
+        public void changeBeatmapAndReorderDisplay()
+        {
+            lbox.selectedIndex = lbox.Items.Count - 1;
         }
 
         void orderByTitle()

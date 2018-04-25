@@ -7,6 +7,9 @@ public static class StringHelper
 {
     public static string SanitizeUnicode(string input)
     {
+        if (string.IsNullOrWhiteSpace(input))
+            return "";
+        
         return Regex.Replace(input, @"[^\u0000-\u007F]+", string.Empty);
     }
 

@@ -55,7 +55,8 @@ namespace kyun.GameModes.Classic
         private ParticleEngine particleEngine;
         static ClassicModeScreen Instance;
         public Replay replay;
-
+        private ButtonStandard skipButton;
+        private bool skipped;
 
         public static ClassicModeScreen GetInstance()
         {
@@ -165,6 +166,13 @@ namespace kyun.GameModes.Classic
 
             };
 
+            skipButton = new ButtonStandard(Color.PaleVioletRed)
+            {
+                Caption = "Skip",
+                Position = new Vector2(ActualScreenMode.Width - SpritesContent.Instance.ButtonDefault.Width, ActualScreenMode.Height - SpritesContent.Instance.ButtonDefault.Height),
+                Visible = false
+            };
+
             _comboDsp = new ComboDisplay();
 
             _particleEngine = new ParticleEngine();
@@ -191,6 +199,8 @@ namespace kyun.GameModes.Classic
             backButton.Click += BackButton_Click;
             _healthBar.OnFail += _healthBar_OnFail;
 
+            skipButton.Click += SkipButton_Click;
+
             Controls.Add(particleEngine);
             Controls.Add(imgGridBackground);
             Controls.Add(Board);
@@ -205,6 +215,28 @@ namespace kyun.GameModes.Classic
             Controls.Add(tmLabel);
             Controls.Add(_particleEngine);
             Controls.Add(replayLabel);
+            Controls.Add(skipButton);
+
+        }
+
+        private void SkipButton_Click(object sender, EventArgs e)
+        {
+            skipButton.Visible = false;
+            skip();
+        }
+
+        private void skip()
+        {
+            if (skipped)
+                return;
+
+            if (avp.audioplayer.PlayState == BassPlayState.Playing)
+            {
+                skipped = true;
+                skipButton.Visible = false;
+                avp.audioplayer.Position = (long)Beatmap.HitObjects[0].StartTime - 3000;
+                EffectsPlayer.PlayEffect(SpritesContent.Instance.MenuTransition);
+            }
         }
 
         private void ClassicModeScreen_onKeyPress(object sender, GameScreen.InputEvents.KeyPressEventArgs args)
@@ -229,6 +261,10 @@ namespace kyun.GameModes.Classic
                        0,
                        Color.White
                        );
+                    break;
+                case Microsoft.Xna.Framework.Input.Keys.Space:
+                    if (skipButton.Visible)
+                        skip();
                     break;
             }
         }
@@ -271,6 +307,7 @@ namespace kyun.GameModes.Classic
             lastBreak = 0;
             failed = false;
             End = false;
+            skipped = false;
             HitObjects.Clear();
             FailsCount = 0;
             _healthBar.Reset();
@@ -393,6 +430,11 @@ namespace kyun.GameModes.Classic
                 KyunGame.Instance.Player.Play(Beatmap.SongPath, ((gameMod & GameModes.GameMod.DoubleTime) == GameMod.DoubleTime) ? 1.5f : 1f);
 
                 KyunGame.Instance.Player.Volume = KyunGame.Instance.GeneralVolume;
+
+                if ((long)Beatmap.HitObjects.First().StartTime > 3500)
+                    skipButton.Visible = true;
+                else
+                    skipButton.Visible = false;
             }
 
             onBreak = false;
@@ -451,6 +493,14 @@ namespace kyun.GameModes.Classic
             long actualTime = GamePosition;
 
             IHitObj lastObject = Beatmap.HitObjects[lastIndex];
+
+            if (!skipped && actualTime > Beatmap.HitObjects[0].StartTime - 3000)
+            {
+                skipped = true;
+               
+            }
+
+            skipButton.Visible = !skipped;
 
             long approachStart = (long)(ModeConstants.APPROACH_TIME_BASE - Beatmap.ApproachRate * 150f) + 10;
 

@@ -21,6 +21,10 @@ using kyun.game.GameScreen.UI;
 using kyun.game;
 using kyun.game.Utils;
 using kyun.game.NikuClient;
+using kyun.game.GameScreen;
+using System.Threading.Tasks;
+using kyun.Notifications;
+using kyun.game.Winforms;
 
 namespace kyun
 {
@@ -52,16 +56,38 @@ namespace kyun
         public SoundEffect soundEffect;
         public Beatmap.ubeatBeatMap SelectedBeatmap { get; set; }
         public Beatmap.Mapset SelectedMapset { get; set; }
-        public float elapsed = 0;
+        public double elapsed = 0;
         public bool VideoEnabled { get; set; }
         public Vector2 wSize = new Vector2(800, 600);
         public GameTime GameTimeP { get; set; }
         private float _vol = Settings1.Default.Volume;
         public FrameCounter frameCounter;
+        public FrameCounter VideoCounter;
         public static bool RunningOverWine;
         public static bool xmas = false;
         public float maxPeak { get; private set; }
         public NikuClientApi server { get; set; }
+
+        public static int Attemps = 0;
+
+        public static int AttempsLag = 0;
+        public static double timeToClear = 0;
+        public static long lastSongPos = 0;
+
+        delegate void shit(GameTime tm);
+        event shit updateEvent;
+        private System.Threading.SynchronizationContext syncContext;
+
+        bool gameIsRunning;
+        double timeToCrash = 0;
+
+        public Notifier Notifications { get; private set; }
+
+        public static int LauncherVersion = 0; //THIS WILL FILL WITH LAUNCHER (EXECUTABLE)
+
+        public static int DesiredLauncher = 1; //THIS IS A LAUNCHER REQUESTED WITH THIS ACTUAL BUILD (NOT EXECUTABLE)
+
+        public static string MainSite = "https://kyun.mokyu.pw/";
 
         public float GeneralVolume
         {
@@ -87,6 +113,8 @@ namespace kyun
             }
         }
 
+
+
         public KyunGame(bool softwareRendering = false)
         {
 
@@ -109,6 +137,7 @@ namespace kyun
             CompilationVersion = CompilationStatus + " | " + lastComp.ToString("ddMMyy");
 
             frameCounter = new FrameCounter();
+            VideoCounter = new FrameCounter();
             Instance = this;
             Graphics = new GraphicsDeviceManager(this);
 
@@ -126,7 +155,7 @@ namespace kyun
             KeyBoardManager = new KeyboardManager(this);
             VideoEnabled = Settings1.Default.Video;
 
-            if (RunningOverWine)
+            if (true)
             {
                 m_GlobalHook = Hook.AppEvents();
                 m_GlobalHook.MouseDown += MouseHandler.setMouseDownStateWinform;
@@ -137,6 +166,7 @@ namespace kyun
 
             discordHandler = new Discord_Handler();
         }
+
 
         void loadEnviroment()
         {
@@ -165,12 +195,11 @@ namespace kyun
             ToggleVSync(Settings1.Default.VSync);
             ToggleFullscreen(Settings1.Default.FullScreen);
 
-            System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(Window.Handle);
-
+           
             if (srcm[Settings1.Default.ScreenMode].WindowMode != Screen.WindowDisposition.Windowed)
             {
-                FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-                FormGame.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+                WinForm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+                WinForm.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             }
 #if DEBUG
             Logger.Instance.Debug("!!!! GRAPHICS CARD !!!!");
@@ -186,7 +215,161 @@ namespace kyun
 #endif
 
             Graphics.ApplyChanges();
+            WinForm.AllowDrop = true;
 
+            //ToDo: add sprite
+            WinForm.DragEnter += FormGame_DragEnter;
+            WinForm.DragLeave += FormGame_DragLeave;
+            WinForm.DragDrop += FormGame_DragDrop;
+
+            gameIsRunning = true;
+
+            TimeSpan gameStart = DateTime.Now - DateTime.Now;
+            updateEvent = cUpdate;
+
+            /*            
+            syncContext = System.Threading.SynchronizationContext.Current;
+            System.Threading.Thread tr = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
+            {
+                DateTime startTime;
+                startTime = DateTime.Now;
+                while (gameIsRunning)
+                {
+                    elapsed = (DateTime.Now - startTime).TotalMilliseconds;
+                    startTime = DateTime.Now;
+                    syncContext.Send(state =>
+                    {
+                        updateEvent.Invoke(new GameTime(gameStart, TimeSpan.FromMilliseconds(elapsed), false));
+                    }, null);
+                    System.Threading.Thread.Sleep(TimeSpan.FromTicks(1000));
+                }
+            }));
+            tr.IsBackground = true;
+            tr.Start();*/
+            syncContext = System.Threading.SynchronizationContext.Current;
+
+            Task tk = new Task(() =>
+            {
+                DateTime startTime;
+                startTime = DateTime.Now;
+                while (gameIsRunning)
+                {
+                    try
+                    {
+                        elapsed = (DateTime.Now - startTime).TotalMilliseconds;
+                        startTime = DateTime.Now;
+
+                        timeToCrash += elapsed;
+
+                        syncContext.Send(state =>
+                        {
+                            updateEvent.Invoke(new GameTime(gameStart, TimeSpan.FromMilliseconds(elapsed), false));
+                        }, null);
+
+                        System.Threading.Thread.Sleep((int)(750f / Settings1.Default.FrameRate));
+
+
+                    }
+                    catch (Exception pex)
+                    {
+                        Logger.Instance.Severe($"{pex.Message} \r\n {pex.StackTrace}");
+                        gameIsRunning = false;
+                        syncContext.Send(state =>
+                        {
+                            RecallAndNotify(pex);
+                        }, null);
+                        return;
+                    }
+                }
+            });
+
+            tk.Start();
+        }
+
+        public void RecallAndNotify(Exception ex)
+        {
+            if (Attemps >= 5)
+            {
+                var frm = new FailForm();
+                Player.Stop();
+                WinForm.Hide();
+                gameIsRunning = false;
+                frm.ShowForm(ex);
+                return;
+            }
+
+            TimeSpan gameStart = DateTime.Now - DateTime.Now;
+            updateEvent = cUpdate;
+            syncContext = System.Threading.SynchronizationContext.Current;
+            gameIsRunning = true;
+            try
+            {
+                Notifications.ShowDialog("Ups, kyun! has experienced an error, this will be notified, sorry about that.", 10000, NotificationType.Critical);
+            }
+            catch(Exception rex)
+            {
+                Attemps++;
+                RecallAndNotify(rex);
+                return;
+            }
+
+
+            Task tk = new Task(() =>
+            {
+                DateTime startTime;
+                startTime = DateTime.Now;
+                while (gameIsRunning)
+                {
+                    try
+                    {
+                        elapsed = (DateTime.Now - startTime).TotalMilliseconds;
+                        startTime = DateTime.Now;
+
+                        syncContext.Send(state =>
+                        {
+                            updateEvent.Invoke(new GameTime(gameStart, TimeSpan.FromMilliseconds(elapsed), false));
+                        }, null);
+
+                        System.Threading.Thread.Sleep((int)(750f / Settings1.Default.FrameRate));
+                        //throw new Exception("Test");
+                    }
+                    catch (Exception pex)
+                    {
+                        Logger.Instance.Severe($"{pex.Message} \r\n {pex.StackTrace}");
+                        gameIsRunning = false;
+                        syncContext.Send(state =>
+                        {
+                            RecallAndNotify(pex);
+                        }, null);
+                        return;
+                    }
+                }
+            });
+
+            gameIsRunning = true;
+            tk.Start();            
+            Attemps++;            
+        }
+
+        protected override void Update(GameTime tm)
+        {
+
+        }
+
+        private void FormGame_DragLeave(object sender, EventArgs e)
+        {
+        }
+
+        private void FormGame_DragEnter(object sender, System.Windows.Forms.DragEventArgs e)
+        {
+            e.Effect = System.Windows.Forms.DragDropEffects.All;
+
+        }
+
+        private void FormGame_DragDrop(object sender, System.Windows.Forms.DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(System.Windows.Forms.DataFormats.FileDrop);
+            BeatmapLoader.GetInstance().LoadBeatmaps(files, (ScreenBase)ScreenManager.ActualScreen);
         }
 
         protected override void Initialize()
@@ -224,24 +407,6 @@ namespace kyun
 
         void hideGameWindow()
         {
-            /*
-            if (!true)
-            {
-                System.Windows.Forms.DialogResult drs = System.Windows.Forms.MessageBox.Show("Warning!\r\n\r\nLa presentacion que viene a continuacion contiene video, si no tienes un equipo 'potente', desactiva esa opcion, en serio, el video tiende a fallar e interfiere con el juego en equipos lentos.\r\n\r\n¿deseas activar el video?", "",System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
-                if(drs == System.Windows.Forms.DialogResult.No)
-                {
-                    Settings1.Default.Video = false;
-                    Settings1.Default.QuestionVideo = true;
-                    Settings1.Default.Save();
-                    System.Windows.Forms.MessageBox.Show("ubeat se reiniciará.");
-                    InstanceManager.Instance.Reload();
-                    return;
-                }
-                Settings1.Default.Video = !false;
-                Settings1.Default.QuestionVideo = true;
-                Settings1.Default.Save();
-            }*/
-
             Screen.ScreenMode acmode = Screen.ScreenModeManager.GetActualMode();
             uLabelVer = new GameScreen.UI.Label(.1f);
             uLabelVer.Text = "ubeat Project alpha";
@@ -254,6 +419,11 @@ namespace kyun
 
             uLabelMsgVer = new GameScreen.UI.Label(.1f);
             uLabelMsgVer.Text = CompilationVersion;
+            uLabelMsgVer.Tooltip = new Tooltip
+            {
+                Text = "Ok, you catch me.",
+                BorderColor = Color.Coral
+            };
 
             uLabelMsgVer.Centered = true;
             uLabelMsgVer.Position = new Vector2(acmode.Width / 2, acmode.Height - 25);
@@ -261,12 +431,18 @@ namespace kyun
             uLabelMsgVer.Scale = .75f;
             uLabelMsgVer.ForegroundColor = Color.WhiteSmoke * .75f;
 
+            uLabelMsgVer.Click += (e, arg) => {
+                ScreenManager.ChangeTo(game.GameModes.Test.TestScreen.GetInstance());
+            };
+
             FrameDisplay = new Label()
             {
                 Font = SpritesContent.Instance.GeneralBig,
-                Position = new Vector2(0, acmode.Height - SpritesContent.Instance.GeneralBig.MeasureString("123").Y - 10),
+                Position = new Vector2(0, acmode.Height - SpritesContent.Instance.GeneralBig.MeasureString("123").Y * 2 - 10),
                 Text = ""
             };
+
+            Notifications = new Notifier();
 
             ScreenManager.ChangeTo(new LogoScreen());
             EffectsPlayer.StartEngine();//Clear
@@ -297,7 +473,7 @@ namespace kyun
 
             SpritesContent.Instance.LoadContent(SpriteBatch, GraphicsDevice);
 
-            touchHandler = new TouchHandler(System.Windows.Forms.Control.FromHandle(Window.Handle));
+            touchHandler = new TouchHandler(WinForm);
             Logger.Instance.Info("");
             Logger.Instance.Info("Done.");
             Logger.Instance.Info("");
@@ -309,6 +485,7 @@ namespace kyun
 
         protected override void UnloadContent()
         {
+            gameIsRunning = false;
             if (Player != null)
                 Player.Dispose();
 
@@ -348,29 +525,65 @@ namespace kyun
 
         }
 
-        #region GameUpdates
-        protected override void Update(GameTime gameTime)
+        public void checkHaxOrLag(GameTime gameTime)
         {
+            //Check if time cheating or game is running slow
+
+            long lastPos = Player.Position;
+
+            ///ToDo: Check that
+            if (gameTime.ElapsedGameTime.Milliseconds >= 200)
+            {
+                AttempsLag++;
+
+                if (AttempsLag > 50)
+                    throw new Exception("Game is running too slow or lagged.");
+            }
+
+            if (Player.PlayState == BassPlayState.Playing)
+            {
+                long desiredPosition = lastSongPos + gameTime.ElapsedGameTime.Milliseconds;
+                if (Math.Abs(desiredPosition - lastPos) >= 100)
+                {
+                    if (ScreenManager.ActualScreen is GameModes.GameModeScreenBase)
+                        AttempsLag++;
+                    if (AttempsLag > 15)
+                        throw new Exception("Game is running too slow or lagged /Or speedhack/.");
+                }
+            }
+
+            if (timeToClear > 10000)
+                timeToClear = AttempsLag = 0;
+
+            timeToClear++;
+            lastSongPos = lastPos;
+        }
+
+        #region GameUpdates
+        protected void cUpdate(GameTime gameTime)
+        {
+            checkHaxOrLag(gameTime);
+
             //Update Gametime FIRST
             GameTimeP = gameTime;
+            frameCounter.Update(gameTime);
 
             touchHandler?.Update();
             updatePeak(gameTime);
 
-            System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(Window.Handle);
-
+           
             if (Player.PlayState == BassPlayState.Playing)
             {
 
                 if (SelectedBeatmap != null)
                 {
-                    FormGame.Text = "kyun! - Playing: " + SelectedBeatmap.Artist + " - " + SelectedBeatmap.Title;
+                    WinForm.Text = "kyun! - Playing: " + SelectedBeatmap.Artist + " - " + SelectedBeatmap.Title;
                 }
 
             }
             else
             {
-                FormGame.Text = "kyun!";
+                WinForm.Text = "kyun!";
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Add))
@@ -385,17 +598,20 @@ namespace kyun
 
             KeyBoardManager.Update(gameTime);
             ScreenManager.Update(gameTime);
-
+            
             uLabelVer.Update();
             uLabelMsgVer.Update();
 
             base.Update(gameTime);
-            frameCounter.Update(gameTime);
 
-            FrameDisplay.Text = frameCounter.AverageFramesPerSecond.ToString("0", CultureInfo.InvariantCulture) + " FPS";
+            string vAv = VideoCounter.AverageFramesPerSecond.ToString("0", CultureInfo.InvariantCulture);
+            string lAv = frameCounter.AverageFramesPerSecond.ToString("0", CultureInfo.InvariantCulture);
+
+            FrameDisplay.Text = $"Logic: {lAv} UPS\nVideo: {vAv} FPS";
             FrameDisplay?.Update();
 
-            if (System.Windows.Forms.Form.ActiveForm == FormGame)
+            Notifications?.Update();
+            if (System.Windows.Forms.Form.ActiveForm == WinForm)
             {
                 if (oVol != 0f)
                     GeneralVolume = oVol;
@@ -415,9 +631,15 @@ namespace kyun
 
         protected override void Draw(GameTime gameTime)
         {
+            VideoCounter.Update(gameTime);
+
             GraphicsDevice.Clear(Color.Black);
 
-            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone);
+
+            if (!GraphicsAdapter.UseReferenceDevice)
+                SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone);
+            else
+                SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
 
             ScreenManager.Render();
 
@@ -427,6 +649,8 @@ namespace kyun
             touchHandler?.Render();
 
             FrameDisplay?.Render();
+
+            Notifications?.Render();
 
             VolumeControl.Instance.Render();
 
@@ -440,18 +664,17 @@ namespace kyun
         public void ChangeResolution(Screen.ScreenMode screenMode)
         {
             SuppressDraw();
-
-            System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(Window.Handle);
+            
 
             if (screenMode.WindowMode != Screen.WindowDisposition.Windowed)
             {
-                FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-                FormGame.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+                WinForm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+                WinForm.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             }
             else
             {
-                FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-                FormGame.WindowState = System.Windows.Forms.FormWindowState.Normal;
+                WinForm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+                WinForm.WindowState = System.Windows.Forms.FormWindowState.Normal;
 
             }
 
@@ -491,12 +714,13 @@ namespace kyun
             Screen.ScreenModeManager.Change();
 
             ScreenManager.ChangeTo(SettingsScreen.Instance); //return 
-            FrameDisplay.Position = new Vector2(0, wSize.Y - SpritesContent.Instance.GeneralBig.MeasureString("123").Y - 10);
+            FrameDisplay.Position = new Vector2(0, wSize.Y - SpritesContent.Instance.GeneralBig.MeasureString("123").Y * 2 - 10);
             uLabelMsgVer.Position = new Vector2(wSize.X / 2, wSize.Y - 25);
         }
 
         public static void SetSoftwareRendering()
         {
+            return;
             if (Settings1.Default.WindowsRender)
             {
                 GraphicsAdapter.UseReferenceDevice = true; //A REALLY BAD IDEA
@@ -508,11 +732,10 @@ namespace kyun
             this.Graphics.IsFullScreen = enabled;
             this.Graphics.ApplyChanges();
 
-            System.Windows.Forms.Form FormGame = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(Window.Handle);
             if (enabled)
             {
-                FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-                FormGame.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+                WinForm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+                WinForm.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             }
             else
             {
@@ -520,13 +743,13 @@ namespace kyun
 
                 if (modd.WindowMode == Screen.WindowDisposition.Windowed)
                 {
-                    FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-                    FormGame.WindowState = System.Windows.Forms.FormWindowState.Normal;
+                    WinForm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+                    WinForm.WindowState = System.Windows.Forms.FormWindowState.Normal;
                 }
                 else
                 {
-                    FormGame.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-                    FormGame.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+                    WinForm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+                    WinForm.WindowState = System.Windows.Forms.FormWindowState.Maximized;
                 }
             }
         }
@@ -534,6 +757,8 @@ namespace kyun
         public void ChangeFrameRate(float fps)
         {
             TargetElapsedTime = TimeSpan.FromSeconds(1.0f / fps);
+            //TargetElapsedTime = TimeSpan.FromTicks(5000);
         }
+
     }
 }

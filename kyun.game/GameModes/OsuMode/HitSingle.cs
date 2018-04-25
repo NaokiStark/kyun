@@ -8,6 +8,7 @@ using kyun.UIObjs;
 using kyun.Utils;
 using Microsoft.Xna.Framework.Graphics;
 using kyun.Audio;
+using Microsoft.Xna.Framework.Input;
 
 namespace kyun.GameModes.OsuMode
 {
@@ -23,6 +24,8 @@ namespace kyun.GameModes.OsuMode
         internal bool lastIntersects;
         internal bool willDie;
         internal bool pressed;
+
+        public List<Keys> keyPressed { get; set; }
 
         public int HitSound
         {
@@ -49,6 +52,7 @@ namespace kyun.GameModes.OsuMode
         }
 
         internal long pressedTime { get; set; }
+        public bool IsFirst { get; internal set; }
 
 
 
@@ -154,7 +158,34 @@ namespace kyun.GameModes.OsuMode
                 return;
             }
 
+            if (!IsFirst)
+                return;
+
             bool intersecs = KyunGame.Instance.touchHandler.TouchIntersecs(new Rectangle((int)Position.X, (int)Position.Y, Texture.Height, Texture.Height));
+
+            Rectangle mouseRec = new Rectangle((int)MouseHandler.GetState().Position.X, (int)MouseHandler.GetState().Position.Y, 10, 10);
+
+            bool mouseH = mouseRec.Intersects(new Rectangle((int)Position.X, (int)Position.Y, (int)(Texture.Width * Scale), (int)(Texture.Height * Scale)));
+            
+            bool kapressed = false;
+            bool kbpressed = false;
+
+            if (keyPressed != null)
+            {
+                kapressed = keyPressed.Exists(x => x == Keys.Z);
+                kbpressed = keyPressed.Exists(x => x == Keys.X);
+            }
+            kapressed = !kapressed && Keyboard.GetState().IsKeyDown(Keys.Z);
+            kbpressed = !kbpressed && Keyboard.GetState().IsKeyDown(Keys.X);
+            bool kpressed = kapressed || kbpressed;
+
+            bool mousea = MouseHandler.GetState().LeftButton == ButtonState.Pressed;
+            bool mouseb = MouseHandler.GetState().RightButton == ButtonState.Pressed;
+            bool mousec = mousea || mouseb;
+
+            mouseH = mouseH && (mousec || kpressed);
+
+            intersecs = intersecs || mouseH;
 
             if (screenInstance.GamePosition < Time - _beatmap.Timing50)
             {
@@ -174,10 +205,14 @@ namespace kyun.GameModes.OsuMode
                 return;
             }
 
-
-
+            if (intersecs && screenInstance.GamePosition > Time - _beatmap.Timing50)
+            {
+                pressed = true;
+                pressedTime = screenInstance.GamePosition;
+                calculateScore();
+            }
             //Touch
-            
+
         }
 
         internal void UpdateTime()
@@ -241,22 +276,22 @@ namespace kyun.GameModes.OsuMode
                     particle = SpritesContent.Instance.PerfectTx;
                     break;
             }
-            /*
+            
             screenInstance._particleEngine.AddNewScoreParticle(particle,
                 new Vector2(.05f),
-                new Vector2(screenInstance.imgGridBackground.Position.X + (screenInstance.imgGridBackground.Texture.Height / 2) - (particle.Width / 2), screenInstance.imgGridBackground.Position.Y + (screenInstance.imgGridBackground.Texture.Height / 2) + (particle.Height + 10) * 1.5f),
+                new Vector2(Position.X + (Texture.Height / 2) - (particle.Width / 2), Position.Y + (Texture.Height / 2) + (particle.Height + 10) * 1.5f),
                 10,
                 0,
                 Color.White
-                );*/
-            /*
+                );
+            
             screenInstance._particleEngine.AddNewHitObjectParticle(SpritesContent.Instance.Radiance,
                        new Vector2(.05f),
                        new Vector2(Position.X, Position.Y),
                        10,
                        0,
                        Color.White
-                       );*/
+                       );
                        /*
             screenInstance._particleEngine.AddNewHitObjectParticle(Texture,
                new Vector2(.05f),

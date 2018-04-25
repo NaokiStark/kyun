@@ -109,6 +109,8 @@ namespace kyun.GameScreen.UI.Particles
 
             particles.RemoveWhere(p => p.TimeToDie <= 0);
 
+
+            particles = new HashSet<Particle>(particles.OrderByDescending(p => p.Scale));
         }
 
         /// <summary>
@@ -118,6 +120,8 @@ namespace kyun.GameScreen.UI.Particles
         {
             if (Settings1.Default.MyPCSucks)
                 return;
+
+            
 
             foreach (UIObjectBase particle in particles)
             {

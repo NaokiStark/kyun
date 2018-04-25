@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using kyun.GameScreen.UI;
 using kyun.Utils;
+using kyun.game.GameScreen.UI;
 
 namespace kyun.GameScreen
 {
@@ -41,13 +42,16 @@ namespace kyun.GameScreen
 
         public event EventHandler Click;
         public event EventHandler Over;
+        public event EventHandler Leave;
         public event EventHandler MouseDown;
         public event EventHandler MouseUp;
         public event EventHandler MouseDoubleClick;
         public event ScrollEventHandler OnScroll;
         public event Utils.TouchHandler.TouchEventHandler OnTouch;
 
+        private bool hasOver = false;
 
+        public Tooltip Tooltip { get; set; }
 
         int lastScrollVal = 0;
         bool alredyPressed;
@@ -69,6 +73,19 @@ namespace kyun.GameScreen
             this.MouseDown += (e, ar) =>
             {
                 //Console.WriteLine($"MouseDown over: {e}");
+            };
+
+            Over += (e, arg) =>
+            {
+                if(Tooltip != null)
+                    Tooltip.Visible = true;  
+            };
+
+            Leave += (e, arg) =>
+            {
+                
+                if (Tooltip != null)
+                    Tooltip.Visible = false;
             };
         }
 
@@ -92,16 +109,17 @@ namespace kyun.GameScreen
             UpdateTouchEvents(rg);
 
 
-            if (System.Windows.Forms.Form.ActiveForm != (System.Windows.Forms.Control.FromHandle(KyunGame.Instance.Window.Handle) as System.Windows.Forms.Form)) return;
+            if (System.Windows.Forms.Form.ActiveForm != KyunGame.WinForm) return;
 
-            
+            if(Tooltip != null)
+                Tooltip?.Update();
 
             //if (!KyunGame.Instance.IsActive) return; //Fix events
 
             if (this is Listbox || this is ListboxDiff || this is ObjectListbox)
             {
                 //int actualScrollTouchValue = 0;
-                
+
                 int actualScrollVal = mouseState.ScrollWheelValue;
                 TouchHandler touch = KyunGame.Instance.touchHandler;
                 List<TouchPoint> touchPoints = touch.GetAllPointsIntersecs(rg);
@@ -151,7 +169,7 @@ namespace kyun.GameScreen
                             OnScroll?.Invoke(this, false);
                             scrollInvoked = true;
                         }
-                       
+
                     }
 
                 }
@@ -179,12 +197,12 @@ namespace kyun.GameScreen
 
             if (cursor.Intersects(rg) || tcursor.Intersects(rg))
             {
-
+                hasOver = true;
                 Over?.Invoke(this, new EventArgs());
 
                 if (mouseState.LeftButton == ButtonState.Pressed || KyunGame.Instance.touchHandler.TouchDown)
                 {
-                    
+
 
                     if (!alredyPressed)
                     {
@@ -195,22 +213,30 @@ namespace kyun.GameScreen
 
                         alredyPressed = true;
                     }
-                }                
+                }
+            }
+            else
+            {
+                if (hasOver)
+                {
+                    hasOver = false;
+                    Leave?.Invoke(this, new EventArgs());
+                }             
             }
 
             if (mouseState.LeftButton == ButtonState.Released)
             {
                 //Fix Wine bug
                 if (KyunGame.Instance.touchHandler.TouchUp || KyunGame.RunningOverWine)
-                {                               
+                {
                     if (alredyPressed)
                     {
-                        if(clickCount < 3)
+                        if (clickCount < 3)
                         {
                             clickCount++;
                             clickC = 0;
                         }
-                    
+
                         //Launch MouseUp
                         if (MouseUp != null)
                             if (cursor.Intersects(rg) || tcursor.Intersects(rg)) //again
@@ -234,7 +260,7 @@ namespace kyun.GameScreen
             }
 
 
-         
+
         }
 
         internal void UpdateTouchEvents(Rectangle rg)
@@ -252,9 +278,10 @@ namespace kyun.GameScreen
         {
             if (!Visible)
                 return;
-            
 
-            Rectangle rg = new Rectangle((int)(Position.X), (int)(Position.Y), (int)(this.Texture.Width*Scale), (int)(this.Texture.Height*Scale));
+          
+
+            Rectangle rg = new Rectangle((int)(Position.X), (int)(Position.Y), (int)(this.Texture.Width * Scale), (int)(this.Texture.Height * Scale));
             rg.X = (int)(rg.X - ((Texture.Width * Scale) - Texture.Width) / 2);
             rg.Y = (int)(rg.Y - ((Texture.Height * Scale) - Texture.Height) / 2);
             SourceRectangle = new Rectangle(SourceRectangle.X, SourceRectangle.Y, (int)(SourceRectangle.Width * Scale), (int)(SourceRectangle.Height * Scale));
@@ -262,6 +289,10 @@ namespace kyun.GameScreen
                 KyunGame.Instance.SpriteBatch.Draw(Texture, rg, SourceRectangle, TextureColor * Opacity, AngleRotation, OriginRender, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0);
             else
                 KyunGame.Instance.SpriteBatch.Draw(Texture, rg, null, TextureColor * Opacity, AngleRotation, OriginRender, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0);
+
+            //Render over object
+            if (Tooltip != null)
+                Tooltip?.Render();
         }
 
         public void _OnClick()

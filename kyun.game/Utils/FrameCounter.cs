@@ -6,6 +6,9 @@ namespace kyun.Utils
 {
     public class FrameCounter
     {
+        double time;
+        int frames = 0;
+
         public FrameCounter()
         {
 
@@ -30,8 +33,16 @@ namespace kyun.Utils
 
             TotalFrames++;
             TotalSeconds += deltaTime;*/
+
+            frames++;
+            time+= deltaTime.ElapsedGameTime.Milliseconds;
+            if (time >= 1000)
+            {
+                AverageFramesPerSecond = frames;
+                frames = 0;
+                time = 0;
+            }          
             
-            AverageFramesPerSecond = (double)1 / deltaTime.ElapsedGameTime.TotalSeconds;
             
             //frameCounter = 0;
         }

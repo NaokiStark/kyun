@@ -180,6 +180,8 @@ namespace kyun.Utils
             Applause = LoadSoundBass("Effects\\applause.wav");
 
             MenuTransition = LoadSoundBass("Effects\\MenuTransition.mp3");
+
+            NotificationSound = LoadSoundBass("Effects\\Notification.mp3");
         }
 
         private void LoadFonts(SpriteBatch spriteBatch)
@@ -192,6 +194,9 @@ namespace kyun.Utils
             TitleFont = Content.Load<SpriteFont>("TitleFont");
             StandardButtonsFont = Content.Load<SpriteFont>("StandardButtonFont");
             ScoreBig = Content.Load<SpriteFont>("scorebig");
+
+            MSGothic1 = Content.Load<SpriteFont>("MSGothic1");
+            MSGothic2 = Content.Load<SpriteFont>("MSGothic2");
         }
 
         private void LoadSprites(SpriteBatch spriteBatch, GraphicsDevice graphics)
@@ -353,9 +358,62 @@ namespace kyun.Utils
             return memoryStream;
         }
 
-        public static Texture2D RoundCorners(Texture2D texture, float radius)
+        public static Texture2D RoundCorners(Texture2D tx, float radius, float factor = 1)
         {
-            return texture;
+            
+            List<Color> cl = new List<Color>();
+            cl.Add(Color.Black);
+
+            List<Color> cll = new List<Color>();
+            cll.Add(Color.Green * 0f);
+            cll.Add(Color.Red);
+            cll.Add(Color.Blue * factor);
+            Texture2D rConnr = ContentLoader.CreateRoundedRectangleTexture(
+                KyunGame.Instance.GraphicsDevice,
+                tx.Width,
+                tx.Height,
+                (int)3,
+                (int)radius,
+                5,
+                cl,
+                cll,
+                .7f,
+                0);
+
+            Color[] rdc = new Color[rConnr.Width * rConnr.Height];
+            rConnr.GetData<Color>(rdc);
+
+            Color[] hdc = new Color[tx.Width * tx.Height];
+            tx.GetData<Color>(hdc);
+
+            Color[] final = new Color[rConnr.Width * rConnr.Height];
+
+            int a = 0;
+            
+            foreach(Color clrr in rdc)
+            {
+                try
+                {
+                    hdc[a] = Color.FromNonPremultiplied(hdc[a].R, hdc[a].G, hdc[a].B, clrr.A);
+                    final[a] = hdc[a];
+                   
+                }
+                catch
+                {
+                    break;
+                }
+
+                a++;
+            }
+
+            rConnr.SetData<Color>(final);
+
+            return rConnr;
+        }
+
+        public static Texture2D RoundCornerss(Texture2D texture, float radius)
+        {
+         //   return texture;
 
             Texture2D texturex = new Texture2D(KyunGame.Instance.GraphicsDevice, texture.Width, texture.Height);
 
@@ -371,7 +429,10 @@ namespace kyun.Utils
 
                     int index = y * texture.Width + x;
 
-                    Rectangle internalRectangle = new Rectangle((int)radius, (int)(radius), (int)((float)texture.Width + 1 - 2f * radius), (int)(texture.Height +1 - 2f * radius));
+                    Rectangle internalRectangle = new Rectangle(
+                        (int)radius, (int)(radius),
+                        (int)((float)texture.Width + 1 - 2f * radius),
+                        (int)((float)texture.Height + 1 - 2f * radius));
 
                     Vector2 origin = Vector2.Zero;
                     Vector2 point = new Vector2(x, y);
@@ -418,7 +479,7 @@ namespace kyun.Utils
 
                     if (internalRectangle.Contains(x, y))
                     {
-                        colorData[index] = colorDataTx[index];
+                       // colorData[index] = colorDataTx[index];
                     }
 
 
@@ -496,9 +557,11 @@ namespace kyun.Utils
         public SpriteFont TitleFont { get; set; }
         public SpriteFont StandardButtonsFont { get; set; }
         public SpriteFont ScoreBig { get; set; }
-#endregion
+        public SpriteFont MSGothic1 { get; set; }
+        public SpriteFont MSGothic2 { get; set; }
+        #endregion
 
-#region AudiosVars
+        #region AudiosVars
         public int ButtonHit { get; set; }
         public int ComboBreak { get; set; }
         public int ButtonOver { get; set; }
@@ -520,6 +583,7 @@ namespace kyun.Utils
         public Texture2D Healthbar { get; set; }
         public string defaultbg { get; private set; }
         public int MenuTransition { get; private set; }
+        public int NotificationSound { get; private set; }
 
         #endregion
 

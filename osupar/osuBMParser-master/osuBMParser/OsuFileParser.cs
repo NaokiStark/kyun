@@ -15,13 +15,16 @@ namespace osuBMParser
         private string path;
         private TimingPoint actualTimmingPoint;
 
+        private bool ParseObj { get; set; }
+
         #endregion
 
         #region constructors
-        internal OsuFileParser(string path, Beatmap beatmap)
+        internal OsuFileParser(string path, Beatmap beatmap, bool parseObj = false)
         {
             this.path = path;
             this.beatmap = beatmap;
+            ParseObj = parseObj;
         }
         #endregion
 
@@ -50,6 +53,9 @@ namespace osuBMParser
 
             foreach (string line in lines)
             {
+                if (!ParseObj && ActualSection == "[hitobjects]")
+                    return;
+
                 //Skip line if empty
                 if (!string.IsNullOrWhiteSpace(line))
                 {
@@ -94,6 +100,7 @@ namespace osuBMParser
                 case "[colours]":
                     break;
                 case "[hitobjects]":
+
                     hitObjectParse(line);
                     break;
                 case "[editor]":

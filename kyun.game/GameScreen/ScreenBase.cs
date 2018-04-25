@@ -28,6 +28,11 @@ namespace kyun.GameScreen
         private event EventHandler onFadeInEnd;
         private event EventHandler onFadeOutEnd;
         public event ScrollEventHandler OnScroll;
+
+        public event EventHandler OnMouseMove;
+
+        Vector2 lastMousePosition = Vector2.Zero;
+
         public delegate void ScrollEventHandler(object sender, bool Up, bool touch = false);
 
         public static AudioVideoPlayer AVPlayer
@@ -221,6 +226,7 @@ namespace kyun.GameScreen
             if (!Visible || isDisposing) return;
 
 
+
             KeyboardState actualState = Keyboard.GetState();
 
             if (actualState.IsKeyDown(Keys.Escape))
@@ -249,6 +255,14 @@ namespace kyun.GameScreen
 
             updateBgTransition();
 
+            Vector2 actualPos = MouseHandler.GetState().Position;
+
+            if (!actualPos.Equals(lastMousePosition))
+            {
+                OnMouseMove?.Invoke(this, new EventArgs());
+            }
+
+            lastMousePosition = actualPos;
         }
 
         internal virtual void UpdateScroll()
@@ -354,27 +368,6 @@ namespace kyun.GameScreen
         internal void RenderPeak()
         {
 
-            if(BackgroundBeat.Opacity -((float)KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.003f) < 0)
-            {
-                BackgroundBeat.Opacity = BackgroundFlash.Opacity = 0;
-                
-            }
-            else
-            {
-                BackgroundBeat.Opacity -= ((float)KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.003f);
-                BackgroundFlash.Opacity = BackgroundBeat.Opacity;
-            }
-            
-
-            if (peaked && BackgroundBeat.Opacity == 0)
-            {
-                rightBgEffect = !rightBgEffect;
-                BackgroundBeat.Opacity = .8f;             
-
-                peaked = false;
-            }
-
-
             Screen.ScreenMode actmode = Screen.ScreenModeManager.GetActualMode();
             KyunGame.Instance.SpriteBatch.Draw(BackgroundBeat.Texture, new Rectangle(0, 0, actmode.Width, actmode.Height), null, Color.White * BackgroundBeat.Opacity * .8f, BackgroundBeat.AngleRotation, Vector2.Zero, (!rightBgEffect)?SpriteEffects.None:SpriteEffects.FlipHorizontally, 0);
             BackgroundFlash.Render();
@@ -404,7 +397,15 @@ namespace kyun.GameScreen
                 peak -= (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f);
             }
 
-            
+            BackgroundFlash.Opacity = BackgroundBeat.Opacity = Math.Max(BackgroundBeat.Opacity - ((float)KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.003f),0f);
+
+            if (peaked && BackgroundBeat.Opacity == 0)
+            {
+                rightBgEffect = !rightBgEffect;
+                BackgroundBeat.Opacity = .8f;
+
+                peaked = false;
+            }
         }
 
         internal virtual void UpdateControls()

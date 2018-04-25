@@ -18,6 +18,7 @@ using kyun.UIObjs;
 using kyun.Video;
 using kyun.GameScreen.UI.Particles;
 using Microsoft.Xna.Framework.Graphics;
+using kyun.GameScreen.UI.Buttons;
 
 namespace kyun.game.GameModes.CatchIt
 {
@@ -46,6 +47,8 @@ namespace kyun.game.GameModes.CatchIt
         public Replay replay { get; set; }
         public List<ReplayObject> movements = new List<ReplayObject>();
         private int mid;
+        private ButtonStandard skipButton;
+        private bool skipped;
 
         public Texture2D LongTail { get; set; }
 
@@ -109,6 +112,13 @@ namespace kyun.game.GameModes.CatchIt
 
             _healthbar.OnFail += _healthbar_OnFail;
 
+            skipButton = new ButtonStandard(Color.PaleVioletRed)
+            {
+                Caption = "Skip",
+                Position = new Vector2(ActualScreenMode.Width - SpritesContent.Instance.ButtonDefault.Width, ActualScreenMode.Height - SpritesContent.Instance.ButtonDefault.Height),
+                Visible = false
+            };
+
             Controls.Add(Player);
             Controls.Add(comboDisplay);
             Controls.Add(_scoreDisplay);
@@ -116,9 +126,33 @@ namespace kyun.game.GameModes.CatchIt
 
             Controls.Add(particleEngine);
             Controls.Add(replayLabel);
+            Controls.Add(skipButton);
+
 
             onKeyPress += CatchItMode_onKeyPress;
             OnScroll += CatchItMode_OnScroll;
+
+            skipButton.Click += SkipButton_Click;
+        }
+
+        private void SkipButton_Click(object sender, EventArgs e)
+        {
+            skipButton.Visible = false;
+            skip();
+        }
+
+        private void skip()
+        {
+            if (skipped)
+                return;
+
+            if (avp.audioplayer.PlayState == BassPlayState.Playing)
+            {
+                skipped = true;
+                skipButton.Visible = false;
+                avp.audioplayer.Position = (long)Beatmap.HitObjects[0].StartTime - 3000;
+                EffectsPlayer.PlayEffect(SpritesContent.Instance.MenuTransition);
+            }
         }
 
         private void _healthbar_OnFail()
@@ -174,30 +208,38 @@ namespace kyun.game.GameModes.CatchIt
         {
             switch (args.Key)
             {
-                case Microsoft.Xna.Framework.Input.Keys.Up:
-                case Microsoft.Xna.Framework.Input.Keys.Left:
+                case Keys.Up:
+                case Keys.Left:
+                case Keys.W:
+                case Keys.A:
                     if (playerLinePosition > 1)
                     {
-                        if (Keyboard.GetState().IsKeyDown(Keys.LeftShift))
+                        if (Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift))
                             playerLinePosition = Math.Max(playerLinePosition - 2, 1);
                         else
                             playerLinePosition--;
                     }
                     movements.Add(new ReplayObject { PressedAt = playerLinePosition, LeaveAt = GamePosition });
                     break;
-                case Microsoft.Xna.Framework.Input.Keys.Down:
-                case Microsoft.Xna.Framework.Input.Keys.Right:
+                case Keys.Down:
+                case Keys.Right:
+                case Keys.S:
+                case Keys.D:
                     if (playerLinePosition < fieldSlots)
                     {
-                        if (Keyboard.GetState().IsKeyDown(Keys.LeftShift))
+                        if (Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift))
                             playerLinePosition = Math.Min(playerLinePosition + 2, fieldSlots);
                         else
                             playerLinePosition++;
                     }
                     movements.Add(new ReplayObject { PressedAt = playerLinePosition, LeaveAt = GamePosition });
                     break;
-                case Microsoft.Xna.Framework.Input.Keys.Escape:
+                case Keys.Escape:
                     togglePause();
+                    break;
+                case Keys.Space:
+                    if (skipButton.Visible)
+                        skip();
                     break;
             }
 
@@ -215,7 +257,7 @@ namespace kyun.game.GameModes.CatchIt
         {
             beatmap.ApproachRate = Math.Min(beatmap.ApproachRate, 10);
             End = false;
-            
+            skipped = false;
             GamePosition = 0;
             lastIndex = 0;
             countToScores = 0;
@@ -228,7 +270,7 @@ namespace kyun.game.GameModes.CatchIt
             playerLinePosition = 1;
             lastIndex = 0;
             _scoreDisplay.IsActive = true;
-            if((GameMods & GameMod.Replay) != GameMod.Replay)
+            if ((GameMods & GameMod.Replay) != GameMod.Replay)
                 movements.Clear();
 
             mid = 0;
@@ -242,7 +284,7 @@ namespace kyun.game.GameModes.CatchIt
             _healthbar.IsActive = true;
             gameMod = GameMods;
             Combo.Instance.ResetAll();
-            
+
 
             if ((gameMod & GameMod.Replay) == GameMod.Replay)
             {
@@ -282,7 +324,7 @@ namespace kyun.game.GameModes.CatchIt
                     }
                 }
             }
-                        KyunGame.Instance.discordHandler.SetState("Catching things", $"{Beatmap.Artist} - {Beatmap.Title}", "idle_large", "classic_small");
+            KyunGame.Instance.discordHandler.SetState("Catching things", $"{Beatmap.Artist} - {Beatmap.Title}", "idle_large", "classic_small");
             clearObjects();
 
             InGame = true;
@@ -313,6 +355,10 @@ namespace kyun.game.GameModes.CatchIt
 
                 KyunGame.Instance.Player.Volume = KyunGame.Instance.GeneralVolume;
 
+                if ((long)Beatmap.HitObjects.First().StartTime > 3500)
+                    skipButton.Visible = true;
+                else
+                    skipButton.Visible = false;
             }
 
             if (lastIndex >= Beatmap.HitObjects.Count)
@@ -325,6 +371,13 @@ namespace kyun.game.GameModes.CatchIt
 
 
             IHitObj lastObject = Beatmap.HitObjects[lastIndex];
+
+            if (!skipped && actualTime > Beatmap.HitObjects[0].StartTime - 3000)
+            {
+                skipped = true;
+
+            }
+            skipButton.Visible = !skipped;
 
             long approachStart = (long)(ModeConstants.APPROACH_TIME_BASE - Beatmap.ApproachRate * 150f) + 20000;
 
@@ -425,7 +478,7 @@ namespace kyun.game.GameModes.CatchIt
             {
                 if (replay.Hits.Count > 0)
                 {
-                    if(mid < replay.Hits.Count)
+                    if (mid < replay.Hits.Count)
                     {
                         if (GamePosition >= replay.Hits[mid].LeaveAt)
                         {

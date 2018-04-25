@@ -72,9 +72,10 @@ namespace kyun.Audio
             }
             set
             {
-
-                var pos = Bass.BASS_ChannelSeconds2Bytes(stream, value);
-                Bass.BASS_ChannelSetPosition(stream, pos);
+                //Bass.BASS_ChannelPause(stream);
+                var pos = Bass.BASS_ChannelSeconds2Bytes(stream, ((double)value / 1000d));
+                Bass.BASS_ChannelSetPosition(stream, pos, BASSMode.BASS_POS_BYTE);
+                //Bass.BASS_ChannelPlay(stream, false);
             }
         }
 

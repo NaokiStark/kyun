@@ -32,7 +32,7 @@ namespace kyun.GameScreen.UI.Particles
             float positionY = 0;
             float positionX = 0;
 
-            Vector2 VelocityP = new Vector2(Velocity.X * KyunGame.Instance.Player.PeakVol, Math.Max(Velocity.Y * KyunGame.Instance.Player.PeakVol, 0.05f));
+            Vector2 VelocityP = new Vector2(Velocity.X * KyunGame.Instance.Player.PeakVol, Math.Max((Math.Abs(Scale - 1)/1.1f) * KyunGame.Instance.Player.PeakVol, 0.05f));
 
             if (StopAtBottom)
             {

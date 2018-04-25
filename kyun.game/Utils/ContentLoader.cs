@@ -115,7 +115,11 @@ namespace kyun.Utils
             if (borderRadius < 1) throw new ArgumentException("Must define a border radius (rounds off edges).");
             if (borderThickness < 1) throw new ArgumentException("Must define border thikness.");
             if (borderThickness + borderRadius > height / 2 || borderThickness + borderRadius > width / 2) throw new ArgumentException("Border will be too thick and/or rounded to fit on the texture.");
-            if (borderShadow > borderRadius) throw new ArgumentException("Border shadow must be lesser in magnitude than the border radius (suggeted: shadow <= 0.25 * radius).");
+            if (borderShadow > borderRadius)
+            {
+                borderShadow = borderRadius - 1;
+                //throw new ArgumentException("Border shadow must be lesser in magnitude than the border radius (suggeted: shadow <= 0.25 * radius).");
+            }
 
             Texture2D texture = new Texture2D(graphics, width, height);
             Color[] color = new Color[width * height];
@@ -219,7 +223,8 @@ namespace kyun.Utils
                 {
                     float mod = (distance - (borderRadius - borderShadow)) / borderShadow;
                     float shadowDiff = initialShadowIntensity - finalShadowIntensity;
-                    return DarkenColor(initialColor, ((shadowDiff * mod) + finalShadowIntensity));
+                    Color Dk = DarkenColor(initialColor, ((shadowDiff * mod) + finalShadowIntensity));
+                    return Dk;
                 }
             }
 

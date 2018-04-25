@@ -10,6 +10,7 @@ using kyun.Notifications;
 using kyun.Utils;
 using kyun.GameScreen.UI.Buttons;
 using kyun.game.Utils;
+using kyun.game.GameScreen.UI;
 
 namespace kyun.GameScreen
 {
@@ -38,6 +39,10 @@ namespace kyun.GameScreen
 
             comboLang.Text = "English";
             comboLang.Items.Add("English");
+            comboLang.Tooltip = new Tooltip
+            {
+                Text = "Your language."
+            };
             //comboLang.Items.Add("Español");
 
             //Label Lang
@@ -57,6 +62,11 @@ namespace kyun.GameScreen
                     comboLang.Position.Y + globalMarginBottom + SpritesContent.Instance.SettingsFont.MeasureString("a").Y + 5),
                 250,
                 SpritesContent.Instance.SettingsFont);
+
+            combodisplayMode.Tooltip = new Tooltip
+            {
+                Text = "Screen resolution"
+            };
 
             combodisplayMode.IndexChaged += CombodisplayMode_IndexChaged;
             fillComboDisplay();
@@ -95,6 +105,11 @@ namespace kyun.GameScreen
                 comboFrameRate.Items.Add("1000");
             }
 
+            comboFrameRate.Tooltip = new Tooltip
+            {
+                Text = "This changes framerate, this means how much frames per second will be processed, this feature is limited by your processor."
+            };
+
             comboFrameRate.IndexChaged += ComboFrameRate_IndexChaged;
 
             //Label Framerate
@@ -113,6 +128,12 @@ namespace kyun.GameScreen
                     comboFrameRate.Position.Y + globalMarginBottom + SpritesContent.Instance.SettingsFont.MeasureString("a").Y + 5);
 
             checkFullScr.Checked = Settings1.Default.FullScreen;
+
+            checkFullScr.Tooltip = new Tooltip
+            {
+                Text = "Toggle fullscreen mode."
+            };
+
             checkFullScr.CheckChanged += CheckFullScr_CheckChanged;
 
             //Label Fullscreen
@@ -131,12 +152,16 @@ namespace kyun.GameScreen
                     checkFullScr.Position.Y + globalMarginBottom + SpritesContent.Instance.SettingsFont.MeasureString("a").Y + 5);
 
             checkVSync.Checked = Settings1.Default.VSync;
+            checkVSync.Tooltip = new Tooltip
+            {
+                Text = "Toggle VSync mode: When enabled, the frame rate will be set to the maximum that your graphics card supports in Vertical Sync mode, to avoid famous \"Flickering\". Note: this will reduce precision adding more milliseconds between frames."
+            };
             checkVSync.CheckChanged += CheckVSync_CheckChanged;
 
             //Label VSync
 
             lcheckVSync = new Label();
-            lcheckVSync.Text = "VSync (Fix framerate to 60FPS)";
+            lcheckVSync.Text = "VSync";
             lcheckVSync.Font = SpritesContent.Instance.SettingsFont;
             lcheckVSync.Size = SpritesContent.Instance.SettingsFont.MeasureString(lcheckVSync.Text) + new Vector2(20, 10);
             lcheckVSync.Position = new Vector2(center.X - lcheckVSync.Size.X - 10, checkVSync.Position.Y);
@@ -148,6 +173,10 @@ namespace kyun.GameScreen
                     center.X,
                     checkVSync.Position.Y + globalMarginBottom + SpritesContent.Instance.SettingsFont.MeasureString("a").Y + 5);
             checkInGameVideo.Checked = Settings1.Default.Video;
+            checkInGameVideo.Tooltip = new Tooltip
+            {
+                Text = "Toggle video in all beatmaps, enable it if you like more nice stuff :)"
+            };
 
             checkInGameVideo.CheckChanged += CheckInGameVideo_CheckChanged;
 
@@ -166,6 +195,10 @@ namespace kyun.GameScreen
                     center.X,
                     checkInGameVideo.Position.Y + globalMarginBottom + SpritesContent.Instance.SettingsFont.MeasureString("a").Y + 5);
             checkMyPCSucks.Checked = Settings1.Default.MyPCSucks;
+            checkMyPCSucks.Tooltip = new Tooltip
+            {
+                Text = "Toaster mode reduce all particles and nice stuff, getting more perfomance in Toasters pc's©"
+            };
 
             checkMyPCSucks.CheckChanged += CheckMyPCSucks_CheckChanged;
 
@@ -183,11 +216,15 @@ namespace kyun.GameScreen
                     center.X,
                     checkMyPCSucks.Position.Y + globalMarginBottom + SpritesContent.Instance.SettingsFont.MeasureString("a").Y + 5);
             checkSoftwareRender.Checked = Settings1.Default.WindowsRender;
+            checkSoftwareRender.Tooltip = new Tooltip
+            {
+                Text = "PLEASE DON'T CHECK THIS."
+            };
 
             checkSoftwareRender.CheckChanged += CheckSoftwareRender_CheckChanged; ;
 
             lcheckSoftwareRender = new Label();
-            lcheckSoftwareRender.Text = "Software Rendering (FAQ)";
+            lcheckSoftwareRender.Text = "Software Rendering";
             lcheckSoftwareRender.Font = SpritesContent.Instance.SettingsFont;
             lcheckSoftwareRender.Size = SpritesContent.Instance.SettingsFont.MeasureString(lcheckSoftwareRender.Text) + new Vector2(20, 10);
             lcheckSoftwareRender.Position = new Vector2(center.X - lcheckSoftwareRender.Size.X - 10, checkSoftwareRender.Position.Y);
@@ -199,10 +236,17 @@ namespace kyun.GameScreen
                     center.X,
                     checkSoftwareRender.Position.Y + globalMarginBottom + SpritesContent.Instance.SettingsFont.MeasureString("a").Y + 5), 250, SpritesContent.Instance.SettingsFont);
 
+
+
             foreach(Skin skin in SpritesContent.Instance._SkinManager.skins)
                 lbSkins.Items.Add(skin);
 
             lbSkins.Text = lbSkins.Items[Settings1.Default.Skin].ToString();
+            lbSkins.Tooltip = new Tooltip
+            {
+                Text = "To add more skins or create new, copy 'Default' folder into a new folder (don't delete Default) and edit their images as you like."
+            };
+
             lbSkins.IndexChaged += LbSkins_IndexChaged;
 
             lSkin = new Label();
@@ -213,7 +257,7 @@ namespace kyun.GameScreen
 
             //Notifier
 
-            notifier = new Notifier();
+            notifier = KyunGame.Instance.Notifications;
 
             //Filled Rectangle
 
@@ -246,6 +290,11 @@ namespace kyun.GameScreen
                 Position = new Vector2(center.X, lbSkins.Position.Y + 20 + SpritesContent.Instance.SettingsFont.MeasureString("a").Y),
                 Font = SpritesContent.Instance.SettingsFont,
                 Centered = true
+            };
+
+            selectbm.Tooltip = new Tooltip
+            {
+                Text = "kyun! can load osu!Beatmaps, select 'osu!\\Songs' folder. Note: when you try to add new osu!Beatmaps here, this will installed in your osu! Songs folder."
             };
 
             selectbm.Click += (o, e) =>
@@ -304,7 +353,7 @@ namespace kyun.GameScreen
             Controls.Add(lcomboLang);
             Controls.Add(comboLang);
             Controls.Add(backButton);
-            Controls.Add(notifier);
+            
             Controls.Add(selectbm);
 
             Controls.Add(lbSkins);

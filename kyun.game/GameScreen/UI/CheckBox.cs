@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using kyun.game.GameScreen.UI;
+using Microsoft.Xna.Framework;
 using System;
 
 
@@ -11,6 +12,18 @@ namespace kyun.GameScreen.UI
         RoundedRectangle checkBoxRect;
 
         public event EventHandler CheckChanged;
+
+        public new Tooltip Tooltip
+        {
+            get
+            {
+                return box.Tooltip;
+            }
+            set
+            {
+                box.Tooltip = checkBoxRect.Tooltip = value;
+            }
+        }
 
         bool thisChecked;
 

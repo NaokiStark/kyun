@@ -91,6 +91,7 @@ namespace kyun.GameScreen.UI
 
         public override void Render()
         {
+
             if (!Visible)
                 return;
 
@@ -106,6 +107,10 @@ namespace kyun.GameScreen.UI
             }
             if(Texture !=null && !Texture.IsDisposed)
                 KyunGame.Instance.SpriteBatch.Draw(this.Texture, rg, null, TextureColor * Opacity, AngleRotation, new Vector2((this.Texture.Width / 2), (this.Texture.Height / 2)), SpriteEffects.None, 0);
+
+            //Render over object
+            if (Tooltip != null)
+                Tooltip?.Render();
         }
     }
 }

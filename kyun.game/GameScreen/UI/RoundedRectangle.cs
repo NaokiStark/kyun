@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using kyun.Utils;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace kyun.GameScreen.UI {
 
@@ -17,26 +18,7 @@ namespace kyun.GameScreen.UI {
             float finalShadowIntensity = 1
             ) : base(Size, Clr)
         {
-
-            var bgcolor = new List<Color>();
-            bgcolor.Add(Clr);
-            var bordColor = new List<Color>();
-            bordColor.Add(borderColor);
-
-            //borderShadow = borderThickness;
-
-            this.Texture = ContentLoader.CreateRoundedRectangleTexture(
-                KyunGame.Instance.GraphicsDevice,
-                (int)Size.X,
-                (int)Size.Y,
-                borderThickness,
-                borderRadius,
-                borderShadow,
-                bgcolor,
-                bordColor,
-                initialShadowIntensity,
-                finalShadowIntensity
-                );
+            Texture = SpritesContent.RoundCorners(Texture, borderRadius);
         }
     }
 }

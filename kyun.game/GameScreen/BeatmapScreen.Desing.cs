@@ -12,6 +12,7 @@ using kyun.GameModes.Classic;
 using kyun.game.GameModes;
 using kyun.GameModes.OsuMode;
 using kyun.game.GameModes.CatchIt;
+using kyun.game.GameScreen;
 
 namespace kyun.GameScreen
 {
@@ -184,6 +185,17 @@ namespace kyun.GameScreen
 
             };
 
+            osuModeBtn2 = new ButtonStandard(Color.DimGray)
+            {
+                Position = new Vector2(osuModeBtn.Position.X - SpritesContent.Instance.ButtonStandard.Width - 50, (filledRectBottom.Position.Y + 75 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
+
+                //Scale=.85f,
+                ForegroundColor = Color.White,
+                Caption = "osu!"
+
+            };
+
+
 
             backButton = new ButtonStandard(Color.DarkRed)
             {
@@ -204,6 +216,9 @@ namespace kyun.GameScreen
 
             osuModeBtn.Click += OsuModeBtn_Click;
 
+
+            osuModeBtn2.Click += OsuModeBtn2_Click;
+
             Controls.Add(lbox);
             Controls.Add(filledRectBottom);
             Controls.Add(filledRectBottomClr);            
@@ -215,6 +230,7 @@ namespace kyun.GameScreen
             Controls.Add(randomBtn);
             Controls.Add(doubleBtn);
             Controls.Add(osuModeBtn);
+            Controls.Add(osuModeBtn2);
             Controls.Add(btnStart);
             Controls.Add(lblSearch);
             Controls.Add(backButton);
@@ -229,6 +245,25 @@ namespace kyun.GameScreen
             addTextureG();
 
             OnLoadScreen();
+        }
+
+        private void OsuModeBtn2_Click(object sender, EventArgs e)
+        {
+             if (_gamemode == GameMode.Osu)
+            {
+                
+                _gamemode = GameMode.Classic;
+
+                //autoBtn.Texture = SpritesContent.Instance.AutoModeButton;
+                osuModeBtn2.TextureColor = Color.DimGray;
+            }
+            else
+            {
+                _gamemode = GameMode.Osu;
+
+                //autoBtn.Texture = SpritesContent.Instance.AutoModeButtonSel;
+                osuModeBtn2.TextureColor = Color.DarkRed;
+            }
         }
 
         private void OsuModeBtn_Click(object sender, EventArgs e)
@@ -301,21 +336,13 @@ namespace kyun.GameScreen
             switch (_gamemode)
             {
                 case GameMode.Classic:
-                    
-                    ClassicModeScreen.GetInstance().Play(lBDff.Items[lBDff.selectedIndex], modes);
-
-                    ScreenManager.ChangeTo(ClassicModeScreen.GetInstance());
+                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items[lBDff.selectedIndex], ClassicModeScreen.GetInstance(), modes);
                     break;
                 case GameMode.Osu:
-                  
-                    OsuMode.GetInstance().Play(lBDff.Items[lBDff.selectedIndex], modes);
-
-                    ScreenManager.ChangeTo(OsuMode.GetInstance());
+                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items[lBDff.selectedIndex], OsuMode.GetInstance(), modes);
                     break;
                 case GameMode.CatchIt:
-                    CatchItMode.GetInstance().Play(lBDff.Items[lBDff.selectedIndex], modes);
-
-                    ScreenManager.ChangeTo(CatchItMode.GetInstance());
+                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items[lBDff.selectedIndex], CatchItMode.GetInstance(), modes);
                     break;
             }
             /*
@@ -437,10 +464,11 @@ namespace kyun.GameScreen
         private FilledRectangle filledRectBottom;
         private FilledRectangle filledRectBottomClr;
         private ButtonStandard backButton;
-        private Image songDescImg;
-        private Image coverimg;
-        private int coverSize;
+        public Image songDescImg;
+        public Image coverimg;
+        public int coverSize;
         private ButtonStandard osuModeBtn;
+        private ButtonStandard osuModeBtn2;
 
         public override void Update(GameTime tm)
         {

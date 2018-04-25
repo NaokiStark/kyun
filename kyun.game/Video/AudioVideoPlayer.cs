@@ -7,6 +7,7 @@ using System.Text;
 using kyun.Audio;
 using kyun.GameScreen;
 using kyun.Screen;
+using kyun.game;
 
 namespace kyun.Video
 {
@@ -18,8 +19,10 @@ namespace kyun.Video
 
         static Texture2D bgxd = null;
 
-        internal Texture2D bg {
-            get {
+        internal Texture2D bg
+        {
+            get
+            {
                 if (bgxd == null)
                 {
                     ScreenMode actualMode = ScreenModeManager.GetActualMode();
@@ -31,7 +34,7 @@ namespace kyun.Video
 
                     Color[] data = new Color[screenWidth * screenHeight];
                     for (int i = 0; i < data.Length; ++i) data[i] = Color.Black;
-                    bgxd.SetData(data);                    
+                    bgxd.SetData(data);
                 }
                 return bgxd;
             }
@@ -48,21 +51,25 @@ namespace kyun.Video
 
         public BPlayer audioplayer;
 
-        
+        private double cEl = 0;
 
-        byte[][] bbuffer = new byte[1][];
+
+
+        byte[][] bbuffer = new byte[60][];
         int nF = 0;
         private string anotherfuckingvideovar;
 
+        public Queue<byte[]> vBuffer = new Queue<byte[]>();
+
         public AudioVideoPlayer()
         {
-            
+
 
             //??
             videoplayer = VideoPlayer.Instance;
             audioplayer = KyunGame.Instance.Player;
 
-          
+
         }
 
         public void SeekTime(int tm)
@@ -72,34 +79,37 @@ namespace kyun.Video
 
         public void Play(string audio, string video = "", bool fadein = false, float opacity = 0.75f)
         {
-           
 
-            
             this.Video = video;
 
             anotherfuckingvideovar = video;
 
             Opacity = opacity;
 
-            audioplayer.Play(audio, 1, 1, true);
-
             //SHIT Cleanup
-            if(Audio != audio)
+            if (Audio != audio)
             {
                 videoplayer.vdc?.Dispose();
+
             }
             else
             {
-                if(!videoplayer.Stopped)
+                if (!videoplayer.Stopped)
                     videoplayer.vdc?.Seek(0);
             }
-            
-            Audio = audio;
+
+            vBuffer.Clear();
+
             if (KyunGame.Instance.VideoEnabled && anotherfuckingvideovar != "")
             {
-            
+
                 videoplayer.Play(anotherfuckingvideovar);
+                //updateBuffer(true);
             }
+
+            audioplayer.Play(audio, 1, 1, true);
+
+            Audio = audio;
 
         }
 
@@ -109,13 +119,70 @@ namespace kyun.Video
 
         }
 
+        private void updateBuffer(bool callZero = false)
+        {
+            float pos = 0;
+            long position = 0;
+
+            int framRate = Math.Min((int)Settings1.Default.FrameRate, 144);
+
+            if (!callZero)
+                position = audioplayer.Position - 400;
+
+            if (videoplayer.Stopped)
+                return;
+
+            if (Settings1.Default.VSync)
+                framRate = 60;
+
+            if (System.Windows.Forms.Form.ActiveForm != KyunGame.WinForm)
+            {
+                
+                framRate = 35; //Fix 
+            }
+                
+
+            if (audioplayer.PlayState != BassPlayState.Playing)
+            {
+                if (vBuffer.Count > 2)
+                    vBuffer.Clear();
+
+                framRate = 2;
+            }
+
+            if (callZero)
+                framRate = 2;
+
+            if (vBuffer.Count < framRate / 2)
+            {
+                byte[] lastf = null;
+                //int bcount = vBuffer.Count;
+                for (int a = vBuffer.Count; a < framRate; a++)
+                {
+                    byte[] frame = videoplayer.GetFrame((long)((float)position + pos));
+                    if (frame != null)
+                    {
+                        //lastf = frame;
+                        vBuffer.Enqueue(frame);
+                    }
+                    else
+                    {
+                        if(lastf != null)
+                            vBuffer.Enqueue(lastf);
+                    }
+                    pos += 1000f / (float)framRate;
+                }
+
+            }
+        }
+
         public override void Update()
         {
-            if (!videoplayer.Stopped)
-            {            
-               
-                long position = audioplayer.Position;
-            }
+            if (videoplayer.Stopped)
+                return;
+
+            long position = audioplayer.Position;
+            updateBuffer();
         }
 
         public override void Render()
@@ -137,6 +204,9 @@ namespace kyun.Video
             if (audioplayer.PlayState == BassPlayState.Stopped)
                 return;
 
+            //There are no buffer
+            if (vBuffer.Count < 1)
+                return;
 
             ScreenMode actualMode = ScreenModeManager.GetActualMode();
 
@@ -145,58 +215,33 @@ namespace kyun.Video
 
             Rectangle screenVideoRectangle = new Rectangle();
 
-            long position = audioplayer.Position;
 
-            float pos = 0;
-            nF++;
-            if (nF >= bbuffer.Length)
+            byte[] deFrame = vBuffer.Dequeue();
+            if (deFrame == null)
             {
+                KyunGame.Instance.SpriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
 
-                nF = 0;
-
-                lock (bbuffer)
-                {
-                    for (int a = 0; a < bbuffer.Length; a++)
-                    {
-
-                        byte[] frame = videoplayer.GetFrame((int)((float)position + pos));
-                        if (frame != null)
-                        {
-                            bbuffer[a] = frame;
-                        }
-                        pos += 120f;
-                    }
-                }
+                return;
             }
 
+            KyunGame.Instance.SpriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
 
-            lock (bbuffer)
+            Texture2D texture = new Texture2D(KyunGame.Instance.GraphicsDevice, videoplayer.vdc.width, videoplayer.vdc.height, false, SurfaceFormat.Color);
+            //Texture2D texture = Utils.ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, new System.IO.MemoryStream(deFrame), true);
+            screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)texture.Width / (float)texture.Height) * (float)screenHeight), screenHeight);
+
+            try
             {
-                if (bbuffer[nF] == null)
-                {
-                    KyunGame.Instance.SpriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
-                    return;
-                }
-                lock (bbuffer[nF])
-                {
-                    KyunGame.Instance.SpriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
+                texture.SetData(deFrame);
 
-                    Texture2D texture = new Texture2D(KyunGame.Instance.GraphicsDevice, videoplayer.vdc.width, videoplayer.vdc.height, false, SurfaceFormat.Color);
-                    screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)texture.Width / (float)texture.Height) * (float)screenHeight), screenHeight);
+                KyunGame.Instance.SpriteBatch.Draw(texture, screenVideoRectangle, null, Color.White * ((ScreenBase)ScreenManager.ActualScreen).BackgroundDim, 0, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 0);
 
-                    try
-                    {
-                        texture.SetData(bbuffer[nF]);
-                        KyunGame.Instance.SpriteBatch.Draw(texture, screenVideoRectangle, null, Color.White * ((ScreenBase)ScreenManager.ActualScreen).BackgroundDim, 0, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 0);
-                    }
-                    catch { }
-
-                    texture.Dispose();
-                }
             }
-            
+            catch { }
 
-            
+            texture.Dispose();
+
+
         }
     }
 }

@@ -7,6 +7,9 @@ namespace kyun.Beatmap
 {
     public interface IBeatmap
     {
+
+        string FilePath { get; set; } //Mod: loads objects when beatmap is being played
+
         string Title { get; set; }
         string Artist { get; set; }
         string Creator { get; set; }

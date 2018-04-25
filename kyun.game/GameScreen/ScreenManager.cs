@@ -23,7 +23,7 @@ namespace kyun.GameScreen
 
         public static void ChangeTo(IScreen ToScreen)
         {
-                        
+
             if (!(ToScreen == null))
                 if (!(ToScreen is LogoScreen))
                     if (!(ToScreen is LoadScreen))
@@ -49,12 +49,14 @@ namespace kyun.GameScreen
             Screen.ScreenMode actmode = Screen.ScreenModeManager.GetActualMode();
 
             List<Screen.ScreenMode> scrmds = Screen.ScreenModeManager.GetSupportedModes();
-            Screen.ScreenMode higestMode = scrmds[scrmds.Count - 1];
-           
+            Screen.ScreenMode highestMode = scrmds[scrmds.Count - 1];
 
-            TopEffect = new Texture2D(KyunGame.Instance.GraphicsDevice, higestMode.Width, higestMode.Height);
+            int screenw = Math.Min(highestMode.Width, 2048);
+            int screenh = Math.Min(highestMode.Height, 2048);
 
-            Color[] txClr = new Color[higestMode.Width * higestMode.Height];
+            TopEffect = new Texture2D(KyunGame.Instance.GraphicsDevice, screenw, screenh);
+
+            Color[] txClr = new Color[screenw * screenh];
             for (int a = 0; a < txClr.Length; a++)
             {
                 txClr[a] = Color.Black;
@@ -71,7 +73,7 @@ namespace kyun.GameScreen
                     ActualScreen = SettingsScreen.Instance;
             }
 
-            if(Overlay == null)
+            if (Overlay == null)
             {
                 ActualScreen?.Update(gm);
             }
@@ -85,45 +87,45 @@ namespace kyun.GameScreen
             {
 
 
-                if (KyunGame.Instance.Player.Volume > (float)(KyunGame.Instance.GeneralVolume/2))
+                if (KyunGame.Instance.Player.Volume > (float)(KyunGame.Instance.GeneralVolume / 2))
                 {
                     KyunGame.Instance.Player.Volume -= (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f);
                 }
 
                 if (Opacity < 1f)
                 {
-                    
-                    Opacity += (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f);
+
+                    Opacity = Math.Min(Opacity + (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f), 1f);
 
                 }
                 else
                 {
-                    if(ActualScreen != null) ActualScreen.Visible = false;
+                    if (ActualScreen != null) ActualScreen.Visible = false;
                     ActualScreen = ToBeChanged;
                     fadingIn = true;
                     showing = false;
                     ActualScreen.Visible = true;
-                    
-                   
+
+
                 }
             }
             else
             {
-                
+
                 if (Opacity >= 0f)
                 {
-                    Opacity -= (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f);
+                    Opacity = Math.Max(Opacity - (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f), 0f);
                 }
                 else
                 {
-                    fadingIn = false;        
+                    fadingIn = false;
                 }
-                
+
 
                 if (KyunGame.Instance.Player.Volume < KyunGame.Instance.GeneralVolume)
                 {
                     float vol = KyunGame.Instance.Player.Volume + (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.003f);
-                    if(vol > KyunGame.Instance.GeneralVolume)
+                    if (vol > KyunGame.Instance.GeneralVolume)
                     {
                         KyunGame.Instance.Player.Volume = KyunGame.Instance.GeneralVolume;
                     }
@@ -132,11 +134,11 @@ namespace kyun.GameScreen
                         KyunGame.Instance.Player.Volume = vol;
                     }
 
-                    
+
                 }
 
             }
-            
+
         }
 
         public static void Render()

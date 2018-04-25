@@ -7,6 +7,7 @@ using kyun.Utils;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using kyun.Score;
+using Microsoft.Xna.Framework.Input;
 
 namespace kyun.GameModes.OsuMode
 {
@@ -18,6 +19,8 @@ namespace kyun.GameModes.OsuMode
         private long position;
         private float porcent;
         private float length;
+
+
 
         public HitHolder(IHitObj hitObject, IBeatmap beatmap, OsuMode Instance, bool shared = false)
             :base(hitObject, beatmap, Instance)
@@ -67,6 +70,72 @@ namespace kyun.GameModes.OsuMode
 
                 return;
             }
+
+            if (!IsFirst)
+                return;
+
+            position = EndTime - screenInstance.GamePosition;
+
+            position = (EndTime - Time) - position;
+
+            porcent = (float)position / (float)(EndTime - Time) * 100f;
+
+            bool intersecs = KyunGame.Instance.touchHandler.TouchIntersecs(new Rectangle((int)Position.X, (int)Position.Y, Texture.Height, Texture.Height));
+
+            Rectangle mouseRec = new Rectangle((int)MouseHandler.GetState().Position.X, (int)MouseHandler.GetState().Position.Y, 10, 10);
+            bool mouseH = mouseRec.Intersects(new Rectangle((int)Position.X, (int)Position.Y, (int)(Texture.Width * Scale), (int)(Texture.Height * Scale)));
+
+            bool kapressed = false;
+            bool kbpressed = false;
+
+            if(keyPressed != null)
+            {
+                kapressed = keyPressed.Exists(x => x == Keys.Z);
+                kbpressed = keyPressed.Exists(x => x == Keys.X);
+            }
+
+            kapressed = !kapressed && Keyboard.GetState().IsKeyDown(Keys.Z);
+            kbpressed = !kbpressed && Keyboard.GetState().IsKeyDown(Keys.X);
+            bool kpressed = kapressed || kbpressed;
+
+            bool mousea = MouseHandler.GetState().LeftButton == ButtonState.Pressed;
+            bool mouseb = MouseHandler.GetState().RightButton == ButtonState.Pressed;
+            bool mousec = mousea || mouseb;
+
+            mouseH = mouseH && (mousec || kpressed);
+
+            intersecs = intersecs || mouseH;
+
+            if (screenInstance.GamePosition < Time - _beatmap.Timing50)
+            {
+                lastIntersects = intersecs; //Shit 
+                return;
+            }
+
+            if (intersecs && screenInstance.GamePosition > Time - _beatmap.Timing50)
+            {
+                if (!holding)
+                    playHitsound();
+
+                pressed = holding = true;
+
+                pressedTime = screenInstance.GamePosition;
+                
+            }
+            
+            if(holding && screenInstance.GamePosition > EndTime)
+            {
+                leaveTime = EndTime;
+                calculateScore();
+            }
+
+            if(!holding && screenInstance.GamePosition > Time + _beatmap.Timing100)
+            {
+                leaveTime = screenInstance.GamePosition;
+                calculateScore();
+            }
+
+
         }
 
         internal override ScoreType GetScore()
@@ -122,6 +191,8 @@ namespace kyun.GameModes.OsuMode
 
         public override void Render()
         {
+            if (Died || !Visible)
+                return;
             float ppeak = (KyunGame.Instance.maxPeak / 4) + 1;
 
             if (ppeak > 1.4f)

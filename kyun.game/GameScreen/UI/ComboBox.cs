@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using kyun.game.GameScreen.UI;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace kyun.GameScreen.UI
         //And listbox (and make a combo (genius))
         ObjectListbox baseListbox;
 
-      
+
         public event EventHandler IndexChaged;
 
         public string Text
@@ -30,7 +31,8 @@ namespace kyun.GameScreen.UI
             }
         }
 
-        public bool IsListVisible {
+        public bool IsListVisible
+        {
             get
             {
                 return baseListbox.Visible;
@@ -82,7 +84,8 @@ namespace kyun.GameScreen.UI
             }
         }
 
-        public new Vector2 Position {
+        public new Vector2 Position
+        {
             get
             {
                 return displayLabel.Position;
@@ -94,6 +97,18 @@ namespace kyun.GameScreen.UI
         }
 
         public int Width;
+
+        public new Tooltip Tooltip
+        {
+            get
+            {
+                return baseListbox.Tooltip;
+            }
+            set
+            {
+                baseListbox.Tooltip = displayLabel.Tooltip = value;
+            }
+        }
 
         public ComboBox(Vector2 position, float width, SpriteFont font)
         {
@@ -113,7 +128,7 @@ namespace kyun.GameScreen.UI
 
         private void DisplayLabel_Click(object sender, EventArgs e)
         {
-            
+
             baseListbox.Position = new Vector2(displayLabel.Position.X, displayLabel.Position.Y + displayLabel.Texture.Height);
             baseListbox.Visible = !baseListbox.Visible;
 
@@ -147,7 +162,7 @@ namespace kyun.GameScreen.UI
             if (baseListbox.Visible)
             {
                 baseListbox.width = displayLabel.TotalSize.X + 60;
-                
+
             }
             baseListbox.Update();
         }

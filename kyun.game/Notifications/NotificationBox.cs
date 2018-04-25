@@ -37,7 +37,7 @@ namespace kyun.Notifications
                     notificationColor = Color.LightGoldenrodYellow;
                     break;
                 case NotificationType.Critical:
-                    notificationColor = Color.DarkRed;
+                    notificationColor = Color.Red;
                     break;
             }
 
@@ -54,7 +54,9 @@ namespace kyun.Notifications
             rectng = new FilledRectangle(new Vector2(200, (MeasuredString.Y * (Text.Split('\n').Length) + 20)), Color.Black * .8f);
 
 
-            rectBorder = new FilledRectangle(new Vector2(3, rectng.Texture.Height), notificationColor);
+            rectBorder = new FilledRectangle(new Vector2(4, rectng.Texture.Height), notificationColor);
+
+           // rectBorder.Texture = SpritesContent.RoundCorners(rectBorder.Texture, 1, 1);
            
             RemainingMilliseconds = milliseconds;
 

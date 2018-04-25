@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework;
 using kyun.OsuUtils;
 using kyun.Audio;
 using kyun.game;
+using System.Diagnostics;
 
 namespace kyun.GameScreen
 {
@@ -77,14 +78,38 @@ namespace kyun.GameScreen
 
             EnphasisColor = ecolors[OsuBeatMap.rnd.Next(0, ecolors.Count - 1)];
 
+            sColors.Add(EnphasisColor);
+            sColors.Add(EnphasisColor);
+
+            sColors.Add(EnphasisColor);
+
 
             onKeyPress += MainScreen_onKeyPress;
+
+            OnMouseMove += MainScreen_OnMouseMove;
 
             KyunGame.Instance.OnPeak += Instance_OnPeak;
 
             KyunGame.Instance.discordHandler.SetState("Idle", "Waiting for something...");
+
+            //Check launcher version
+            
+            if(KyunGame.LauncherVersion < KyunGame.DesiredLauncher)
+            {
+                ntfr.ShowDialog("Woops! your launcher needs to be updated now, download it by clicking me.", 20000, Notifications.NotificationType.Warning, ()=>
+                {
+                    Process.Start($"{KyunGame.MainSite}");
+                });
+            }
         }
 
+        private void MainScreen_OnMouseMove(object sender, EventArgs e)
+        {
+            foreach (UIObjectBase ctl in Controls)
+                ctl.Opacity = Math.Min(ctl.Opacity + (ctl.Elapsed.Milliseconds * .01f), 1f);
+
+            countToHide = 0;
+        }
 
         private bool switchParticle = false;
         private void Instance_OnPeak(object sender, EventArgs e)
@@ -93,6 +118,8 @@ namespace kyun.GameScreen
             if (KyunGame.Instance.Player.PlayState != BassPlayState.Playing) return;
 
             if (particleEngine.ParticleCount > 50) return;
+
+            if (!AVPlayer.videoplayer.Stopped) return;
 
             Screen.ScreenMode actualMode = Screen.ScreenModeManager.GetActualMode();
 
@@ -137,12 +164,17 @@ namespace kyun.GameScreen
                     else
                     {
                         black_rand = OsuBeatMap.rnd.Next(20, 40);
-                    }                  
+                    }
 
-                    Color ccolor = (squareYesNo) ?
-                                    LoadScreen.getColorRange(EnphasisColor[0], EnphasisColor[1], EnphasisColor[2]) :
-                                    Color.FromNonPremultiplied(black_rand, black_rand, black_rand, 255);
+                    int[] selectedEnph = new int[3];
 
+                    int magicColor = OsuBeatMap.rnd.Next(0, sColors.Count - 1);
+
+                    selectedEnph = sColors[magicColor];
+
+                    Color ccolor = Color.FromNonPremultiplied(selectedEnph[0], selectedEnph[1], selectedEnph[2], 255)/*Color.FromNonPremultiplied(black_rand, black_rand, black_rand, 255)Color.Lerp(Color.FromNonPremultiplied(selectedEnph[0], selectedEnph[1], selectedEnph[2], 255), Color.Black,.7f)*/;
+
+                    //ccolor = Color.FromNonPremultiplied(selectedEnph[0], selectedEnph[1], selectedEnph[2], 255);
                     if (KyunGame.xmas && OsuBeatMap.rnd.NextBoolean())
                     {
                         ccolor = LoadScreen.getColorRange(ecolors[1][0], ecolors[1][1], ecolors[1][2]);
@@ -155,8 +187,8 @@ namespace kyun.GameScreen
                         0.01f * (float)(OsuUtils.OsuBeatMap.rnd.NextDouble() * 2f - 1),
                         ccolor
                         );
-                    particle.Scale = (float)OsuUtils.OsuBeatMap.rnd.NextDouble(0.4, 0.7);
-                    particle.Opacity = /*(float)OsuUtils.OsuBeatMap.rnd.NextDouble(0.4, 0.9)*/0.95f;
+                    particle.Scale = (float)OsuUtils.OsuBeatMap.rnd.NextDouble(0.35, 0.7);
+                    particle.Opacity = /*(float)OsuUtils.OsuBeatMap.rnd.NextDouble(0.4, 0.9)*/0.8f;
                     squareYesNo = !squareYesNo;
                 }
 
@@ -238,8 +270,20 @@ namespace kyun.GameScreen
             {
                 changeCoverDisplay(((LoadScreen)LoadScreen.Instance).selected_song.Cover);
 
-                float titleSize = SpritesContent.Instance.SettingsFont.MeasureString(((LoadScreen)LoadScreen.Instance).selected_song.Title).X;
-                float artSize = SpritesContent.Instance.SettingsFont.MeasureString(((LoadScreen)LoadScreen.Instance).selected_song.Artist).X;
+                float titleSize = 50;
+                float artSize = 50;
+
+                try
+                {
+                    titleSize = SpritesContent.Instance.SettingsFont.MeasureString(((LoadScreen)LoadScreen.Instance).selected_song.Title).X;
+                    artSize = SpritesContent.Instance.SettingsFont.MeasureString(((LoadScreen)LoadScreen.Instance).selected_song.Artist).X;
+                }
+                catch
+                {
+                    titleSize = SpritesContent.Instance.MSGothic2.MeasureString(((LoadScreen)LoadScreen.Instance).selected_song.Title).X;
+                    artSize = SpritesContent.Instance.MSGothic2.MeasureString(((LoadScreen)LoadScreen.Instance).selected_song.Artist).X;
+                }
+                
 
                 float maxSize = Math.Max(titleSize, artSize);
 
@@ -260,6 +304,7 @@ namespace kyun.GameScreen
             {
                 ntfr.ShowDialog("You are in osu! v0.1 (ubeat codename)!, to show changes, click here.");
             }*/
+            //ntfr.ShowDialog("Free coffee!                  Find a easter egg in this version (no free coffee).                  Enjoy!", 15000, Notifications.NotificationType.Critical);
             ntfr.ShowDialog("Welcome!");
             //ntfr.ShowDialog("Tu version es nueva, asi que esto handa piolaso amewo", 10000, Notifications.NotificationType.Critical);
 
@@ -390,10 +435,14 @@ namespace kyun.GameScreen
         public override void ChangeBeatmapDisplay(ubeatBeatMap bm, bool overrideBg = false)
         {
             changingSong = true;
-            base.ChangeBeatmapDisplay(bm, false);
+            base.ChangeBeatmapDisplay(bm, true);
 
-            Background = SpritesContent.Instance.DefaultBackground;
+
+           // Background = SpritesContent.Instance.DefaultBackground;
             changeCoverDisplay(bm.Background);
+
+            changeEmphasis();
+            coverBox.Opacity = coverLabel.Opacity = coverimg.Opacity = coverLabelArt.Opacity = 1;
 
             float titleSize = SpritesContent.Instance.SettingsFont.MeasureString(bm.Title).X;
             float artSize = SpritesContent.Instance.SettingsFont.MeasureString(bm.Artist).X;
@@ -404,6 +453,28 @@ namespace kyun.GameScreen
             coverLabel.Text = bm.Title;
             coverLabelArt.Text = bm.Artist;
             changingSong = false ;
+        }
+
+        private void changeEmphasis()
+        {
+            Color[] colors = new Color[coverimg.Texture.Width * coverimg.Texture.Height];
+            coverimg.Texture.GetData(colors);
+
+            int ncolor = OsuBeatMap.rnd.Next(15, colors.Length - 1);
+
+            sColors.Clear();
+            int lcc = 0;
+            for(int a = 0; a < coverimg.Texture.Width; a++)
+            {
+                int[] lc = new int[3];
+                lc[0] = colors[a*lcc].R;
+                lc[1] = colors[a*lcc].G;
+                lc[2] = colors[a*lcc].B;
+                sColors.Add(lc);
+                lcc++;
+                //ncolor = OsuBeatMap.rnd.Next(15, colors.Length - 1);
+            }
+
         }
 
         public void ChangeMainDisplay(int mps)
@@ -486,12 +557,15 @@ namespace kyun.GameScreen
         bool PlayingInit { get; set; }
         public int[] EnphasisColor { get; private set; }
 
+        List<int[]> sColors = new List<int[]>();
+
         bool StateHidden;
         int maxElapsedToHide = 5000;
         int actualElapsed;
         bool hidding;
         private bool squareYesNo;
         private List<int[]> ecolors;
+        internal int countToHide;
 
         #endregion
 

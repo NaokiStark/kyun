@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using kyun.GameScreen;
 using kyun.Screen;
+using kyun.Audio;
+using kyun.Utils;
 
 namespace kyun.Notifications
 {
@@ -17,14 +19,14 @@ namespace kyun.Notifications
 
         public override void Update()
         {
-           // base.Update(); //Events
+            // base.Update(); //Events
 
             if (Notifications.Count < 1) return;
 
             ScreenMode mode = ScreenModeManager.GetActualMode();
 
 
-            for(int a = Notifications.Count - 1; a > -1; a--)
+            for (int a = Notifications.Count - 1; a > -1; a--)
             {
 
                 NotificationBox box = Notifications[a];
@@ -43,15 +45,15 @@ namespace kyun.Notifications
                     box.ActualPosition = mode.Width - box.Size.Width - 5;
                 }
 
-                int lastSize = (a-1 > -1)? Notifications[a-1].Size.Height * a: 0;
+                int lastSize = (a - 1 > -1) ? Notifications[a - 1].Size.Height * a : 0;
 
-                
-                box.Position = new Vector2(box.ActualPosition, boxposition - lastSize - 5);
+
+                box.Position = new Vector2(box.ActualPosition, boxposition - lastSize - 5 * a);
 
                 box.Update();
 
-                
             }
+
             Notifications.RemoveAll(x => x.Disposing);
         }
 
@@ -60,10 +62,10 @@ namespace kyun.Notifications
             foreach (NotificationBox box in Notifications)
                 box.Render();
         }
-        
+
         #endregion
 
-        public void ShowDialog(string text, int milliseconds = 5000, NotificationType type = NotificationType.Info)
+        public void ShowDialog(string text, int milliseconds = 5000, NotificationType type = NotificationType.Info, Action callback = null)
         {
             var ntbox = new NotificationBox(text, milliseconds, type);
 
@@ -71,6 +73,7 @@ namespace kyun.Notifications
 
             ntbox.ActualPosition = mode.Width;
 
+#if DEBUG
             ntbox.Click += (send, args) =>
             {
                 Logger.Instance.Debug($"Showing notification: {text}");
@@ -79,8 +82,14 @@ namespace kyun.Notifications
 
                 ((NotificationBox)send).Dispose();
             };
+#endif
+            ntbox.Click += (s, arg) =>
+            {
+                callback?.Invoke();
+            };
 
             Notifications.Add(ntbox);
+            EffectsPlayer.PlayEffect(SpritesContent.Instance.NotificationSound);
         }
 
         private List<NotificationBox> Notifications;

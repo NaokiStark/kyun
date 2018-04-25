@@ -35,6 +35,11 @@ namespace kyun.GameScreen
 
             Logo.Click += Logo_Click;
 
+            Logo.Tooltip = new Tooltip
+            {
+                Text = "Click me!"
+            };
+
             objectsInitialPosition[0] = Logo.Position;
 
             CnfBtn = new ConfigButton();
@@ -55,7 +60,7 @@ namespace kyun.GameScreen
             coverSize = 75;
 
             Vector2 meas = SpritesContent.Instance.DefaultFont.MeasureString("ubeat") * .85f;
-            
+
             Label1 = new UI.Label();
             Label1.Text = "Hello world";
             Label1.Scale = .85f;
@@ -67,7 +72,7 @@ namespace kyun.GameScreen
             FPSMetter.Scale = .75f;
             FPSMetter.Position = new Vector2(0, ActualMode.Height - meas.Y);
 
-            ntfr = new Notifier();
+            ntfr = KyunGame.Instance.Notifications;
 
             int btnSize = SpritesContent.Instance.SquareButton.Width + 5;
 
@@ -105,8 +110,8 @@ namespace kyun.GameScreen
                 Position = new Vector2(btnPrev.Position.X + btnSize * 4, btnPrev.Position.Y)
             };
 
-                  
-           
+
+
 
 
 
@@ -119,11 +124,11 @@ namespace kyun.GameScreen
 
             particleEngine = new ParticleEngine();
 
-            
+
 
 
             string[] songs = { "Junk - enchanted.mp3" };
-            
+
             string[] bgs = { "bg.jpg", "" };
             if (KyunGame.xmas)
             {
@@ -135,7 +140,7 @@ namespace kyun.GameScreen
 
             mainBm = new ubeatBeatMap()
             {
-                Artist ="Junk",
+                Artist = "Junk",
                 BPM = mspb[song],
                 SongPath = AppDomain.CurrentDomain.BaseDirectory + @"\Assets\" + songs[song],
                 ApproachRate = 10,
@@ -150,7 +155,7 @@ namespace kyun.GameScreen
 
             };
 
-           
+
 
             System.Drawing.Image cimg = System.Drawing.Image.FromFile(mainBm.Background);
 
@@ -160,7 +165,7 @@ namespace kyun.GameScreen
             MemoryStream istream;
             if (cbimg.Width != cbimg.Height)
             {
-                ccbimg = SpritesContent.cropAtRect(cbimg, new System.Drawing.Rectangle((int)((cbimg.Width - coverSize) /2) , 0, (int)coverSize, (int)coverSize));
+                ccbimg = SpritesContent.cropAtRect(cbimg, new System.Drawing.Rectangle((int)((cbimg.Width - coverSize) / 2), 0, (int)coverSize, (int)coverSize));
                 istream = SpritesContent.BitmapToStream(ccbimg);
             }
             else
@@ -208,7 +213,7 @@ namespace kyun.GameScreen
             Controls.Add(Logo);
             Controls.Add(Label1);
             //Controls.Add(FPSMetter);
-            Controls.Add(ntfr);
+            //Controls.Add(ntfr);
 
             //Music controls
             Controls.Add(btnNext);
@@ -222,7 +227,7 @@ namespace kyun.GameScreen
             Controls.Add(coverLabel);
             Controls.Add(coverLabelArt);
             Controls.Add(userBox);
-            
+
 
             KyunGame.Instance.IsMouseVisible = true;
             OnLoad += MainScreen_OnLoad;
@@ -236,7 +241,7 @@ namespace kyun.GameScreen
             {
                 actualElapsed = 0;
                 hidding = false;
-                showing = true;                
+                showing = true;
             }
         }
 
@@ -245,25 +250,25 @@ namespace kyun.GameScreen
             EnphasisColor = ecolors[OsuUtils.OsuBeatMap.rnd.Next(0, ecolors.Count - 1)];
             float coverSize = 75;
 
-            
+
             System.Drawing.Image cimg = null;
 
 
             if (!File.Exists(image))
             {
-                
-                if(SpritesContent.Instance.CroppedBg == null)
+
+                if (SpritesContent.Instance.CroppedBg == null)
                 {
                     using (FileStream ff = File.Open(SpritesContent.Instance.defaultbg, FileMode.Open))
                     {
                         cimg = System.Drawing.Image.FromStream(ff);
                         SpritesContent.Instance.CroppedBg = cimg;
                     }
-                        
+
                 }
 
             }
-            else if(File.GetAttributes(image) == FileAttributes.Directory)
+            else if (File.GetAttributes(image) == FileAttributes.Directory)
             {
                 if (SpritesContent.Instance.CroppedBg == null)
                 {
@@ -310,6 +315,14 @@ namespace kyun.GameScreen
 
             int fps = (int)Math.Round(KyunGame.Instance.frameCounter.AverageFramesPerSecond, 0);
 
+            if (countToHide < 7000)
+                countToHide += tm.ElapsedGameTime.Milliseconds;
+            
+
+            if (countToHide >= 7000)
+                foreach (UIObjectBase ctl in Controls)
+                    ctl.Opacity = Math.Max(ctl.Opacity - tm.ElapsedGameTime.Milliseconds * .0001f, 0f);
+
 
 
             FPSMetter.Text = fps.ToString("0", CultureInfo.InvariantCulture) + " FPS";
@@ -322,9 +335,9 @@ namespace kyun.GameScreen
             {
                 actualElapsed += KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds;
             }
-            
 
-            if(actualElapsed > maxElapsedToHide && !StateHidden)
+
+            if (actualElapsed > maxElapsedToHide && !StateHidden)
             {
                 StateHidden = true;
                 HideControls();
@@ -335,10 +348,10 @@ namespace kyun.GameScreen
 
                 bool doneLogo = false;
                 filledRect1.Visible = false;
-                bool[] doneButtons = new bool[]{false,false,false};
+                bool[] doneButtons = new bool[] { false, false, false };
 
                 int elapsed = KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds;
-                if(Logo.Position.Y < (ActualScreenMode.Height / 2 ) - (Logo.Texture.Height / 2 ))
+                if (Logo.Position.Y < (ActualScreenMode.Height / 2) - (Logo.Texture.Height / 2))
                 {
                     Logo.Position = new Vector2(Logo.Position.X, Logo.Position.Y + ((float)elapsed * 0.5f));
                 }
@@ -350,9 +363,9 @@ namespace kyun.GameScreen
                 if (StrBtn.Position.Y > (ActualScreenMode.Height / 2) - (StrBtn.Texture.Height / 2))
                 {
                     StrBtn.Position = new Vector2(StrBtn.Position.X, StrBtn.Position.Y - ((float)elapsed * 0.5f));
-                    
-                 
-                    
+
+
+
                 }
                 else
                 {
@@ -399,13 +412,13 @@ namespace kyun.GameScreen
                 {
                     doneButtons[2] = true;
                 }
-                
-                if(doneLogo && doneButtons[0] && doneButtons[1] && doneButtons[2])
+
+                if (doneLogo && doneButtons[0] && doneButtons[1] && doneButtons[2])
                 {
                     ExtBtn.Visible = CnfBtn.Visible = StrBtn.Visible = false;
                     Logo.ChangeScale(.7f);
                     Logo.Texture = SpritesContent.Instance.LogoAtTwo;
-                    Logo.Position = new Vector2((ActualScreenMode.Width / 2) - (Logo.Texture.Width / 2), (ActualScreenMode.Height / 2) - (Logo.Texture.Height /2));
+                    Logo.Position = new Vector2((ActualScreenMode.Width / 2) - (Logo.Texture.Width / 2), (ActualScreenMode.Height / 2) - (Logo.Texture.Height / 2));
                     hidding = false;
                 }
             }
@@ -433,7 +446,7 @@ namespace kyun.GameScreen
                 {
                     StrBtn.Position = new Vector2(StrBtn.Position.X, StrBtn.Position.Y + ((float)elapsed * 0.5f));
 
-                    
+
                 }
                 else
                 {
@@ -490,7 +503,7 @@ namespace kyun.GameScreen
                 }
             }
         }
-        
+
         #region UI
 
         public ConfigButton CnfBtn;
@@ -499,7 +512,6 @@ namespace kyun.GameScreen
         public UI.Image Logo;
         public UI.Label Label1;
         public UI.Label FPSMetter;
-        private Notifier ntfr;
         private ButtonStandard btnNext;
         private ButtonStandard btnPrev;
         private ButtonStandard btnPlay;
@@ -516,6 +528,7 @@ namespace kyun.GameScreen
         public Label coverLabelArt;
         public int coverSize;
         private UserBox userBox;
+        private Notifier ntfr;
 
         public ubeatBeatMap mainBm { get; private set; }
         #endregion
