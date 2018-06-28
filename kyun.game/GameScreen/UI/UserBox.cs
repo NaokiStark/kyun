@@ -82,6 +82,9 @@ namespace kyun.game.GameScreen.UI
 
         public override void Update()
         {
+            if (!Visible)
+                return;
+
             if(NikuClientApi.User == null && !NikuClientApi.isLogout)
             {
                 NikuClientApi.isLogout = true;
@@ -97,6 +100,9 @@ namespace kyun.game.GameScreen.UI
 
         public override void Render()
         {
+            if (!Visible)
+                return;
+
             displayBg.Render();
             userAvatar.Render();
             nickLabel.Render();

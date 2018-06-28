@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using kyun.Utils;
 using kyun.Audio;
+using System;
+using System.Collections.Generic;
 
 namespace kyun.GameScreen.UI
 {
@@ -32,25 +34,7 @@ namespace kyun.GameScreen.UI
         void updateScale()
         {
             if (!BeatReact) return;
-            //ToDo: Ms per beat
-
-            /*
-
-             if (UbeatGame.Instance.Player.PlayState == NAudio.Wave.PlaybackState.Playing)
-             {
-                 if (UbeatGame.Instance.SelectedBeatmap != null)
-                 {
-                     if (nextBeat == 0) nextBeat += (long)UbeatGame.Instance.SelectedBeatmap.BPM;
-
-                     if (UbeatGame.Instance.Player.Position > nextBeat)
-                     {
-                         Scale = 1.1f;
-                         nextBeat += (long)UbeatGame.Instance.SelectedBeatmap.BPM;
-                     }
-                 }
-
-             }*/
-
+            
                      
             float pScale = KyunGame.Instance.Player.PeakVol;
             if (KyunGame.Instance.Player.PlayState != BassPlayState.Playing)
@@ -95,6 +79,23 @@ namespace kyun.GameScreen.UI
             if (!Visible)
                 return;
 
+            if (Effect != null && KyunGame.Instance.Graphics.GraphicsProfile == GraphicsProfile.HiDef)
+            {
+                KyunGame.Instance.SpriteBatch.End();
+                KyunGame.Instance.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone);
+
+                foreach (KeyValuePair<string, dynamic> parameter in EffectParameters)
+                {
+                    Effect.Parameters[parameter.Key].SetValue(parameter.Value);                    
+                }
+
+                Effect.CurrentTechnique = Effect.Techniques[0];
+                foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
+                {
+                    pass.Apply();
+                }
+            }
+
             Rectangle rg = new Rectangle();
             if (Size != Vector2.Zero)
             {
@@ -108,6 +109,11 @@ namespace kyun.GameScreen.UI
             if(Texture !=null && !Texture.IsDisposed)
                 KyunGame.Instance.SpriteBatch.Draw(this.Texture, rg, null, TextureColor * Opacity, AngleRotation, new Vector2((this.Texture.Width / 2), (this.Texture.Height / 2)), SpriteEffects.None, 0);
 
+            if (Effect != null && KyunGame.Instance.Graphics.GraphicsProfile == GraphicsProfile.HiDef)
+            {
+                KyunGame.Instance.SpriteBatch.End();
+                KyunGame.Instance.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone);
+            }
             //Render over object
             if (Tooltip != null)
                 Tooltip?.Render();

@@ -255,7 +255,18 @@ namespace kyun.Utils
             ExitButton = Content.Load<Texture2D>("ExitMain");
             ConfigButton = Content.Load<Texture2D>("ConfigMain");
             ButtonStandard = Content.Load<Texture2D>("ButtonStandard");
-            Catcher = Content.Load<Texture2D>("nn");
+
+            Catcher = Content.Load<Texture2D>("Catcher");
+
+            CatcherCombo = Content.Load<Texture2D>("CatcherCombo");
+            CatcherCombo2 = Content.Load<Texture2D>("CatcherCombo2");
+
+            CatcherFire = Content.Load<Texture2D>("CatcherFire");
+            CatcherFire2 = Content.Load<Texture2D>("CatcherFire2");
+
+            CatcherMiss = Content.Load<Texture2D>("CatcherMiss");
+            CatcherMiss2 = Content.Load<Texture2D>("CatcherMiss2");
+
             CatchObject = Content.Load<Texture2D>("CHitObject");
 
             MenuSnow = Content.Load<Texture2D>("menu-snow");
@@ -290,6 +301,8 @@ namespace kyun.Utils
             {
                 CroppedBg = System.Drawing.Image.FromStream(ff);
             }
+
+            RGBShiftEffect = Content.Load<Effect>("RGBShift");
         }
 
         public void AddTexture(string name, Texture2D tex)
@@ -546,6 +559,16 @@ namespace kyun.Utils
         public System.Drawing.Image CroppedBg { get; set; }
         public System.Drawing.Image CroppedBgCover2 { get; set; }
         public Texture2D Catcher { get; set; }
+
+        public Texture2D CatcherCombo { get; set; }
+        public Texture2D CatcherCombo2 { get; set; }
+
+        public Texture2D CatcherFire { get; set; }
+        public Texture2D CatcherFire2 { get; set; }
+        
+        public Texture2D CatcherMiss { get; set; }
+        public Texture2D CatcherMiss2 { get; set; }
+
         public Texture2D CatchObject { get; set; }
         #endregion
 
@@ -584,6 +607,7 @@ namespace kyun.Utils
         public string defaultbg { get; private set; }
         public int MenuTransition { get; private set; }
         public int NotificationSound { get; private set; }
+        public Effect RGBShiftEffect { get; internal set; }
 
         #endregion
 

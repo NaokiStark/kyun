@@ -414,19 +414,12 @@ namespace kyun.GameScreen
             }
             if (((CheckBox)sender).Checked)
             {
-                /*
-                if(System.Windows.Forms.MessageBox.Show("This feature uses a lot of resources, is recommended for multicore processors and up to 2GB of RAM\r\n\r\nAre you sure you want to apply this change?", "ubeat", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Warning) == System.Windows.MessageBoxResult.Yes)
-                {*/
+                
                 notifier.ShowDialog("Great!, your pc is a master race!", 5000, NotificationType.Warning);
                 Logger.Instance.Info("Setting Video: " + ((CheckBox)sender).Checked.ToString());
                 KyunGame.Instance.VideoEnabled = ((CheckBox)sender).Checked;
                 Settings1.Default.Video = ((CheckBox)sender).Checked;
-                Settings1.Default.Save();/*
-                }
-                else
-                {
-                    ((CheckBox)sender).Checked = false;
-                }*/
+                Settings1.Default.Save();
             }
             else
             {
@@ -497,39 +490,7 @@ namespace kyun.GameScreen
         }
 
         internal override void UpdateControls()
-        {/*
-            bool restrictedUpdate = false;
-
-            ComboBox activeBox = null;
-
-            foreach (UIObjectBase ctr in Controls)
-            {
-                if (ctr is ComboBox)
-                {
-                    ComboBox ctrc = (ComboBox)ctr;
-                    if (ctrc.IsListVisible)
-                    {
-                        restrictedUpdate = true;
-                        activeBox = ctrc;
-                        break;
-                    }
-                }
-            }
-
-            foreach (UIObjectBase ctr in Controls)
-            {
-                if (activeBox != null)
-                {
-                    if (restrictedUpdate && (ctr is InputControl && !activeBox.IsListVisible))
-                    {
-                        continue;
-                    }
-
-                }
-
-
-                ctr.Update();
-            }*/
+        {
             base.UpdateControls();
         }
 

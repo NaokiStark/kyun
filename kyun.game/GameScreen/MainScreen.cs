@@ -17,6 +17,7 @@ namespace kyun.GameScreen
 {
     public partial class MainScreen : ScreenBase
     {
+        public bool Jukebox { get; set; }
         int lastIndex = 0;
         static IScreen instance = null;
         public static IScreen Instance
@@ -199,15 +200,35 @@ namespace kyun.GameScreen
         {
             switch (args.Key)
             {
+                case Microsoft.Xna.Framework.Input.Keys.MediaPreviousTrack:
                 case Microsoft.Xna.Framework.Input.Keys.Left:
                     _prev();
                     break;
+                case Microsoft.Xna.Framework.Input.Keys.MediaNextTrack:
                 case Microsoft.Xna.Framework.Input.Keys.Right:
                     _next();
                     break;
                 case Microsoft.Xna.Framework.Input.Keys.Escape:
                     ExtBtn_Click(new object(), new EventArgs());
                     break;
+                case Microsoft.Xna.Framework.Input.Keys.F10:
+                    Jukebox = !Jukebox;
+                    string act = "activated";
+                    string deact = "disabled";
+                    ntfr.ShowDialog($"Jukebox mode {((Jukebox)?act:deact)}, press F10 to toggle");
+                    break;                
+                case Microsoft.Xna.Framework.Input.Keys.F5:
+                    AVPlayer.Play(KyunGame.Instance.Player.ActualSong);
+                    break;
+                case Microsoft.Xna.Framework.Input.Keys.MediaPlayPause:
+                case Microsoft.Xna.Framework.Input.Keys.F4:
+                    AVPlayer.audioplayer.Pause();
+                    break;
+                case Microsoft.Xna.Framework.Input.Keys.MediaStop:
+                case Microsoft.Xna.Framework.Input.Keys.F6:
+                    AVPlayer.audioplayer.Stop();
+                    break;
+
             }
         }
 
@@ -226,8 +247,9 @@ namespace kyun.GameScreen
         {
             if(KyunGame.Instance.Player.PlayState == BassPlayState.Stopped)
             {
-                
-                AVPlayer.Play(KyunGame.Instance.SelectedMapset[0].SongPath);
+
+                //AVPlayer.Play(KyunGame.Instance.SelectedMapset[0].SongPath);
+                AVPlayer.Play(KyunGame.Instance.Player.ActualSong);
             }
             else if(KyunGame.Instance.Player.PlayState == BassPlayState.Paused)
             {
@@ -250,7 +272,7 @@ namespace kyun.GameScreen
         void MainScreen_OnLoad(object sender, EventArgs e)
         {
 
-            BackgroundDim = .7f;
+            BackgroundDim = .9f;
             /*
             if (!noLoadRnd && !UbeatGame.Instance.FistLoad)
                 playRandomSong();
@@ -472,14 +494,12 @@ namespace kyun.GameScreen
                 lc[2] = colors[a*lcc].B;
                 sColors.Add(lc);
                 lcc++;
-                //ncolor = OsuBeatMap.rnd.Next(15, colors.Length - 1);
             }
 
         }
 
         public void ChangeMainDisplay(int mps)
         {
-            //ChangeBackground(InstanceManager.AllBeatmaps[mps][0].Background);
             Label1.Text = InstanceManager.AllBeatmaps[mps][0].Artist + " - " + InstanceManager.AllBeatmaps[mps][0].Title;
             lastIndex = mps;
         }

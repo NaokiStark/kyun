@@ -14,7 +14,7 @@ namespace kyun.GameScreen
         public static Texture2D TopEffect = null;
         static float Opacity = 0;
         static bool showing = false;
-        static IScreen ToBeChanged = null;
+        public static IScreen ToBeChanged = null;
         static bool Changed = false;
 
         static bool fadingIn = false;
@@ -32,6 +32,20 @@ namespace kyun.GameScreen
             showing = true;
             ToBeChanged = ToScreen;
 
+        }
+
+        public static Texture2D ActualBackground
+        {
+            get
+            {
+                if (ActualScreen == null)
+                    if (ToBeChanged != null)
+                        return ((ScreenBase)ToBeChanged).Background;
+                    else
+                        return null;
+
+                return ((ScreenBase)ActualScreen).Background;
+            }
         }
 
         public static void ShowOverlay(IOverlay _overlay)

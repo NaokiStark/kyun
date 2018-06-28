@@ -99,14 +99,6 @@ namespace kyun.Audio
         {
             PlayState = BassPlayState.Stopped;
 
-            /*
-             * We init this before
-            Un4seen.Bass.BassNet.Registration("nikumi@hotmail.com", "2X14292918312422");
-            Bass.BASS_PluginLoad(AppDomain.CurrentDomain.BaseDirectory + "bass_fx.dll");
-
-            Bass.BASS_Init(1, 44100, BASSInit.BASS_DEVICE_STEREO, IntPtr.Zero);
-            */
-
             System.Timers.Timer tmm = new System.Timers.Timer();
 
             tmm.Elapsed += (obj, hnd) =>
@@ -195,8 +187,21 @@ namespace kyun.Audio
 
         public void Pause()
         {
-            Bass.BASS_ChannelPause(stream);
-            PlayState = BassPlayState.Paused;
+            if(PlayState == BassPlayState.Stopped)
+                Play(ActualSong);
+            else
+            {
+                if(PlayState == BassPlayState.Paused)
+                {
+                    Bass.BASS_ChannelPlay(stream, false);
+                    PlayState = BassPlayState.Playing;
+                }
+                else
+                {
+                    Bass.BASS_ChannelPause(stream);
+                    PlayState = BassPlayState.Paused;
+                }
+            }
         }
 
         public void Stop()
@@ -206,62 +211,14 @@ namespace kyun.Audio
         }
 
         private float GetLevel(int channel)
-        {/*
-            float maxL = 0f;
-            float maxR = 0f;
-
-            // length of a 20ms window in bytes
-            int length20ms = (int)Bass.BASS_ChannelSeconds2Bytes(channel, 0.02);
-            // the number of 32-bit floats required (since length is in bytes!)
-            int l4 = length20ms / 4; // 32-bit = 4 bytes
-
-            // create a data buffer as needed
-            float[] sampleData = new float[l4];
-
-            int length = Bass.BASS_ChannelGetData(channel, sampleData, length20ms);
-
-            // the number of 32-bit floats received
-            // as less data might be returned by BASS_ChannelGetData as requested
-            l4 = length / 4;
-
-            for (int a = 0; a < l4; a++)
-            {
-                float absLevel = Math.Abs(sampleData[a]);
-
-                // decide on L/R channel
-                if (a % 2 == 0)
-                {
-                    // Left channel
-                    if (absLevel > maxL)
-                        maxL = absLevel;
-                }
-                else
-                {
-                    // Right channel
-                    if (absLevel > maxR)
-                        maxR = absLevel;
-                }
-            }
-
-            // limit the maximum peak levels to +6bB = 65535 = 0xFFFF
-            // the peak levels will be int values, where 32767 = 0dB
-            // and a float value of 1.0 also represents 0db.
-            int peakL = (int)Math.Round(32767f * maxL) & 0xFFFF;
-            int peakR = (int)Math.Round(32767f * maxR) & 0xFFFF;
-            //int peakL = (float)Math.Round(32767f * maxL);
-            //float peakR = (float)Math.Round(32767f * maxR);
-
-            return maxL;*/
-
+        {
             int level = Bass.BASS_ChannelGetLevel(channel);
             float left = (float)((float)Un4seen.Bass.Utils.LowWord32(level) / 5f) / 65535f * 10; // the left level
             float right = (float)((float)Un4seen.Bass.Utils.HighWord32(level) / 5f) / 65535f * 10; // the right level
-            left = Math.Min(left, 1); //Limit to 0db
-            right = Math.Min(right, 1); //Limit to 0db
-            return Math.Max(left, right);
-            /*
-            int left = Utils.LowWord32(level); // the left level
-            int right = Utils.HighWord32(level); // the right level*/
+            //left = Math.Min(left, 1); //Limit to 0db
+            //right = Math.Min(right, 1); //Limit to 0db
+            return Math.Max(left, right)*.9f;
+            
         }
     }
 

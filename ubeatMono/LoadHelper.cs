@@ -53,9 +53,17 @@ namespace kyunMono
                 kyun.Logger.Instance.Info("");
 
 
-                kyun.KyunGame.LauncherVersion = 1;
+                kyun.KyunGame.LauncherVersion = 2;
+                try
+                {
+                    using (kyun.Utils.InstanceManager InsManager = new kyun.Utils.InstanceManager(false, Program.repair)) { }
 
-                using (kyun.Utils.InstanceManager InsManager = new kyun.Utils.InstanceManager(Program.SoftwareRendering)) {}
+                }
+                catch
+                {
+                    using (kyun.Utils.InstanceManager InsManager = new kyun.Utils.InstanceManager(false)) { }
+                }
+
 
                 Launcher.Instance?.Dispose();
             }
@@ -65,7 +73,7 @@ namespace kyunMono
                 kyun.Logger.Instance.Severe("Beep boop, something went wrong.");
                 kyun.Logger.Instance.Warn("You can try run kyun! with \"repair\" argument if you can't run kyun! anymore.");
                 kyun.Logger.Instance.Severe("");
-                kyun.Logger.Instance.Severe("Some info to developer (don't try to understand): ");
+                kyun.Logger.Instance.Severe("Some info to developer: ");
                 kyun.Logger.Instance.Severe("");
                 kyun.Logger.Instance.Severe($"{e.GetType().ToString()}");
                 kyun.Logger.Instance.Severe(e.Message);

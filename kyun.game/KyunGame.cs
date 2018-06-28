@@ -74,6 +74,10 @@ namespace kyun
         public static double timeToClear = 0;
         public static long lastSongPos = 0;
 
+        float peak = 0;
+        float magic = 0;
+        float dPeak = 0;
+
         delegate void shit(GameTime tm);
         event shit updateEvent;
         private System.Threading.SynchronizationContext syncContext;
@@ -85,7 +89,7 @@ namespace kyun
 
         public static int LauncherVersion = 0; //THIS WILL FILL WITH LAUNCHER (EXECUTABLE)
 
-        public static int DesiredLauncher = 1; //THIS IS A LAUNCHER REQUESTED WITH THIS ACTUAL BUILD (NOT EXECUTABLE)
+        public static int DesiredLauncher = 2; //THIS IS A LAUNCHER REQUESTED WITH THIS ACTUAL BUILD (NOT EXECUTABLE)
 
         public static string MainSite = "https://kyun.mokyu.pw/";
 
@@ -115,8 +119,15 @@ namespace kyun
 
 
 
-        public KyunGame(bool softwareRendering = false)
+        public KyunGame(bool softwareRendering = false, bool repair = false)
         {
+
+            if (repair)
+            {
+                Settings1.Default.Reset();
+                Settings1.Default.Save();
+            }           
+            
 
             if (Settings1.Default.Token != "" && Settings1.Default.User != "")
                 server = new NikuClientApi(Settings1.Default.User, Settings1.Default.Token);
@@ -140,6 +151,9 @@ namespace kyun
             VideoCounter = new FrameCounter();
             Instance = this;
             Graphics = new GraphicsDeviceManager(this);
+
+            if(GraphicsAdapter.DefaultAdapter.IsProfileSupported(GraphicsProfile.HiDef))
+                Graphics.GraphicsProfile = GraphicsProfile.HiDef;
 
             if (softwareRendering)
             {
@@ -195,7 +209,7 @@ namespace kyun
             ToggleVSync(Settings1.Default.VSync);
             ToggleFullscreen(Settings1.Default.FullScreen);
 
-           
+
             if (srcm[Settings1.Default.ScreenMode].WindowMode != Screen.WindowDisposition.Windowed)
             {
                 WinForm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -306,7 +320,7 @@ namespace kyun
             {
                 Notifications.ShowDialog("Ups, kyun! has experienced an error, this will be notified, sorry about that.", 10000, NotificationType.Critical);
             }
-            catch(Exception rex)
+            catch (Exception rex)
             {
                 Attemps++;
                 RecallAndNotify(rex);
@@ -347,8 +361,8 @@ namespace kyun
             });
 
             gameIsRunning = true;
-            tk.Start();            
-            Attemps++;            
+            tk.Start();
+            Attemps++;
         }
 
         protected override void Update(GameTime tm)
@@ -419,11 +433,17 @@ namespace kyun
 
             uLabelMsgVer = new GameScreen.UI.Label(.1f);
             uLabelMsgVer.Text = CompilationVersion;
+            /*
             uLabelMsgVer.Tooltip = new Tooltip
             {
-                Text = "Ok, you catch me.",
+                Text = "Hi",
                 BorderColor = Color.Coral
             };
+                        uLabelMsgVer.Click += (e, arg) => {
+                ScreenManager.ChangeTo(game.GameModes.Test.TestScreen.GetInstance());
+            };
+             
+             */
 
             uLabelMsgVer.Centered = true;
             uLabelMsgVer.Position = new Vector2(acmode.Width / 2, acmode.Height - 25);
@@ -431,9 +451,7 @@ namespace kyun
             uLabelMsgVer.Scale = .75f;
             uLabelMsgVer.ForegroundColor = Color.WhiteSmoke * .75f;
 
-            uLabelMsgVer.Click += (e, arg) => {
-                ScreenManager.ChangeTo(game.GameModes.Test.TestScreen.GetInstance());
-            };
+
 
             FrameDisplay = new Label()
             {
@@ -521,12 +539,20 @@ namespace kyun
             if (actualPeak >= InstanceManager.MaxPeak - 0.001)
             {
                 OnPeak?.Invoke(this, new EventArgs());
+                magic = (float)OsuUtils.OsuBeatMap.rnd.NextDouble(-4d, 4d);
             }
 
         }
 
+
+        /// <summary>
+        /// This fails
+        /// </summary>
+        /// <param name="gameTime"></param>
         public void checkHaxOrLag(GameTime gameTime)
         {
+            return;
+
             //Check if time cheating or game is running slow
 
             long lastPos = Player.Position;
@@ -571,7 +597,7 @@ namespace kyun
             touchHandler?.Update();
             updatePeak(gameTime);
 
-           
+
             if (Player.PlayState == BassPlayState.Playing)
             {
 
@@ -598,7 +624,7 @@ namespace kyun
 
             KeyBoardManager.Update(gameTime);
             ScreenManager.Update(gameTime);
-            
+
             uLabelVer.Update();
             uLabelMsgVer.Update();
 
@@ -635,11 +661,69 @@ namespace kyun
 
             GraphicsDevice.Clear(Color.Black);
 
+            if(Graphics.GraphicsProfile == GraphicsProfile.HiDef)
+            {
+                if (ScreenManager.ActualBackground != null)
+                {
+                    SpritesContent.Instance.RGBShiftEffect.Parameters["xColoredTexture"].SetValue(ScreenManager.ActualBackground);
 
-            if (!GraphicsAdapter.UseReferenceDevice)
+                    if (peak > 0)
+                    {
+                        peak = (float)Math.Max(peak - Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f, 0);
+                    }
+                    else if(peak < 0)
+                    {
+                        peak = (float)Math.Min(peak + Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f, 0);
+                    }                    
+
+
+                    if(peak == 0 || float.IsNaN(peak))
+                    {
+
+                        if (KyunGame.Instance.Player.PeakVol >= InstanceManager.MaxPeak - 0.11)
+                            peak = 2 * (magic / -magic);
+                    }
+
+                    dPeak = (float)Math.Max(dPeak - Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.01f, 0);
+
+                    if (KyunGame.Instance.Player.PeakVol >= InstanceManager.MaxPeak - 0.01)
+                    {
+                        dPeak = KyunGame.Instance.Player.PeakVol;
+                    }
+
+                    float distorsion = Math.Max(0, Math.Min(.1f, dPeak / 5));
+                    SpritesContent.Instance.RGBShiftEffect.Parameters["DisplacementDist"].SetValue(-distorsion);
+
+                    SpritesContent.Instance.RGBShiftEffect.Parameters["DisplacementScroll"].SetValue((peak / 1000) * magic);
+                    SpritesContent.Instance.RGBShiftEffect.CurrentTechnique = SpritesContent.Instance.RGBShiftEffect.Techniques["Technique1"];
+
+                }
+
                 SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone);
-            else
-                SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
+                if (ScreenManager.ActualBackground != null)
+                {
+                    foreach (EffectPass pass in SpritesContent.Instance.RGBShiftEffect.CurrentTechnique.Passes)
+                    {
+                        pass.Apply();
+
+                    }
+                    if (ScreenManager.ActualScreen != null)
+                    {
+                        ((ScreenBase)ScreenManager.ActualScreen)?.RenderBg();
+                    }
+                    else if (ScreenManager.ToBeChanged != null)
+                    {
+                        ((ScreenBase)ScreenManager.ToBeChanged)?.RenderBg();
+                    }
+
+                }
+
+                SpriteBatch.End();
+            }
+           
+
+            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone);
+            
 
             ScreenManager.Render();
 
@@ -664,7 +748,7 @@ namespace kyun
         public void ChangeResolution(Screen.ScreenMode screenMode)
         {
             SuppressDraw();
-            
+
 
             if (screenMode.WindowMode != Screen.WindowDisposition.Windowed)
             {

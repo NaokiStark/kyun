@@ -50,6 +50,11 @@ namespace kyun.game.GameModes.CatchIt
         private ButtonStandard skipButton;
         private bool skipped;
 
+        private PlayerTxType txState;
+        private long catcherElapsed = 0;
+        private int catcherState = 0;
+        public long catcherToIdle = 0;
+
         public Texture2D LongTail { get; set; }
 
         public bool End { get; private set; }
@@ -67,7 +72,7 @@ namespace kyun.game.GameModes.CatchIt
             AllowVideo = true;
             mid = 0;
             HitObjects = new List<HitBase>();
-            BackgroundDim = 0.45f;
+            BackgroundDim = .9f;
 
             Player = new Image(SpritesContent.Instance.Catcher);
             Player.BeatReact = true;
@@ -75,16 +80,16 @@ namespace kyun.game.GameModes.CatchIt
 
             PlayerSize = new Vector2(Math.Max(Math.Min(Player.Texture.Width, 100), 50), Math.Max(Math.Min(Player.Texture.Height, 100), 50));
 
-            FieldSize = new Vector2(ActualScreenMode.Width, (PlayerSize.Y + Margin) * fieldSlots);
+            FieldSize = new Vector2(ActualScreenMode.Width - 20, (PlayerSize.Y + Margin) * fieldSlots);
             //FieldPosition = new Vector2(0, (ActualScreenMode.Height / 2) - (FieldSize.Y / 2) - PlayerSize.Y);
-            FieldPosition = new Vector2(0, 0);
+            FieldPosition = new Vector2(10, 0);
 
             Player.Size = PlayerSize;
 
             for (int a = 0; a < fieldSlots; a++)
             {
-                var rgnl = new FilledRectangle(new Vector2(ActualScreenMode.Width, PlayerSize.Y), Color.Black * .8f);
-                rgnl.Position = new Vector2(0, FieldPosition.Y + (PlayerSize.Y + Margin) * (a + 1));
+                var rgnl = new FilledRectangle(new Vector2(FieldSize.X, PlayerSize.Y), Color.Black * .8f);
+                rgnl.Position = new Vector2(FieldPosition.X, FieldPosition.Y + (PlayerSize.Y + Margin) * (a + 1));
                 rgnl.Opacity = .9f;
                 rectangles.Add(rgnl);
                 Controls.Add(rectangles[a]);
@@ -270,13 +275,15 @@ namespace kyun.game.GameModes.CatchIt
             playerLinePosition = 1;
             lastIndex = 0;
             _scoreDisplay.IsActive = true;
+            changeCatcherTx(PlayerTxType.Idle);
+
             if ((GameMods & GameMod.Replay) != GameMod.Replay)
                 movements.Clear();
 
             mid = 0;
-            FieldSize = new Vector2(ActualScreenMode.Width, (PlayerSize.Y + Margin) * fieldSlots);
+            FieldSize = new Vector2(ActualScreenMode.Width - 20, (PlayerSize.Y + Margin) * fieldSlots);
             //FieldPosition = new Vector2(0, (ActualScreenMode.Height / 2) - (FieldSize.Y / 2) - PlayerSize.Y);
-            FieldPosition = new Vector2(0, 0);
+            FieldPosition = new Vector2(10, 0);
 
             _healthbar.Position = new Vector2(0, FieldPosition.Y + FieldSize.Y + 2 + PlayerSize.Y);
             _scoreDisplay.Position = new Vector2(0, _healthbar.Position.Y + 48);
@@ -432,6 +439,39 @@ namespace kyun.game.GameModes.CatchIt
             PauseOverlay.ShowAlert(this);
         }
 
+        private void updateCatcher()
+        {
+            if(Combo.Instance.ActualMultiplier > 200)
+            {
+                changeCatcherTx(PlayerTxType.Fire);
+            }
+            else if (Combo.Instance.ActualMultiplier > 80)
+            {
+                changeCatcherTx(PlayerTxType.Combo);
+            }
+
+            if (catcherElapsed > 600)
+            {
+                catcherElapsed = 0;
+                if(catcherState == 0)
+                {
+                    catcherState = 1;
+                }
+                else
+                {
+                    catcherState = 0;
+                }
+
+                changeCatcherTx(txState);
+            }
+
+            if(catcherToIdle > 5000 && txState == PlayerTxType.Miss)
+            {
+                catcherToIdle = 0;
+                changeCatcherTx(PlayerTxType.Idle);
+            }
+        }
+
         public override void Update(GameTime tm)
         {
             if (KyunGame.Instance.Player.PlayState == BassPlayState.Stopped)
@@ -439,8 +479,12 @@ namespace kyun.game.GameModes.CatchIt
             else
                 GamePosition = KyunGame.Instance.Player.Position + Beatmap.SleepTime;
 
+            catcherElapsed += tm.ElapsedGameTime.Milliseconds;
+            catcherToIdle += tm.ElapsedGameTime.Milliseconds;
+
             updatePlayer();
             checkObjects();
+            updateCatcher();
             base.Update(tm);
             Controls.RemoveAll(item => item.Died);
             HitObjectsRemain.RemoveAll(item => item.Died);
@@ -494,12 +538,60 @@ namespace kyun.game.GameModes.CatchIt
 
             inFieldPosition *= playerLinePosition;
 
-            Player.Position = new Vector2(0, inFieldPosition + FieldPosition.Y);
+            Player.Position = new Vector2(FieldPosition.X, inFieldPosition + FieldPosition.Y);
+        }
+
+        public void changeCatcherTx(PlayerTxType type)
+        {
+            switch (type)
+            {
+                case PlayerTxType.Idle:
+                    txState = type;
+                    Player.Texture = SpritesContent.Instance.Catcher;
+
+                    break;
+                case PlayerTxType.Combo:
+                    txState = type;
+
+                    if(catcherState == 0)
+                        Player.Texture = SpritesContent.Instance.CatcherCombo;
+                    else
+                        Player.Texture = SpritesContent.Instance.CatcherCombo2;
+
+                    break;
+                case PlayerTxType.Fire:
+                    txState = type;
+
+                    if (catcherState == 0)
+                        Player.Texture = SpritesContent.Instance.CatcherFire;
+                    else
+                        Player.Texture = SpritesContent.Instance.CatcherFire2;
+
+                    break;
+                case PlayerTxType.Miss:
+                    txState = type;
+
+                    if (catcherState == 0)
+                        Player.Texture = SpritesContent.Instance.CatcherMiss;
+                    else
+                        Player.Texture = SpritesContent.Instance.CatcherMiss2;
+
+                    break;
+            }
+            Player.Texture = Player.Texture;
         }
 
         public override void Render()
         {
             base.Render();
         }
+    }
+
+    public enum PlayerTxType
+    {
+        Idle,
+        Combo,
+        Fire,
+        Miss
     }
 }

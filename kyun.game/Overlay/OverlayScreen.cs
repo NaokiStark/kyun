@@ -24,7 +24,7 @@ namespace kyun.Overlay
 
             Type = type;
             
-            BackgroundDim = 0.8f;
+            BackgroundDim = 0.5f;
         }
         
     }

@@ -315,7 +315,7 @@ namespace kyun.GameScreen
 
 
             KyunGame.Instance.IsMouseVisible = true;
-            KyunGame.Instance.Notifications.ShowDialog("Free coffee!                  Find a easter egg in this version (no free coffee).                  Enjoy!", 15000, Notifications.NotificationType.Critical);
+            //KyunGame.Instance.Notifications.ShowDialog("Free coffee!                  Find a easter egg in this version (no free coffee).                  Enjoy!", 15000, Notifications.NotificationType.Critical);
             //UbeatGame.Instance.OnPeak += Instance_OnPeak;
         }
 
@@ -414,14 +414,14 @@ namespace kyun.GameScreen
             {
 
                 auplayer.Stop();
-                if (!Settings1.Default.Tutorial)
+                //if (!Settings1.Default.Tutorial)
                     ScreenManager.ChangeTo(MainScreen.Instance);
-                else
+                /*else
                 {
                     ScreenManager.ChangeTo(ClassicModeScreen.GetInstance());
                     ClassicModeScreen c = (ClassicModeScreen)ClassicModeScreen.GetInstance();
                     c.Play(TutorialBeatmap);
-                }
+                }*/
             }
         }
 
@@ -449,14 +449,14 @@ namespace kyun.GameScreen
                 if (loadDone)
                 {
                     auplayer.Stop();
-                    if (!Settings1.Default.Tutorial)
-                        ScreenManager.ChangeTo(MainScreen.Instance);
-                    else
+                    //if (!Settings1.Default.Tutorial)
+                    ScreenManager.ChangeTo(MainScreen.Instance);
+                    /*else
                     {
                         ScreenManager.ChangeTo(ClassicModeScreen.GetInstance());
                         ClassicModeScreen c = (ClassicModeScreen)ClassicModeScreen.GetInstance();
                         c.Play(TutorialBeatmap);
-                    }
+                    }*/
                 }
             }
         }
@@ -477,14 +477,14 @@ namespace kyun.GameScreen
             if (loadDone && auplayer.audioplayer.PlayState == BassPlayState.Stopped && !issueChange)
             {
                 auplayer.Stop();
-                if (!Settings1.Default.Tutorial)
-                    ScreenManager.ChangeTo(MainScreen.Instance);
-                else
+                //if (!Settings1.Default.Tutorial)
+                ScreenManager.ChangeTo(MainScreen.Instance);
+                /*else
                 {
                     ScreenManager.ChangeTo(ClassicModeScreen.GetInstance());
                     ClassicModeScreen c = (ClassicModeScreen)ClassicModeScreen.GetInstance();
                     c.Play(TutorialBeatmap);
-                }
+                }*/
             }
         }
 
@@ -717,7 +717,7 @@ namespace kyun.GameScreen
 
             // Settings1.Default.Reset();
 
-            if (Settings1.Default.Tutorial)
+            if (false)
             {
                 if (TutorialBeatmap == null)
                 {

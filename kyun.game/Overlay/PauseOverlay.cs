@@ -111,11 +111,46 @@ namespace kyun.Overlay
                 AVPlayer.audioplayer.SetVelocity(vel);
             };
 
+            this.onKeyPress += PauseOverlay_onKeyPress;
+
             Controls.Add(ltitle);
             Controls.Add(ladditional);
             Controls.Add(btnYes);
             Controls.Add(btnNo);
             Controls.Add(btnRestart);
+        }
+
+        private void PauseOverlay_onKeyPress(object sender, GameScreen.InputEvents.KeyPressEventArgs args)
+        {
+            if (args.Key != Microsoft.Xna.Framework.Input.Keys.Escape)
+                return;
+
+            if (Instance.btnYes.Visible == false)
+            {
+                Visible = false;
+
+                ScreenManager.RemoveOverlay();
+                ScreenManager.ChangeTo(BeatmapScreen.Instance);
+                i.InGame = false;
+                i.Visible = false;
+                AVPlayer.audioplayer.Play();
+
+                // GameModes.GameMod gm = ((ClassicModeScreen)ClassicModeScreen.Instance).gameMod;
+
+                //float vel = ((gm & GameModes.GameMod.DoubleTime) == GameModes.GameMod.DoubleTime) ? 1.5f : 1f;
+                AVPlayer.audioplayer.SetVelocity(1);
+                return;
+            }
+                
+
+            Visible = false;
+            ScreenManager.RemoveOverlay();
+            AVPlayer.audioplayer.Play();
+
+            GameModes.GameMod gm = i.gameMod;
+
+            float vel = ((gm & GameModes.GameMod.DoubleTime) == GameModes.GameMod.DoubleTime) ? 1.5f : 1f;
+            AVPlayer.audioplayer.SetVelocity(vel);
         }
 
         public static PauseOverlay ShowAlert(GameModeScreenBase instance)

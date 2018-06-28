@@ -40,6 +40,11 @@ namespace kyun.GameScreen
                 Text = "Click me!"
             };
 
+
+            Logo.Effect = SpritesContent.Instance.RGBShiftEffect;
+            Logo.EffectParameters.Add(new KeyValuePair<string, object>("DisplacementDist", 1f));
+            Logo.EffectParameters.Add(new KeyValuePair<string, object>("DisplacementScroll", .1f));
+
             objectsInitialPosition[0] = Logo.Position;
 
             CnfBtn = new ConfigButton();
@@ -109,11 +114,7 @@ namespace kyun.GameScreen
                 Caption = ">>",
                 Position = new Vector2(btnPrev.Position.X + btnSize * 4, btnPrev.Position.Y)
             };
-
-
-
-
-
+            
 
             filledRect1 = new UI.FilledRectangle(
                new Vector2(ActualMode.Width, ActualMode.Height),
@@ -501,6 +502,33 @@ namespace kyun.GameScreen
                     showing = false;
                     StateHidden = false;
                 }
+            }
+
+            if (Jukebox)
+            {
+
+                coverBox.Opacity = coverimg.Opacity = coverLabel.Opacity = coverLabelArt.Opacity = 1;
+
+                Logo.Visible =
+                    userBox.Visible =
+                    btnNext.Visible = 
+                    btnPause.Visible = 
+                    btnPlay.Visible =
+                    btnPrev.Visible =
+                    btnStop.Visible =
+                    KyunGame.Instance.IsMouseVisible = false;
+
+            }
+            else
+            {
+                Logo.Visible =
+                    userBox.Visible =
+                    btnNext.Visible =
+                    btnPause.Visible =
+                    btnPlay.Visible =
+                    btnPrev.Visible =
+                    btnStop.Visible =
+                    KyunGame.Instance.IsMouseVisible = true;
             }
         }
 

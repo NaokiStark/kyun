@@ -43,7 +43,7 @@ namespace kyun.game.GameScreen
         {
             BmScr = (BeatmapScreen)BeatmapScreen.Instance;
             Background = SpritesContent.Instance.DefaultBackground;
-            BackgroundDim = .4f;
+            BackgroundDim = .9f;
             AllowVideo = true;
 
             loadingLabel = new Label(0)

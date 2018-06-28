@@ -51,7 +51,7 @@ namespace kyun.GameScreen.UI
         {
             this.Text = ""; //WTF NULL
             BackgroundOpacity = backgroundOpacity;
-            generateTexture(1, 1);
+            generateTexture(20, 20);
             Scale = 1;
             ForegroundColor = Color.White;
             Shadow = true;
@@ -64,8 +64,8 @@ namespace kyun.GameScreen.UI
             Texture = new Texture2D(KyunGame.Instance.GraphicsDevice, w, h);
             Color[] dataBar = new Color[w * h];
             for (int i = 0; i < dataBar.Length; ++i) dataBar[i] = Color.Black * BackgroundOpacity;
-            this.Texture.SetData(dataBar);
-
+            Texture.SetData(dataBar);
+            //Texture = SpritesContent.RoundCorners(Texture, 5);
         }
 
         public override void Update()
@@ -124,16 +124,19 @@ namespace kyun.GameScreen.UI
                 pos.X = Position.X - messStr.X / 2;
             }
 
-            if (Size == null || Size == Vector2.Zero)
+            if(BackgroundOpacity > 0f)
             {
-                KyunGame.Instance.SpriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(messStr.X), (int)(messStr.Y)), Color.White);
-                //SpriteBatchExtensions.DrawRoundedRect(UbeatGame.Instance.spriteBatch, new Rectangle((int)pos.X, (int)pos.Y, (int)(messStr.X), (int)(messStr.Y)), Texture, 16, Color.White);
-                TotalSize = new Vector2(messStr.X, messStr.Y); //TODO: Make this better
-            }
-            else
-            {
-                KyunGame.Instance.SpriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(Size.X), (int)(Size.Y)), Color.White);
-                TotalSize = Size; //TODO: Make this better
+                if (Size == null || Size == Vector2.Zero)
+                {
+                    KyunGame.Instance.SpriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(messStr.X), (int)(messStr.Y)), Color.White * BackgroundOpacity);
+                    //SpriteBatchExtensions.DrawRoundedRect(UbeatGame.Instance.spriteBatch, new Rectangle((int)pos.X, (int)pos.Y, (int)(messStr.X), (int)(messStr.Y)), Texture, 16, Color.White);
+                    TotalSize = new Vector2(messStr.X, messStr.Y); //TODO: Make this better
+                }
+                else
+                {
+                    KyunGame.Instance.SpriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(Size.X), (int)(Size.Y)), Color.White * BackgroundOpacity);
+                    TotalSize = Size; //TODO: Make this better
+                }
             }
 
             try

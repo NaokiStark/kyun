@@ -107,7 +107,7 @@ namespace kyun.game.GameModes.CatchIt
         {
 
             //Note: 1024 is for universal velocity, cuz, in higher resolution speeds are imposible
-            float twidth = 1024 - i.PlayerSize.X;
+            float twidth = 1024 - (i.PlayerSize.X + i.Player.Position.X);
 
             
 
@@ -166,6 +166,8 @@ namespace kyun.game.GameModes.CatchIt
                 CheckScore();
                 i._healthbar.Substract((2 * _beatmap.OverallDifficulty) * i.FailsCount);
                 Combo.Instance.Miss();
+                i.catcherToIdle = 0;
+                i.changeCatcherTx(PlayerTxType.Miss);
                 //playHitsound();
                 Died = true;
             }
@@ -175,7 +177,7 @@ namespace kyun.game.GameModes.CatchIt
 
         internal void updateOpacity()
         {
-            Opacity = Math.Max(KyunGame.Instance.maxPeak, .7f);
+            //Opacity = Math.Max(KyunGame.Instance.maxPeak, .7f);
         }
 
         internal virtual void CheckScore()
@@ -261,6 +263,7 @@ namespace kyun.game.GameModes.CatchIt
 
         public override void Render()
         {
+            _parent?.Render();
             if(_longNote && ((OsuUtils.OsuBeatMap)_beatmap).osuBeatmapType <= 1)
                 if(Position.X > i.Player.Position.X + i.PlayerSize.X)
                     KyunGame.Instance.SpriteBatch.Draw(i.LongTail, new Rectangle((int)Position.X + Texture.Width/2, (int)Position.Y + (Texture.Height / 2) / 2, ((int)_parent.Position.X + Texture.Width) - (int)Position.X - Texture.Width, Texture.Height / 2), TextureColor * Opacity);

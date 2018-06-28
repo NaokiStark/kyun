@@ -58,7 +58,7 @@ namespace kyun.game.GameScreen
         public void LoadBeatmaps(string[] paths, ScreenBase returnScreen)
         {
             Background = SpritesContent.Instance.DefaultBackground;
-            BackgroundDim = .5f;
+            BackgroundDim = .8f;
 
             ScreenManager.ChangeTo(this);
 

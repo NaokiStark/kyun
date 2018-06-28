@@ -20,9 +20,33 @@ namespace kyun.Utils
         public bool IntancedBeatmaps;
 
         public static bool SoftwareRendering { get; private set; }
-        
+
+        public static bool Repair = false;
+
+        //old launcher
         public InstanceManager(bool softwareRendering = false)
         {
+            Settings1.Default.WindowsRender = softwareRendering;
+
+            
+
+            Logger.Instance.Severe("|");
+            Logger.Instance.Severe("| Notice:");
+            Logger.Instance.Severe("|");
+            Logger.Instance.Severe("| kyun! is running on old launcher, please, update your launcher, it wouldn't work in the future. ");
+            Logger.Instance.Severe("|                                                                                                    ");
+
+            MessageBox.Show("Your launcher is old, please update your launcher.");
+
+            Instance = this;
+            SoftwareRendering = false;
+            StartInstance();
+        }
+
+
+        public InstanceManager(bool softwareRendering = false, bool repair = false)
+        {
+            Repair = repair;
             Settings1.Default.WindowsRender = softwareRendering;
 
             //Disable things
@@ -49,7 +73,7 @@ namespace kyun.Utils
             try
             {
                 kyun.Logger.Instance.Debug(System.Threading.Thread.GetDomainID().ToString());
-                using (ubeat = new KyunGame(SoftwareRendering))
+                using (ubeat = new KyunGame(SoftwareRendering, Repair))
                     ubeat.Run();
             }
             catch (Microsoft.Xna.Framework.Graphics.NoSuitableGraphicsDeviceException nsgdex)

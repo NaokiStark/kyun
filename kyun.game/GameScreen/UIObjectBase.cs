@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using kyun.GameScreen.UI;
 using kyun.Utils;
 using kyun.game.GameScreen.UI;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace kyun.GameScreen
 {
@@ -39,6 +40,9 @@ namespace kyun.GameScreen
         public TimeSpan Elapsed { get; set; }
 
         public Screen.ScreenMode ScreenMode { get; set; }
+
+        public Effect Effect { get; set; }
+        public List<KeyValuePair<string, dynamic>> EffectParameters = new List<KeyValuePair<string, dynamic>>();
 
         public event EventHandler Click;
         public event EventHandler Over;
@@ -77,13 +81,13 @@ namespace kyun.GameScreen
 
             Over += (e, arg) =>
             {
-                if(Tooltip != null)
-                    Tooltip.Visible = true;  
+                if (Tooltip != null)
+                    Tooltip.Visible = true;
             };
 
             Leave += (e, arg) =>
             {
-                
+
                 if (Tooltip != null)
                     Tooltip.Visible = false;
             };
@@ -111,7 +115,7 @@ namespace kyun.GameScreen
 
             if (System.Windows.Forms.Form.ActiveForm != KyunGame.WinForm) return;
 
-            if(Tooltip != null)
+            if (Tooltip != null)
                 Tooltip?.Update();
 
             //if (!KyunGame.Instance.IsActive) return; //Fix events
@@ -221,7 +225,7 @@ namespace kyun.GameScreen
                 {
                     hasOver = false;
                     Leave?.Invoke(this, new EventArgs());
-                }             
+                }
             }
 
             if (mouseState.LeftButton == ButtonState.Released)
@@ -279,7 +283,25 @@ namespace kyun.GameScreen
             if (!Visible)
                 return;
 
-          
+            if (Effect != null && KyunGame.Instance.Graphics.GraphicsProfile == GraphicsProfile.HiDef)
+            {
+                KyunGame.Instance.SpriteBatch.End();
+                KyunGame.Instance.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone);
+
+                foreach (KeyValuePair<string, dynamic> parameter in EffectParameters)
+                {
+
+                    Effect.Parameters[parameter.Key].SetValue(parameter.Value);
+                  
+                }
+
+                Effect.CurrentTechnique = Effect.Techniques[0];
+
+                foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
+                {
+                    pass.Apply();
+                }
+            }
 
             Rectangle rg = new Rectangle((int)(Position.X), (int)(Position.Y), (int)(this.Texture.Width * Scale), (int)(this.Texture.Height * Scale));
             rg.X = (int)(rg.X - ((Texture.Width * Scale) - Texture.Width) / 2);
@@ -290,9 +312,17 @@ namespace kyun.GameScreen
             else
                 KyunGame.Instance.SpriteBatch.Draw(Texture, rg, null, TextureColor * Opacity, AngleRotation, OriginRender, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0);
 
+            if (Effect != null && KyunGame.Instance.Graphics.GraphicsProfile == GraphicsProfile.HiDef)
+            {
+                KyunGame.Instance.SpriteBatch.End();
+                KyunGame.Instance.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone);
+            }
+
             //Render over object
             if (Tooltip != null)
                 Tooltip?.Render();
+
+           
         }
 
         public void _OnClick()

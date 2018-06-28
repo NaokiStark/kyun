@@ -105,18 +105,20 @@ namespace kyun.GameScreen
                 onTouch?.Invoke(this, e);
         }
 
-        internal void RenderBg()
+        public void RenderBg()
         {
             if (Background != null)
             {
-                int screenWidth = KyunGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-                int screenHeight = KyunGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+                float screenWidth = KyunGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
+                float screenHeight = KyunGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
-                var screenRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), screenHeight);
+                var screenRectangle = new Rectangle((int)screenWidth / 2, (int)screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), (int)screenHeight);
+
+
                 try
                 {
                     if(Background != null && !Background.IsDisposed)
-                        KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Microsoft.Xna.Framework.Color.White * BackgroundDim, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                        KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
                 }
                 catch
                 {
@@ -130,16 +132,20 @@ namespace kyun.GameScreen
                 AVPlayer.Render();
             }
             
+            
+        }
+
+        internal void renderGoodies()
+        {
             if (rPeak)
             {
                 RenderPeak();
             }
 
-            if(backgroundTransitionLayer.Opacity > 0.01)
+            if (backgroundTransitionLayer.Opacity > 0.01)
             {
                 backgroundTransitionLayer.Render();
             }
-            
         }
 
         internal void updateBgTransition()
@@ -213,12 +219,34 @@ namespace kyun.GameScreen
         {
             if (!Visible || isDisposing) return;
 
-            RenderBg();
-
+            RenderDim();
+            renderGoodies();
             RenderObjects();
 
         }
 
+        public virtual void RenderDim()
+        {
+            if (Background != null)
+            {
+                float screenWidth = KyunGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
+                float screenHeight = KyunGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+
+                var screenRectangle = new Rectangle((int)screenWidth / 2, (int)screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), (int)screenHeight);
+
+
+                try
+                {
+                    if (Background != null && !Background.IsDisposed)
+                        KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.Black * (1f - BackgroundDim), 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                }
+                catch
+                {
+                    //
+                }
+
+            }
+        }
 
 
         public virtual void Update(GameTime tm)
