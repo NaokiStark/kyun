@@ -14,16 +14,36 @@ namespace kyun.Audio
         {
             System.Timers.Timer tm = new System.Timers.Timer();
             tm.Elapsed += (obj, args) => {
-                EffectChannelList.Clear();
+
+                for(int a = 0; a < EffectChannelList.Count; a++)
+                {
+                    int chnl = EffectChannelList[a];
+                    //First 'll check for channel
+                    if (Bass.BASS_ChannelGetPosition(chnl) >= Bass.BASS_ChannelGetLength(chnl))
+                    {
+                        //Free chnl
+                        try
+                        {
+                            // .-.
+                            Bass.BASS_ChannelStop(chnl);
+                            Bass.BASS_StreamFree(chnl);
+                        }
+                        catch { }
+                        finally
+                        {
+                            EffectChannelList.Remove(chnl); //clean
+                        }
+                    }
+                }
             };
-            tm.Interval += 60*1000;
+            tm.Interval += 1000;
             tm.Start();
         }
 
-        public static void PlayEffect(int sample)
+        public static int PlayEffect(int sample)
         {
 
-            if(sample != 0)
+            if (sample != 0)
             {
 
                 int channel = Bass.BASS_SampleGetChannel(sample, false);
@@ -34,17 +54,31 @@ namespace kyun.Audio
                 Bass.BASS_ChannelSetAttribute(channel, BASSAttribute.BASS_ATTRIB_VOL, KyunGame.Instance.GeneralVolume);
                 Bass.BASS_ChannelPlay(channel, false);
 
-                Bass.BASS_StreamFree(channel);      
-                          
-            }
-            
+                Bass.BASS_StreamFree(channel);
 
-                
+
+            }
+
+            return sample;
+        }
+
+        public static int SetVelocity(int chnl, float vl)
+        {
+            float pbrate = vl * 100;
+            Bass.BASS_ChannelSetAttribute(chnl, BASSAttribute.BASS_ATTRIB_TEMPO, pbrate - 100);
+            return chnl;
+        }
+
+        public static int setEffect(int chnl, BASSFXType eff)
+        {
+
+            Bass.BASS_ChannelSetFX(chnl, eff, 1);
+            return chnl;
         }
 
         public static void StopAll()
         {
-            foreach(int chnl in EffectChannelList)
+            foreach (int chnl in EffectChannelList)
             {
                 Bass.BASS_ChannelStop(chnl);
                 Bass.BASS_StreamFree(chnl);

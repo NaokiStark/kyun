@@ -1,5 +1,6 @@
 ﻿using kyun.GameScreen;
 using kyun.GameScreen.UI;
+using kyun.Screen;
 using kyun.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -115,12 +116,12 @@ namespace kyun.game.GameScreen.UI
             
             Position = new Vector2(MouseHandler.GetState().Position.X + KyunGame.WinForm.Cursor.Size.Width / 2, MouseHandler.GetState().Position.Y + KyunGame.WinForm.Cursor.Size.Height / 2);
 
-            if(Position.Y + rectBorder.Texture.Height > Screen.ScreenModeManager.GetActualMode().Height)
+            if(Position.Y + rectBorder.Texture.Height > ScreenModeManager.GetActualMode().Height)
             {
                 Position = new Vector2(Position.X, MouseHandler.GetState().Position.Y - KyunGame.WinForm.Cursor.Size.Height);
             }
 
-            if(Position.X +  boxSize.X > Screen.ScreenModeManager.GetActualMode().Width)
+            if(Position.X +  boxSize.X > ScreenModeManager.GetActualMode().Width)
             {
                 Position = new Vector2(Position.X - boxSize.X - KyunGame.WinForm.Cursor.Size.Width, Position.Y);
             }

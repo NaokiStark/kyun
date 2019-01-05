@@ -74,9 +74,7 @@ namespace kyun.GameModes.Classic
         /// </summary>
         /// <param name="hitObject">HitObject</param>
         public HitSingle(IHitObj hitObject, IBeatmap beatmap, ClassicModeScreen Instance, int gridPosition, bool _shared = false)
-            : base((Screen.ScreenModeManager.GetActualMode().Height < 650 && Screen.ScreenModeManager.GetActualMode().Width < 1000) ?
-                  SpritesContent.Instance.ButtonDefault_0 :
-                  SpritesContent.Instance.ButtonDefault)
+            : base(SpritesContent.Instance.ButtonDefault)
         {
 
             shared = _shared;
@@ -174,7 +172,7 @@ namespace kyun.GameModes.Classic
                 return;
             }
 
-            bool intersecs = KyunGame.Instance.touchHandler.TouchIntersecs(new Rectangle((int)Position.X, (int)Position.Y, Texture.Height, Texture.Height));
+            bool intersecs = KyunGame.Instance.touchHandler.TouchIntersecs(new Rectangle((int)Position.X, (int)Position.Y, (int)Size.X, (int)Size.Y));
 
             if (screenInstance.GamePosition < Time - _beatmap.Timing50)
             {
@@ -287,9 +285,12 @@ namespace kyun.GameModes.Classic
                     break;
             }
 
+
+            screenInstance._scoreDisplay.CalcAcc(finalScore);
+
             screenInstance._particleEngine.AddNewScoreParticle(particle,
                 new Vector2(.05f),
-                new Vector2(screenInstance.imgGridBackground.Position.X + (screenInstance.imgGridBackground.Texture.Height / 2) - (particle.Width/2), screenInstance.imgGridBackground.Position.Y + (screenInstance.imgGridBackground.Texture.Height / 2) + (particle.Height + 10)*1.5f ),
+                new Vector2(screenInstance.imgGridBackground.Position.X + (screenInstance.imgGridBackground.Texture.Width / 2) - (particle.Width * RenderScale / 2), screenInstance.imgGridBackground.Position.Y + (screenInstance.imgGridBackground.Texture.Height / 2) + (particle.Height * RenderScale + 10)*1.5f ),
                 10,
                 0,
                 Color.White
@@ -304,12 +305,12 @@ namespace kyun.GameModes.Classic
                        );*/
 
             screenInstance._particleEngine.AddNewHitObjectParticle(Texture,
-               new Vector2(.05f),
+               new Vector2(2f),
                new Vector2(Position.X, Position.Y),
                10,
                0,
                Color.White
-               );
+               ).Opacity = .6f; 
 
             Died = true;
         }
@@ -395,16 +396,18 @@ namespace kyun.GameModes.Classic
             }
 
             ScreenMode mode = ScreenModeManager.GetActualMode();
-            bool isSmallRes = mode.Height < 600 && mode.Width < 1000;
+            //bool isSmallRes = mode.Height < 600 && mode.Width < 1000;
 
-            Texture2D txbtn = (isSmallRes) ? SpritesContent.Instance.ButtonDefault_0 : SpritesContent.Instance.ButtonDefault;
+            Texture2D txbtn = SpritesContent.Instance.ButtonDefault;
 
-            int x = (mode.Width / 2) + (txbtn.Bounds.Width + 20) * posXX;
-            int y = (mode.Height / 2) + (txbtn.Bounds.Height + 20) * posYY;
+            float scaling = ScreenModeManager.ScreenScaling();
+
+            int x = (mode.Width / 2) + (int)(txbtn.Bounds.Width * scaling + 20) * posXX;
+            int y = (mode.Height / 2) + (int)(txbtn.Bounds.Height * scaling + 20) * posYY;
 
 
-            x = x - (txbtn.Bounds.Width + 20) * 2 - (txbtn.Bounds.Width / 2);
-            y = y - (txbtn.Bounds.Height + 20) * 2 - (txbtn.Bounds.Height / 2);
+            x = x - (int)(txbtn.Bounds.Width * scaling + 20) * 2 - (int)(txbtn.Bounds.Width * scaling / 2);
+            y = y - (int)(txbtn.Bounds.Height * scaling + 20) * 2 - (int)(txbtn.Bounds.Height * scaling / 2);
             return new Vector2(x, y);
         }
 

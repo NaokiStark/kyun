@@ -43,9 +43,9 @@
             this.picCompiling = new System.Windows.Forms.PictureBox();
             this.label4 = new System.Windows.Forms.Label();
             this.pnPrincipal = new System.Windows.Forms.Panel();
+            this.btClear = new System.Windows.Forms.Button();
             this.pnCompiling = new System.Windows.Forms.Panel();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
-            this.btClear = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picCompiling)).BeginInit();
             this.pnPrincipal.SuspendLayout();
             this.pnCompiling.SuspendLayout();
@@ -90,12 +90,16 @@
             // 
             // lstArquivos
             // 
+            this.lstArquivos.AllowDrop = true;
             this.lstArquivos.FormattingEnabled = true;
             this.lstArquivos.ItemHeight = 16;
             this.lstArquivos.Location = new System.Drawing.Point(9, 64);
             this.lstArquivos.Name = "lstArquivos";
             this.lstArquivos.Size = new System.Drawing.Size(350, 180);
             this.lstArquivos.TabIndex = 4;
+            this.lstArquivos.SelectedIndexChanged += new System.EventHandler(this.lstArquivos_SelectedIndexChanged);
+            this.lstArquivos.DragDrop += new System.Windows.Forms.DragEventHandler(this.lstArquivos_DragDrop);
+            this.lstArquivos.DragEnter += new System.Windows.Forms.DragEventHandler(this.lstArquivos_DragEnter);
             // 
             // btOutput
             // 
@@ -204,6 +208,16 @@
             this.pnPrincipal.Size = new System.Drawing.Size(516, 307);
             this.pnPrincipal.TabIndex = 14;
             // 
+            // btClear
+            // 
+            this.btClear.Location = new System.Drawing.Point(365, 123);
+            this.btClear.Name = "btClear";
+            this.btClear.Size = new System.Drawing.Size(103, 24);
+            this.btClear.TabIndex = 12;
+            this.btClear.Text = "Clear";
+            this.btClear.UseVisualStyleBackColor = true;
+            this.btClear.Click += new System.EventHandler(this.btClear_Click);
+            // 
             // pnCompiling
             // 
             this.pnCompiling.Controls.Add(this.label4);
@@ -219,16 +233,6 @@
             this.backgroundWorker.WorkerReportsProgress = true;
             this.backgroundWorker.WorkerSupportsCancellation = true;
             this.backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DoWork);
-            // 
-            // btClear
-            // 
-            this.btClear.Location = new System.Drawing.Point(365, 123);
-            this.btClear.Name = "btClear";
-            this.btClear.Size = new System.Drawing.Size(103, 24);
-            this.btClear.TabIndex = 12;
-            this.btClear.Text = "Clear";
-            this.btClear.UseVisualStyleBackColor = true;
-            this.btClear.Click += new System.EventHandler(this.btClear_Click);
             // 
             // Form1
             // 

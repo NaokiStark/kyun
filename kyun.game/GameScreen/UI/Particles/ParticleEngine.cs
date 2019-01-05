@@ -70,7 +70,7 @@ namespace kyun.GameScreen.UI.Particles
 
         public Particle AddNewHitObjectParticle(Texture2D tx, Vector2 velocity, Vector2 startUpPosition, int timeToDie, float angleVelocity, Color pColor)
         {
-            HitObjectParticle particle = new HitObjectParticle(tx, velocity, startUpPosition, timeToDie, angleVelocity);
+            HitObjectParticle particle = new HitObjectParticle(tx, velocity, startUpPosition, timeToDie, angleVelocity) { TextureColor = pColor};
 
             if (!Settings1.Default.MyPCSucks)
                 particles.Add(particle);

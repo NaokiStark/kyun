@@ -17,6 +17,7 @@ using kyun.Overlay;
 using kyun.Video;
 using kyun.OsuUtils;
 using kyun.game;
+using kyun.game.GameScreen.UI;
 
 namespace kyun.GameModes.Classic
 {
@@ -82,9 +83,7 @@ namespace kyun.GameModes.Classic
                 Position = new Vector2(15, ActualScreenMode.Height - (SpritesContent.Instance.ButtonStandard.Height / 2) - 30),
             };
 
-            imgGridBackground = new GameScreen.UI.Image((ActualScreenMode.Height < 650 && ActualScreenMode.Width < 1000) ?
-                  SpritesContent.Instance.ClassicBackground_0 :
-                  SpritesContent.Instance.ClassicBackground);
+            imgGridBackground = new GameScreen.UI.Image(SpritesContent.Instance.ClassicBackground);
             imgGridBackground.BeatReact = false;
 
             imgGridBackground.Position = new Vector2((ActualScreenMode.Width / 2) - (imgGridBackground.Texture.Width / 2), (ActualScreenMode.Height / 2) - (imgGridBackground.Texture.Height / 2));
@@ -207,6 +206,7 @@ namespace kyun.GameModes.Classic
             Controls.Add(TitleLabel);
             Controls.Add(CoverImage);
             Controls.Add(backButton);
+            Controls.Add(UserBox.GetInstance());
             Controls.Add(fcRectangle);
             Controls.Add(tmProgress);
             Controls.Add(_comboDsp);
@@ -407,7 +407,7 @@ namespace kyun.GameModes.Classic
 
         private void clearObjects()
         {
-            Controls.RemoveAll(item => item is HitBase);
+            Controls.RemoveAll(isHitBase);
             objGrid.CleanUp();
         }
 

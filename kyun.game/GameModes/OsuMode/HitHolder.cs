@@ -8,46 +8,120 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using kyun.Score;
 using Microsoft.Xna.Framework.Input;
+using static kyun.GameScreen.ScreenBase;
 
 namespace kyun.GameModes.OsuMode
 {
     public class HitHolder : HitSingle
     {
 
-        bool holding;
+        public bool holding;
         private long leaveTime;
         private long position;
         private float porcent;
         private float length;
 
+        public bool Missed = false;
+
+        private bool replayhasmissed = false;
+
+        bool issuedKeypress = false;
+
+        MouseEvent lastMouse;
 
 
         public HitHolder(IHitObj hitObject, IBeatmap beatmap, OsuMode Instance, bool shared = false)
-            :base(hitObject, beatmap, Instance)
+            : base(hitObject, beatmap, Instance)
         {
-            Texture = (Screen.ScreenModeManager.GetActualMode().Height < 650 && Screen.ScreenModeManager.GetActualMode().Width < 1000) ?
-                  SpritesContent.Instance.ButtonHolder_0 :
-                  SpritesContent.Instance.ButtonHolder;
+            lastMouse = MouseHandler.GetState();
+            Texture = SpritesContent.Instance.CircleNoteHolder;
+            approachObj.Texture = SpritesContent.Instance.ApproachCircle;
+            // approachObj.Scale = Scale = Math.Min(Math.Max(Math.Abs(_beatmap.OverallDifficulty - 10), 1), 2) / 2;
+
+            float PlayfieldWidth = (int)((512f / 384f) * ((float)Screen.ScreenModeManager.GetActualMode().Height * .95f));
+            float CircleRadius = (PlayfieldWidth / 16f) * (1f - (0.7f * (_beatmap.CircleSize - 5f) / 5f));
+            float scaledCircle = (CircleRadius * 2) / 160;
+
+            approachObj.Scale = Scale = scaledCircle;
+            Size = new Vector2(150);
 
             if (shared)
                 approachObj.TextureColor = Color.Yellow;
             else
                 approachObj.TextureColor = Color.FromNonPremultiplied(255, 66, 11, 255);
 
+
+        }
+
+        internal override void HitSingle_Over(object sender, EventArgs e)
+        {
+            if (kbLast.IsKeyDown(Keys.X) && kbLast.IsKeyDown(Keys.Z) &&
+                lastMouse.LeftButton == ButtonState.Pressed && lastMouse.RightButton == ButtonState.Pressed && holding)
+            {
+                return;
+            }
+
+            KeyboardState kbstate = Keyboard.GetState();
+            MouseEvent mouseState = MouseHandler.GetState();
+
+            if (kbstate.IsKeyDown(Keys.X) || kbstate.IsKeyDown(Keys.Z) 
+                || mouseState.RightButton == ButtonState.Pressed || mouseState.LeftButton == ButtonState.Pressed)
+            {
+                if (kbstate.IsKeyDown(Keys.X) && !kbLast.IsKeyDown(Keys.X))
+                    makeClick();
+                else if (kbstate.IsKeyDown(Keys.Z) && !kbLast.IsKeyDown(Keys.Z))
+                    makeClick();
+                else if (mouseState.LeftButton == ButtonState.Pressed && lastMouse.LeftButton != ButtonState.Pressed)
+                    makeClick();
+                else if (mouseState.RightButton == ButtonState.Pressed && lastMouse.RightButton != ButtonState.Pressed)
+                    makeClick();
+            }
+            else
+            {
+                if (holding)
+                {
+                    mouseClicked = false;
+                }
+            }
+        }
+
+        internal virtual void makeClick()
+        {
+            if (!avaiableToClick)
+                return;
+
+            mouseClicked = true;
+        }
+
+        internal virtual void HitSingle_Click(object sender, EventArgs e)
+        {
+           
         }
 
         internal override void calculateScore()
         {
+            Died = true;
             base.calculateScore();
         }
 
+        public override void Update()
+        {
+            base.Update();
+            kbLast = Keyboard.GetState();
+            lastMouse = MouseHandler.GetState();
 
+        }
         internal override void updateLogic()
         {
-
+            if(EndTime - Time < 0)
+            {
+                EndTime = (long)(Time + (60000f / _beatmap.BPM));
+            }
 
             if ((screenInstance.gameMod & GameMod.Auto) == GameMod.Auto)
             {
+                
+
                 if (screenInstance.GamePosition > Time && !holding)
                 {
                     holding = true;
@@ -71,8 +145,38 @@ namespace kyun.GameModes.OsuMode
                 return;
             }
 
-            if (!IsFirst)
+            if ((screenInstance.gameMod & GameMod.Replay) == GameMod.Replay)
+            {
+                if (screenInstance.GamePosition > Time && !holding)
+                {
+                    holding = true;
+                    pressedTime = replayTime;
+                    playHitsound();
+                }
+
+                if (Missed && !replayhasmissed)
+                {
+                    replayhasmissed = true;
+                    Combo.Instance.Miss();
+                }
+
+                if (holding && screenInstance.GamePosition > EndTime)
+                {
+                    leaveTime = EndTime;
+                    calculateScore();
+                    Died = true;
+                }
+
+                position = EndTime - screenInstance.GamePosition;
+
+                position = (EndTime - Time) - position;
+
+                porcent = (float)position / (float)(EndTime - Time) * 100f;
+
                 return;
+            }
+
+
 
             position = EndTime - screenInstance.GamePosition;
 
@@ -80,31 +184,27 @@ namespace kyun.GameModes.OsuMode
 
             porcent = (float)position / (float)(EndTime - Time) * 100f;
 
-            bool intersecs = KyunGame.Instance.touchHandler.TouchIntersecs(new Rectangle((int)Position.X, (int)Position.Y, Texture.Height, Texture.Height));
 
-            Rectangle mouseRec = new Rectangle((int)MouseHandler.GetState().Position.X, (int)MouseHandler.GetState().Position.Y, 10, 10);
-            bool mouseH = mouseRec.Intersects(new Rectangle((int)Position.X, (int)Position.Y, (int)(Texture.Width * Scale), (int)(Texture.Height * Scale)));
-
-            bool kapressed = false;
-            bool kbpressed = false;
-
-            if(keyPressed != null)
+            if (IsFirst)
             {
-                kapressed = keyPressed.Exists(x => x == Keys.Z);
-                kbpressed = keyPressed.Exists(x => x == Keys.X);
+                avaiableToClick = true;
+            }
+            else
+            {
+                HitSingle fowrw = (HitSingle)screenInstance.HitObjects[Id - 1];
+                Rectangle fwRect = new Rectangle((int)fowrw.Position.X, (int)fowrw.Position.Y, (int)(fowrw.Size.X * Scale), (int)(fowrw.Size.Y * Scale));
+                Rectangle thisRect = new Rectangle((int)Position.X, (int)Position.Y, (int)(Size.X * Scale), (int)(Size.Y * Scale));
+
+                if (!fwRect.Intersects(thisRect))
+                {
+                    avaiableToClick = fowrw.Died;
+                }
             }
 
-            kapressed = !kapressed && Keyboard.GetState().IsKeyDown(Keys.Z);
-            kbpressed = !kbpressed && Keyboard.GetState().IsKeyDown(Keys.X);
-            bool kpressed = kapressed || kbpressed;
 
-            bool mousea = MouseHandler.GetState().LeftButton == ButtonState.Pressed;
-            bool mouseb = MouseHandler.GetState().RightButton == ButtonState.Pressed;
-            bool mousec = mousea || mouseb;
+            bool intersecs = mouseClicked;
 
-            mouseH = mouseH && (mousec || kpressed);
 
-            intersecs = intersecs || mouseH;
 
             if (screenInstance.GamePosition < Time - _beatmap.Timing50)
             {
@@ -112,27 +212,39 @@ namespace kyun.GameModes.OsuMode
                 return;
             }
 
-            if (intersecs && screenInstance.GamePosition > Time - _beatmap.Timing50)
+            if (screenInstance.GamePosition > Time && !holding)
             {
-                if (!holding)
-                    playHitsound();
 
-                pressed = holding = true;
+                holding = true;
+            }
+
+            if (intersecs && !pressed && screenInstance.GamePosition > Time - _beatmap.Timing50)
+            {
+
+                playHitsound();
+                pressed = true;
 
                 pressedTime = screenInstance.GamePosition;
-                
+
             }
-            
-            if(holding && screenInstance.GamePosition > EndTime)
+
+            if (screenInstance.GamePosition > EndTime)
             {
                 leaveTime = EndTime;
                 calculateScore();
             }
 
-            if(!holding && screenInstance.GamePosition > Time + _beatmap.Timing100)
+            if (pressed && holding && !intersecs && !Missed)
             {
-                leaveTime = screenInstance.GamePosition;
-                calculateScore();
+                Missed = true;
+                Combo.Instance.Miss();
+            }
+
+            if (!holding && screenInstance.GamePosition > Time + _beatmap.Timing100)
+            {
+                pressedTime = screenInstance.GamePosition;
+                Missed = true;
+                holding = true;
             }
 
 
@@ -140,53 +252,37 @@ namespace kyun.GameModes.OsuMode
 
         internal override ScoreType GetScore()
         {
-            float fillPerc = (((float)leaveTime - (float)Time) / (float)length) * 100f;
 
-            if (leaveTime > EndTime - _beatmap.Timing50)
+
+            if (pressedTime >= Time - _beatmap.Timing300 && pressedTime <= Time + _beatmap.Timing300 && !Missed)
             {
-                if (pressedTime >= Time - _beatmap.Timing300 && pressedTime <= Time + _beatmap.Timing300)
-                {
-                    //Perfect
-                    return Score.ScoreType.Perfect;
-                }
-                else if (pressedTime >= Time - _beatmap.Timing100 && pressedTime <= Time + _beatmap.Timing100)
-                {
-                    //Excellent
-                    return Score.ScoreType.Excellent;
-                }
-
-                else if (pressedTime >= Time - _beatmap.Timing50 && pressedTime <= Time + _beatmap.Timing50)
-                {
-                    //Bad
-                    return Score.ScoreType.Good;
-                }
+                //Perfect
+                if (Missed)
+                    return ScoreType.Excellent; //punish
                 else
-                {
-                    return Score.ScoreType.Miss;
-                }
+                    return Score.ScoreType.Perfect;
             }
-            else if (fillPerc <= 30)
+            else if (pressedTime >= Time - _beatmap.Timing100 && pressedTime <= Time + _beatmap.Timing100)
             {
-                return Score.ScoreType.Miss;
+                //Excellent
+                if (Missed)
+                    return ScoreType.Good;
+                else
+                    return ScoreType.Excellent;
+            }
+
+            else if (pressedTime >= Time - _beatmap.Timing50 && pressedTime <= Time + _beatmap.Timing50)
+            {
+                if (Missed)
+                    return ScoreType.Miss;
+                //Bad
+                return Score.ScoreType.Good;
             }
             else
             {
-                //rip?
-                if (pressedTime >= Time - _beatmap.Timing300 && pressedTime <= Time + _beatmap.Timing300)
-                {
-                    //ño
-                    return Score.ScoreType.Good;
-                }
-                else if (pressedTime >= Time - _beatmap.Timing50 && pressedTime <= Time + _beatmap.Timing50)
-                {
-                    //Bad
-                    return Score.ScoreType.Miss;
-                }
-                else
-                {
-                    return Score.ScoreType.Miss;
-                }
+                return Score.ScoreType.Miss;
             }
+
         }
 
         public override void Render()
@@ -200,36 +296,44 @@ namespace kyun.GameModes.OsuMode
                 ppeak = 1.4f;
             }
 
+            
+
             if (holding)
             {
-
+               
                 Texture2D fill = null;
                 fill = SpritesContent.Instance.Fill_1;
 
+                Color c = (pressed || (screenInstance.gameMod & GameMod.Auto) == GameMod.Auto || (screenInstance.gameMod & GameMod.Replay) == GameMod.Replay) ? Color.White : Color.Red;
 
 
 
                 float circlepresition = 1.07f;
+                Vector2 vpos = new Vector2(this.Position.X + (Texture.Width / 2),
+                            this.Position.Y + (Texture.Height / 2));
+                Vector2 vcent = new Vector2(fill.Width / 2, fill.Height / 2);
+
                 for (float a = 0; a < porcent;)
                 {
                     a += circlepresition;
                     float circle = (float)(Math.PI * 2d);
                     float cp = circle * (a - circlepresition) / 100;
 
-                    if ((int)a % 4 != 0)
+                    //if ((int)a % 2 != 0)
+                    //if(true)
+                    if (true)
                     {
                         KyunGame.Instance.SpriteBatch.Draw(fill,
-                            new Vector2(this.Position.X + (Texture.Width / 2),
-                            this.Position.Y + (Texture.Height / 2)),
+                            vpos,
                             null,
-                            (pressed || (screenInstance.gameMod & GameMod.Auto) == GameMod.Auto) ? Color.White : Color.Red,
+                            c,
                             cp,
-                            new Vector2(fill.Width / 2, fill.Height / 2),
-                            ppeak,
+                            vcent,
+                            ppeak * Scale * 1.1f,
                             SpriteEffects.None, 0);
                     }
 
-
+                    /*
                     if (a - circlepresition <= 0)
                     {
 
@@ -240,9 +344,11 @@ namespace kyun.GameModes.OsuMode
                             Color.White,
                             0,
                             new Vector2(SpritesContent.Instance.FillStartEnd.Width / 2, SpritesContent.Instance.FillStartEnd.Height / 2),
-                            ppeak,
+                            ppeak * Scale,
                             SpriteEffects.None, 0);
                     }
+
+                    
                     if (porcent <= a && (int)porcent < 96)
                     {
                         float cc = cp + 0.25f;
@@ -253,27 +359,19 @@ namespace kyun.GameModes.OsuMode
                             Color.White,
                             cc,
                             new Vector2(SpritesContent.Instance.FillStartEnd.Width / 2, SpritesContent.Instance.FillStartEnd.Height / 2),
-                            ppeak,
+                            ppeak * Scale,
                             SpriteEffects.None, 0);
-                    }
+                    }*/
                 }
 
                 float cpeak = Math.Max(Math.Min(ppeak, .3f), 0.2f);
 
+                
 
-                KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.Radiance,
-                       new Vector2(this.Position.X - ((Texture.Width * Math.Max(ppeak, .9f)) - Texture.Width) / 2,
-                       this.Position.Y - ((Texture.Height * Math.Max(ppeak, .9f)) - Texture.Height) / 2),
-                       null,
-                       ((pressed || (screenInstance.gameMod & GameMod.Auto) == GameMod.Auto) ? Color.White : Color.Red) * cpeak,
-                       0,
-                       Vector2.Zero,
-                       Math.Max(ppeak, .9f),
-                       SpriteEffects.None, 0);
-                //Scale = Math.Max(0.99f, Math.Min(ppeak / 1.2f, 1.04f));
             }
-
-
+           
+            
+           
 
             base.Render();
         }

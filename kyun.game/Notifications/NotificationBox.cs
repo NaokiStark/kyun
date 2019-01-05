@@ -10,6 +10,8 @@ namespace kyun.Notifications
     {
         public Rectangle Size { get { return rectng.Texture.Bounds; } }
 
+        bool leaving = false;
+
         public NotificationBox(string text, int milliseconds = 5000, NotificationType type = NotificationType.Info)
         {
             displayLabel = new Label(0);
@@ -79,16 +81,39 @@ namespace kyun.Notifications
             Click?.Invoke(this, e); //Fuck this again
         }
 
+        public new void FadeIn(AnimationEffect effect, int duration, Action complete) {
+            rectng.FadeOut(effect, 400, complete);
+            rectBorder.FadeOut(effect, 400);
+            displayLabel.FadeOut(effect, 400);
+        }
+
+        public new void FadeOut(AnimationEffect effect, int duration, Action complete)
+        {
+            rectng.FadeOut(effect, 400, complete);
+            rectBorder.FadeOut(effect, 400);
+            displayLabel.FadeOut(effect, 400);
+        }
+
         public override void Update()
         {
-            //base.Update(); //Events
+            base.Update(); //Events
 
             if (!Visible) return;
 
             RemainingMilliseconds -= KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds;
             
             if(RemainingMilliseconds < 0)
-                Dispose();
+            {
+                if (!leaving)
+                {
+                    FadeOut(AnimationEffect.Linear, 400, () => {
+                        Dispose();
+                    });
+                   
+                    leaving = true;
+                } 
+            }
+                
 
             rectng.Position = Position;
             displayLabel.Position = new Vector2(Position.X + 10, Position.Y + 5);

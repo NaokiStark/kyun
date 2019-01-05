@@ -21,7 +21,7 @@ namespace kyun.GameScreen
 
         public void LoadInterface()
         {
-            Controls = new List<UIObjectBase>();
+            //Controls = new HashSet<UIObjectBase>();
 
             //ñam ñam
             ScreenMode actualMode = ScreenModeManager.GetActualMode();
@@ -41,7 +41,8 @@ namespace kyun.GameScreen
             comboLang.Items.Add("English");
             comboLang.Tooltip = new Tooltip
             {
-                Text = "Your language."
+                Text = "Your language.",
+                
             };
             //comboLang.Items.Add("Español");
 
@@ -151,10 +152,11 @@ namespace kyun.GameScreen
                     center.X,
                     checkFullScr.Position.Y + globalMarginBottom + SpritesContent.Instance.SettingsFont.MeasureString("a").Y + 5);
 
+            
             checkVSync.Checked = Settings1.Default.VSync;
             checkVSync.Tooltip = new Tooltip
             {
-                Text = "Toggle VSync mode: When enabled, the frame rate will be set to the maximum that your graphics card supports in Vertical Sync mode, to avoid famous \"Flickering\". Note: this will reduce precision adding more milliseconds between frames."
+                Text = "Toggle VSync mode: When enabled, the frame rate will be set to the maximum that your graphics card supports in Vertical Sync mode, to avoid famous \"Tearing\". Note: this will reduce precision adding more milliseconds between frames."
             };
             checkVSync.CheckChanged += CheckVSync_CheckChanged;
 
@@ -215,16 +217,30 @@ namespace kyun.GameScreen
             checkSoftwareRender.Position = new Vector2(
                     center.X,
                     checkMyPCSucks.Position.Y + globalMarginBottom + SpritesContent.Instance.SettingsFont.MeasureString("a").Y + 5);
-            checkSoftwareRender.Checked = Settings1.Default.WindowsRender;
-            checkSoftwareRender.Tooltip = new Tooltip
-            {
-                Text = "PLEASE DON'T CHECK THIS."
-            };
 
-            checkSoftwareRender.CheckChanged += CheckSoftwareRender_CheckChanged; ;
+            if (GraphicsAdapter.DefaultAdapter.IsProfileSupported(GraphicsProfile.HiDef))
+            {
+                checkSoftwareRender.Checked = Settings1.Default.Shaders;
+                checkSoftwareRender.Tooltip = new Tooltip
+                {
+                    Text = "Toggles Shaders effects (Chromatic aberration and more stuff related)."
+                };
+
+                checkSoftwareRender.CheckChanged += CheckSoftwareRender_CheckChanged; 
+            }
+            else
+            {
+                checkSoftwareRender.Checked = false;
+                checkSoftwareRender.Tooltip = new Tooltip
+                {
+                    Text = "Your graphics card doesn't support shaders, sorry."
+                };
+                
+            }
+           
 
             lcheckSoftwareRender = new Label();
-            lcheckSoftwareRender.Text = "Software Rendering";
+            lcheckSoftwareRender.Text = "Shaders";
             lcheckSoftwareRender.Font = SpritesContent.Instance.SettingsFont;
             lcheckSoftwareRender.Size = SpritesContent.Instance.SettingsFont.MeasureString(lcheckSoftwareRender.Text) + new Vector2(20, 10);
             lcheckSoftwareRender.Position = new Vector2(center.X - lcheckSoftwareRender.Size.X - 10, checkSoftwareRender.Position.Y);
@@ -360,7 +376,6 @@ namespace kyun.GameScreen
             Controls.Add(lSkin);
 
 
-            KyunGame.Instance.IsMouseVisible = true;
 
             OnLoadScreen();
         }
@@ -381,9 +396,9 @@ namespace kyun.GameScreen
         {
             bool actualValue = ((CheckBox)sender).Checked;
             
-            Settings1.Default.WindowsRender = actualValue;
+            Settings1.Default.Shaders = actualValue;
             Settings1.Default.Save();
-            notifier.ShowDialog("You need to restart to apply this change.");
+            notifier.ShowDialog("kyun! needs restart to apply this change.");
         }
 
         private void CheckMyPCSucks_CheckChanged(object sender, EventArgs e)
@@ -480,8 +495,8 @@ namespace kyun.GameScreen
             {
                 combodisplayMode.Items.Add(
                     string.Format("({0}x{1}){2}",
-                    mode.Width,
-                    mode.Height,
+                    mode.ScaledWidth,
+                    mode.ScaledHeight,
                     (mode.WindowMode == WindowDisposition.Borderless) ? "[Borderless]" : "[Windowed]")
                 );
             }

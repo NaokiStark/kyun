@@ -31,9 +31,7 @@ namespace kyun.GameModes.Classic
             :base(hitObject, beatmap, Instance, gridPosition)
         {
             shared = _shared;
-            Texture = (Screen.ScreenModeManager.GetActualMode().Height < 650 && Screen.ScreenModeManager.GetActualMode().Width < 1000) ?
-                  SpritesContent.Instance.ButtonHolder_0 :
-                  SpritesContent.Instance.ButtonHolder;
+            Texture = SpritesContent.Instance.ButtonHolder;
 
             if (shared)
                 approachObj.TextureColor = Color.Yellow;
@@ -289,8 +287,8 @@ namespace kyun.GameModes.Classic
                     if((int)a % 4 != 0)
                     {
                         KyunGame.Instance.SpriteBatch.Draw(fill,
-                            new Vector2(this.Position.X + (Texture.Width / 2),
-                            this.Position.Y + (Texture.Height / 2)),
+                            new Vector2(this.Position.X + (Size.X / 2),
+                            this.Position.Y + (Size.Y / 2)),
                             null,
                             (pressed || (screenInstance.gameMod & GameMod.Auto) == GameMod.Auto) ? Color.White : Color.Red,
                             cp,
@@ -304,8 +302,8 @@ namespace kyun.GameModes.Classic
                     {
 
                         KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.FillStartEnd,
-                            new Vector2(this.Position.X + (Texture.Width / 2),
-                            this.Position.Y + (Texture.Height / 2)),
+                            new Vector2(this.Position.X + (Size.X / 2),
+                            this.Position.Y + (Size.Y / 2)),
                             null,
                             Color.White,
                             0,
@@ -317,8 +315,8 @@ namespace kyun.GameModes.Classic
                     {
                         float cc = cp + 0.25f;
                         KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.FillStartEnd,
-                            new Vector2(this.Position.X + (Texture.Width / 2),
-                            this.Position.Y + (Texture.Height / 2)),
+                            new Vector2(this.Position.X + (Size.X/ 2),
+                            this.Position.Y + (Size.Y / 2)),
                             null,
                             Color.White,
                             cc,
@@ -332,8 +330,8 @@ namespace kyun.GameModes.Classic
 
 
                 KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.Radiance,
-                       new Vector2(this.Position.X - ((Texture.Width * Math.Max(ppeak,.9f)) - Texture.Width) / 2,
-                       this.Position.Y - ((Texture.Height * Math.Max(ppeak, .9f)) - Texture.Height) / 2),
+                       new Vector2(this.Position.X - ((Size.X * Math.Max(ppeak,.9f)) - Size.X) / 2,
+                       this.Position.Y - ((Size.Y * Math.Max(ppeak, .9f)) - Size.Y) / 2),
                        null,
                        ((pressed || (screenInstance.gameMod & GameMod.Auto) == GameMod.Auto) ? Color.White : Color.Red) * cpeak,
                        0,

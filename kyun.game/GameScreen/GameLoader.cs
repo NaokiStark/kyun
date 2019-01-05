@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using kyun.Utils;
 using kyun.GameScreen.UI;
 using Redux.Utilities.Managers;
+using System.IO;
 
 namespace kyun.game.GameScreen
 {
@@ -35,6 +36,9 @@ namespace kyun.game.GameScreen
         private Label beatmapDisplayLabel;
         private Label detailsLabel;
         private Image coverimg;
+
+        public Image ImgTip { get; }
+
         BeatmapScreen BmScr;
 
         bool loading { get; set; }
@@ -43,7 +47,7 @@ namespace kyun.game.GameScreen
         {
             BmScr = (BeatmapScreen)BeatmapScreen.Instance;
             Background = SpritesContent.Instance.DefaultBackground;
-            BackgroundDim = .9f;
+            BackgroundDim = .5f;
             AllowVideo = true;
 
             loadingLabel = new Label(0)
@@ -74,14 +78,22 @@ namespace kyun.game.GameScreen
             coverimg = new Image(SpritesContent.Instance.DefaultBackground)
             {
                 Position = new Vector2(ActualScreenMode.Width / 2 - BmScr.coverSize / 2, loadingLabel.Position.Y - BmScr.coverSize / 2 ),
-                Texture = BmScr.coverimg.Texture,
+                //Texture = BmScr.coverimg.Texture,
                 BeatReact = false
             };
+
+            ImgTip = new Image(SpritesContent.Instance.CatchTip);
+
+            ImgTip.Position = new Vector2(ActualScreenMode.Width/2 - SpritesContent.Instance.CatchTip.Width / 2, detailsLabel.Position.Y + detailsLabel.Font.MeasureString("a").Y * .5f * 2 + 10);
+            ImgTip.BeatReact = false;
+            ImgTip.Scale = .7f;
+
 
             Controls.Add(loadingLabel);
             Controls.Add(beatmapDisplayLabel);
             Controls.Add(detailsLabel);
             Controls.Add(coverimg);
+            Controls.Add(ImgTip);
 
             onKeyPress += (e, args) =>
             {
@@ -98,6 +110,68 @@ namespace kyun.game.GameScreen
             };
         }
 
+        private void ChangeImgDisplay(string image)
+        {
+            int coverSize = 300;
+
+            coverimg.Position = new Vector2(ActualScreenMode.Width / 2 - coverSize / 2, loadingLabel.Position.Y - coverSize / 2);
+
+            System.Drawing.Image cimg = null;
+
+            if (!File.Exists(image))
+            {
+                if (SpritesContent.Instance.CroppedBg == null)
+                {
+                    using (FileStream ff = File.Open(SpritesContent.Instance.defaultbg, FileMode.Open))
+                    {
+                        cimg = System.Drawing.Image.FromStream(ff);
+                        SpritesContent.Instance.CroppedBg = cimg;
+                    }
+
+                }
+
+            }
+            else if (File.GetAttributes(image) == FileAttributes.Directory)
+            {
+                if (SpritesContent.Instance.CroppedBg == null)
+                {
+                    using (FileStream ff = File.Open(SpritesContent.Instance.defaultbg, FileMode.Open))
+                    {
+                        cimg = System.Drawing.Image.FromStream(ff);
+                        SpritesContent.Instance.CroppedBg = cimg;
+                    }
+
+                }
+            }
+            else
+            {
+                cimg = System.Drawing.Image.FromFile(image);
+            }
+
+            if (cimg == null)
+            {
+                cimg = SpritesContent.Instance.CroppedBg;
+            }
+
+
+            System.Drawing.Bitmap cbimg = SpritesContent.ResizeImage(cimg, (int)(((float)cimg.Width / (float)cimg.Height) * coverSize), (int)coverSize);
+
+            System.Drawing.Bitmap ccbimg;
+            MemoryStream istream;
+            if (true)
+            {
+                ccbimg = SpritesContent.cropAtRect(cbimg, new System.Drawing.Rectangle((int)((cbimg.Width - coverSize) / 2), (int)((cbimg.Height - coverSize / 2.2f) / 2f), (int)coverSize, (int)(coverSize / 2.2f)));
+                istream = SpritesContent.BitmapToStream(ccbimg);
+            }
+            else
+            {
+                istream = SpritesContent.BitmapToStream(cbimg);
+            }
+
+            coverimg.Texture = SpritesContent.RoundCorners(ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, istream), 5);
+
+        }
+
         /// <summary>
         /// Loads and execute game
         /// </summary>
@@ -105,16 +179,39 @@ namespace kyun.game.GameScreen
         /// <param name="gameScreen"></param>
         public void LoadBeatmapAndRun(IBeatmap beatmap, GameModeScreenBase gameScreen, GameMod mods = GameMod.None)
         {
-            
+
+            if(gameScreen is GameModes.CatchIt.CatchItMode)
+            {
+                ImgTip.Texture = SpritesContent.Instance.CatchTip;
+                ImgTip.Visible = true;
+            }
+            else if(gameScreen is kyun.GameModes.OsuMode.OsuMode)
+            {
+                ImgTip.Texture = SpritesContent.Instance.OsuTip;
+                ImgTip.Visible = true;
+            }
+            else
+            {
+                ImgTip.Visible = false; 
+            }
+
+            ChangeImgDisplay(beatmap.Background);
+
+            if (File.Exists(beatmap.Background))
+                Background = SpritesContent.ToGaussianBlur(System.Drawing.Bitmap.FromFile(beatmap.Background) as System.Drawing.Bitmap, 10);
+            else
+                Background = SpritesContent.Instance.DefaultBackground;
+
+
             loading = false;
             countToRun = 0;
             _beatmap = beatmap;
             _gameScreen = gameScreen;
             _mods = mods;
 
-            beatmapDisplayLabel.Text = $"{_beatmap.Artist} - {_beatmap.Title}";
+            beatmapDisplayLabel.Text = StringHelper.WrapText(beatmapDisplayLabel.Font, $"{_beatmap.Artist} - {_beatmap.Title}", ActualScreenMode.Width - 200);
             detailsLabel.Text = $"Difficulty: {_beatmap.Version}\r\nBy {_beatmap.Creator}";
-            coverimg.Texture = BmScr.coverimg.Texture;
+            //coverimg.Texture = BmScr.coverimg.Texture;
             //Start update
             KyunGame.Instance.KeyBoardManager.Enabled = false;
             ScreenManager.ChangeTo(this);
@@ -158,8 +255,13 @@ namespace kyun.game.GameScreen
             }
             catch (Exception ex)
             {
+                //Log error
+                Logger.Instance.Warn($"{ex.Message}, \r\n\r\nStackTrace: \r\n\r\n{ex.StackTrace}");
+
                 //Corrupted?
                 ScreenManager.ChangeTo(BeatmapScreen.Instance);
+                KyunGame.Instance.Notifications.ShowDialog("Ups, beatmap corrupted, check log for more info.");
+
             }
         }
     }

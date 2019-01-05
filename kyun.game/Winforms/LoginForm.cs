@@ -60,7 +60,7 @@ namespace kyun.game.Winforms
 
         private void regbtn_Click(object sender, EventArgs e)
         {
-            Process.Start("https://onics.club/register");
+            Process.Start("https://mokyu.pw/register");
         }
 
         private void logoutbtn_Click(object sender, EventArgs e)

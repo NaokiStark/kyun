@@ -92,7 +92,7 @@ namespace kyun.GameScreen.UI
             EffectsPlayer.PlayEffect(SpritesContent.Instance.ScrollHit);
             if (!Up)
             {
-                if (vertOffset + (maxCanHold / 2) > Items.Count) return;
+                if (vertOffset + (maxCanHold / 2) > Items.Beatmaps.Count) return;
 
                 vertOffset += 3;
             }
@@ -146,7 +146,7 @@ namespace kyun.GameScreen.UI
             {
                 //oops
 
-                object o = Items[i].Version;
+                object o = Items.Beatmaps[i].Version;
                 float oLength = textFont.MeasureString(o.ToString()).X;
                 int numChars = (int)(oLength / length);
                 if (numChars > numCharsAllowed)
@@ -183,7 +183,7 @@ namespace kyun.GameScreen.UI
 
             for (int i = 0; i < maxCanHold && i + vertOffset < Items.Count; i++)
             {
-                string o2 = Items[i + vertOffset].Version;
+                string o2 = Items.Beatmaps[i + vertOffset].Version;
                 string o = "";
                 for (int a = horizontalOffset; a < o2.Length && a < maxCharsCanHold + horizontalOffset; a++)
                 {
@@ -202,7 +202,7 @@ namespace kyun.GameScreen.UI
                 }
 
 
-                KyunGame.Instance.SpriteBatch.DrawString(textFont, o, drawTextPos, textColor, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0);
+                KyunGame.Instance.SpriteBatch.DrawString(textFont, o, drawTextPos, textColor, 0f, Vector2.Zero, RenderScale, SpriteEffects.None, 0);
 
                 startBoxPos.Y += perEntryHeight;
                 drawTextPos.Y += perEntryHeight;
@@ -253,7 +253,7 @@ namespace kyun.GameScreen.UI
             if (autoAdjust)
             {
                 float maxWidth = 0;
-                foreach (ubeatBeatMap o in Items)
+                foreach (ubeatBeatMap o in Items.Beatmaps)
                 {
                     string r = o.Version;
                     //Vector2 size = textFont.MeasureString(r);

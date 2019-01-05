@@ -44,7 +44,7 @@ namespace kyun.GameScreen.UI
             
             if (Uping && Scale < 1.5f)
             {
-                Scale = Math.Min(Scale + (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f), 1.5f);
+                Scale = Math.Min(Scale + (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f), 1.1f);
             }
             else if (!Uping && Scale > 1f)
             {
@@ -65,14 +65,14 @@ namespace kyun.GameScreen.UI
             if (System.Windows.Forms.Form.ActiveForm != KyunGame.WinForm) return;
 
             if (!KyunGame.Instance.IsActive) return; //Fix events
-
+            updateScale();
             if (cursor.Intersects(rg) && !alredyIntersecs)
             {
                 alredyIntersecs = true;
                 Uping = true;
-                updateScale();
+                
 
-                if (!alredyIntersecs)
+                if (alredyIntersecs)
                 {
                     //AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.ButtonOver);
                     EffectsPlayer.PlayEffect(SpritesContent.Instance.ButtonOver);
@@ -83,8 +83,7 @@ namespace kyun.GameScreen.UI
             {
                 Uping = false;                            
                 alredyIntersecs = false;
-                if(Scale > 1f)
-                    updateScale();
+
             }
         }
     }

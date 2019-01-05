@@ -13,6 +13,9 @@ using kyun.game.GameModes;
 using kyun.GameModes.OsuMode;
 using kyun.game.GameModes.CatchIt;
 using kyun.game.GameScreen;
+using kyun.game.GameModes.CatchItCollab;
+using kyun.game.GameScreen.UI.Scoreboard;
+using kyun.game.Overlay;
 
 namespace kyun.GameScreen
 {
@@ -20,7 +23,8 @@ namespace kyun.GameScreen
     {
 
         static IScreen instance = null;
-        public static IScreen Instance {
+        public static IScreen Instance
+        {
             get
             {
                 if (instance == null)
@@ -28,9 +32,9 @@ namespace kyun.GameScreen
                     instance = new BeatmapScreen();
                     ((BeatmapScreen)instance).Random();
                 }
-                    
+
                 KyunGame.Instance.KeyBoardManager.Enabled = true;
-               
+
                 return instance;
             }
             set
@@ -39,30 +43,50 @@ namespace kyun.GameScreen
             }
         }
 
-       
+
         public Listbox lbox;
-        ListboxDiff lBDff;
+        internal ListboxDiff lBDff;
         FilledRectangle filledRect1;
         Label lblTitleDesc = new Label();
+        private Image topBarBase;
+        private Image topBarTail;
         ButtonStandard autoBtn;
 
         bool AMode = false;
 
         public void LoadInterface()
         {
-            KyunGame.Instance.IsMouseVisible = true;
-            Controls = new List<UIObjectBase>();
+            //KyunGame.Instance.IsMouseVisible = true;
+            //Controls = new HashSet<UIObjectBase>(); Alredy in Base
 
             ScreenMode actualMode = ScreenModeManager.GetActualMode();
 
-            lblTitleDesc = new Label(.8f)
+            // === FIX THIS SHAPE ===
+            
+            lblTitleDesc = new Label(0)
             {
                 Scale = 1f,
                 Text = "",
-                Position = new Vector2(0, 0),
-                Size = new Vector2(actualMode.Width, 50),
+                Position = new Vector2(SpritesContent.Instance.BeatmapBarBase.Height + 5, 0),
+                //Size = new Vector2(actualMode.Width, 50),
                 Font = SpritesContent.Instance.StandardButtonsFont
             };
+
+            topBarBase = new Image(SpritesContent.Instance.BeatmapBarBase)
+            {
+                Position = Vector2.Zero,
+                Size = new Vector2(actualMode.Width - 512, SpritesContent.Instance.BeatmapBarBase.Height),
+                BeatReact = false
+            };
+
+            topBarTail = new Image(SpritesContent.Instance.BeatmapBarTail)
+            {
+                Position = new Vector2(actualMode.Width - 512, 0),
+                BeatReact = false
+            };
+
+
+            // ========= DELETE THIS ============
 
             filledRect1 = new FilledRectangle(new Vector2(actualMode.Width, 4), Color.FromNonPremultiplied(34, 92, 173, 255));
             filledRect1.Position = new Vector2(0, lblTitleDesc.Size.Y);
@@ -73,61 +97,43 @@ namespace kyun.GameScreen
             filledRectBottomClr = new FilledRectangle(new Vector2(actualMode.Width, 4), Color.FromNonPremultiplied(34, 92, 173, 255));
             filledRectBottomClr.Position = filledRectBottom.Position;
 
-            Vector2 lPos = new Vector2(0, lblTitleDesc.Size.Y + filledRect1.Texture.Height - 5);
+            // ========= DELETE THIS ============
 
-            lbox = new Listbox(lPos, 400, actualMode.Height - filledRectBottom.Texture.Height - 80, SpritesContent.Instance.SettingsFont);
-            
+            // cover image
+
+            coverImage = new Image(SpritesContent.Instance.DefaultBackground)
+            {
+                Position = new Vector2(2,2),
+                BeatReact = false
+            };
+
+            Vector2 lPos = new Vector2(0, topBarBase.Texture.Height);
+
+            lbox = new Listbox(lPos, 400, actualMode.Height - topBarBase.Texture.Height - 80, SpritesContent.Instance.SettingsFont);
+
             lbox.IndexChanged += lbox_IndexChanged;
 
             lbox.autoAdjust = false;
 
-            songDescImg = new Image(SpritesContent.Instance.SongDescBox) {
+            songDescImg = new Image(SpritesContent.Instance.SongDescBox)
+            {
                 Position = new Vector2(actualMode.Width - SpritesContent.Instance.SongDescBox.Width, lblTitleDesc.Size.Y + filledRect1.Texture.Height),
                 BeatReact = false
             };
 
-
-            coverSize = songDescImg.Texture.Width - 50;
-
-            System.Drawing.Image cimg = null;
-
-            if (SpritesContent.Instance.CroppedBg == null)
+            songListDiffImg = new Image(SpritesContent.Instance.DiffSelector)
             {
-                using (FileStream ff = File.Open(SpritesContent.Instance.defaultbg, FileMode.Open))
-                {
-                    cimg = System.Drawing.Image.FromStream(ff);
-                    SpritesContent.Instance.CroppedBg = cimg;
-                }
-
-            }
-
-            if (cimg == null)
-            {
-                cimg = SpritesContent.Instance.CroppedBg;
-            }
-
-            System.Drawing.Bitmap cbimg = SpritesContent.ResizeImage(cimg, (int)(((float)cimg.Width / (float)cimg.Height) * coverSize), (int)coverSize);
-
-            System.Drawing.Bitmap ccbimg;
-            MemoryStream istream;
-            if (true)
-            {
-                ccbimg = SpritesContent.cropAtRect(cbimg, new System.Drawing.Rectangle((int)((cbimg.Width - coverSize) / 2), (int)((cbimg.Height - coverSize / 2.2f) / 2f), (int)coverSize, (int)(coverSize / 2.2f)));
-                istream = SpritesContent.BitmapToStream(ccbimg);
-            }
-            else
-            {
-                istream = SpritesContent.BitmapToStream(cbimg);
-            }
-
-            coverimg = new Image(SpritesContent.RoundCorners(ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, (Stream)istream), 5))
-            {
-                BeatReact = false,
-                Position = new Vector2(songDescImg.Position.X + (songDescImg.Texture.Width / 2 - coverSize/2) , songDescImg.Position.Y + 20),
+                Position = new Vector2(SpritesContent.Instance.ScrollListBeatmap_alt.Width + 20, actualMode.Height / 2 - (SpritesContent.Instance.DiffSelector.Height / 2)),
+                BeatReact = false
             };
+            
 
 
-            lBDff = new ListboxDiff(new Vector2(songDescImg.Position.X + 15, songDescImg.Position.Y + 30 + coverimg.Texture.Height), songDescImg.Texture.Width - 5 , songDescImg.Texture.Height - coverimg.Texture.Height - 30, SpritesContent.Instance.SettingsFont);
+            lBDff = new ListboxDiff(
+                new Vector2(songListDiffImg.Position.X + 15, songListDiffImg.Position.Y + 15),
+                songListDiffImg.Texture.Width - 5,
+                songListDiffImg.Texture.Height,
+                SpritesContent.Instance.SettingsFont);
 
 
             lblSearch = new Label(0f)
@@ -139,6 +145,8 @@ namespace kyun.GameScreen
                 Font = SpritesContent.Instance.SettingsFont
             };
 
+            int buttonSpace = 20;
+
             btnStart = new ButtonStandard(Color.DarkOliveGreen)
             {
                 Position = new Vector2(actualMode.Width - SpritesContent.Instance.ButtonStandard.Width - 20, (filledRectBottom.Position.Y + 75 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
@@ -146,8 +154,9 @@ namespace kyun.GameScreen
                 ForegroundColor = Color.White
             };
 
-            autoBtn = new ButtonStandard(Color.DimGray) {
-                Position = new Vector2(btnStart.Position.X - SpritesContent.Instance.ButtonStandard.Width - 50, (filledRectBottom.Position.Y + 75 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
+            autoBtn = new ButtonStandard(Color.DimGray)
+            {
+                Position = new Vector2(btnStart.Position.X - SpritesContent.Instance.ButtonStandard.Width - buttonSpace, (filledRectBottom.Position.Y + 75 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
 
                 //Scale=.85f,
                 ForegroundColor = Color.White,
@@ -157,7 +166,7 @@ namespace kyun.GameScreen
 
             doubleBtn = new ButtonStandard(Color.DimGray)
             {
-                Position = new Vector2(autoBtn.Position.X - SpritesContent.Instance.ButtonStandard.Width - 50, (filledRectBottom.Position.Y + 75 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
+                Position = new Vector2(autoBtn.Position.X - SpritesContent.Instance.ButtonStandard.Width - buttonSpace, (filledRectBottom.Position.Y + 75 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
 
                 //Scale=.85f,
                 ForegroundColor = Color.White,
@@ -167,7 +176,7 @@ namespace kyun.GameScreen
 
             randomBtn = new ButtonStandard(Color.Aquamarine)
             {
-                Position = new Vector2(doubleBtn.Position.X - SpritesContent.Instance.ButtonStandard.Width - 50, (filledRectBottom.Position.Y + 75 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
+                Position = new Vector2(doubleBtn.Position.X - SpritesContent.Instance.ButtonStandard.Width - buttonSpace, (filledRectBottom.Position.Y + 75 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
 
                 //Scale=.85f,
                 ForegroundColor = Color.White,
@@ -177,17 +186,17 @@ namespace kyun.GameScreen
 
             osuModeBtn = new ButtonStandard(Color.DimGray)
             {
-                Position = new Vector2(randomBtn.Position.X - SpritesContent.Instance.ButtonStandard.Width - 50, (filledRectBottom.Position.Y + 75 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
+                Position = new Vector2(randomBtn.Position.X - SpritesContent.Instance.ButtonStandard.Width - buttonSpace, (filledRectBottom.Position.Y + 75 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
 
                 //Scale=.85f,
                 ForegroundColor = Color.White,
-                Caption = "CatchIt!"
+                Caption = "Modes"
 
             };
 
             osuModeBtn2 = new ButtonStandard(Color.DimGray)
             {
-                Position = new Vector2(osuModeBtn.Position.X - SpritesContent.Instance.ButtonStandard.Width - 50, (filledRectBottom.Position.Y + 75 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
+                Position = new Vector2(osuModeBtn.Position.X - SpritesContent.Instance.ButtonStandard.Width - buttonSpace, (filledRectBottom.Position.Y + 75 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
 
                 //Scale=.85f,
                 ForegroundColor = Color.White,
@@ -196,12 +205,45 @@ namespace kyun.GameScreen
             };
 
 
+            _scoreboard = Scoreboard.Instance;
+
+            _scoreboard.Position = new Vector2(actualMode.Width - _scoreboard.Size.X, 100);
 
             backButton = new ButtonStandard(Color.DarkRed)
             {
                 ForegroundColor = Color.White,
                 Caption = "Back",
-                Position = new Vector2(15, (filledRectBottom.Position.Y + 75/2) - (SpritesContent.Instance.ButtonStandard.Height/2)),
+                Position = new Vector2(15, (filledRectBottom.Position.Y + 75 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
+            };
+
+
+            // Label SortBy
+            lblSortBy = new Label()
+            {
+                Position = new Vector2(actualMode.Width - 192, 40),
+                Text = "Sort by:",
+                Font = SpritesContent.Instance.GeneralBig,
+                RoundCorners = true
+            };
+
+            // button by title
+
+            btnByTitle = new Label()
+            {
+                Position = new Vector2(lblSortBy.Position.X + 60, 40),
+                Text = "Title",
+                Font = SpritesContent.Instance.GeneralBig,
+                RoundCorners = true
+            };
+
+            // button by artist
+
+            btnByArtist = new Label()
+            {
+                Position = new Vector2(lblSortBy.Position.X + 60 + 40, 40),
+                Text = "Artist",
+                Font = SpritesContent.Instance.GeneralBig,
+                RoundCorners = true
             };
 
             backButton.Click += BackButton_Click;
@@ -215,50 +257,104 @@ namespace kyun.GameScreen
             doubleBtn.Click += DoubleBtn_Click;
 
             osuModeBtn.Click += OsuModeBtn_Click;
-
-
+            
             osuModeBtn2.Click += OsuModeBtn2_Click;
 
+            btnByTitle.Click += BtnByTitle_Click;
+
+            btnByArtist.Click += BtnByArtist_Click;
+
+            //Main Listbox
             Controls.Add(lbox);
+
+            // == Delete this ==
             Controls.Add(filledRectBottom);
-            Controls.Add(filledRectBottomClr);            
-            Controls.Add(songDescImg);
+            //Controls.Add(filledRectBottomClr);
+            //
+
+            // Top bar
+            Controls.Add(topBarBase);
+            Controls.Add(topBarTail);
+
+            // Cover in top
+
+            Controls.Add(coverImage);
+
+            // Label "Sort By"
+
+            Controls.Add(lblSortBy);
+
+            // Label by title
+
+            Controls.Add(btnByTitle);
+
+            // Label by artist
+
+            Controls.Add(btnByArtist);
+
+            // delete dis
+            //Controls.Add(songDescImg);
+
+            Controls.Add(songListDiffImg);
             Controls.Add(lBDff);
-            Controls.Add(filledRect1);
+
+            //Controls.Add(filledRect1);
+
             Controls.Add(lblTitleDesc);
             Controls.Add(autoBtn);
             Controls.Add(randomBtn);
             Controls.Add(doubleBtn);
+
             Controls.Add(osuModeBtn);
-            Controls.Add(osuModeBtn2);
+            //Controls.Add(osuModeBtn2);
+
             Controls.Add(btnStart);
             Controls.Add(lblSearch);
-            Controls.Add(backButton);
-            Controls.Add(coverimg);
-            Controls.Add(randomBtn);
             
+            Controls.Add(backButton);
+            
+            Controls.Add(randomBtn);
+            Controls.Add(_scoreboard);
+
 
             OnLoad += BeatmapScreen_OnLoad;
             OnBackSpacePress += BeatmapScreen_OnBackSpacePress;
-
+            
 
             addTextureG();
 
             OnLoadScreen();
         }
 
+        private void BtnByArtist_Click(object sender, EventArgs e)
+        {
+            orderByArtist();
+            lbox.Items = InstanceManager.AllBeatmaps;
+        }
+
+        private void BtnByTitle_Click(object sender, EventArgs e)
+        {
+            orderByTitle();
+            lbox.Items = InstanceManager.AllBeatmaps;
+        }
+
         private void OsuModeBtn2_Click(object sender, EventArgs e)
         {
-             if (_gamemode == GameMode.Osu)
+            if (_gamemode == GameMode.Osu)
             {
-                
-                _gamemode = GameMode.Classic;
+
+                _gamemode = GameMode.CatchIt;
 
                 //autoBtn.Texture = SpritesContent.Instance.AutoModeButton;
                 osuModeBtn2.TextureColor = Color.DimGray;
             }
             else
             {
+                if (_gamemode == GameMode.Classic)
+                {
+                    osuModeBtn.TextureColor = Color.DimGray;
+                }
+
                 _gamemode = GameMode.Osu;
 
                 //autoBtn.Texture = SpritesContent.Instance.AutoModeButtonSel;
@@ -268,20 +364,8 @@ namespace kyun.GameScreen
 
         private void OsuModeBtn_Click(object sender, EventArgs e)
         {
-            if (_gamemode == GameMode.CatchIt)
-            {
-                _gamemode = GameMode.Classic;
-
-                //autoBtn.Texture = SpritesContent.Instance.AutoModeButton;
-                osuModeBtn.TextureColor = Color.DimGray;
-            }
-            else
-            {
-                _gamemode = GameMode.CatchIt;
-
-                //autoBtn.Texture = SpritesContent.Instance.AutoModeButtonSel;
-                osuModeBtn.TextureColor = Color.DarkRed;
-            }
+            ModeOverlay.Instance.Show();
+            ScreenManager.ShowOverlay(ModeOverlay.Instance);
         }
 
         private void DoubleBtn_Click(object sender, EventArgs e)
@@ -336,26 +420,16 @@ namespace kyun.GameScreen
             switch (_gamemode)
             {
                 case GameMode.Classic:
-                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items[lBDff.selectedIndex], ClassicModeScreen.GetInstance(), modes);
+                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items.Beatmaps[lBDff.selectedIndex], ClassicModeScreen.GetInstance(), modes);
                     break;
                 case GameMode.Osu:
-                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items[lBDff.selectedIndex], OsuMode.GetInstance(), modes);
+                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items.Beatmaps[lBDff.selectedIndex], OsuMode.GetInstance(), modes);
                     break;
                 case GameMode.CatchIt:
-                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items[lBDff.selectedIndex], CatchItMode.GetInstance(), modes);
+                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items.Beatmaps[lBDff.selectedIndex], CatchItMode.GetInstance(), modes);
                     break;
             }
-            /*
 
-            if (ClassicModeScreen.Instance == null)
-                ClassicModeScreen.Instance = new ClassicModeScreen();
-
-           
-
-
-            ClassicModeScreen.GetInstance().Play(lBDff.Items[lBDff.selectedIndex], modes);
-
-            ScreenManager.ChangeTo(ClassicModeScreen.GetInstance());*/
         }
 
         private void BackButton_Click(object sender, EventArgs e)
@@ -400,6 +474,7 @@ namespace kyun.GameScreen
         private void changeCoverDisplay(string image)
         {
 
+            coverSize = SpritesContent.Instance.BeatmapBarBase.Height - 10;
 
             System.Drawing.Image cimg = null;
 
@@ -433,7 +508,7 @@ namespace kyun.GameScreen
                 cimg = System.Drawing.Image.FromFile(image);
             }
 
-            if(cimg == null)
+            if (cimg == null)
             {
                 cimg = SpritesContent.Instance.CroppedBg;
             }
@@ -443,9 +518,9 @@ namespace kyun.GameScreen
 
             System.Drawing.Bitmap ccbimg;
             MemoryStream istream;
-            if (true)
+            if (cbimg.Width != cbimg.Height)
             {
-                ccbimg = SpritesContent.cropAtRect(cbimg, new System.Drawing.Rectangle((int)((cbimg.Width - coverSize) / 2), (int)((cbimg.Height - coverSize / 2.2f) / 2f), (int)coverSize, (int)(coverSize/2.2f)));
+                ccbimg = SpritesContent.cropAtRect(cbimg, new System.Drawing.Rectangle((int)((cbimg.Width - coverSize) / 2), 0, (int)coverSize, (int)coverSize));
                 istream = SpritesContent.BitmapToStream(ccbimg);
             }
             else
@@ -453,37 +528,43 @@ namespace kyun.GameScreen
                 istream = SpritesContent.BitmapToStream(cbimg);
             }
 
-            coverimg.Texture = SpritesContent.RoundCorners(ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, istream), 5);
+            coverImage.Texture = SpritesContent.RoundCorners(ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, istream), 5);
 
             ((MainScreen)MainScreen.Instance).changeCoverDisplay(image);
 
-            
+
         }
 
         private Texture2D bg;
         private FilledRectangle filledRectBottom;
         private FilledRectangle filledRectBottomClr;
         private ButtonStandard backButton;
+        private Label lblSortBy;
+        private Label btnByTitle;
+        private Label btnByArtist;
         public Image songDescImg;
-        public Image coverimg;
+        private Image songListDiffImg;
+
         public int coverSize;
         private ButtonStandard osuModeBtn;
         private ButtonStandard osuModeBtn2;
+        private Scoreboard _scoreboard;
+        private Image coverImage;
 
         public override void Update(GameTime tm)
         {
             if (isDisposing) return;
-                        
-            if (!KyunGame.Instance.IsMouseVisible) KyunGame.Instance.IsMouseVisible = true;
+
+            //if (!KyunGame.Instance.IsMouseVisible) KyunGame.Instance.IsMouseVisible = true;
 
             base.Update(tm);
 
         }
-        
+
         public override void Render()
         {
             if (!Visible || isDisposing) return;
-                     
+
 
             RenderBg();
 

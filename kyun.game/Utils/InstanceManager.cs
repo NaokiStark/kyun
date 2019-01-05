@@ -46,6 +46,9 @@ namespace kyun.Utils
 
         public InstanceManager(bool softwareRendering = false, bool repair = false)
         {
+
+            
+
             Repair = repair;
             Settings1.Default.WindowsRender = softwareRendering;
 
@@ -76,7 +79,7 @@ namespace kyun.Utils
                 using (ubeat = new KyunGame(SoftwareRendering, Repair))
                     ubeat.Run();
             }
-            catch (Microsoft.Xna.Framework.Graphics.NoSuitableGraphicsDeviceException nsgdex)
+            catch (Exception nsgdex)
             {
                 MessageBox.Show("Well, your graphics card is too old, but not everything is lost, kyun will start with CPU rendering (VERY SLOWER [30FPS]).", "kyun!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 MessageBox.Show("If you want to load without this message, set 'Software Rendering' in Settings screen.", "IMPORTANT MESSAGE", MessageBoxButtons.OK, MessageBoxIcon.Information);

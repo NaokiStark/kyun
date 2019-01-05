@@ -6,6 +6,7 @@ using kyun.GameScreen.UI;
 using kyun.Utils;
 using kyun.game.GameScreen.UI;
 using Microsoft.Xna.Framework.Graphics;
+using static kyun.GameScreen.ScreenBase;
 
 namespace kyun.GameScreen
 {
@@ -17,7 +18,18 @@ namespace kyun.GameScreen
 
         public Color TextureColor { get; set; }
 
+
         public float Scale = 1;
+
+        public float RenderScale
+        {
+            get
+            {
+
+                return Scale;
+            }
+        }
+
 
         public Vector2 Position { get; set; }
 
@@ -37,6 +49,37 @@ namespace kyun.GameScreen
 
         public Vector2 OriginRender = Vector2.Zero;
 
+        private Vector2 size = Vector2.Zero;
+
+        private AnimationType animationType { get; set; }
+        private AnimationEffect animationEffect { get; set; }
+
+        private int animationDuration = 400;
+        private int animationElapsed = 0;
+
+        private Vector2 toPosition = Vector2.Zero;
+        private Vector2 initialPosition = Vector2.Zero;
+
+        public virtual Vector2 Size
+        {
+            get
+            {
+                if (size == Vector2.Zero)
+                {
+                    if (Texture != null)
+                        return new Vector2(Texture.Width, Texture.Height);
+                    else
+                        return Vector2.Zero;
+                }
+
+                return size;
+            }
+            set
+            {
+                size = value;
+            }
+        }
+
         public TimeSpan Elapsed { get; set; }
 
         public Screen.ScreenMode ScreenMode { get; set; }
@@ -53,6 +96,12 @@ namespace kyun.GameScreen
         public event ScrollEventHandler OnScroll;
         public event Utils.TouchHandler.TouchEventHandler OnTouch;
 
+        // Animation Events
+
+        public event EventHandler OnFadeOut;
+        public event EventHandler OnFadeIn;
+        public event EventHandler OnMoveEnd;
+
         private bool hasOver = false;
 
         public Tooltip Tooltip { get; set; }
@@ -66,6 +115,7 @@ namespace kyun.GameScreen
         private bool alredyTouched;
         private bool mouseEventsCancelled;
         private bool scrollInvoked;
+        internal KeyboardState keyboardOldState;
 
         public UIObjectBase()
         {
@@ -104,6 +154,8 @@ namespace kyun.GameScreen
             //No Texture, no input update
             if (Texture == null)
                 return;
+
+            updateAnimation();
 
             MouseEvent mouseState = MouseHandler.GetState();
             Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, (int)(this.Texture.Width * Scale), (int)(this.Texture.Height * Scale));
@@ -262,9 +314,6 @@ namespace kyun.GameScreen
                     }
                 }
             }
-
-
-
         }
 
         internal void UpdateTouchEvents(Rectangle rg)
@@ -283,6 +332,9 @@ namespace kyun.GameScreen
             if (!Visible)
                 return;
 
+            if (Texture == null)
+                return;
+
             if (Effect != null && KyunGame.Instance.Graphics.GraphicsProfile == GraphicsProfile.HiDef)
             {
                 KyunGame.Instance.SpriteBatch.End();
@@ -292,7 +344,7 @@ namespace kyun.GameScreen
                 {
 
                     Effect.Parameters[parameter.Key].SetValue(parameter.Value);
-                  
+
                 }
 
                 Effect.CurrentTechnique = Effect.Techniques[0];
@@ -303,10 +355,13 @@ namespace kyun.GameScreen
                 }
             }
 
-            Rectangle rg = new Rectangle((int)(Position.X), (int)(Position.Y), (int)(this.Texture.Width * Scale), (int)(this.Texture.Height * Scale));
-            rg.X = (int)(rg.X - ((Texture.Width * Scale) - Texture.Width) / 2);
-            rg.Y = (int)(rg.Y - ((Texture.Height * Scale) - Texture.Height) / 2);
-            SourceRectangle = new Rectangle(SourceRectangle.X, SourceRectangle.Y, (int)(SourceRectangle.Width * Scale), (int)(SourceRectangle.Height * Scale));
+            Rectangle rg = new Rectangle((int)(Position.X), (int)(Position.Y), (int)(Size.X * RenderScale), (int)(Size.Y * RenderScale));
+
+            rg.X = (int)(rg.X - ((Size.X * RenderScale) - Size.X) / 2);
+            rg.Y = (int)(rg.Y - ((Size.Y * RenderScale) - Size.Y) / 2);
+
+            SourceRectangle = new Rectangle(SourceRectangle.X, SourceRectangle.Y, (int)(SourceRectangle.Width * RenderScale), (int)(SourceRectangle.Height * RenderScale));
+
             if (SourceRectangle != Rectangle.Empty)
                 KyunGame.Instance.SpriteBatch.Draw(Texture, rg, SourceRectangle, TextureColor * Opacity, AngleRotation, OriginRender, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0);
             else
@@ -322,7 +377,324 @@ namespace kyun.GameScreen
             if (Tooltip != null)
                 Tooltip?.Render();
 
-           
+        }
+
+        private void updateAnimation()
+        {
+            if (animationType == AnimationType.None)
+            {
+                animationElapsed = 0;
+                return;
+            }
+
+            animationElapsed += KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds;
+
+            switch (animationEffect)
+            {
+                case AnimationEffect.Linear:
+                    updateLinear();
+                    break;
+                case AnimationEffect.Ease:
+                    updateEase();
+                    break;
+                case AnimationEffect.bounceIn:
+                case AnimationEffect.bounceOut:
+                    updateBounce();
+                    break;
+                default: //??
+                    updateLinear();
+                    break;
+            }
+        }
+
+        internal void updateLinear()
+        {
+            switch (animationType)
+            {
+                case AnimationType.FadeIn:
+                    Opacity = linearIn(animationElapsed, animationDuration);
+                    if (Opacity == 1f)
+                    {
+                        animationType = AnimationType.None;
+                        OnFadeIn?.Invoke(this, new EventArgs());
+                    }
+                    break;
+                case AnimationType.FadeOut:
+                    Opacity = Math.Max(linearOut(animationElapsed, animationDuration), 0f);
+                    if (Opacity <= 0f || animationElapsed > animationDuration)
+                    {
+                        animationType = AnimationType.None;
+                        OnFadeOut?.Invoke(this, new EventArgs());
+                    }
+                    break;
+                case AnimationType.MoveTo:
+                    float initialPosX = initialPosition.X;
+                    float initialPosY = initialPosition.Y;
+                    float destPosX = toPosition.X;
+                    float destPosY = toPosition.Y;
+
+                    float scalePosX = (initialPosX > destPosX) ? linearOut(animationElapsed, animationDuration) : linearIn(animationElapsed, animationDuration);
+                    float scalePosY = (initialPosY > destPosY) ? linearOut(animationElapsed, animationDuration) : linearIn(animationElapsed, animationDuration);
+
+                    float actualX = (initialPosX - destPosX) * scalePosX;
+                    float actualY = (initialPosY - destPosY) * scalePosY;
+
+                    if (initialPosX < destPosX)
+                    {
+                        actualX = (destPosX - initialPosX) * scalePosX;
+                    }
+                    if (initialPosY < destPosY)
+                    {
+                        actualX = (destPosY - initialPosY) * scalePosY;
+                    }
+
+                    Position = new Vector2(actualX, actualY);
+                    if (animationElapsed >= animationDuration)
+                    {
+                        animationType = AnimationType.None;
+                        OnMoveEnd?.Invoke(this, new EventArgs());
+                    }
+                    break;
+            }
+        }
+
+        internal void updateEase()
+        {
+            switch (animationType)
+            {
+                case AnimationType.FadeIn:
+                    Opacity = bezierBlend(linearIn(animationElapsed, animationDuration));
+                    if (Opacity == 1f)
+                    {
+                        animationType = AnimationType.None;
+                        OnFadeIn?.Invoke(this, new EventArgs());
+                    }
+                    break;
+                case AnimationType.FadeOut:
+                    Opacity = Math.Max(bezierBlend(linearOut(animationElapsed, animationDuration)), 0f);
+                    if (Opacity <= 0f || animationElapsed > animationDuration)
+                    {
+                        animationType = AnimationType.None;
+                        OnFadeOut?.Invoke(this, new EventArgs());
+                    }
+                    break;
+                case AnimationType.MoveTo:
+                    float initialPosX = initialPosition.X;
+                    float initialPosY = initialPosition.Y;
+                    float destPosX = toPosition.X;
+                    float destPosY = toPosition.Y;
+
+                    float scalePosX = bezierBlend((initialPosX > destPosX) ? linearOut(animationElapsed, animationDuration) : linearIn(animationElapsed, animationDuration));
+                    float scalePosY = bezierBlend((initialPosY > destPosY) ? linearOut(animationElapsed, animationDuration) : linearIn(animationElapsed, animationDuration));
+
+                    float actualX = (initialPosX - destPosX) * scalePosX;
+                    float actualY = (initialPosY - destPosY) * scalePosY;
+
+                    if (initialPosX < destPosX)
+                    {
+                        actualX = (destPosX - initialPosX) * scalePosX;
+                    }
+                    if (initialPosY < destPosY)
+                    {
+                        actualY = (destPosY - initialPosY) * scalePosY;
+                    }
+
+                    Position = new Vector2(actualX, actualY);
+                    if (animationElapsed >= animationDuration)
+                    {
+                        animationType = AnimationType.None;
+                        OnMoveEnd?.Invoke(this, new EventArgs());
+                    }
+                    break;
+            }
+        }
+
+        internal void updateBounce()
+        {
+            switch (animationType)
+            {
+                case AnimationType.FadeIn:
+                    float tIn = linearIn(animationElapsed, animationDuration);
+                    Opacity = (animationEffect == AnimationEffect.bounceIn) ? bounceIn(tIn) : bounceOut(tIn);
+
+                    if (Opacity == 1f)
+                    {
+                        animationType = AnimationType.None;
+                        OnFadeIn?.Invoke(this, new EventArgs());
+                    }
+                    break;
+                case AnimationType.FadeOut:
+                    float tOut = Math.Max(linearOut(animationElapsed, animationDuration), 0f);
+                    Opacity = (animationEffect == AnimationEffect.bounceIn) ? bounceIn(tOut) : bounceOut(tOut);
+
+                    if (Opacity <= 0f || animationElapsed > animationDuration)
+                    {
+                        animationType = AnimationType.None;
+                        OnFadeOut?.Invoke(this, new EventArgs());
+                    }
+                    break;
+                case AnimationType.MoveTo:
+                    float initialPosX = initialPosition.X;
+                    float initialPosY = initialPosition.Y;
+                    float destPosX = toPosition.X;
+                    float destPosY = toPosition.Y;
+
+                    float mTIn = linearIn(animationElapsed, animationDuration);
+                    float mTOut = linearOut(animationElapsed, animationDuration);
+
+                    float scalePosX = (animationEffect == AnimationEffect.bounceIn) ? bounceIn((initialPosX < destPosX) ? mTOut : mTIn) : bounceOut((initialPosX > destPosX) ? mTOut : mTIn);
+                    float scalePosY = (animationEffect == AnimationEffect.bounceIn) ? bounceIn((initialPosY < destPosY) ? mTOut : mTIn) : bounceOut((initialPosY > destPosY) ? mTOut : mTIn);
+
+                    float actualX = (initialPosX - destPosX) * scalePosX;
+                    float actualY = (initialPosY - destPosY) * scalePosY;
+
+                    if (initialPosX < destPosX)
+                    {
+                        actualX = (destPosX - initialPosX) * scalePosX;
+                    }
+                    if (initialPosition.X == destPosX)
+                    {
+                        actualX = initialPosition.X;
+                    }
+
+
+                    if (initialPosition.Y < destPosY)
+                    {
+                        actualY = (destPosY - initialPosY) * scalePosY;
+                    }
+
+                    if (initialPosition.Y == destPosY)
+                    {
+                        actualY = initialPosition.Y;
+                    }
+
+
+
+                    Position = new Vector2(actualX, actualY);
+                    if (animationElapsed >= animationDuration)
+                    {
+                        animationType = AnimationType.None;
+                        OnMoveEnd?.Invoke(this, new EventArgs());
+                    }
+                    break;
+            }
+        }
+
+        public void FadeIn(AnimationEffect effect, int duration)
+        {
+            animationEffect = effect;
+            animationDuration = duration;
+            animationType = AnimationType.FadeIn;
+
+        }
+
+        public void FadeIn(AnimationEffect effect, int duration, Action complete)
+        {
+            OnFadeIn += (e, args) =>
+            {
+                complete();
+
+                foreach (Delegate d in OnFadeIn.GetInvocationList())
+                {
+                    OnFadeIn -= (EventHandler)d;
+                }
+            };
+
+
+            FadeIn(effect, duration);
+        }
+
+        public void FadeOut(AnimationEffect effect, int duration)
+        {
+            animationType = AnimationType.FadeOut;
+            animationEffect = effect;
+            animationDuration = duration;
+
+
+        }
+
+        public void FadeOut(AnimationEffect effect, int duration, Action complete)
+        {
+            OnFadeOut += (e, args) =>
+            {
+                complete();
+
+                foreach (Delegate d in OnFadeOut.GetInvocationList())
+                {
+                    OnFadeOut -= (EventHandler)d;
+                }
+            };
+
+
+
+            FadeOut(effect, duration);
+
+        }
+
+        public void MoveTo(AnimationEffect effect, int duration, Vector2 to)
+        {
+            animationEffect = effect;
+            toPosition = to;
+            initialPosition = Position;
+            animationDuration = duration;
+            animationType = AnimationType.MoveTo;
+        }
+
+        public void MoveTo(AnimationEffect effect, int duration, Vector2 to, Action complete)
+        {
+            OnMoveEnd += (e, args) =>
+            {
+                complete();
+                foreach (Delegate d in OnMoveEnd.GetInvocationList())
+                {
+                    OnMoveEnd -= (EventHandler)d;
+                }
+            };
+
+            MoveTo(effect, duration, to);
+        }
+
+        internal float linearIn(float time, float duration)
+        {
+            return Math.Min(time / (duration / 100f) / 100f, 1f);
+        }
+
+        internal float linearOut(int time, int duration)
+        {
+            return Math.Max((duration - time) / (duration / 100f) / 100f, 0f);
+        }
+
+        internal float bezierBlend(float t)
+        {
+            return (float)Math.Pow(t, 2f) * (3.0f - 2.0f * t);
+        }
+
+        internal float bounceIn(float t)
+        {
+            return 1 - bounceOut(1 - t);
+        }
+
+        internal float bounceOut(float t)
+        {
+            return (t = +t) < b1 ? b0 * t * t : t < b3 ? b0 * (t -= b2) * t + b4 : t < b6 ? b0 * (t -= b5) * t + b7 : b0 * (t -= b8) * t + b9;
+        }
+
+        float b1 = 4f / 11f,
+            b2 = 6f / 11f,
+            b3 = 8f / 11f,
+            b4 = 3f / 4f,
+            b5 = 9 / 11f,
+            b6 = 10f / 11f,
+            b7 = 15f / 16f,
+            b8 = 21f / 22f,
+            b9 = 63f / 64f;
+
+        float b0 = 1f / (4f / 11f) / (4f / 11f);
+
+
+        internal Vector2 calculatePosition(Vector2 position, float scale)
+        {
+            return position * scale;
         }
 
         public void _OnClick()
@@ -334,5 +706,23 @@ namespace kyun.GameScreen
         {
             Disposing = true;
         }
+
+
+    }
+
+    public enum AnimationType
+    {
+        None,
+        FadeIn,
+        FadeOut,
+        MoveTo,
+    }
+
+    public enum AnimationEffect
+    {
+        Linear,
+        Ease,
+        bounceIn,
+        bounceOut
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ICSharpCode.SharpZipLib.Zip;
+using kyun.game.Database;
 using kyun.GameScreen;
 using kyun.GameScreen.UI;
 using kyun.OsuUtils;
@@ -49,6 +50,8 @@ namespace kyun.game.GameScreen
             Controls.Add(loadingLabel);
             Controls.Add(titleLabel);
         }
+
+
 
         /// <summary>
         /// Load Beatmap
@@ -118,6 +121,9 @@ namespace kyun.game.GameScreen
                     if (bmms != null)
                     {
                         Beatmap.Mapset mapst = Beatmap.Mapset.OrderByDiff(bmms);
+
+                        //Add to database
+                        DatabaseInterface.Instance.InsertMapset(bmms);
 
                         InstanceManager.AllBeatmaps.Add(mapst);
                     }

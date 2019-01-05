@@ -16,8 +16,8 @@ namespace kyun.GameScreen
 
         public void LoadInterface()
         {
-            KyunGame.Instance.IsMouseVisible = true;
-            Controls = new List<UIObjectBase>();
+
+            //Controls = new HashSet<UIObjectBase>();
 
             ScreenMode ActualMode = ScreenModeManager.GetActualMode();
 

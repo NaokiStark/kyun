@@ -36,7 +36,7 @@ namespace kyun.GameScreen
 
             base.Update(tm);
 
-            KyunGame.Instance.IsMouseVisible = false;
+
 
             count += KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds;
             

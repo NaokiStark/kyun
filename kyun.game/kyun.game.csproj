@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;WINDOWS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WINDOWS BETA</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -32,6 +32,16 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UITests|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\UITests\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINDOWS BETA</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Bass.Net">
@@ -48,6 +58,10 @@
     <Reference Include="Lidgren.Network, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\Lidgren.Network.dll</HintPath>
+    </Reference>
+    <Reference Include="LiteDB, Version=4.1.4.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiteDB.4.1.4\lib\net40\LiteDB.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Ink, Version=6.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
@@ -133,7 +147,10 @@
     <Compile Include="Beatmap\IHitObj.cs" />
     <Compile Include="Beatmap\Mapset.cs" />
     <Compile Include="Beatmap\ubeatBeatMap.cs" />
+    <Compile Include="Database\DatabaseInterface.cs" />
     <Compile Include="Dialog\DialogLayer.cs" />
+    <Compile Include="GameModes\CatchItCollab\CatchItCollabMode.cs" />
+    <Compile Include="GameModes\CatchItCollab\HitObjectCollab.cs" />
     <Compile Include="GameModes\CatchIt\CatchItMode.cs" />
     <Compile Include="GameModes\CatchIt\HitObject.cs" />
     <Compile Include="GameModes\Classic\ClassicModeScreen.cs" />
@@ -153,6 +170,7 @@
     <Compile Include="GameModes\OsuMode\HitSingle.cs" />
     <Compile Include="GameModes\OsuMode\ModeConstants.cs" />
     <Compile Include="GameModes\OsuMode\OsuMode.cs" />
+    <Compile Include="GameModes\OsuMode\OsuTutorial.cs" />
     <Compile Include="GameModes\Test\Egg.cs" />
     <Compile Include="GameModes\Test\TestPlayer.cs" />
     <Compile Include="GameModes\Test\TestScreen.cs" />
@@ -199,6 +217,8 @@
     <Compile Include="GameScreen\UI\Particles\SquareParticle.cs" />
     <Compile Include="GameScreen\UI\ProgressBar.cs" />
     <Compile Include="GameScreen\UI\RoundedRectangle.cs" />
+    <Compile Include="GameScreen\UI\Scoreboard\Scoreboard.cs" />
+    <Compile Include="GameScreen\UI\Scoreboard\ScoreItem.cs" />
     <Compile Include="GameScreen\UI\Tooltip.cs" />
     <Compile Include="GameScreen\UI\UserBox.cs" />
     <Compile Include="GameScreen\UI\VolumeControl.cs" />
@@ -213,6 +233,7 @@
     <Compile Include="Notifications\Notifier.cs" />
     <Compile Include="OsuUtils\OsuBeatMap.cs" />
     <Compile Include="Overlay\IOverlay.cs" />
+    <Compile Include="Overlay\ModeOverlay.cs" />
     <Compile Include="Overlay\OverlayScreen.cs" />
     <Compile Include="Overlay\PauseOverlay.cs" />
     <Compile Include="Overlay\QuestionOverlay.cs" />
@@ -227,7 +248,9 @@
     <Compile Include="Score\ComboDisplay.cs" />
     <Compile Include="Score\HealthBar.cs" />
     <Compile Include="Score\ScoreDisplay.cs" />
+    <Compile Include="Score\ScoreInfo.cs" />
     <Compile Include="Score\ScoreType.cs" />
+    <Compile Include="Screen\BaseResolution.cs" />
     <Compile Include="Screen\ScreenMode.cs" />
     <Compile Include="Screen\ScreenModeManager.cs" />
     <Compile Include="Settings11.Designer.cs">
@@ -243,6 +266,7 @@
     <Compile Include="Utils\ContentLoader.cs" />
     <Compile Include="Utils\Discord_Handler.cs" />
     <Compile Include="Utils\FrameCounter.cs" />
+    <Compile Include="Utils\GaussianBlur.cs" />
     <Compile Include="Utils\InstanceManager.cs" />
     <Compile Include="Utils\KeyboardManager.cs" />
     <Compile Include="Utils\MouseHandler.cs" />
@@ -290,6 +314,12 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="app.manifest" />
+    <Content Include="Assets\cursor.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Effects\failsound.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Effects\MenuTransition.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -311,47 +341,14 @@
     <Content Include="Assets\songs\2\pepensow.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\songs\3\a3843029910_16.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\songs\3\UjicoSnail%27s House   Mystic Girl.mp3">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\songs\4\cover.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\songs\4\Digital Math - Journey %28Part 2%29 [Argofox].mp3">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\songs\5\kan.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\songs\5\KanooliAscensus.mp3">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\songs\6\kan.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\songs\6\KanooliAscensus.mp3">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Assets\test.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Maps\129844 Diana Vickers - The Boy Who Murdered Love\Diana Vickers - The Boy Who Murdered Love %28Autumn%29 [Insane].osu">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="Maps\Cash Cash - Overtime\bg.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Maps\129844 Diana Vickers - The Boy Who Murdered Love\Diana Vickers - The Boy Who Murdered Love %28Autumn%29 [Latte%27s Hard].osu">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\129844 Diana Vickers - The Boy Who Murdered Love\Diana Vickers - The Boy Who Murdered Love %28Autumn%29 [Normal].osu">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\KYUN TUTORIAL\Kanooli - kyun! Tutorial %28[ NekoChan ]%29 [Easy].osu">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\KYUN TUTORIAL\Kanooli - kyun! Tutorial %28[ NekoChan ]%29.osb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="Maps\Cash Cash - Overtime\Overtime.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Maps\Reol - Pinko Stick Luv\Reol - Pinko Stick Luv [Easy].osu">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -518,25 +515,28 @@
     <Content Include="Assets\songs\2\songinfo.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\songs\3\songinfo.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\songs\4\songinfo.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\songs\5\songinfo.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Content\CHitObject.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\songs\6\songinfo.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\MSGothic1.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\MSGothic2.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\approachcircle.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\1beatmaptopbar.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\beatmaptopbar.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\CatchTip.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\OsuTip.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Content\Catcher.xnb">
@@ -560,9 +560,48 @@
     <None Include="Content\CatcherMiss2.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="Content\Note.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Note_holder.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\cursor.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Content\DiffSelector.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Content\RGBShift.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="Maps\Cash Cash - Overtime\Cash Cash - Overtime %28W h i t e%29 [Another].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\Cash Cash - Overtime\Cash Cash - Overtime %28W h i t e%29 [Beginner].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\Cash Cash - Overtime\Cash Cash - Overtime %28W h i t e%29 [Extra].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\Cash Cash - Overtime\Cash Cash - Overtime %28W h i t e%29 [G.G%27s Hyper].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\Cash Cash - Overtime\Cash Cash - Overtime %28W h i t e%29 [G.G%27s Standard].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\Cash Cash - Overtime\Cash Cash - Overtime %28W h i t e%29 [Hard].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\Cash Cash - Overtime\Cash Cash - Overtime %28W h i t e%29 [Over Cash].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\Cash Cash - Overtime\Cash Cash - Overtime %28W h i t e%29.osb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\scorebar.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <None Include="Settings1.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -634,24 +673,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon.ico" />
-    <Content Include="Maps\129844 Diana Vickers - The Boy Who Murdered Love\BG.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\129844 Diana Vickers - The Boy Who Murdered Love\[AMV]ONEWAYS - The Boy Who Murdered Love.mp3">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\KYUN TUTORIAL\bg.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\KYUN TUTORIAL\KYUN TUTORIAL.avi">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\KYUN TUTORIAL\KYUN TUTORIAL.mp3">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\KYUN TUTORIAL\logo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Maps\Reol - Pinko Stick Luv\gg.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

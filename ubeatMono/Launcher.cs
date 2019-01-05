@@ -13,8 +13,13 @@ namespace kyunMono
     {
         public static Launcher Instance;
 
+        public bool AbortUpdate = false;
+
         public static string UpdateBase = "http://kyun.mokyu.pw/";
-        
+        WebClient client = new WebClient();
+
+        public static string UpdatePath = "kyun.game";
+
         public Launcher()
         {
             Instance = this;
@@ -46,8 +51,8 @@ namespace kyunMono
                         string data = Encoding.UTF8.GetString(dataBuff);
 
                         string[] splt = data.Split(',');
-                        string actualVersion = splt[0];
-                        string fallbackVersion = splt[1];
+                        string actualPatch = splt[0];
+                        string requiredVersion = splt[1];
 
                         // a
 
@@ -56,15 +61,22 @@ namespace kyunMono
 
                         
                         int intVersion = int.Parse(version);
-                        int intActualVersion = int.Parse(actualVersion);
+                        int intActualVersion = int.Parse(actualPatch);
 
                         
-                        if (intActualVersion > intVersion)
+                        if (intVersion < int.Parse(requiredVersion))
                         {
-                            Console.WriteLine($"New Version: {actualVersion}");
+                            Console.WriteLine($"New Version: {actualPatch}");
                             Console.WriteLine($"Downloading");
                             DownloadUpdate();
 
+                        }
+                        else if (intVersion < intActualVersion)
+                        {
+                            UpdatePath = "patch.kyun.game";
+                            Console.WriteLine($"New Patch: {actualPatch}");
+                            Console.WriteLine($"Downloading");
+                            DownloadUpdate();
                         }
                         else
                         {
@@ -79,7 +91,7 @@ namespace kyunMono
                     }
                 };
 
-                wc.DownloadDataAsync(new Uri($"{UpdateBase}lastVersion.json"));
+                wc.DownloadDataAsync(new Uri($"{UpdateBase}lastVersionV2.json"));
             }
             catch
             {
@@ -119,12 +131,16 @@ namespace kyunMono
             }
             
 
-            DownloadFile($"{UpdateBase}update/kyun.game.zip", Path.Combine(localPath, "kyun.game.zip"),
+            DownloadFile($"{UpdateBase}update/{UpdatePath}.zip", Path.Combine(localPath, $"{UpdatePath}.zip"),
                 new DownloadProgressChangedEventHandler((obj, args)=> {
                     DownloadProgressChangedEventArgs e = args;
                     lDsp.Text = $"Downloading update {e.ProgressPercentage}%";
                 }),
                 new AsyncCompletedEventHandler((obj, args) => {
+
+                    if (AbortUpdate)
+                        return;
+
                     AsyncCompletedEventArgs e = args;
 
 
@@ -140,7 +156,7 @@ namespace kyunMono
 
                     string updatePath = Path.Combine(localPath, "l");
                     Update();
-                    fz.ExtractZip(Path.Combine(localPath, "kyun.game.zip"), updatePath, null);
+                    fz.ExtractZip(Path.Combine(localPath, $"{UpdatePath}.zip"), updatePath, null);
                     Update();
                     DirectoryInfo df = new DirectoryInfo(updatePath);
 
@@ -174,8 +190,16 @@ namespace kyunMono
             {
                 if (file.Extension == ".pdb" || file.Name.ToLower().EndsWith("vshost.exe"))
                     continue;
-               
-                file.CopyTo(Path.Combine(target.FullName, file.Name), true);
+               try
+                {
+                    file.CopyTo(Path.Combine(target.FullName, file.Name), true);
+                }
+                catch
+                {
+                    //I asume kyun is currently running
+                    return;
+                }
+                
             }
                 
         }
@@ -183,7 +207,7 @@ namespace kyunMono
         public void DownloadFile(string address, string location, DownloadProgressChangedEventHandler progress, AsyncCompletedEventHandler complete)
         {
 
-            WebClient client = new WebClient();
+            
             Uri Uri = new Uri(address);
 
             client.DownloadFileCompleted += complete;
@@ -213,6 +237,23 @@ namespace kyunMono
             }
 
             
+        }
+
+        private void Launcher_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            AbortUpdate = true;
+            client?.CancelAsync();
+            
+        }
+
+        private void lDsp_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 

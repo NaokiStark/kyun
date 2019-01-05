@@ -46,7 +46,9 @@ namespace kyun.Video
             }
             Stopped = false;
 
-            VideoDecoder.Instance?.Dispose(); //CLEANUP SHIT BUFFER
+            if(VideoDecoder.__instance != null)
+                VideoDecoder.__instance?.Dispose(); //CLEANUP SHIT BUFFER
+
             vdc = VideoDecoder.Instance;
             
             bool oppenned = vdc.Open(VideoPath);

@@ -1,4 +1,5 @@
-﻿using kyun.GameModes;
+﻿using kyun.Audio;
+using kyun.GameModes;
 using kyun.GameModes.Classic;
 using kyun.GameScreen;
 using kyun.GameScreen.UI;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace kyun.Overlay
 {
@@ -73,38 +75,43 @@ namespace kyun.Overlay
 
             btnRestart = new ButtonStandard(Color.Red)
             {
+
                 Caption = "Quit",
                 Position = new Vector2(ActualScreenMode.Width / 2 - SpritesContent.Instance.ButtonStandard.Width / 2, btnNo.Position.Y + SpritesContent.Instance.ButtonStandard.Height + 20),
 
             };
 
-            btnNo.Click += (obj, args) => {
+            btnNo.Click += (obj, args) =>
+            {
+                EffectsPlayer.StopAll();
                 i.Play(i.Beatmap, i.gameMod); //restart game
 
                 Visible = false;
                 ScreenManager.RemoveOverlay();
             };
 
-            btnRestart.Click += (obj, args) => {                
+            btnRestart.Click += (obj, args) =>
+            {
                 Visible = false;
-
+                EffectsPlayer.StopAll();
                 ScreenManager.RemoveOverlay();
                 ScreenManager.ChangeTo(BeatmapScreen.Instance);
                 i.InGame = false;
                 i.Visible = false;
                 AVPlayer.audioplayer.Play();
 
-               // GameModes.GameMod gm = ((ClassicModeScreen)ClassicModeScreen.Instance).gameMod;
+                // GameModes.GameMod gm = ((ClassicModeScreen)ClassicModeScreen.Instance).gameMod;
 
                 //float vel = ((gm & GameModes.GameMod.DoubleTime) == GameModes.GameMod.DoubleTime) ? 1.5f : 1f;
                 AVPlayer.audioplayer.SetVelocity(1);
             };
 
-            btnYes.Click += (obj, args) => {
+            btnYes.Click += (obj, args) =>
+            {
                 Visible = false;
                 ScreenManager.RemoveOverlay();
                 AVPlayer.audioplayer.Play();
-
+                EffectsPlayer.StopAll();
                 GameModes.GameMod gm = i.gameMod;
 
                 float vel = ((gm & GameModes.GameMod.DoubleTime) == GameModes.GameMod.DoubleTime) ? 1.5f : 1f;
@@ -141,7 +148,7 @@ namespace kyun.Overlay
                 AVPlayer.audioplayer.SetVelocity(1);
                 return;
             }
-                
+
 
             Visible = false;
             ScreenManager.RemoveOverlay();
@@ -156,15 +163,17 @@ namespace kyun.Overlay
         public static PauseOverlay ShowAlert(GameModeScreenBase instance)
         {
             i = instance;
-            Instance.ltitle.Text = "Paused";
+            Instance.ltitle.Text = ((i.gameMod & GameMod.Replay) == GameMod.Replay) ? "Replay paused" : "Paused";
             Instance.ladditional.Text = "A little break";
             Instance.btnYes.Visible = true;
             Instance.Visible = true;
+            Thread.Sleep(200);
             return Instance;
         }
 
         public static PauseOverlay ShowFailed(GameModeScreenBase instance)
         {
+            EffectsPlayer.PlayEffect(SpritesContent.Instance.FailSound);
             i = instance;
             Instance.btnYes.Visible = false;
             Instance.ltitle.Text = "You Failed";

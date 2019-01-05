@@ -17,8 +17,8 @@ namespace kyun.game.GameScreen.UI
     public class UserBox : UIObjectBase
     {
         FilledRectangle displayBg;
-        Image userAvatar;
-        Label nickLabel;
+        public Image userAvatar;
+        public Label nickLabel;
 
         static UserBox instance;
 
@@ -45,9 +45,9 @@ namespace kyun.game.GameScreen.UI
         {
             displayBg = new FilledRectangle(new Vector2(200, 75), Color.Black * .8f);
 
+            Stream avatarstream = UserData.GetAvatarStream("").Result;
 
-
-            userAvatar = new Image((NikuClientApi.User != null) ? NikuClientApi.User.AvatarTexture:ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, UserData.GetAvatarStream("")))
+            userAvatar = new Image((NikuClientApi.User != null) ? NikuClientApi.User.AvatarTexture:ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, avatarstream))
             {
                 BeatReact = false
             };
@@ -67,6 +67,11 @@ namespace kyun.game.GameScreen.UI
 
         private void UserAvatar_Click(object sender, EventArgs e)
         {
+            if(!(ScreenManager.ActualScreen is MainScreen))
+            {
+                return;
+            }
+
             var isFullScreen = KyunGame.Instance.Graphics.IsFullScreen;
             if (isFullScreen)
                 KyunGame.Instance.ToggleFullscreen(false);
@@ -74,13 +79,13 @@ namespace kyun.game.GameScreen.UI
             new LoginForm().Show();
         }
 
-        public void ReloadAvatar()
+        public async void ReloadAvatar()
         {
-            userAvatar.Texture = (NikuClientApi.User != null) ? NikuClientApi.User.AvatarTexture : ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, UserData.GetAvatarStream(""));
+            userAvatar.Texture = (NikuClientApi.User != null) ? NikuClientApi.User.AvatarTexture : ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, await UserData.GetAvatarStream(""));
             nickLabel.Text = (NikuClientApi.User == null) ? "Login" : NikuClientApi.User.Username;
         }
 
-        public override void Update()
+        public override async void Update()
         {
             if (!Visible)
                 return;
@@ -88,7 +93,7 @@ namespace kyun.game.GameScreen.UI
             if(NikuClientApi.User == null && !NikuClientApi.isLogout)
             {
                 NikuClientApi.isLogout = true;
-                userAvatar.Texture = ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, UserData.GetAvatarStream(""));
+                userAvatar.Texture = ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, await UserData.GetAvatarStream(""));
                 nickLabel.Text = "Login";
             }
 

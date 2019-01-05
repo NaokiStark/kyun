@@ -99,6 +99,21 @@ namespace kyun.GameScreen
            // Controls.Add(BackgroundBeat);
         }
 
+        internal static bool isDed(UIObjectBase i)
+        {
+            return i.Died;
+        }
+
+        internal static bool isHitBase(UIObjectBase i)
+        {
+            return i is GameModes.HitBase;
+        }
+
+        internal static bool isNull(dynamic i)
+        {
+            return i == null;
+        }
+
         private void ScreenBase_onTouch(object sender, ubeatTouchEventArgs e)
         {
             if(Visible)
@@ -109,16 +124,23 @@ namespace kyun.GameScreen
         {
             if (Background != null)
             {
-                float screenWidth = KyunGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-                float screenHeight = KyunGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+                float screenWidth = ActualScreenMode.Width;
+                float screenHeight = ActualScreenMode.Height;
+
 
                 var screenRectangle = new Rectangle((int)screenWidth / 2, (int)screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), (int)screenHeight);
 
+                if(screenRectangle.Width < screenWidth)
+                {
+                    screenRectangle = new Rectangle(screenRectangle.X, screenRectangle.Y, (int)screenWidth, (int)(((float)Background.Height / (float)Background.Width) * (float)screenWidth));
+                }
 
+                
                 try
                 {
                     if(Background != null && !Background.IsDisposed)
-                        KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                        if(!VideoDecoder.Instance.decoding)   
+                            KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
                 }
                 catch
                 {
@@ -229,16 +251,24 @@ namespace kyun.GameScreen
         {
             if (Background != null)
             {
-                float screenWidth = KyunGame.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth;
-                float screenHeight = KyunGame.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight;
+
+                float screenWidth = ActualScreenMode.Width;
+                float screenHeight = ActualScreenMode.Height;
 
                 var screenRectangle = new Rectangle((int)screenWidth / 2, (int)screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), (int)screenHeight);
 
+                if (screenRectangle.Width < screenWidth)
+                {
+                    screenRectangle = new Rectangle(screenRectangle.X, screenRectangle.Y, (int)screenWidth, (int)(((float)Background.Height / (float)Background.Width) * (float)screenWidth));
+                }
 
                 try
                 {
-                    if (Background != null && !Background.IsDisposed)
-                        KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.Black * (1f - BackgroundDim), 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                    if (Background != null && !Background.IsDisposed && !VideoDecoder.Instance.decoding)
+                    {
+                        KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.FromNonPremultiplied((int)(255f - 255f*BackgroundDim), (int)(255f - 255f * BackgroundDim), (int)(255f - 255f * BackgroundDim), (int)(255f * BackgroundDim)), 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                    }
+                        //
                 }
                 catch
                 {
@@ -599,7 +629,17 @@ namespace kyun.GameScreen
         private bool mouseEventsCancelled;
         private bool scrollInvoked;
 
-        public float BackgroundDim { get; set; }
+        public float BackgroundDim {
+            get
+            {
+                return Math.Abs(bgdim - 1f);
+            }
+            set {
+                bgdim = value;
+            }
+        }
+
+        internal float bgdim = 1;
         public Texture2D Background { get; set; }
         public List<UIObjectBase> Controls { get; set; }
         public float Opacity { get; set; }

@@ -16,7 +16,7 @@ namespace kyun.Utils
             FileInfo fInfo = new FileInfo(path);
 
             if (!fInfo.Exists)
-                throw new FileNotFoundException("The file doesn't exist. lol");
+                throw new FileNotFoundException("The file doesn't exist.");
 
             Texture2D tx = null;
 

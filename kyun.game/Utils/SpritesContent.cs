@@ -32,7 +32,7 @@ namespace kyun.Utils
         #endregion
 
         #region Singleton
-        
+
         public static SpritesContent Instance
         {
             get
@@ -67,7 +67,7 @@ namespace kyun.Utils
 #endif
             Bass.BASS_PluginLoad(AppDomain.CurrentDomain.BaseDirectory + "bass_fx.dll");
             Bass.BASS_Init(1, 44100, BASSInit.BASS_DEVICE_STEREO, IntPtr.Zero);
-            
+
 
             _fullpath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ASSETS_PATH);
             Content = KyunGame.Instance.Content;
@@ -75,9 +75,9 @@ namespace kyun.Utils
 
         }
 
-#endregion
+        #endregion
 
-#region Public Methods
+        #region Public Methods
 
         public void LoadContent(SpriteBatch spriteBatch, GraphicsDevice device)
         {
@@ -105,9 +105,9 @@ namespace kyun.Utils
 
         }
 
-#endregion
+        #endregion
 
-#region LocalFunctions
+        #region LocalFunctions
 
         private string getPath(string asset)
         {
@@ -153,9 +153,9 @@ namespace kyun.Utils
                 return 0;
             }
         }
-#endregion
+        #endregion
 
-#region Loader
+        #region Loader
 
         private void LoadAudios()
         {
@@ -182,11 +182,12 @@ namespace kyun.Utils
             MenuTransition = LoadSoundBass("Effects\\MenuTransition.mp3");
 
             NotificationSound = LoadSoundBass("Effects\\Notification.mp3");
+            FailSound = LoadSoundBass("Effects\\failsound.mp3");
         }
 
         private void LoadFonts(SpriteBatch spriteBatch)
         {
-            
+
             DefaultFont = Content.Load<SpriteFont>("SpriteFont1");
             GeneralBig = Content.Load<SpriteFont>("General");
             ListboxFont = Content.Load<SpriteFont>("Listbox");
@@ -202,7 +203,7 @@ namespace kyun.Utils
         private void LoadSprites(SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
             LoadingSpinnerTx = Content.Load<Texture2D>("loadingSpin");
-            
+
             ButtonDefault = Content.Load<Texture2D>("button_0");
             ButtonHolder = Content.Load<Texture2D>("holder_0");
             WaitDefault = Content.Load<Texture2D>("approachv2");
@@ -223,9 +224,9 @@ namespace kyun.Utils
             MissTx = Content.Load<Texture2D>("miss");
 
             Logo = Content.Load<Texture2D>("logo");
-            
+
             LogoAtTwo = Content.Load<Texture2D>("logo@2");
-            
+
             IsoLogo = Content.Load<Texture2D>("logo");
             IsoLogoAtTwo = Content.Load<Texture2D>("logo@2");
 
@@ -275,8 +276,9 @@ namespace kyun.Utils
 
             SongDescBox = Content.Load<Texture2D>("SongDescBox");
 
-            ScrollListBeatmap_alt = Content.Load<Texture2D>("Wheel-Bar");
+            ScrollListBeatmap_alt = Content.Load<Texture2D>("ScrollListBeatmap_alt");
 
+            DiffSelector = Content.Load<Texture2D>("DiffSelector");
             /*
             SquareParticle = new Texture2D(UbeatGame.Instance.GraphicsDevice, 500, 500);
             Color[] sColor = new Color[500 * 500];
@@ -303,11 +305,26 @@ namespace kyun.Utils
             }
 
             RGBShiftEffect = Content.Load<Effect>("RGBShift");
+
+            ApproachCircle = Content.Load<Texture2D>("approachcircle");
+            CircleNote = Content.Load<Texture2D>("Note");
+            CircleNoteHolder = Content.Load<Texture2D>("Note_holder");
+
+            GameCursor = Content.Load<Texture2D>("cursor");
+
+            BeatmapBarBase = Content.Load<Texture2D>("1beatmaptopbar");
+
+            BeatmapBarTail = Content.Load<Texture2D>("beatmaptopbar");
+
+            Scorebar = Content.Load<Texture2D>("scorebar");
+
+            CatchTip = Content.Load<Texture2D>("CatchTip");
+            OsuTip = Content.Load<Texture2D>("OsuTip");
         }
 
         public void AddTexture(string name, Texture2D tex)
         {
-            
+
         }
 
 
@@ -317,12 +334,13 @@ namespace kyun.Utils
 
             //Test
 
-            if(Settings1.Default.Skin > 0)
+            if (Settings1.Default.Skin > 0)
                 _SkinManager.SwitchSkin(Settings1.Default.Skin);
         }
 
         public static System.Drawing.Bitmap ResizeImage(System.Drawing.Image image, int width, int height)
         {
+
             var destRect = new System.Drawing.Rectangle(0, 0, width, height);
             var destImage = new System.Drawing.Bitmap(width, height);
 
@@ -330,7 +348,7 @@ namespace kyun.Utils
 
             using (var graphics = System.Drawing.Graphics.FromImage(destImage))
             {
-                
+
                 graphics.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
                 graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
                 graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
@@ -356,7 +374,7 @@ namespace kyun.Utils
             System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp);
 
 
-            System.Drawing.Rectangle rg = new System.Drawing.Rectangle(0, 0, r.Width,  r.Height);
+            System.Drawing.Rectangle rg = new System.Drawing.Rectangle(0, 0, r.Width, r.Height);
             // Draw the given area (section) of the source image
             // at location 0,0 on the empty bitmap (bmp)
             g.DrawImage(b, rg, r, System.Drawing.GraphicsUnit.Pixel);
@@ -373,7 +391,7 @@ namespace kyun.Utils
 
         public static Texture2D RoundCorners(Texture2D tx, float radius, float factor = 1)
         {
-            
+
             List<Color> cl = new List<Color>();
             cl.Add(Color.Black);
 
@@ -402,14 +420,14 @@ namespace kyun.Utils
             Color[] final = new Color[rConnr.Width * rConnr.Height];
 
             int a = 0;
-            
-            foreach(Color clrr in rdc)
+
+            foreach (Color clrr in rdc)
             {
                 try
                 {
                     hdc[a] = Color.FromNonPremultiplied(hdc[a].R, hdc[a].G, hdc[a].B, clrr.A);
                     final[a] = hdc[a];
-                   
+
                 }
                 catch
                 {
@@ -424,9 +442,54 @@ namespace kyun.Utils
             return rConnr;
         }
 
+        public static Texture2D ToGaussianBlur(Texture2D tx, int radial = 3)
+        {
+
+            var image = Texture2DToBitmap(tx);
+
+            var blur = new GaussianBlur(image);
+
+            var result = blur.Process(radial);
+
+            return ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, BitmapToStream(result), false);
+        }
+
+        public static Texture2D ToGaussianBlur(System.Drawing.Bitmap bm, int radial = 3)
+        {
+
+            bm = cropAtRect(bm, new System.Drawing.Rectangle(bm.Width / 2 - 800 / 2, bm.Height / 2 - 450 / 2, 800, 450));
+            var blur = new GaussianBlur(bm);
+            
+            bm = blur.Process(radial);
+
+            return ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, BitmapToStream(bm));
+        }
+
+        public static System.Drawing.Bitmap Texture2DToBitmap(Texture2D tx)
+        {
+            byte[] txData = new byte[4 * tx.Width * tx.Height];
+            tx.GetData<byte>(txData);
+
+            System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(
+               tx.Width, tx.Height
+             );
+
+            System.Drawing.Imaging.BitmapData bmpData = bmp.LockBits(
+                           new System.Drawing.Rectangle(0, 0, tx.Width, tx.Height),
+                           System.Drawing.Imaging.ImageLockMode.WriteOnly,
+                           System.Drawing.Imaging.PixelFormat.Format32bppArgb
+                         );
+
+            IntPtr safePtr = bmpData.Scan0;
+            System.Runtime.InteropServices.Marshal.Copy(txData, 0, safePtr, txData.Length);
+            bmp.UnlockBits(bmpData);
+
+            return bmp;
+        }
+
         public static Texture2D RoundCornerss(Texture2D texture, float radius)
         {
-         //   return texture;
+            //   return texture;
 
             Texture2D texturex = new Texture2D(KyunGame.Instance.GraphicsDevice, texture.Width, texture.Height);
 
@@ -453,27 +516,27 @@ namespace kyun.Utils
                     if (x < radius)
                     {
                         if (y < radius)
-                            origin = new Vector2(radius , radius );
-                        else if (y > texture.Height - (radius ))
-                            origin = new Vector2(radius , texture.Height - (radius ));
+                            origin = new Vector2(radius, radius);
+                        else if (y > texture.Height - (radius))
+                            origin = new Vector2(radius, texture.Height - (radius));
                         else
-                            origin = new Vector2(radius , y);
+                            origin = new Vector2(radius, y);
                     }
-                    else if (x > texture.Width - (radius ))
+                    else if (x > texture.Width - (radius))
                     {
-                        if (y < radius )
-                            origin = new Vector2(texture.Width - (radius ), radius );
-                        else if (y > texture.Height - (radius ))
-                            origin = new Vector2(texture.Width - (radius ), texture.Height - (radius ));
+                        if (y < radius)
+                            origin = new Vector2(texture.Width - (radius), radius);
+                        else if (y > texture.Height - (radius))
+                            origin = new Vector2(texture.Width - (radius), texture.Height - (radius));
                         else
-                            origin = new Vector2(texture.Width - (radius ), y);
+                            origin = new Vector2(texture.Width - (radius), y);
                     }
                     else
                     {
-                        if (y < radius )
-                            origin = new Vector2(x, radius );
-                        else if (y > texture.Height - (radius ))
-                            origin = new Vector2(x, texture.Height - (radius ));
+                        if (y < radius)
+                            origin = new Vector2(x, radius);
+                        else if (y > texture.Height - (radius))
+                            origin = new Vector2(x, texture.Height - (radius));
                     }
 
                     if (!origin.Equals(Vector2.Zero))
@@ -492,7 +555,7 @@ namespace kyun.Utils
 
                     if (internalRectangle.Contains(x, y))
                     {
-                       // colorData[index] = colorDataTx[index];
+                        // colorData[index] = colorDataTx[index];
                     }
 
 
@@ -506,9 +569,9 @@ namespace kyun.Utils
             return texturex;
         }
 
-#endregion
+        #endregion
 
-#region SpritesVars
+        #region SpritesVars
         public Texture2D ButtonDefault { get; set; }
         public Texture2D ButtonHolder { get; set; }
         public Texture2D ButtonDefault_0 { get; set; }
@@ -565,11 +628,21 @@ namespace kyun.Utils
 
         public Texture2D CatcherFire { get; set; }
         public Texture2D CatcherFire2 { get; set; }
-        
+
         public Texture2D CatcherMiss { get; set; }
         public Texture2D CatcherMiss2 { get; set; }
 
         public Texture2D CatchObject { get; set; }
+
+        public Texture2D BeatmapBarBase { get; set; }
+        public Texture2D BeatmapBarTail { get; set; }
+
+        public Texture2D Scorebar { get; set; }
+
+        public Texture2D CatchTip { get; set; }
+
+        public Texture2D OsuTip { get; set; }
+
         #endregion
 
         #region FontsVars
@@ -597,17 +670,23 @@ namespace kyun.Utils
         public int SeeyaOsu { get; set; }
         public int OsuHit { get; set; }
         public int WelcomeToOsuXd { get; set; }
-        public int Hitwhistle { get; internal set; }
-        public int Hitfinish { get; internal set; }
-        public int Hitclap { get; internal set; }
-        public int Applause { get; internal set; }
+        public int Hitwhistle { get; set; }
+        public int Hitfinish { get; set; }
+        public int Hitclap { get; set; }
+        public int Applause { get; set; }
         public Texture2D SquareButton { get; set; }
         public Texture2D FillStartEnd { get; set; }
         public Texture2D Healthbar { get; set; }
-        public string defaultbg { get; private set; }
-        public int MenuTransition { get; private set; }
-        public int NotificationSound { get; private set; }
-        public Effect RGBShiftEffect { get; internal set; }
+        public string defaultbg { get; set; }
+        public int MenuTransition { get; set; }
+        public int NotificationSound { get; set; }
+        public Effect RGBShiftEffect { get; set; }
+        public Texture2D ApproachCircle { get; set; }
+        public Texture2D CircleNote { get; set; }
+        public Texture2D CircleNoteHolder { get; set; }
+        public int FailSound { get; set; }
+        public Texture2D GameCursor { get; set; }
+        public Texture2D DiffSelector { get; set; }
 
         #endregion
 

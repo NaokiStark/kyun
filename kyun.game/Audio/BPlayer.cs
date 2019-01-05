@@ -79,6 +79,8 @@ namespace kyun.Audio
             }
         }
 
+        public float Velocity = 1;
+
         public float Volume
         {
             get
@@ -108,12 +110,16 @@ namespace kyun.Audio
 
                 if (stream == 0)
                     return;
-
-                if (Bass.BASS_ChannelGetPosition(stream) >= Bass.BASS_ChannelGetLength(stream))
+                try
                 {
-                    PlayState = BassPlayState.Stopped;
-                    OnStopped?.Invoke();
+                    if (Bass.BASS_ChannelGetPosition(stream) >= Bass.BASS_ChannelGetLength(stream))
+                    {
+                        PlayState = BassPlayState.Stopped;
+                        OnStopped?.Invoke();
+                    }
+
                 }
+                catch { }
 
             };
 
@@ -131,6 +137,7 @@ namespace kyun.Audio
 
         public void SetVelocity(float vl)
         {
+            Velocity = vl;
             float pbrate = vl * 100;
             Bass.BASS_ChannelSetAttribute(stream, BASSAttribute.BASS_ATTRIB_TEMPO, pbrate - 100);
 

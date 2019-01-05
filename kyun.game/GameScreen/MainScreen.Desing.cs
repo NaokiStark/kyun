@@ -12,6 +12,7 @@ using kyun.GameScreen.UI;
 using Microsoft.Xna.Framework.Graphics;
 using kyun.Beatmap;
 using kyun.game.GameScreen.UI;
+using System.Diagnostics;
 
 namespace kyun.GameScreen
 {
@@ -23,7 +24,7 @@ namespace kyun.GameScreen
             if (KyunGame.Instance.ppyMode)
                 Audio.AudioPlaybackEngine.Instance.PlaySound(KyunGame.Instance.WelcomeToOsuXd);*/
 
-            Controls = new List<UIObjectBase>();
+            //Controls = new HashSet<UIObjectBase>();
 
             ScreenMode ActualMode = ScreenModeManager.GetActualMode();
 
@@ -40,10 +41,12 @@ namespace kyun.GameScreen
                 Text = "Click me!"
             };
 
-
+            /*
             Logo.Effect = SpritesContent.Instance.RGBShiftEffect;
             Logo.EffectParameters.Add(new KeyValuePair<string, object>("DisplacementDist", 1f));
             Logo.EffectParameters.Add(new KeyValuePair<string, object>("DisplacementScroll", .1f));
+            */
+
 
             objectsInitialPosition[0] = Logo.Position;
 
@@ -125,7 +128,15 @@ namespace kyun.GameScreen
 
             particleEngine = new ParticleEngine();
 
-
+            DlbmLbl = new Label(.7f)
+            {
+                Text = "Download Beatmaps",
+                Font = SpritesContent.Instance.StandardButtonsFont,
+                Position = new Vector2(ActualMode.Width - SpritesContent.Instance.StandardButtonsFont.MeasureString("Download Beatmaps").X - 15,
+                                       ActualMode.Height - SpritesContent.Instance.StandardButtonsFont.LineSpacing - 10),
+                RoundCorners = true,
+                Opacity = .8f
+            };
 
 
             string[] songs = { "Junk - enchanted.mp3" };
@@ -228,12 +239,19 @@ namespace kyun.GameScreen
             Controls.Add(coverLabel);
             Controls.Add(coverLabelArt);
             Controls.Add(userBox);
+            Controls.Add(DlbmLbl);
 
-
-            KyunGame.Instance.IsMouseVisible = true;
             OnLoad += MainScreen_OnLoad;
+            DlbmLbl.Click += DlbmLbl_Click;
 
             OnLoadScreen();
+        }
+
+        private void DlbmLbl_Click(object sender, EventArgs e)
+        {
+            ntfr.ShowDialog("Drop downloaded \".osz\" file in this window to add your new beatmaps", 30000, NotificationType.Critical);
+            Process.Start("https://bloodcat.com/osu/");
+            
         }
 
         private void Logo_Click(object sender, EventArgs e)
@@ -347,11 +365,24 @@ namespace kyun.GameScreen
             if (hidding)
             {
 
-                bool doneLogo = false;
+                
                 filledRect1.Visible = false;
                 bool[] doneButtons = new bool[] { false, false, false };
 
                 int elapsed = KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds;
+
+                if (!logoMoving)
+                {
+                    Logo.MoveTo(AnimationEffect.bounceOut, 500, new Vector2(Logo.Position.X, (ActualScreenMode.Height / 2) ),
+                        () => {
+                            doneLogo = true;
+                            Logo.Texture = SpritesContent.Instance.LogoAtTwo;
+                            Logo.Position = new Vector2((ActualScreenMode.Width / 2) - (Logo.Texture.Width / 2), (ActualScreenMode.Height / 2) - (Logo.Texture.Height / 2));
+                        });
+                    logoMoving = true;
+                }
+
+                /*
                 if (Logo.Position.Y < (ActualScreenMode.Height / 2) - (Logo.Texture.Height / 2))
                 {
                     Logo.Position = new Vector2(Logo.Position.X, Logo.Position.Y + ((float)elapsed * 0.5f));
@@ -360,7 +391,7 @@ namespace kyun.GameScreen
                 {
                     doneLogo = true;
                 }
-
+                */
                 if (StrBtn.Position.Y > (ActualScreenMode.Height / 2) - (StrBtn.Texture.Height / 2))
                 {
                     StrBtn.Position = new Vector2(StrBtn.Position.X, StrBtn.Position.Y - ((float)elapsed * 0.5f));
@@ -418,8 +449,8 @@ namespace kyun.GameScreen
                 {
                     ExtBtn.Visible = CnfBtn.Visible = StrBtn.Visible = false;
                     Logo.ChangeScale(.7f);
-                    Logo.Texture = SpritesContent.Instance.LogoAtTwo;
-                    Logo.Position = new Vector2((ActualScreenMode.Width / 2) - (Logo.Texture.Width / 2), (ActualScreenMode.Height / 2) - (Logo.Texture.Height / 2));
+                    //Logo.Texture = SpritesContent.Instance.LogoAtTwo;
+                    //Logo.Position = new Vector2((ActualScreenMode.Width / 2) - (SpritesContent.Instance.LogoAtTwo.Width / 2), (ActualScreenMode.Height / 2) - (SpritesContent.Instance.LogoAtTwo.Height / 2));
                     hidding = false;
                 }
             }
@@ -427,6 +458,7 @@ namespace kyun.GameScreen
             if (showing)
             {
                 filledRect1.Visible = true;
+                logoMoving = false;
                 Logo.ChangeScale(1f);
                 Logo.Texture = SpritesContent.Instance.IsoLogo;
                 Logo.Position = new Vector2((ActualScreenMode.Width / 2) - (Logo.Texture.Width / 2), Logo.Position.Y);
@@ -516,7 +548,7 @@ namespace kyun.GameScreen
                     btnPlay.Visible =
                     btnPrev.Visible =
                     btnStop.Visible =
-                    KyunGame.Instance.IsMouseVisible = false;
+                    false;
 
             }
             else
@@ -528,7 +560,7 @@ namespace kyun.GameScreen
                     btnPlay.Visible =
                     btnPrev.Visible =
                     btnStop.Visible =
-                    KyunGame.Instance.IsMouseVisible = true;
+                    true;
             }
         }
 
@@ -546,6 +578,9 @@ namespace kyun.GameScreen
         private ButtonStandard btnStop;
         private ButtonStandard btnPause;
         public ParticleEngine particleEngine;
+
+        public Label DlbmLbl { get; private set; }
+
         private bool showing;
 
         Vector2[] objectsInitialPosition = { Vector2.Zero, Vector2.Zero, Vector2.Zero, Vector2.Zero };
@@ -557,7 +592,8 @@ namespace kyun.GameScreen
         public int coverSize;
         private UserBox userBox;
         private Notifier ntfr;
-
+        private bool logoMoving;
+        bool doneLogo = false;
         public ubeatBeatMap mainBm { get; private set; }
         #endregion
 

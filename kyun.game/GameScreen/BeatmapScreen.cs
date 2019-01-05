@@ -9,16 +9,19 @@ using kyun.Utils;
 using kyun.game.GameModes;
 using kyun.game.GameModes.CatchIt;
 using kyun.game.GameScreen;
+using kyun.game.GameModes.CatchItCollab;
+using kyun.game.GameScreen.UI.Scoreboard;
+using kyun.game.GameScreen.UI;
 
 namespace kyun.GameScreen
 {
     public partial class BeatmapScreen : ScreenBase
-    { 
+    {
 
         string lastStr = "";
         private bool changingDisplay;
         private int lastDiffIndex = 0;
-        private GameMode _gamemode = GameMode.Classic;
+        internal GameMode _gamemode = GameMode.CatchIt;
 
         public BeatmapScreen()
             : base("BeatmapScreen")
@@ -28,7 +31,7 @@ namespace kyun.GameScreen
             KyunGame.Instance.KeyBoardManager.OnKeyPress += kbmgr_OnKeyPress;
             onKeyPress += BeatmapScreen_onKeyPress;
             AllowVideo = true;
-            
+
         }
 
         private void BeatmapScreen_onKeyPress(object sender, InputEvents.KeyPressEventArgs args)
@@ -55,7 +58,10 @@ namespace kyun.GameScreen
                     break;
                 case Keys.F5:
                     LoadScreen.Instance = null;
-                    ScreenManager.ChangeTo(LoadScreen.Instance);
+                    ScreenManager.ChangeTo(new LoadScreen(true));
+                    break;
+                case Keys.F3:
+                    _scoreboard.Add(ScoreItem.BuildNew(UserBox.GetInstance().userAvatar.Texture, UserBox.GetInstance().nickLabel.Text, OsuUtils.OsuBeatMap.rnd.Next(10, 9999999), OsuUtils.OsuBeatMap.rnd.Next(10, 99999)));
                     break;
             }
 
@@ -70,7 +76,7 @@ namespace kyun.GameScreen
             int lastind = lbox.selectedIndex;
             lbox.selectedIndex = -1;
         }
-       
+
 
         private void Random()
         {
@@ -80,12 +86,12 @@ namespace kyun.GameScreen
 
             lbox.selectedIndex = rnd;
             lbox.vertOffset = (rnd > 2) ? rnd - 1 : 0;
-            
+
             //UbeatGame.Instance.SelectedBeatmap = InstanceManager.AllBeatmaps[rnd][0];
             ((MainScreen)MainScreen.Instance).ChangeMainDisplay(rnd);
 
 
-            ChangeBeatmapDisplay(InstanceManager.AllBeatmaps[rnd][0]);
+            ChangeBeatmapDisplay(InstanceManager.AllBeatmaps[rnd].Beatmaps[0]);
 
         }
 
@@ -106,29 +112,31 @@ namespace kyun.GameScreen
 
                 lbox.Items = InstanceManager.AllBeatmaps;
             }
-            
-            lbox.IndexChanged+=lbox_IndexChanged;
+
+            lbox.IndexChanged += lbox_IndexChanged;
             lBDff.IndexChanged += lBDff_IndexChanged;
             lBDff.MouseDoubleClick += lBDff_MouseDoubleClick;
 
             ChangeBeatmapDisplay(KyunGame.Instance.SelectedBeatmap);
             lbox.selectedIndex = 0;
+
+            //var sItem = ScoreItem.BuildNew(
+            //    UserBox.GetInstance().userAvatar.Texture,
+            //    UserBox.GetInstance().nickLabel.Text,
+            //    999999,
+            //    99999);           
+            
+
+            //_scoreboard.Add(sItem);
         }
 
         void lBDff_MouseDoubleClick(object sender, EventArgs e)
         {
             if (lBDff.selectedIndex < 0 || lBDff.selectedIndex > lBDff.Items.Count - 1) return;
-            
+
             KyunGame.Instance.KeyBoardManager.Enabled = false;
 
-            //UbeatGame.Instance.GameStart(lBDff.Items[lBDff.selectedIndex], this.AMode);
-
-            //if (ClassicModeScreen.Instance == null)
-            //    ClassicModeScreen.Instance = new ClassicModeScreen();
-
-            //ClassicModeScreen.GetInstance().Play(lBDff.Items[lBDff.selectedIndex], (AMode) ? GameModes.GameMod.Auto : GameModes.GameMod.None);
-            //ScreenManager.ChangeTo(ClassicModeScreen.GetInstance());
-
+        
             GameModes.GameMod modes = GameModes.GameMod.None;
 
             if (AMode)
@@ -144,55 +152,53 @@ namespace kyun.GameScreen
             switch (_gamemode)
             {
                 case GameMode.Classic:
-                   
-                    ClassicModeScreen.GetInstance().Play(lBDff.Items[lBDff.selectedIndex], modes);
 
-                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items[lBDff.selectedIndex], ClassicModeScreen.GetInstance(), modes);
+                    //ClassicModeScreen.GetInstance().Play(lBDff.Items[lBDff.selectedIndex], modes);
+
+                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items.Beatmaps[lBDff.selectedIndex], ClassicModeScreen.GetInstance(), modes);
                     break;
                 case GameMode.Osu:
 
-                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items[lBDff.selectedIndex], OsuMode.GetInstance(), modes);
-                    /*
-                    OsuMode.GetInstance().Play(lBDff.Items[lBDff.selectedIndex], modes);
+                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items.Beatmaps[lBDff.selectedIndex], OsuMode.GetInstance(), modes);
 
-                    ScreenManager.ChangeTo(OsuMode.GetInstance());*/
                     break;
                 case GameMode.CatchIt:
 
-                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items[lBDff.selectedIndex], CatchItMode.GetInstance(), modes);
-                    /*
-                    CatchItMode.GetInstance().Play(lBDff.Items[lBDff.selectedIndex], modes);
+                    GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items.Beatmaps[lBDff.selectedIndex], CatchItMode.GetInstance(), modes);
 
-                    ScreenManager.ChangeTo(CatchItMode.GetInstance());*/
                     break;
             }
 
-            
+
 
         }
 
         void lBDff_IndexChanged(object sender, EventArgs e)
         {
 
-            if (lBDff.selectedIndex < 0 || lBDff.selectedIndex > lBDff.Items.Count-1) return;
+            if (lBDff.selectedIndex < 0 || lBDff.selectedIndex > lBDff.Items.Count - 1) return;
             //AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.SelectorHit);
             EffectsPlayer.PlayEffect(SpritesContent.Instance.SelectorHit);
-            lblTitleDesc.Text = lBDff.Items[lBDff.selectedIndex].Artist + " - " + lBDff.Items[lBDff.selectedIndex].Title;
-            if(lastDiffIndex != lBDff.selectedIndex)
+            lblTitleDesc.Text = lBDff.Items.Beatmaps[lBDff.selectedIndex].Artist + " - " + lBDff.Items.Beatmaps[lBDff.selectedIndex].Title;
+            if (lastDiffIndex != lBDff.selectedIndex)
             {
-                
+
 
                 if (lastDiffIndex >= lBDff.Items.Count)
                     lastDiffIndex = 0;
 
-                if(lBDff.Items[lBDff.selectedIndex].Background != lBDff.Items[lastDiffIndex].Background)
+                if (lBDff.Items.Beatmaps[lBDff.selectedIndex].Background != lBDff.Items.Beatmaps[lastDiffIndex].Background)
                 {
                     //ChangeBackground(lBDff.Items[lBDff.selectedIndex].Background);
-                    ChangeBeatmapDisplay(lBDff.Items[lBDff.selectedIndex]);
+                    ChangeBeatmapDisplay(lBDff.Items.Beatmaps[lBDff.selectedIndex]);
                 }
 
                 lastDiffIndex = lBDff.selectedIndex;
+
+                
             }
+            _scoreboard.Items.Clear();
+            _scoreboard.AddList(ScoreItem.GetFromDb(lBDff.Items.Beatmaps[lBDff.selectedIndex]));
         }
 
         void lbox_IndexChanged(object sender, EventArgs e)
@@ -202,9 +208,9 @@ namespace kyun.GameScreen
             if (lbox.selectedIndex < 0 || lbox.selectedIndex > lbox.Items.Count - 1) return;
             //AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.SelectorHit);
             EffectsPlayer.PlayEffect(SpritesContent.Instance.SelectorHit);
-            lblTitleDesc.Text = lbox.Items[lbox.selectedIndex][0].Artist + " - " + lbox.Items[lbox.selectedIndex][0].Title;
+            lblTitleDesc.Text = lbox.Items[lbox.selectedIndex].Beatmaps[0].Artist + " - " + lbox.Items[lbox.selectedIndex].Beatmaps[0].Title;
 
-            ChangeBeatmapDisplay(lbox.Items[lbox.selectedIndex][0]);
+            ChangeBeatmapDisplay(lbox.Items[lbox.selectedIndex].Beatmaps[0]);
 
             ((MainScreen)MainScreen.Instance).ChangeMainDisplay(lbox.selectedIndex);
 

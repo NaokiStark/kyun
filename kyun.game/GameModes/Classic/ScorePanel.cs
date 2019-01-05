@@ -1,6 +1,10 @@
 ﻿using kyun.Audio;
 using kyun.Beatmap;
+using kyun.game.Database;
 using kyun.game.GameModes.CatchIt;
+using kyun.game.GameScreen.UI;
+using kyun.game.GameScreen.UI.Scoreboard;
+using kyun.game.NikuClient;
 using kyun.GameScreen;
 using kyun.GameScreen.UI;
 using kyun.GameScreen.UI.Buttons;
@@ -14,7 +18,7 @@ using System.Text;
 
 namespace kyun.GameModes.Classic
 {
-    public class ScorePanel:ScreenBase
+    public class ScorePanel : ScreenBase
     {
 
         public static bool Displaying = false;
@@ -27,7 +31,7 @@ namespace kyun.GameModes.Classic
                 {
                     instance = new ScorePanel();
                 }
-                                
+
                 return instance;
             }
             set
@@ -63,16 +67,16 @@ namespace kyun.GameModes.Classic
 
         public ScorePanel()
         {
-
+            AllowVideo = true;
             mStr = SpritesContent.Instance.ScoreBig.MeasureString("la puta madre que te pario");
 
             var aMode = ActualScreenMode;
 
-          
+
             rankingPanel = new Image(SpritesContent.Instance.RankingPanel)
             {
-                Position = new Vector2(aMode.Width / 2 - (SpritesContent.Instance.RankingPanel.Width / 2), aMode.Height / 2 - (SpritesContent.Instance.RankingPanel.Height /2)),
-                BeatReact = false                
+                Position = new Vector2(aMode.Width / 2 - (SpritesContent.Instance.RankingPanel.Width / 2), aMode.Height / 2 - (SpritesContent.Instance.RankingPanel.Height / 2)),
+                BeatReact = false
             };
 
 
@@ -81,25 +85,26 @@ namespace kyun.GameModes.Classic
                 Text = $"",
                 Font = SpritesContent.Instance.TitleFont,
                 //Centered = true,
-                Position = new Vector2(rankingPanel.Position.X, rankingPanel.Position.Y-50)
+                Position = new Vector2(rankingPanel.Position.X, rankingPanel.Position.Y - 50)
             };
 
-            
-            
-            scoreLabel = new Label(0) {
+
+
+            scoreLabel = new Label(0)
+            {
                 Text = "",
                 Font = SpritesContent.Instance.ScoreBig,
                 //Centered = true,
                 Position = new Vector2(rankingPanel.Position.X + 70, rankingPanel.Position.Y + 20),
             };
 
-            
+
 
             perfectimg = new Image(SpritesContent.Instance.PerfectTx)
             {
                 Position = scoreLabel.Position + new Vector2(0, mStr.Y + cmargin),
                 BeatReact = false
-                
+
             };
 
             greatimg = new Image(SpritesContent.Instance.ExcellentTx)
@@ -206,13 +211,13 @@ namespace kyun.GameModes.Classic
 
             Controls.Add(backButton);
             Controls.Add(tryAgainBtn);
-            Controls.Add(replayBtn);         
+            Controls.Add(replayBtn);
 
 
 
             onKeyPress += (obj, args) =>
             {
-                if(args.Key == Microsoft.Xna.Framework.Input.Keys.Escape)
+                if (args.Key == Microsoft.Xna.Framework.Input.Keys.Escape)
                 {
                     Displaying = false;
                     EffectsPlayer.StopAll();
@@ -220,7 +225,7 @@ namespace kyun.GameModes.Classic
                     ScreenManager.ChangeTo(BeatmapScreen.Instance);
 
                 }
-                      
+
             };
 
             backButton.Click += (o, ar) =>
@@ -256,7 +261,7 @@ namespace kyun.GameModes.Classic
             i.Play(i.Beatmap, i.gameMod, rpl); //restart replay
         }
 
-        public void CalcScore(GameModeScreenBase ins)
+        public async void CalcScore(GameModeScreenBase ins)
         {
             if (Displaying)
                 return;
@@ -269,7 +274,7 @@ namespace kyun.GameModes.Classic
 
             GameMod mods = i.gameMod;
             string mmods = "";
-            if((mods & GameMod.Auto) == GameMod.Auto)
+            if ((mods & GameMod.Auto) == GameMod.Auto)
             {
                 mmods += "Auto ";
             }
@@ -295,7 +300,7 @@ namespace kyun.GameModes.Classic
 
             int acc = 0;
 
-            foreach(HitBase hb in i.HitObjects)
+            foreach (HitBase hb in i.HitObjects)
             {
                 ScoreType score = ScoreType.Miss;
                 if (hb is HitHolder)
@@ -303,17 +308,21 @@ namespace kyun.GameModes.Classic
                     HitHolder hbb = (HitHolder)hb;
                     score = hbb.GetScore();
                 }
-                else if(hb is HitSingle)
+                else if (hb is HitSingle)
                 {
                     HitSingle bb = (HitSingle)hb;
                     score = bb.GetScore();
                 }
-                else if(hb is game.GameModes.CatchIt.HitObject)
+                else if (hb is game.GameModes.CatchIt.HitObject)
                 {
                     game.GameModes.CatchIt.HitObject bbh = (game.GameModes.CatchIt.HitObject)hb;
                     score = bbh.GetScore();
                 }
-                
+                else
+                {
+                    score = hb.GetScore();
+                }
+
                 switch (score)
                 {
                     case ScoreType.Miss:
@@ -330,15 +339,28 @@ namespace kyun.GameModes.Classic
                     case ScoreType.Perfect:
                         perfectCount++;
                         acc += 100;
-                        break;                        
-                }                                
+                        break;
+                }
             }
 
             if (i is ClassicModeScreen)
                 rpl = Replay.Build(i.HitObjects, i.Beatmap);
-            else
+            else if (i is CatchItMode)
                 rpl = Replay.Build(((CatchItMode)i).movements, i.Beatmap, false);
-                
+            else if (i is OsuMode.OsuMode)
+            {
+                if ((i.gameMod & GameMod.Replay) == GameMod.Replay)
+                {
+                    rpl = ((OsuMode.OsuMode)i).replay;
+                }
+                else
+                {
+                    rpl = Replay.Build(((OsuMode.OsuMode)i).HitObjects, i.Beatmap, ((OsuMode.OsuMode)i).RecordedMousePositions);
+                }
+            }
+            else
+                rpl = null;
+
 
             misslbl.Text = $"{missCount}";
             badlbl.Text = $"{badCount}";
@@ -346,7 +368,34 @@ namespace kyun.GameModes.Classic
             perfectlbl.Text = $"{perfectCount}";
             acclbl.Text = $"{((float)acc / (float)i.HitObjects.Count).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)}%";
 
-            
+            string rawMovements = await rpl.ToString();
+
+            if ((mods & GameMod.Auto) == GameMod.Auto)
+            {
+
+            }
+            else if ((i.gameMod & GameMod.Replay) == GameMod.Replay)
+            {
+                
+            }
+            else
+            {
+                DatabaseInterface.Instance.SaveScore(new game.Score.ScoreInfo
+                {
+                    Score = (int)i._scoreDisplay.TotalScore,
+                    Combo = (int)Combo.Instance.MaxMultiplier,
+                    Beatmap = (ubeatBeatMap)i.Beatmap,
+                    BeatmapArtist = i.Beatmap.Artist,
+                    BeatmapDiff = i.Beatmap.Version,
+                    BeatmapName = i.Beatmap.Title,
+                    RawMovements = rawMovements,
+                    UserId = -1,
+                    Username = (NikuClientApi.User != null) ? NikuClientApi.User.Username : "Anon"
+                });
+
+                Scoreboard.Instance.Items.Clear();
+                Scoreboard.Instance.AddList(ScoreItem.GetFromDb((ubeatBeatMap)i.Beatmap));
+            }
         }
 
         public override void Update(GameTime tm)

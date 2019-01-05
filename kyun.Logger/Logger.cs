@@ -35,13 +35,17 @@ namespace kyun
                 QueueTimer.Elapsed += queuetm_Tick;
                 QueueTimer.Start();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 /* idk, no logger available, terminate program using Application.Exit() ?
                    seems weird since its a logger, it should be terminated from the main app
                    also a logger shouldn't be able to use the System.Windows.Forms namespace imo, i'd use an argument in the constructor
                 */
-                throw;
+                /*
+                    Yes, my bad, so, I put Exception variable only for debug owo
+                    System.Windows.Form is not more added, just use System.Timers.Timer instead System.Windows.Form.Timer
+                 */
+                throw ex;
             }
         }
 

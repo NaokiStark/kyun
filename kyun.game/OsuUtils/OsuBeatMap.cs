@@ -21,7 +21,22 @@ namespace kyun.OsuUtils
                 Random cRnd = new Random(DateTime.Now.Millisecond);
                 osuBMParser.Beatmap osbm = new osuBMParser.Beatmap(path, loadHitobjects);
                 string relPath = new FileInfo(path).DirectoryName;
-                
+
+                OsuGameMode tmpMode = OsuGameMode.Standard;
+
+                switch (osbm.Mode)
+                {
+                    case 1:
+                        tmpMode = OsuGameMode.Taiko;
+                        break;
+                    case 2:
+                        tmpMode = OsuGameMode.CTB;
+                        break;
+                    case 3:
+                        tmpMode = OsuGameMode.Mania;
+
+                        break;
+                }
 
                 OsuBeatMap tmpbm = new OsuBeatMap()
                 {
@@ -39,7 +54,11 @@ namespace kyun.OsuUtils
                     Video = relPath + @"\" + osbm.Video,
                     VideoStartUp = osbm.VideoStartUp,
                     osuBeatmapType = osbm.Mode,
-                    FilePath = path //Added
+                    FilePath = path, //Added
+                    TimingPoints = osbm.TimingPoints,
+                    SliderMultiplier = osbm.SliderMultiplier,
+                    CircleSize = osbm.CircleSize,
+                    Osu_Gamemode = tmpMode
                 };
 
                 tmpbm.Breaks = new List<Beatmap.Break>();
@@ -380,6 +399,9 @@ namespace kyun.OsuUtils
 
         //public static Random rnd = new Random(DateTime.Now.Millisecond);
         public static NR3Generator rnd = new NR3Generator();
+
+        
+
         public static int GetRnd(int min, int max, int last)
         {
 

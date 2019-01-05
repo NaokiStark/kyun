@@ -67,7 +67,9 @@ namespace kyun.game.NikuClient
             
             tmpData.LastLogin = DateTime.Now;
 
-            tmpData.AvatarTexture = ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, GetAvatarStream(tmpData.AvatarUrl));
+            Stream avatarstream = await GetAvatarStream(tmpData.AvatarUrl);
+
+            tmpData.AvatarTexture = ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, avatarstream);
 
             try
             {
@@ -127,18 +129,19 @@ namespace kyun.game.NikuClient
 
             tmpData.LastLogin = DateTime.Now;
 
-
-            tmpData.AvatarTexture = ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, GetAvatarStream(tmpData.AvatarUrl));
+            Stream avatarstream = await GetAvatarStream(tmpData.AvatarUrl);
+            tmpData.AvatarTexture = ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, avatarstream);
 
             try
             {
                 WebRequest req = WebRequest.Create(tmpData.BackgroundUrl);
-                WebResponse response = req.GetResponse();
+                WebResponse response = await req.GetResponseAsync();
                 MemoryStream stream = new MemoryStream();
-                response.GetResponseStream().CopyTo(stream);
-                System.Drawing.Bitmap im = (System.Drawing.Bitmap)System.Drawing.Image.FromStream(stream);
+                //response.GetResponseStream().CopyTo(stream);
+                //System.Drawing.Bitmap im = new System.Drawing.Bitmap(response.GetResponseStream());
 
-                tmpData.BackgroundTexture = ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, SpritesContent.BitmapToStream(im));
+                //tmpData.BackgroundTexture = ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, SpritesContent.BitmapToStream(im));
+                tmpData.BackgroundTexture = ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, response.GetResponseStream(), true);
             }
             catch(Exception ex)
             {
@@ -148,7 +151,7 @@ namespace kyun.game.NikuClient
             return tmpData;
         }
 
-        public static Stream GetAvatarStream(string url)
+        public static async Task<Stream> GetAvatarStream(string url)
         {
             System.Drawing.Image cimg = null;
 
@@ -161,10 +164,10 @@ namespace kyun.game.NikuClient
                 try
                 {
                     WebRequest req = WebRequest.Create(url);
-                    WebResponse response = req.GetResponse();
+                    WebResponse response = await req.GetResponseAsync();
                     Stream stream = response.GetResponseStream();
-
-                    cimg = System.Drawing.Image.FromStream(stream);
+                    
+                    cimg = new System.Drawing.Bitmap(stream);
                 }
                 catch
                 {

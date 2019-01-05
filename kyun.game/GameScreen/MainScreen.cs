@@ -54,7 +54,7 @@ namespace kyun.GameScreen
             }
 
 
-            KyunGame.Instance.IsMouseVisible=true;
+            
 
             ScreenInstance = this;
 
@@ -317,18 +317,6 @@ namespace kyun.GameScreen
             
             KyunGame.Instance.Player.OnStopped += player_OnStopped;
 
-            /*
-            if (!KyunGame.Instance.ppyMode)
-            {
-                ntfr.ShowDialog("Now!                               More bugs!");
-            }
-            else
-            {
-                ntfr.ShowDialog("You are in osu! v0.1 (ubeat codename)!, to show changes, click here.");
-            }*/
-            //ntfr.ShowDialog("Free coffee!                  Find a easter egg in this version (no free coffee).                  Enjoy!", 15000, Notifications.NotificationType.Critical);
-            ntfr.ShowDialog("Welcome!");
-            //ntfr.ShowDialog("Tu version es nueva, asi que esto handa piolaso amewo", 10000, Notifications.NotificationType.Critical);
 
         } 
 
@@ -428,9 +416,9 @@ namespace kyun.GameScreen
             Beatmap.ubeatBeatMap ubm;
 
             if (bsel.Count == 1)
-                ubm = bsel[0];
+                ubm = bsel.Beatmaps[0];
             else
-                ubm = bsel[OsuUtils.OsuBeatMap.rnd.Next(0, bsel.Count - 1)];
+                ubm = bsel.Beatmaps[OsuUtils.OsuBeatMap.rnd.Next(0, bsel.Count - 1)];
 
             ChangeBeatmapDisplay(ubm);
             KyunGame.Instance.SelectedBeatmap = ubm;
@@ -500,7 +488,7 @@ namespace kyun.GameScreen
 
         public void ChangeMainDisplay(int mps)
         {
-            Label1.Text = InstanceManager.AllBeatmaps[mps][0].Artist + " - " + InstanceManager.AllBeatmaps[mps][0].Title;
+            Label1.Text = InstanceManager.AllBeatmaps[mps].Beatmaps[0].Artist + " - " + InstanceManager.AllBeatmaps[mps].Beatmaps[0].Title;
             lastIndex = mps;
         }
 
@@ -520,8 +508,8 @@ namespace kyun.GameScreen
 
             KyunGame.Instance.SelectedMapset = InstanceManager.AllBeatmaps[mstIndex];
             
-            ChangeBeatmapDisplay(KyunGame.Instance.SelectedMapset[0]);
-            var ubm = KyunGame.Instance.SelectedMapset[0];
+            ChangeBeatmapDisplay(KyunGame.Instance.SelectedMapset.Beatmaps[0]);
+            var ubm = KyunGame.Instance.SelectedMapset.Beatmaps[0];
             //ChangeBackground(UbeatGame.Instance.SelectedMapset[0].Background);
             lastIndex = mstIndex;
 
@@ -550,8 +538,8 @@ namespace kyun.GameScreen
 
             KyunGame.Instance.SelectedMapset = InstanceManager.AllBeatmaps[mstIndex];
            
-            ChangeBeatmapDisplay(KyunGame.Instance.SelectedMapset[0]);
-            var ubm = KyunGame.Instance.SelectedMapset[0];
+            ChangeBeatmapDisplay(KyunGame.Instance.SelectedMapset.Beatmaps[0]);
+            var ubm = KyunGame.Instance.SelectedMapset.Beatmaps[0];
             //ChangeBackground(UbeatGame.Instance.SelectedMapset[0].Background);
             lastIndex = mstIndex;
             if (BeatmapScreen.Instance != null)

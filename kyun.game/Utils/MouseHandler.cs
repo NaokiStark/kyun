@@ -114,6 +114,29 @@ namespace kyun.Utils
             }
 
             MouseState actualState = Mouse.GetState();
+            var actualMode = Screen.ScreenModeManager.GetActualMode();
+
+            return new MouseEvent()
+            {
+                Position = new Vector2(actualState.X * ((float)actualMode.Width / (float)actualMode.ScaledWidth), actualState.Y * ((float)actualMode.Height / (float)actualMode.ScaledHeight)),
+                LeftButton = actualState.LeftButton,
+                RightButton = actualState.RightButton,
+                MiddleButton = actualState.MiddleButton,
+                X = actualState.X * ((float)actualMode.Width / (float)actualMode.ScaledWidth),
+                Y = actualState.Y * ((float)actualMode.Height / (float)actualMode.ScaledHeight), 
+                ScrollWheelValue = actualState.ScrollWheelValue
+            };
+        }
+
+        public static MouseEvent GetStateNonScaled()
+        {
+            if (KyunGame.RunningOverWine)
+            {
+                return WineHandler();
+            }
+
+            MouseState actualState = Mouse.GetState();
+            var actualMode = Screen.ScreenModeManager.GetActualMode();
 
             return new MouseEvent()
             {
@@ -122,7 +145,7 @@ namespace kyun.Utils
                 RightButton = actualState.RightButton,
                 MiddleButton = actualState.MiddleButton,
                 X = actualState.X,
-                Y = actualState.Y, 
+                Y = actualState.Y,
                 ScrollWheelValue = actualState.ScrollWheelValue
             };
         }

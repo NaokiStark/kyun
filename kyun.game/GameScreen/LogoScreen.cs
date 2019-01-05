@@ -62,6 +62,8 @@ namespace kyun.GameScreen
                 Scale = .5f
             };
 
+            Logo.Position = new Vector2(logoPosition.X, 0);
+
             Controls.Add(Logo);
             Controls.Add(lComp);
             Controls.Add(EWarnImage);
@@ -69,6 +71,12 @@ namespace kyun.GameScreen
             DONT_UPDATE = false;
 
             EffectsPlayer.PlayEffect(SpritesContent.Instance.WelcomeToOsuXd);
+
+            
+            Logo.MoveTo(AnimationEffect.bounceOut, 1000, logoPosition);
+            lComp.FadeIn(AnimationEffect.Ease, 1000);
+            EWarnImage.FadeIn(AnimationEffect.Ease, 1000);
+
         }
 
         public override void Update(GameTime tm)
@@ -78,6 +86,7 @@ namespace kyun.GameScreen
 
             base.Update(tm);
 
+            //return;
            
             TimeSpan diff = (DateTime.Now - initTime);            
 

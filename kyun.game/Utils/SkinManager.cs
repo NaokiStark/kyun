@@ -10,6 +10,7 @@ using System.Reflection;
 using kyun.GameScreen;
 using kyun.GameModes.Classic;
 using kyun.Overlay;
+using kyun.Screen;
 
 namespace kyun.game.Utils
 {
@@ -82,7 +83,7 @@ namespace kyun.game.Utils
 
             GC.Collect();
 
-            Screen.ScreenModeManager.Change();
+            ScreenModeManager.Change();
 
             ScreenManager.ChangeTo(SettingsScreen.Instance); //return 
         }

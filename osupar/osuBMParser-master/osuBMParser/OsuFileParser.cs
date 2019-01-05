@@ -221,6 +221,9 @@ namespace osuBMParser
                 case "source":
                     beatmap.Source = tokens[1];
                     break;
+                case "circlesize":
+                    beatmap.CircleSize = SafeParse(tokens[1]);
+                    break;
                 case "tags":
                     List<string> tnks = tokens[1].Split(' ').ToList<string>();
                     tnks.ForEach(x => x = x.ToLower());

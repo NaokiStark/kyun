@@ -19,7 +19,18 @@ namespace kyun.GameScreen.UI
 
         float ScaleSelect = 1;
 
-        public Vector2 Size { get; set; }
+        Vector2 sx = Vector2.Zero;
+        public override Vector2 Size {
+            get {
+                if (sx == Vector2.Zero)
+                    return new Vector2(Texture.Width, Texture.Height);
+                return sx;
+            }
+            set
+            {
+                sx = value;
+            }
+        }
 
 
 
@@ -103,7 +114,7 @@ namespace kyun.GameScreen.UI
             }
             else
             {
-                rg = new Rectangle((int)this.Position.X + (this.Texture.Width / 2), (int)this.Position.Y + (this.Texture.Height / 2), (int)(this.Texture.Width * Scale), (int)(this.Texture.Height * Scale));
+                rg = new Rectangle((int)this.Position.X + (this.Texture.Width / 2), (int)this.Position.Y + (this.Texture.Height / 2), (int)(this.Texture.Width * RenderScale), (int)(this.Texture.Height * RenderScale));
 
             }
             if(Texture !=null && !Texture.IsDisposed)

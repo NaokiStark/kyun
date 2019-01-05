@@ -73,20 +73,25 @@ namespace kyun.Notifications
 
             ntbox.ActualPosition = mode.Width;
 
-#if DEBUG
+
             ntbox.Click += (send, args) =>
             {
-                Logger.Instance.Debug($"Showing notification: {text}");
-
-                Notifications.Remove(((NotificationBox)send));
-
-                ((NotificationBox)send).Dispose();
-            };
-#endif
-            ntbox.Click += (s, arg) =>
-            {
                 callback?.Invoke();
+#if DEBUG
+                Logger.Instance.Debug($"Showing notification: {text}");
+#endif
+                ((NotificationBox)send).FadeOut(AnimationEffect.Linear, 300, () => {
+                    Notifications.Remove(((NotificationBox)send));
+
+                    ((NotificationBox)send).Dispose();
+                });
+
             };
+
+            //ntbox.Click += (s, arg) =>
+            //{
+                
+            //};
 
             Notifications.Add(ntbox);
             EffectsPlayer.PlayEffect(SpritesContent.Instance.NotificationSound);

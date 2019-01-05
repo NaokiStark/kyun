@@ -29,7 +29,7 @@ namespace kyun.GameScreen.UI.Buttons
 
         private void changeMeasure()
         {
-            mesStr = ((Font == null) ? SpritesContent.Instance.StandardButtonsFont : Font).MeasureString(text);
+            mesStr = ((Font == null) ? SpritesContent.Instance.StandardButtonsFont : Font).MeasureString(text) * RenderScale;
         }
 
         public Color ForegroundColor { get; set; }
@@ -64,9 +64,9 @@ namespace kyun.GameScreen.UI.Buttons
             //Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, (int)(TextureOverlay.Width * Scale), (int)(TextureOverlay.Height * Scale));
             //KyunGame.Instance.SpriteBatch.Draw(TextureOverlay, rg, Color.White);
 
-            Vector2 _mesStr = mesStr * Scale;
+            Vector2 _mesStr = mesStr * RenderScale;
 
-            Vector2 txZ = new Vector2(Texture.Width, Texture.Height);
+            Vector2 txZ = new Vector2(Size.X, Size.Y);
 
             KyunGame.Instance.SpriteBatch.DrawString((Font == null) ? SpritesContent.Instance.StandardButtonsFont : Font,
                 this.Caption,
@@ -74,7 +74,7 @@ namespace kyun.GameScreen.UI.Buttons
                 Color.Black * 0.5f * Opacity,
                 0,
                 Vector2.Zero,
-                this.Scale,
+                RenderScale,
                 SpriteEffects.None,
                 0);
 
@@ -84,7 +84,7 @@ namespace kyun.GameScreen.UI.Buttons
                 (ForegroundColor == null)? Color.White * Opacity : ForegroundColor * Opacity,
                 0,
                 Vector2.Zero,
-                this.Scale,
+                RenderScale,
                 SpriteEffects.None,
                 0);
 

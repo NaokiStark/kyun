@@ -79,7 +79,7 @@ namespace kyun.game.GameModes.Test
 
         public override void Update(GameTime tm)
         {
-            Controls.RemoveAll(ctl => { if (ctl is Egg) { return ctl.Died; } return false; });
+            Controls.RemoveAll(isDed);
 
             base.Update(tm);
 

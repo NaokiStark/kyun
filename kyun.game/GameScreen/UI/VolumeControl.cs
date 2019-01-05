@@ -1,5 +1,6 @@
 ﻿using kyun.GameScreen;
 using kyun.GameScreen.UI;
+using kyun.Screen;
 using kyun.Utils;
 using Microsoft.Xna.Framework;
 using System;
@@ -62,7 +63,7 @@ namespace kyun.game.GameScreen.UI
 
 
 
-            var screenMode = Screen.ScreenModeManager.GetActualMode();
+            var screenMode = ScreenModeManager.GetActualMode();
             _progressbar.Position = new Vector2(screenMode.Width / 2 - (barWidth / 2), screenMode.Height - barHeight);
             textLabel.Position = _progressbar.Position;
 

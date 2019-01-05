@@ -38,11 +38,11 @@ namespace kyunMono
             {
                 kyun.Logger.Instance.Info("");
                 kyun.Logger.Instance.Info("");
-                kyun.Logger.Instance.Info("╔═══════════════════════════════╗");
-                kyun.Logger.Instance.Info("║                               ║");
-                kyun.Logger.Instance.Info("║          Mono Version         ║");
-                kyun.Logger.Instance.Info("║                               ║");
-                kyun.Logger.Instance.Info("╚═══════════════════════════════╝");
+                kyun.Logger.Instance.Info("╔══════════════════════════════╗");
+                kyun.Logger.Instance.Info("║                              ║");
+                kyun.Logger.Instance.Info("║             Beta             ║");
+                kyun.Logger.Instance.Info("║                              ║");
+                kyun.Logger.Instance.Info("╚══════════════════════════════╝");
                 kyun.Logger.Instance.Info("");
                 kyun.Logger.Instance.Info("=====================================");
                 kyun.Logger.Instance.Info("=                                   =");
@@ -53,7 +53,7 @@ namespace kyunMono
                 kyun.Logger.Instance.Info("");
 
 
-                kyun.KyunGame.LauncherVersion = 2;
+                kyun.KyunGame.LauncherVersion = 3;
                 try
                 {
                     using (kyun.Utils.InstanceManager InsManager = new kyun.Utils.InstanceManager(false, Program.repair)) { }

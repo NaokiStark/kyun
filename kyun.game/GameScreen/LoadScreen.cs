@@ -17,6 +17,7 @@ using kyun.GameModes.Classic;
 using Newtonsoft.Json.Linq;
 using kyun.game;
 using kyun.game.GameScreen.UI;
+using kyun.game.Database;
 
 namespace kyun.GameScreen
 {
@@ -35,8 +36,10 @@ namespace kyun.GameScreen
         private Label labelLoadingText;
         private bool issueChange = false;
         private ubeatBeatMap TutorialBeatmap;
-
+        private bool _resetDb;
         static IScreen instance = null;
+
+        
 
         public static IScreen Instance
         {
@@ -66,7 +69,19 @@ namespace kyun.GameScreen
             return Color.FromNonPremultiplied(OsuBeatMap.rnd.Next(mr, mxr), OsuBeatMap.rnd.Next(mg, mxg), OsuBeatMap.rnd.Next(mb, mxb), 255);
         }
 
+        public LoadScreen(bool resetDatabase)
+        {
+            instance = this;
+            _resetDb = resetDatabase;
+            loadInterface();
+        }
+
         public LoadScreen()
+        {
+            loadInterface();
+        }
+
+        private void loadInterface()
         {
             //Colors :F
 
@@ -107,7 +122,7 @@ namespace kyun.GameScreen
             try
             {
                 int nxt = OsuBeatMap.rnd.Next(0, sDirs.Length - 1);
-                DirectoryInfo dr = sDirs[1];
+                DirectoryInfo dr = sDirs[nxt];
 
                 FileInfo[] fls = dr.GetFiles();
 
@@ -133,20 +148,6 @@ namespace kyun.GameScreen
                     break;
 
                 }
-
-                /*
-                List<string[]> songs = new List<string[]>();
-
-                songs.Add(new string[] { AppDomain.CurrentDomain.BaseDirectory + @"\Assets\tofubeats.mp3", AppDomain.CurrentDomain.BaseDirectory + @"\Assets\tofubeats.jpg", "CAND¥¥¥LAND ft LIZ (Pa's Lam System Remix)", "tofubeats" });
-                songs.Add(new string[] { AppDomain.CurrentDomain.BaseDirectory + @"\Assets\DJ Noriken Magicalgirl_Syndrome.mp3", AppDomain.CurrentDomain.BaseDirectory + @"\Assets\DJ Noriken.jpg", "#Magicalgirl_Syndrome", "DJ Noriken" });
-                songs.Add(new string[] { AppDomain.CurrentDomain.BaseDirectory + @"\Assets\Tenkitsune - To The Phantomile!.mp3", AppDomain.CurrentDomain.BaseDirectory + @"\Assets\tenkitsune.jpg", "To The Phantomile!", "Tenkitsune" });
-                songs.Add(new string[] { AppDomain.CurrentDomain.BaseDirectory + @"\Assets\DJ Noriken Magicalgirl_Syndrome.mp3", AppDomain.CurrentDomain.BaseDirectory + @"\Assets\DJ Noriken.jpg", "#Magicalgirl_Syndrome", "DJ Noriken" });
-                songs.Add(new string[] { AppDomain.CurrentDomain.BaseDirectory + @"\Assets\Tenkitsune - To The Phantomile!.mp3", AppDomain.CurrentDomain.BaseDirectory + @"\Assets\tenkitsune.jpg", "To The Phantomile!", "Tenkitsune" });
-                songs.Add(new string[] { AppDomain.CurrentDomain.BaseDirectory + @"\Assets\tofubeats.mp3", AppDomain.CurrentDomain.BaseDirectory + @"\Assets\tofubeats.jpg", "CAND¥¥¥LAND ft LIZ (Pa's Lam System Remix)", "tofubeats" });
-
-                */
-
-                //selected_song = songsList[OsuBeatMap.rnd.Next(0, songsList.Count - 1)];
             }
             catch (Exception EXX)
             {
@@ -172,7 +173,7 @@ namespace kyun.GameScreen
                 Position = logoPosition,
                 BeatReact = false,
                 //Visible = false
-                
+
             };
 
             rectanglexd = new FilledRectangle(new Vector2(300, 150), Color.Black * .75f);
@@ -184,7 +185,7 @@ namespace kyun.GameScreen
 
             labelLoadingText = new Label(0)
             {
-                Text = "Loading",
+                Text = "Loading beatmaps",
                 Position = new Vector2(rectanglexd.Position.X + (rectanglexd.Texture.Width / 2), rectanglexd.Position.Y + 10),
                 Centered = true,
                 Scale = 1,
@@ -304,8 +305,11 @@ namespace kyun.GameScreen
             rectanglexd.Click += LoadScreen_onClick;
 
             System.Windows.Forms.Application.DoEvents();
+
+            
+
             Thread tr = new Thread(new ThreadStart(loadBeatmaps));
-            tr.IsBackground = true;
+            //tr.IsBackground = true;
 
             tr.Start();
 
@@ -313,9 +317,8 @@ namespace kyun.GameScreen
             //bplayer.Play(selected_song[0]);
             //auplayer.Play(AppDomain.CurrentDomain.BaseDirectory + @"\Assets\Junk - enchanted.mp3", "", true);
 
-
-            KyunGame.Instance.IsMouseVisible = true;
-            //KyunGame.Instance.Notifications.ShowDialog("Free coffee!                  Find a easter egg in this version (no free coffee).                  Enjoy!", 15000, Notifications.NotificationType.Critical);
+            
+            KyunGame.Instance.Notifications.ShowDialog(suggestions[OsuBeatMap.rnd.Next(0, suggestions.Length-1)], 15000, Notifications.NotificationType.Info);
             //UbeatGame.Instance.OnPeak += Instance_OnPeak;
         }
 
@@ -415,7 +418,7 @@ namespace kyun.GameScreen
 
                 auplayer.Stop();
                 //if (!Settings1.Default.Tutorial)
-                    ScreenManager.ChangeTo(MainScreen.Instance);
+                ScreenManager.ChangeTo(MainScreen.Instance);
                 /*else
                 {
                     ScreenManager.ChangeTo(ClassicModeScreen.GetInstance());
@@ -540,11 +543,32 @@ namespace kyun.GameScreen
         private BPlayer bplayer;
         private List<int[]> ecolors;
 
+        static int id = 0;
+        static int bid = 0;
+
+        int getBeatmapsCount()
+        {
+            return Settings1.Default.BeatmapsCount;
+        }
+        
         void loadBeatmaps()
         {
+            if (_resetDb)
+            {
+                Logger.Instance.Info("");
+                Logger.Instance.Info("Clearing beatmaps in database.");
+                Logger.Instance.Info("");
+                labelLoadingText.Text = "Cleaning...";
+                DatabaseInterface.Instance.DeleteBeatmaps(); //This make break all
+            }
+
             Logger.Instance.Info("");
             Logger.Instance.Info("Loading beatmaps.");
             Logger.Instance.Info("");
+
+            labelLoadingText.Text = "Loading beatmaps";
+
+            var db = DatabaseInterface.Instance;
 
 
             if (InstanceManager.AllBeatmaps == null)
@@ -556,6 +580,10 @@ namespace kyun.GameScreen
                 InstanceManager.AllBeatmaps.Clear();
             }
 
+            var dbMapsets = db.GetBeatmaps();
+            //var dbBeatmaps = db.GetAllBeatmaps();
+
+
             if (Settings1.Default.osuBeatmaps != "")
             {
 
@@ -563,8 +591,24 @@ namespace kyun.GameScreen
                 if (osuDirPath.Exists)
                 {
                     DirectoryInfo[] osuMapsDirs = osuDirPath.GetDirectories();
-                    int flieCnt = 0;
 
+                    
+                    int flieCnt = 0;
+                    int bmcount = getBeatmapsCount();
+                    //int dbcount = dbBeatmaps.Count;
+                    
+
+                    if (dbMapsets.Count > 0)
+                    {
+                        InstanceManager.AllBeatmaps = dbMapsets.OrderBy(x => x.Title).ToList();
+                        lprgs.Value = 100;
+                        GC.Collect();
+                        Logger.Instance.Info("Loaded from database");
+                        Logger.Instance.Info("--------------------");
+
+                        loadDone = true;
+                        return;
+                    }
 
                     int fCount = osuMapsDirs.Length;
                     int dCount = 0;
@@ -585,12 +629,23 @@ namespace kyun.GameScreen
 
                                 flieCnt++;
                                 OsuUtils.OsuBeatMap bmp = OsuUtils.OsuBeatMap.FromFile(fff.FullName);
+  
                                 if (bmp != null)
                                 {
-
+                                    bid++;
+                                    bmp.Id = bid;
+                                    
                                     //Beatmaps.Add(bmp);
                                     if (bmms == null)
-                                        bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator, bmp.Tags);
+                                    {
+                                        id++;
+                                        bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator, bmp.Tags) { Id = id };
+                                        
+                                    }
+                                    else
+                                    {
+                                        
+                                    }
                                     bmms.Add(bmp);
 
 
@@ -641,6 +696,7 @@ namespace kyun.GameScreen
             Logger.Instance.Info("");
             Logger.Instance.Info("----------------");
             Logger.Instance.Info("");
+            GC.Collect();
 
             loadDone = true;
 
@@ -683,6 +739,9 @@ namespace kyun.GameScreen
                             OsuUtils.OsuBeatMap bmp = OsuUtils.OsuBeatMap.FromFile(fff.FullName);
                             if (bmp != null)
                             {
+                                bid++;
+                                bmp.Id = bid;
+                                
                                 if (bmp.Title.Contains("kyun! Tutorial"))
                                 {
                                     TutorialBeatmap = bmp;
@@ -690,7 +749,12 @@ namespace kyun.GameScreen
 
                                 //Beatmaps.Add(bmp);
                                 if (bmms == null)
-                                    bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator, bmp.Tags);
+                                {
+                                    id++;
+                                    bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator, bmp.Tags) { Id = id };
+                                    
+                                }
+
                                 bmms.Add(bmp);
 
 
@@ -715,6 +779,12 @@ namespace kyun.GameScreen
                 InstanceManager.Instance.IntancedBeatmaps = true;
             }
 
+            var db = DatabaseInterface.Instance;
+            labelLoadingText.Text = "Updating database";
+            db.SaveBeatmaps(InstanceManager.AllBeatmaps);
+            Settings1.Default.BeatmapsCount = InstanceManager.AllBeatmaps.Count;
+            Settings1.Default.Save();
+
             // Settings1.Default.Reset();
 
             if (false)
@@ -732,5 +802,17 @@ namespace kyun.GameScreen
                     ClassicModeScreen.Instance = new ClassicModeScreen();
             }
         }
+
+        private string[] suggestions = new string[] { "You can add your osu! library on Config",
+                                                      "You can breathe",
+                                                      "Use [X] or [Y] to make fast combos on Circles! mode",
+                                                      "To add beatmaps, Drag And Drop \".osz\" files in this window",
+                                                      "Need beatmaps? Download in bloodcat.com/osu/ and drop \".osz\" files here!",
+                                                      "Thank you for play! --- You can leave a comment or suggestion in fabistark.itch.io/kyun",
+                                                      "This is a beta version",
+                                                      "owo",
+                                                      "uwu",
+                                                      "¿Hola? ¿Hay alguien aquí?",
+                                                      "Here should be a suggestion, but I could not think of one, sorry"};
     }
 }

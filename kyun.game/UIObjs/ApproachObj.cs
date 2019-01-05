@@ -28,17 +28,17 @@ namespace kyun.UIObjs
 
             this.starttime = startTime;
             this.Position = position;
-            this.Texture = (isSmallRes)? SpritesContent.Instance.WaitDefault_0 : SpritesContent.Instance.WaitDefault;
+            this.Texture = /*(isSmallRes)? SpritesContent.Instance.WaitDefault_0 : */SpritesContent.Instance.WaitDefault;
             this.approachrate = approachRate;
-            this.width = Texture.Bounds.Width;
-            this.height = Texture.Bounds.Height;
+            this.width = Size.X;
+            this.height = Size.Y;
             
         }
 
         void tickSize_Tick()
         {
 
-            float twidth = Texture.Bounds.Width * 1.8f;
+            float twidth = (Size.X * Scale) * 2f;
 
             int appr = (int)(1950 - approachrate * 150);
 
@@ -50,10 +50,10 @@ namespace kyun.UIObjs
 
             float pcrt = percen / twidth * 100;
 
-            float percentgg = percen + Texture.Bounds.Width;
+            float percentgg = percen + (Size.X * Scale);
 
 
-            float percentg = gtime * Texture.Bounds.Width/*/100f*/;
+            float percentg = gtime * (Size.X * Scale)/*/100f*/;
             /*
             if (opacity > -1)
             {
@@ -66,7 +66,7 @@ namespace kyun.UIObjs
             
             width = percentgg;
             height = percentgg;
-            if (width < Texture.Bounds.Width)
+            if (width < (Size.X * Scale))
             {
                 Died = true;
             }
@@ -90,11 +90,11 @@ namespace kyun.UIObjs
             //if(width <= Texture.Bounds.Width)
             
             KyunGame.Instance.SpriteBatch.Draw(this.Texture,
-                    new Rectangle((int)Position.X + (int)Texture.Bounds.Width / 2,(int)Position.Y + (int)Texture.Bounds.Height / 2, (int)width, (int)height),
+                    new Rectangle((int)Position.X + (int)Size.X  / 2,(int)Position.Y + (int)Size.Y  / 2, (int)width, (int)height),
                     null, base.TextureColor * Opacity,
                     //RotationAngle,
                     0,
-                    new Vector2(Texture.Bounds.Width / 2, Texture.Bounds.Height / 2),
+                    new Vector2(Size.X / 2, Size.Y / 2),
                     Microsoft.Xna.Framework.Graphics.SpriteEffects.None,
                     0);
             //base.Render();

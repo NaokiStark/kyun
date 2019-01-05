@@ -26,11 +26,12 @@ namespace kyun.GameScreen.UI
 
 
         public string Text { get; set; }
-        public Vector2 Size { get; set; }
+        public override Vector2 Size { get; set; }
         public Vector2 TotalSize { get; set; }
         public float BackgroundOpacity { get; set; }
         public Color ForegroundColor { get; set; }
         public SpriteFont InitialFont { get; set; }
+        public bool RoundCorners { get; set; }
 
         SpriteFont font;
 
@@ -65,7 +66,8 @@ namespace kyun.GameScreen.UI
             Color[] dataBar = new Color[w * h];
             for (int i = 0; i < dataBar.Length; ++i) dataBar[i] = Color.Black * BackgroundOpacity;
             Texture.SetData(dataBar);
-            //Texture = SpritesContent.RoundCorners(Texture, 5);
+            if(RoundCorners)
+                Texture = SpritesContent.RoundCorners(Texture, 5);
         }
 
         public override void Update()
@@ -94,7 +96,7 @@ namespace kyun.GameScreen.UI
             font = InitialFont;
             try
             {
-                return Font.MeasureString(Text) * Scale;
+                return Font.MeasureString(Text) * RenderScale;
             }
             catch
             {
@@ -108,7 +110,7 @@ namespace kyun.GameScreen.UI
                     font = SpritesContent.Instance.MSGothic2;
                 }
 
-                return Font.MeasureString(Text) * Scale;
+                return Font.MeasureString(Text) * RenderScale;
             }
         }
 
@@ -143,10 +145,10 @@ namespace kyun.GameScreen.UI
             {
                 if (Shadow)
                     KyunGame.Instance.SpriteBatch.DrawString(Font, this.Text, new Vector2(pos.X + 5, pos.Y + 5 + 2), Color.Black * 0.6f * Opacity, 0,
-                    Vector2.Zero, this.Scale, SpriteEffects.None, 0);
+                    Vector2.Zero, RenderScale, SpriteEffects.None, 0);
 
                 KyunGame.Instance.SpriteBatch.DrawString(Font, this.Text, new Vector2(pos.X + 5, pos.Y + 5), ForegroundColor * Opacity, 0,
-                    Vector2.Zero, this.Scale, SpriteEffects.None, 0);
+                    Vector2.Zero, RenderScale, SpriteEffects.None, 0);
             }
             catch
             {

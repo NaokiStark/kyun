@@ -92,7 +92,7 @@ namespace kyun.GameScreen.UI.Particles
             
 
 //            SourceRectangle = new Rectangle(0, 0, (int)(Texture.Width * Scale), (int)(Texture.Height * Scale));
-            OriginRender = new Vector2((Texture.Width * Scale) / 2, (Texture.Height * Scale) / 2);
+            OriginRender = new Vector2((Size.X * Scale) / 2, (Size.Y * Scale) / 2);
         }
 
     }

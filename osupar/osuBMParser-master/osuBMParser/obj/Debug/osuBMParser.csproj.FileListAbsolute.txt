@@ -10,3 +10,9 @@ C:\Users\Fabi\ubeat Mono\osupar\osuBMParser-master\osuBMParser\bin\Debug\Microso
 C:\Users\Fabi\ubeat Mono\osupar\osuBMParser-master\osuBMParser\obj\Debug\osuBMParser.dll
 C:\Users\Fabi\ubeat Mono\osupar\osuBMParser-master\osuBMParser\obj\Debug\osuBMParser.pdb
 C:\Users\Fabi\ubeat Mono\osupar\osuBMParser-master\osuBMParser\obj\Debug\osuBMParser.csprojResolveAssemblyReference.cache
+C:\Users\Fabi-Note\ubeat Mono\osupar\osuBMParser-master\osuBMParser\bin\Debug\osuBMParser.dll
+C:\Users\Fabi-Note\ubeat Mono\osupar\osuBMParser-master\osuBMParser\bin\Debug\osuBMParser.pdb
+C:\Users\Fabi-Note\ubeat Mono\osupar\osuBMParser-master\osuBMParser\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+C:\Users\Fabi-Note\ubeat Mono\osupar\osuBMParser-master\osuBMParser\obj\Debug\osuBMParser.csprojResolveAssemblyReference.cache
+C:\Users\Fabi-Note\ubeat Mono\osupar\osuBMParser-master\osuBMParser\obj\Debug\osuBMParser.dll
+C:\Users\Fabi-Note\ubeat Mono\osupar\osuBMParser-master\osuBMParser\obj\Debug\osuBMParser.pdb

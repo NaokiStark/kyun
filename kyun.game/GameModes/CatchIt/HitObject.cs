@@ -5,29 +5,33 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 using kyun.Utils;
 using kyun.Beatmap;
 using Microsoft.Xna.Framework;
 using kyun.Audio;
 using kyun.Score;
+using osuBMParser;
+using kyun.Screen;
+
 
 namespace kyun.game.GameModes.CatchIt
 {
     public class HitObject : HitBase
     {
-        CatchItMode i;
+        internal CatchItMode i;
 
         internal IHitObj _hitButton;
         internal IBeatmap _beatmap;
 
         public HitObject _parent;
 
-        public Score.ScoreType score = ScoreType.Miss;
+        public ScoreType score = ScoreType.Miss;
 
         public long CollisionAt = 0;
         public int PositionAtCollision = 1;
 
-        Screen.ScreenMode a = Screen.ScreenModeManager.GetActualMode();
+        ScreenMode a = ScreenModeManager.GetActualMode();
 
         public int HitSound
         {
@@ -37,11 +41,25 @@ namespace kyun.game.GameModes.CatchIt
             }
         }
 
+        private TimingPoint _TimingPoint;
+
         public long Time
         {
             get
             {
-                return (_longNote)? (long)_hitButton.EndTime : (long)_hitButton.StartTime;
+                if (_longNote)
+                {
+                    if (_hitButton.EndTime >= KyunGame.Instance.Player.Length)
+                    {
+                        return (long)(_hitButton.StartTime + (decimal)_TimingPoint.MsPerBeat);
+                    }
+                    else
+                    {
+                        return (long)_hitButton.EndTime;
+                    }
+                }
+
+                return (long)_hitButton.StartTime;
             }
         }
 
@@ -51,15 +69,37 @@ namespace kyun.game.GameModes.CatchIt
 
         public int PositionInRow = 1;
 
-        public HitObject(IHitObj hitObject, IBeatmap beatmap, CatchItMode Instance, bool shared = false, bool longNote = false, HitObject parent = null) : base(SpritesContent.Instance.CatchObject)
+        public HitObject(IHitObj hitObject, IBeatmap beatmap, CatchItMode Instance, bool shared = false, bool longNote = false, HitObject parent = null) : base(SpritesContent.Instance.CircleNote)
         {
-            float msTemp = (((OsuUtils.OsuBeatMap)beatmap).osuBeatmapType == 3)? hitObject.MsPerBeat / 1.5f: hitObject.MsPerBeat;
-            MsPerBeat = ((1680 - beatmap.ApproachRate * 150) * 10000) / ((60000 / msTemp) / 50);
+
+            float msTemp = (((OsuUtils.OsuBeatMap)beatmap).osuBeatmapType == 3) ? hitObject.MsPerBeat / 1.5f : hitObject.MsPerBeat;
+            //MsPerBeat = ((1680 - beatmap.ApproachRate * 150) * 10000) / ((60000 / msTemp) / 100);
+
+            float preempt = 0;
+            if (beatmap.ApproachRate < 5)
+            {
+                preempt = 1200 + 600 * (5 - (beatmap.ApproachRate / 10)) / 5;
+            }/*
+            else if(beatmap.ApproachRate == 5)
+            {
+                preempt = 1200;
+            }*/
+            else
+            {
+                preempt = 1200 - 750 * ((beatmap.ApproachRate / 10) - 5) / 5;
+            }
+
+            MsPerBeat = preempt * 10000;
 
             i = Instance;
             _hitButton = hitObject;
             _beatmap = beatmap;
             _longNote = longNote;
+
+            if (_longNote)
+            {
+                parent.Texture = Texture = SpritesContent.Instance.CircleNoteHolder;
+            }
 
             Visible = true;
             Opacity = 1;
@@ -81,9 +121,11 @@ namespace kyun.game.GameModes.CatchIt
 
             inFieldPosition *= positionInRow;
 
-            Position = new Vector2(i.ActualScreenMode.Width, inFieldPosition + i.FieldPosition.Y + ((i.PlayerSize.Y / 2) - (Texture.Height / 2)));
+            Size = i.PlayerSize * .95f;
 
-            
+            Position = new Vector2(i.ActualScreenMode.Width, inFieldPosition + i.FieldPosition.Y + ((Size.Y / 2) - (Size.Y / 2)));
+
+
 
             switch (hitObject.HitSound)
             {
@@ -97,42 +139,51 @@ namespace kyun.game.GameModes.CatchIt
                     TextureColor = Color.FromNonPremultiplied(255, 61, 58, 255);
                     break;
                 default:
-                    TextureColor = Color.FromNonPremultiplied(255, 229, 244, 255);
+                    TextureColor = /*Color.FromNonPremultiplied(255, 229, 244, 255)*/ Color.White;
                     break;
 
             }
+
+            _TimingPoint = i.Beatmap.GetTimingPointFor((long)_hitButton.StartTime, false);
         }
 
-        internal void updatePosition()
+        internal virtual void updatePosition()
         {
 
             //Note: 1024 is for universal velocity, cuz, in higher resolution speeds are imposible
             float twidth = 1024 - (i.PlayerSize.X + i.Player.Position.X);
 
-            
 
-            float appr = ((i.gameMod & GameMod.DoubleTime) != GameMod.DoubleTime)?MsPerBeat:MsPerBeat * 1.5f /*(int)(1000f * ((float)a.Width / 500f))*/;
+            //experimental zone
 
+
+            //eof experimental zone
+
+            float appr = ((i.gameMod & GameMod.DoubleTime) != GameMod.DoubleTime) ? MsPerBeat : MsPerBeat * 1.5f /*(int)(1000f * ((float)a.Width / 500f))*/;
 
             float stime = ((float)Time - (float)i.GamePosition);
 
-            float gtime = (stime / appr);
+            float gtime = (stime / appr) * (i.SmoothVelocity * (Math.Max(1.5f, Math.Min(_hitButton.MsPerBeat, 400) / 100)));
             float percen = gtime * twidth;
-            
-            
+
+
             Position = new Vector2((twidth * percen) + i.PlayerSize.X, Position.Y);
 
-            Rectangle thisRg = new Rectangle((int)Position.X, (int)Position.Y, Texture.Width, Texture.Height);
+            Rectangle thisRg = new Rectangle((int)Position.X, (int)Position.Y, (int)Size.X, (int)Size.Y);
             Rectangle catcherRg = new Rectangle((int)i.Player.Position.X, (int)i.Player.Position.Y, (int)i.PlayerSize.X, (int)i.PlayerSize.Y);
 
-            if((i.gameMod & GameMod.Auto) == GameMod.Auto)
+            if ((i.gameMod & GameMod.Auto) == GameMod.Auto)
             {
                 if (Position.X < catcherRg.Width + 10)
                 {
+                    //Emulates key
+                    if (Math.Abs(i.playerLinePosition - PositionInRow) >= 2)
+                        i.isKeyDownShift = true;
+
                     i.playerLinePosition = PositionInRow;
                     i.movements.Add(new ReplayObject { PressedAt = PositionInRow, LeaveAt = i.GamePosition });
                 }
-                    
+
             }
             /*
             if ((i.gameMod & GameMod.Replay) == GameMod.Replay)
@@ -147,7 +198,7 @@ namespace kyun.game.GameModes.CatchIt
             {
 
                 CollisionAt = i.GamePosition;
-                if(!((i.gameMod & GameMod.Replay) == GameMod.Replay))
+                if (!((i.gameMod & GameMod.Replay) == GameMod.Replay))
                     PositionAtCollision = PositionInRow;
 
                 Combo.Instance.Add();
@@ -157,12 +208,12 @@ namespace kyun.game.GameModes.CatchIt
                 return;
             }
 
-            if (Position.X < 0)
+            if (Position.X <= 0)
             {
                 if (!((i.gameMod & GameMod.Replay) == GameMod.Replay))
                     PositionAtCollision = i.playerLinePosition;
 
-                CollisionAt = i.GamePosition;
+                CollisionAt = i.GamePosition + 1000;
                 CheckScore();
                 i._healthbar.Substract((2 * _beatmap.OverallDifficulty) * i.FailsCount);
                 Combo.Instance.Miss();
@@ -172,7 +223,7 @@ namespace kyun.game.GameModes.CatchIt
                 Died = true;
             }
 
-            
+
         }
 
         internal void updateOpacity()
@@ -185,36 +236,49 @@ namespace kyun.game.GameModes.CatchIt
 
             Texture2D particle = SpritesContent.Instance.MissTx; //Using a no assingned var
 
-            if (CollisionAt >= Time - _beatmap.Timing300 && CollisionAt <= Time + _beatmap.Timing300)
+            if (/*CollisionAt >= Time - (_beatmap.Timing300 * 2) &&*/ CollisionAt <= Time + (_beatmap.Timing300 * 2))
             {
                 //Perfect
-                score = Score.ScoreType.Perfect;
+                score = ScoreType.Perfect;
                 particle = SpritesContent.Instance.PerfectTx;
                 i._healthbar.Add(4);
-                
+
             }
-            else if (CollisionAt >= Time - _beatmap.Timing300 && CollisionAt <= Time + _beatmap.Timing100)
+            else if (CollisionAt >= Time - _beatmap.Timing300 && CollisionAt <= Time + (_beatmap.Timing100 * 2))
             {
 
-                score = Score.ScoreType.Excellent;
+                score = ScoreType.Excellent;
                 particle = SpritesContent.Instance.ExcellentTx;
                 i._healthbar.Add(2);
             }
-            else if (CollisionAt >= Time - _beatmap.Timing100 && CollisionAt <= Time + _beatmap.Timing100)
+            else if (CollisionAt >= Time - (_beatmap.Timing100 * 2) && CollisionAt <= Time + (_beatmap.Timing100 * 2))
             {
                 //Excellent
-                score = Score.ScoreType.Excellent;
+                score = ScoreType.Excellent;
                 particle = SpritesContent.Instance.ExcellentTx;
                 i._healthbar.Add(2);
             }
-            else if (CollisionAt >= Time - _beatmap.Timing50 && CollisionAt <= Time + _beatmap.Timing50)
+            else if (CollisionAt >= Time - (_beatmap.Timing50 * 2) && CollisionAt <= Time + (_beatmap.Timing50 * 2))
             {
                 //Bad
-                score = Score.ScoreType.Good;
+                score = ScoreType.Good;
                 particle = SpritesContent.Instance.GoodTx;
             }
 
+
+
+            var gnpr = i.particleEngine.AddNewHitObjectParticle(Texture,
+               new Vector2(2f),
+               new Vector2(Position.X, Position.Y),
+               10,
+               0,
+               ((score & ScoreType.Miss) == ScoreType.Miss) ? Color.Violet : TextureColor
+               );
+            gnpr.Opacity = .6f;
+            gnpr.Size = i.PlayerSize;
+
             i._scoreDisplay.Add((((int)score / 50) * Math.Max(Combo.Instance.ActualMultiplier, 1)) / 2);
+            i._scoreDisplay.CalcAcc(score);
 
             i.particleEngine.AddNewScoreParticle(particle,
                 new Vector2(.05f),
@@ -263,11 +327,31 @@ namespace kyun.game.GameModes.CatchIt
 
         public override void Render()
         {
-            _parent?.Render();
-            if(_longNote && ((OsuUtils.OsuBeatMap)_beatmap).osuBeatmapType <= 1)
-                if(Position.X > i.Player.Position.X + i.PlayerSize.X)
-                    KyunGame.Instance.SpriteBatch.Draw(i.LongTail, new Rectangle((int)Position.X + Texture.Width/2, (int)Position.Y + (Texture.Height / 2) / 2, ((int)_parent.Position.X + Texture.Width) - (int)Position.X - Texture.Width, Texture.Height / 2), TextureColor * Opacity);
-            base.Render();
+
+
+            if (_longNote && ((OsuUtils.OsuBeatMap)_beatmap).osuBeatmapType <= 1)
+            {
+                if (Position.X > i.Player.Position.X + i.PlayerSize.X)
+                {
+                    if (_parent != null)
+                    {
+                       
+                      
+
+                        KyunGame.Instance.SpriteBatch.Draw(i.LongTail, new Rectangle((int)Position.X + (int)Size.X / 2, (int)Position.Y + (((int)Size.Y / 2)) / 2, ((int)_parent.Position.X + (int)Size.X) - (int)Position.X - (int)Size.X, ((int)Size.Y / 2)), TextureColor * Opacity);
+                        
+                        _parent?.Render();
+                        base.Render();
+                        base.Render();
+
+                    }
+                }
+            }
+            else
+            {
+                base.Render();
+            }
+
         }
     }
 }

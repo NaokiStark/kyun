@@ -289,14 +289,18 @@ namespace kyun.GameScreen.UI
                 int middle = maxCanHold / 2;
                 if(i > middle)
                 {
-                    fBox += new Vector2(20 * (maxCanHold - i), 0);
+                    //fBox += new Vector2(20 * (maxCanHold - i), 0);
                 }
                 else
                 {
-                    fBox += new Vector2(20 * i, 0);
+                    //fBox += new Vector2(20 * i, 0);
                 }
 
-                fBox -= new Vector2(10 , 0);
+                if(i + vertOffset == selectedIndex)
+                {
+                    fBox += new Vector2(20, 0);
+                }
+                //fBox -= new Vector2(10 , 0);
 
                 Vector2 drTxPs = new Vector2(fBox.X + 30, fBox.Y + 10);
 
@@ -313,9 +317,9 @@ namespace kyun.GameScreen.UI
                     KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.ScrollListBeatmap, fBox, null, Color.White, 0, Vector2.Zero, pscale, SpriteEffects.None, 0);
 
 
-                KyunGame.Instance.SpriteBatch.DrawString(textFont, o, drTxPs, textColor, 0f, Vector2.Zero, Scale * pscale, SpriteEffects.None, 0);
-                KyunGame.Instance.SpriteBatch.DrawString(textFont, artistDrw, drTxPs + new Vector2(10, 25), textColor, 0f, Vector2.Zero, Scale * .85f * pscale, SpriteEffects.None, 0);
-                KyunGame.Instance.SpriteBatch.DrawString(textFont, mapCreator, drTxPs + new Vector2(10, 25*2-5), textColor, 0f, Vector2.Zero, Scale * .75f * pscale, SpriteEffects.None, 0);
+                KyunGame.Instance.SpriteBatch.DrawString(textFont, o, drTxPs, textColor, 0f, Vector2.Zero, RenderScale * pscale, SpriteEffects.None, 0);
+                KyunGame.Instance.SpriteBatch.DrawString(textFont, artistDrw, drTxPs + new Vector2(10, 25), textColor, 0f, Vector2.Zero, RenderScale * .85f * pscale, SpriteEffects.None, 0);
+                KyunGame.Instance.SpriteBatch.DrawString(textFont, mapCreator, drTxPs + new Vector2(10, 25*2-5), textColor, 0f, Vector2.Zero, RenderScale * .75f * pscale, SpriteEffects.None, 0);
 
                 startBoxPos.Y += perEntryHeight;
 

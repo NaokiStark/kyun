@@ -1,4 +1,5 @@
-﻿using System;
+﻿using osuBMParser;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,7 +31,21 @@ namespace kyun.Beatmap
         int Timing300 { get; }
         int Timing100 { get; }
         int Timing50 { get; }
+        List<TimingPoint> TimingPoints { get; set; }
+        float SliderMultiplier { get; set; }
+        TimingPoint GetTimingPointFor(long time, bool inherited = true);
+        TimingPoint GetInheritedPointFor(long time);
+
+        OsuGameMode Osu_Gamemode { get; set; }
+        float CircleSize { get; set; }
+
     }
 
-
+    public enum OsuGameMode
+    {
+        Standard,
+        Mania,
+        CTB,
+        Taiko
+    }
 }

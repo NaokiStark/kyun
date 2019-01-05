@@ -47,8 +47,15 @@ namespace kyun.GameScreen.UI.Particles
 
 
             
-
-            Opacity -= KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.001f;
+            if(VelocityP.X == 0)
+            {
+                Opacity -= KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.001f;
+            }
+            else
+            {
+                Opacity -= KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.001f * Math.Max(0.01f, VelocityP.Y);
+            }
+            
 
             Scale += KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.0005f;
 
@@ -58,7 +65,7 @@ namespace kyun.GameScreen.UI.Particles
 
             //Position -= new Vector2(0.025f, 0);
 
-            if (Position.Y < (-Texture.Height * Scale) * 2 || Opacity < 0.001)
+            if (Position.Y < (-Size.X * Scale) * 2 || Opacity < 0.001)
             {
                 TimeToDie = 0;
             }

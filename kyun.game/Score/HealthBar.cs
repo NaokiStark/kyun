@@ -20,8 +20,14 @@ namespace kyun.Score
 
         GameModes.GameModeScreenBase i;
 
+        public static HealthBar Instance = null;
+
+        
+        
+
         public HealthBar(GameModes.GameModeScreenBase instance, int width = 0, int height = 0)
         {
+            Instance = this;
             i = instance;
 
             if(width == 0)
@@ -42,11 +48,15 @@ namespace kyun.Score
             this.Texture.SetData(data);*/
 
             Texture = SpritesContent.Instance.Healthbar;
-            
+
+            /*
             BgBar = new Texture2D(KyunGame.Instance.GraphicsDevice, width + 20, height + 20);
             Color[] dataBar = new Color[(width + 20) * (height + 20)];
             for (int i = 0; i < dataBar.Length; ++i) dataBar[i] = Color.Black;
             this.BgBar.SetData(dataBar);
+            */
+
+            BgBar = SpritesContent.Instance.Scorebar;
 
             this.IsActive = false;
         }
@@ -104,6 +114,7 @@ namespace kyun.Score
 
         public override void Update()
         {
+            Instance = this;
             HltTmr_Tick();/*
             if (Grid.Instance.inGame && !Grid.Instance.Paused && IsActive)
                 if (Value < 0.1f)
@@ -116,6 +127,11 @@ namespace kyun.Score
                     if (i.gameMod != GameModes.GameMod.Auto)
                         if (i.gameMod != GameModes.GameMod.NoFail)
                             OnFail?.Invoke();
+        }
+
+        public Vector2 GetPosition()
+        {
+            return Position;
         }
 
         public override void Render()
@@ -151,7 +167,7 @@ namespace kyun.Score
 
             //bar
             KyunGame.Instance.SpriteBatch.Draw(this.Texture,
-                new Rectangle((int)Position.X + 6, (int)Position.Y + 6, size.Width, Texture.Height),
+                new Rectangle((int)Position.X, (int)Position.Y + 6, size.Width, Texture.Height),
                 size,
                 colbr,
                 0f,

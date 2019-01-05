@@ -65,8 +65,8 @@ namespace kyun.GameScreen
             List<Screen.ScreenMode> scrmds = Screen.ScreenModeManager.GetSupportedModes();
             Screen.ScreenMode highestMode = scrmds[scrmds.Count - 1];
 
-            int screenw = Math.Min(highestMode.Width, 2048);
-            int screenh = Math.Min(highestMode.Height, 2048);
+            int screenw = Math.Min(highestMode.ScaledWidth, 2048);
+            int screenh = Math.Min(highestMode.ScaledHeight, 2048);
 
             TopEffect = new Texture2D(KyunGame.Instance.GraphicsDevice, screenw, screenh);
 

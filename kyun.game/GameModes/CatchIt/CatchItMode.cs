@@ -19,13 +19,16 @@ using kyun.Video;
 using kyun.GameScreen.UI.Particles;
 using Microsoft.Xna.Framework.Graphics;
 using kyun.GameScreen.UI.Buttons;
+using osuBMParser;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
+using kyun.game.GameScreen.UI;
 
 namespace kyun.game.GameModes.CatchIt
 {
     public class CatchItMode : GameModeScreenBase
     {
         static CatchItMode Instance;
-        private int lastIndex;
+        internal int lastIndex;
 
         public Image Player;
         public Vector2 PlayerSize;
@@ -34,31 +37,61 @@ namespace kyun.game.GameModes.CatchIt
 
         public Vector2 FieldSize = new Vector2();
         public Vector2 FieldPosition = new Vector2();
-        private FilledRectangle fg;
+        internal FilledRectangle fg;
         public int Margin = 2;
 
-        List<FilledRectangle> rectangles = new List<FilledRectangle>();
-        List<HitObject> HitObjectsRemain = new List<HitObject>();
-        private ComboDisplay comboDisplay;
-        private long endToTime;
-        private long countToScores;
+        internal List<FilledRectangle> rectangles = new List<FilledRectangle>();
+        internal List<HitObject> HitObjectsRemain = new List<HitObject>();
+
+        internal List<Beatmap.IHitObj> OriginalHitObjects = new List<Beatmap.IHitObj>();
+
+        internal ComboDisplay comboDisplay;
+        internal long endToTime;
+        internal long countToScores;
         public ParticleEngine particleEngine;
         public HealthBar _healthbar;
         public Replay replay { get; set; }
         public List<ReplayObject> movements = new List<ReplayObject>();
-        private int mid;
-        private ButtonStandard skipButton;
-        private bool skipped;
+        internal int mid;
+        internal ButtonStandard skipButton;
+        internal bool skipped;
 
-        private PlayerTxType txState;
-        private long catcherElapsed = 0;
-        private int catcherState = 0;
+        internal PlayerTxType txState;
+        internal long catcherElapsed = 0;
+        internal int catcherState = 0;
         public long catcherToIdle = 0;
 
         public Texture2D LongTail { get; set; }
 
         public bool End { get; private set; }
         public float FailsCount { get { return 1; } }
+
+        float velocity = 1;
+        public float Velocity
+        {
+            get
+            {
+                return velocity;
+            }
+            set
+            {
+                velocity = value;
+                smoothingVel = true;
+            }
+        }
+
+
+        public float SmoothVelocity { get; set; }
+
+        public bool smoothingVel = false;
+
+        internal long timeToPlayerGlow = 0;
+        public bool isKeyDownShift = false;
+
+        internal TimingPoint NonInheritedPoint;
+        internal TimingPoint InheritedPoint;
+
+        internal long lastTime = 0;
 
         public static CatchItMode GetInstance()
         {
@@ -80,20 +113,31 @@ namespace kyun.game.GameModes.CatchIt
 
             PlayerSize = new Vector2(Math.Max(Math.Min(Player.Texture.Width, 100), 50), Math.Max(Math.Min(Player.Texture.Height, 100), 50));
 
-            FieldSize = new Vector2(ActualScreenMode.Width - 20, (PlayerSize.Y + Margin) * fieldSlots);
+            FieldSize = new Vector2(ActualScreenMode.Width, (PlayerSize.Y + Margin) * fieldSlots);
             //FieldPosition = new Vector2(0, (ActualScreenMode.Height / 2) - (FieldSize.Y / 2) - PlayerSize.Y);
-            FieldPosition = new Vector2(10, 0);
+            FieldPosition = new Vector2(0, 0);
 
             Player.Size = PlayerSize;
 
+            Color lineColor = Color.FromNonPremultiplied(255, 229, 51, 255);
+
             for (int a = 0; a < fieldSlots; a++)
             {
+
                 var rgnl = new FilledRectangle(new Vector2(FieldSize.X, PlayerSize.Y), Color.Black * .8f);
                 rgnl.Position = new Vector2(FieldPosition.X, FieldPosition.Y + (PlayerSize.Y + Margin) * (a + 1));
                 rgnl.Opacity = .9f;
                 rectangles.Add(rgnl);
                 Controls.Add(rectangles[a]);
+
+                var lineRg = new FilledRectangle(new Vector2(FieldSize.X, Margin), lineColor);
+                lineRg.Position = new Vector2(0, rgnl.Position.Y - Margin);
+                Controls.Add(lineRg);
             }
+
+            var lineRg2 = new FilledRectangle(new Vector2(FieldSize.X, Margin), lineColor);
+            lineRg2.Position = new Vector2(0, rectangles[fieldSlots - 1].Position.Y + PlayerSize.Y);
+            Controls.Add(lineRg2);
 
             comboDisplay = new ComboDisplay()
             {
@@ -124,10 +168,11 @@ namespace kyun.game.GameModes.CatchIt
                 Visible = false
             };
 
+            Controls.Add(UserBox.GetInstance());
             Controls.Add(Player);
             Controls.Add(comboDisplay);
-            Controls.Add(_scoreDisplay);
             Controls.Add(_healthbar);
+            Controls.Add(_scoreDisplay);
 
             Controls.Add(particleEngine);
             Controls.Add(replayLabel);
@@ -155,7 +200,7 @@ namespace kyun.game.GameModes.CatchIt
             {
                 skipped = true;
                 skipButton.Visible = false;
-                avp.audioplayer.Position = (long)Beatmap.HitObjects[0].StartTime - 3000;
+                avp.audioplayer.Position = (long)OriginalHitObjects[0].StartTime - 3000;
                 EffectsPlayer.PlayEffect(SpritesContent.Instance.MenuTransition);
             }
         }
@@ -211,33 +256,43 @@ namespace kyun.game.GameModes.CatchIt
 
         private void CatchItMode_onKeyPress(object sender, kyun.GameScreen.InputEvents.KeyPressEventArgs args)
         {
+
+            isKeyDownShift = Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift);
+
             switch (args.Key)
             {
                 case Keys.Up:
                 case Keys.Left:
                 case Keys.W:
                 case Keys.A:
-                    if (playerLinePosition > 1)
+                    if ((gameMod & GameMod.Auto) != GameMod.Auto)
                     {
-                        if (Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift))
-                            playerLinePosition = Math.Max(playerLinePosition - 2, 1);
-                        else
-                            playerLinePosition--;
+                        if (playerLinePosition > 1)
+                        {
+                            if (isKeyDownShift)
+                                playerLinePosition = Math.Max(playerLinePosition - 2, 1);
+                            else
+                                playerLinePosition--;
+                        }
+                        movements.Add(new ReplayObject { PressedAt = playerLinePosition, LeaveAt = GamePosition });
                     }
-                    movements.Add(new ReplayObject { PressedAt = playerLinePosition, LeaveAt = GamePosition });
+
                     break;
                 case Keys.Down:
                 case Keys.Right:
                 case Keys.S:
                 case Keys.D:
-                    if (playerLinePosition < fieldSlots)
+                    if ((gameMod & GameMod.Auto) != GameMod.Auto)
                     {
-                        if (Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift))
-                            playerLinePosition = Math.Min(playerLinePosition + 2, fieldSlots);
-                        else
-                            playerLinePosition++;
+                        if (playerLinePosition < fieldSlots)
+                        {
+                            if (isKeyDownShift)
+                                playerLinePosition = Math.Min(playerLinePosition + 2, fieldSlots);
+                            else
+                                playerLinePosition++;
+                        }
+                        movements.Add(new ReplayObject { PressedAt = playerLinePosition, LeaveAt = GamePosition });
                     }
-                    movements.Add(new ReplayObject { PressedAt = playerLinePosition, LeaveAt = GamePosition });
                     break;
                 case Keys.Escape:
                     togglePause();
@@ -252,7 +307,7 @@ namespace kyun.game.GameModes.CatchIt
 
         private void clearObjects()
         {
-            Controls.RemoveAll(item => item is HitBase);
+            Controls.RemoveAll(isHitBase);
             HitObjectsRemain.Clear();
             HitObjects.Clear();
             particleEngine.Clear();
@@ -260,6 +315,7 @@ namespace kyun.game.GameModes.CatchIt
 
         public override void Play(IBeatmap beatmap, GameMod GameMods = GameMod.None)
         {
+            velocity = SmoothVelocity = 3;
             beatmap.ApproachRate = Math.Min(beatmap.ApproachRate, 10);
             End = false;
             skipped = false;
@@ -272,11 +328,20 @@ namespace kyun.game.GameModes.CatchIt
             KyunGame.Instance.Player.Stop();
             ChangeBackground(KyunGame.Instance.SelectedBeatmap.Background);
             Beatmap = beatmap;
+            OriginalHitObjects = Beatmap.HitObjects.ToArray().ToList();
+
+            //Remove
+
+            OriginalHitObjects = OriginalHitObjects.Distinct(new HitObjectComparer()).ToList();
+
+            //
+
             playerLinePosition = 1;
             lastIndex = 0;
             _scoreDisplay.IsActive = true;
             changeCatcherTx(PlayerTxType.Idle);
-
+            timeToPlayerGlow = 0;
+            lastTime = 0;
             if ((GameMods & GameMod.Replay) != GameMod.Replay)
                 movements.Clear();
 
@@ -292,33 +357,31 @@ namespace kyun.game.GameModes.CatchIt
             gameMod = GameMods;
             Combo.Instance.ResetAll();
 
+            if ((gameMod & GameMod.Replay) == GameMod.Replay && (gameMod & GameMod.Auto) != GameMod.Auto)
+            {
+                replayLabel.Text = "REPLAY";
+                if (!string.IsNullOrWhiteSpace(replay.Username))
+                    replayLabel.Text += " - " + replay.Username;
+                replayLabel.Visible = true;
 
-            if ((gameMod & GameMod.Replay) == GameMod.Replay)
+            }
+            else if ((gameMod & GameMod.Auto) == GameMod.Auto)
             {
                 replayLabel.Visible = true;
-                if ((GameMods & GameMod.Auto) == GameMod.Auto)
+                if ((gameMod & GameMod.Replay) == GameMod.Replay)
+                {
                     replayLabel.Text = "AUTO - REPLAY";
+                }
                 else
-                    replayLabel.Text = "REPLAY";
+                {
+                    replayLabel.Text = "AUTO";
+                }
             }
             else
             {
                 replayLabel.Visible = false;
-                if ((GameMods & GameMod.Auto) == GameMod.Auto)
-                    replayLabel.Text = "AUTO - REPLAY";
-                else
-                    replayLabel.Text = "REPLAY";
             }
 
-            if ((GameMods & GameMod.Auto) == GameMod.Auto)
-            {
-                replayLabel.Text = "AUTO";
-                replayLabel.Visible = true;
-            }
-            else
-            {
-                replayLabel.Visible = false;
-            }
 
             if (System.IO.File.Exists(beatmap.Video))
             {
@@ -350,11 +413,43 @@ namespace kyun.game.GameModes.CatchIt
             Play(Beatmap, GameMods);
         }
 
-        internal void checkObjects()
+        internal virtual void checkObjects()
         {
 
-
             if (!InGame) return;
+            InheritedPoint = Beatmap.GetInheritedPointFor(AVPlayer.audioplayer.Position);
+            if (InheritedPoint == null)
+            {
+
+            }
+            else
+            {
+
+                float sliderVelocityInOsuFormat = InheritedPoint.MsPerBeat;
+
+                if (InheritedPoint.MsPerBeat < -250)
+                {
+                    InheritedPoint.MsPerBeat = -200;
+                }
+
+                if (sliderVelocityInOsuFormat >= 0)
+                {
+                    //sliderVelocityInOsuFormat = -100f; //DEFAUL VALUE FOR OSU
+                    if (Velocity == 0)
+                        Velocity = Beatmap.SliderMultiplier * 2f;
+
+                    Velocity = Math.Max(Velocity, 6f);
+                }
+                else
+                {
+                    Velocity = (float)Math.Abs(100f / sliderVelocityInOsuFormat);
+                    //Velocity = (float)Math.Abs(sliderVelocityInOsuFormat / 100f);
+                    Velocity *= (Beatmap.SliderMultiplier * 2f);
+                    Velocity = Math.Max(Velocity, 6f);
+
+                }
+            }
+
 
             if (InGame && GamePosition > Beatmap.SleepTime && KyunGame.Instance.Player.PlayState == BassPlayState.Stopped)
             {
@@ -362,13 +457,13 @@ namespace kyun.game.GameModes.CatchIt
 
                 KyunGame.Instance.Player.Volume = KyunGame.Instance.GeneralVolume;
 
-                if ((long)Beatmap.HitObjects.First().StartTime > 3500)
+                if ((long)OriginalHitObjects.First().StartTime > 3500)
                     skipButton.Visible = true;
                 else
                     skipButton.Visible = false;
             }
 
-            if (lastIndex >= Beatmap.HitObjects.Count)
+            if (lastIndex >= OriginalHitObjects.Count)
             {
                 InGame = false;
                 return;
@@ -377,53 +472,57 @@ namespace kyun.game.GameModes.CatchIt
             long actualTime = GamePosition;
 
 
-            IHitObj lastObject = Beatmap.HitObjects[lastIndex];
+            IHitObj lastObject = OriginalHitObjects[lastIndex];
 
-            if (!skipped && actualTime > Beatmap.HitObjects[0].StartTime - 3000)
+
+            if (!skipped && actualTime > OriginalHitObjects[0].StartTime - 3000)
             {
                 skipped = true;
 
             }
             skipButton.Visible = !skipped;
 
-            long approachStart = (long)(ModeConstants.APPROACH_TIME_BASE - Beatmap.ApproachRate * 150f) + 20000;
+            long approachStart = (long)(ModeConstants.APPROACH_TIME_BASE - Beatmap.ApproachRate * 150f) + (long)(SmoothVelocity * 1000) + 5000;
 
             long nextObjStart = (long)lastObject.StartTime - approachStart;
 
 
             if (actualTime > nextObjStart)
             {
-
-                if (lastObject is HitButton)
+                if (Math.Abs(lastObject.StartTime - lastTime) > 20)
                 {
+                    if (lastObject is HitButton)
+                    {
 
-                    var obj = new HitObject(lastObject, Beatmap, this);
-                    obj.ReplayId = lastIndex;
-                    HitObjects.Add(obj);
-                    HitObjectsRemain.Add(obj);
-                    Controls.Add(obj);
+                        var obj = new HitObject(lastObject, Beatmap, this);
+                        obj.ReplayId = lastIndex;
+                        HitObjects.Add(obj);
+                        HitObjectsRemain.Add(obj);
+                        Controls.Add(obj);
+                    }
+                    else
+                    {
+
+                        var obj2 = new HitObject(lastObject, Beatmap, this, false);
+                        //obj2.TextureColor = Color.Red;
+
+                        obj2.ReplayId = lastIndex;
+                        HitObjects.Add(obj2);
+                        HitObjectsRemain.Add(obj2);
+
+                        var obj = new HitObject(lastObject, Beatmap, this, false, true, obj2);
+                        obj.ReplayId = lastIndex;
+
+                        HitObjects.Add(obj);
+                        HitObjectsRemain.Add(obj);
+                        Controls.Add(obj);
+
+
+                        Controls.Add(obj2);
+                    }
                 }
-                else
-                {
 
-                    var obj2 = new HitObject(lastObject, Beatmap, this, false);
-                    //obj2.TextureColor = Color.Red;
-
-                    obj2.ReplayId = lastIndex;
-                    HitObjects.Add(obj2);
-                    HitObjectsRemain.Add(obj2);
-
-                    var obj = new HitObject(lastObject, Beatmap, this, false, true, obj2);
-                    obj.ReplayId = lastIndex;
-
-                    HitObjects.Add(obj);
-                    HitObjectsRemain.Add(obj);
-                    Controls.Add(obj);
-
-
-                    Controls.Add(obj2);
-                }
-
+                lastTime = (long)lastObject.StartTime;
                 lastIndex++;
             }
 
@@ -441,7 +540,7 @@ namespace kyun.game.GameModes.CatchIt
 
         private void updateCatcher()
         {
-            if(Combo.Instance.ActualMultiplier > 200)
+            if (Combo.Instance.ActualMultiplier > 200)
             {
                 changeCatcherTx(PlayerTxType.Fire);
             }
@@ -450,10 +549,10 @@ namespace kyun.game.GameModes.CatchIt
                 changeCatcherTx(PlayerTxType.Combo);
             }
 
-            if (catcherElapsed > 600)
+            if (catcherElapsed > Math.Max(NonInheritedPoint.MsPerBeat, 1000f / 150f))
             {
                 catcherElapsed = 0;
-                if(catcherState == 0)
+                if (catcherState == 0)
                 {
                     catcherState = 1;
                 }
@@ -465,7 +564,7 @@ namespace kyun.game.GameModes.CatchIt
                 changeCatcherTx(txState);
             }
 
-            if(catcherToIdle > 5000 && txState == PlayerTxType.Miss)
+            if (catcherToIdle > 5000 && txState == PlayerTxType.Miss)
             {
                 catcherToIdle = 0;
                 changeCatcherTx(PlayerTxType.Idle);
@@ -474,6 +573,28 @@ namespace kyun.game.GameModes.CatchIt
 
         public override void Update(GameTime tm)
         {
+            NonInheritedPoint = Beatmap.GetTimingPointFor(AVPlayer.audioplayer.Position, false);
+            if (smoothingVel)
+            {
+                if (SmoothVelocity != velocity)
+                {
+
+
+                    if (SmoothVelocity > velocity)
+                    {
+                        SmoothVelocity = Math.Max(velocity, SmoothVelocity - tm.ElapsedGameTime.Milliseconds * (Math.Max(NonInheritedPoint.MsPerBeat, 150) / 100000f));
+                    }
+                    else if (SmoothVelocity < velocity)
+                    {
+                        SmoothVelocity = Math.Min(velocity, SmoothVelocity + tm.ElapsedGameTime.Milliseconds * (Math.Max(NonInheritedPoint.MsPerBeat, 150) / 100000f));
+                    }
+                }
+                else
+                {
+                    smoothingVel = false;
+                }
+            }
+
             if (KyunGame.Instance.Player.PlayState == BassPlayState.Stopped)
                 GamePosition += (long)KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds;
             else
@@ -482,18 +603,37 @@ namespace kyun.game.GameModes.CatchIt
             catcherElapsed += tm.ElapsedGameTime.Milliseconds;
             catcherToIdle += tm.ElapsedGameTime.Milliseconds;
 
+            timeToPlayerGlow += tm.ElapsedGameTime.Milliseconds;
+            //isKeyDownShift = Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift);
+
+            if (timeToPlayerGlow > 12) //12ms
+            {
+                timeToPlayerGlow = 0;
+                if (isKeyDownShift)
+                {
+                    Particle particle = particleEngine.AddNewHitObjectParticle(Player.Texture, Vector2.Zero, Player.Position, 30, 0, Color.White);
+                    particle.Opacity = .5f;
+                    particle.TextureColor = Color.Yellow;
+                    particle.Size = new Vector2(PlayerSize.X, PlayerSize.Y);
+                    particle.Scale = Player.Scale;
+                }
+                isKeyDownShift = Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift);
+            }
+            base.Update(tm);
             updatePlayer();
             checkObjects();
             updateCatcher();
-            base.Update(tm);
-            Controls.RemoveAll(item => item.Died);
+
+            Controls.RemoveAll(isDed);
             HitObjectsRemain.RemoveAll(item => item.Died);
 
-            endToTime = (Settings1.Default.Video && !VideoPlayer.Instance.Stopped) ? avp.audioplayer.Length - (long)Beatmap.HitObjects.Last().EndTime : 3000;
+
+
+            endToTime = (Settings1.Default.Video && !VideoDecoder.Instance.decoding) ? avp.audioplayer.Length - (long)OriginalHitObjects.Last().EndTime : 3000;
 
             int hitCount = HitObjectsRemain.Count;
 
-            if (lastIndex >= Beatmap.HitObjects.Count && hitCount < 1)
+            if (lastIndex >= OriginalHitObjects.Count && hitCount < 1)
             {
                 End = true;
 
@@ -553,7 +693,7 @@ namespace kyun.game.GameModes.CatchIt
                 case PlayerTxType.Combo:
                     txState = type;
 
-                    if(catcherState == 0)
+                    if (catcherState == 0)
                         Player.Texture = SpritesContent.Instance.CatcherCombo;
                     else
                         Player.Texture = SpritesContent.Instance.CatcherCombo2;
@@ -593,5 +733,42 @@ namespace kyun.game.GameModes.CatchIt
         Combo,
         Fire,
         Miss
+    }
+
+    class HitObjectComparer : IEqualityComparer<IHitObj>
+    {
+        public bool Equals(IHitObj x, IHitObj y)
+        {
+            if (x is HitSlider)
+            {
+                if (x.EndTime > x.BeatmapContainer.HitObjects.Last().EndTime)
+                {
+                    x.EndTime = x.BeatmapContainer.HitObjects.Last().EndTime;
+                }
+            }
+
+            if (y is HitSlider)
+            {
+                if (y.EndTime > x.BeatmapContainer.HitObjects.Last().EndTime)
+                {
+                    y.EndTime = x.BeatmapContainer.HitObjects.Last().EndTime;
+                }
+            }
+
+            if (x.StartTime == y.StartTime)
+                return true;
+            else if (Math.Abs(x.StartTime - y.StartTime) < 25)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public int GetHashCode(IHitObj obj)
+        {
+            return obj.StartTime.GetHashCode();
+        }
+
     }
 }
