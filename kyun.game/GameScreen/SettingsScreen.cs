@@ -14,7 +14,9 @@ namespace kyun.GameScreen
     public partial class SettingsScreen : ScreenBase
     {
 
-        static IScreen instance = null;
+        public static IScreen instance = null;
+        private SynchronizationContext syncContext;
+
         public static IScreen Instance
         {
             get
@@ -62,6 +64,7 @@ namespace kyun.GameScreen
             Settings1.Default.ScreenMode = ((ComboBox)sender).SelectedIndex;
             Settings1.Default.Save();
 
+            //InstanceManager.deleg.Invoke();
 
             KyunGame.Instance.ChangeResolution(Screen.ScreenModeManager.GetSupportedModes()[Settings1.Default.ScreenMode]);
 

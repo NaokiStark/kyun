@@ -15,7 +15,7 @@ namespace kyun.GameScreen
     {
         private Image Logo;
 
-        private DateTime initTime;
+        private double initTime;
 
         //Test only
 
@@ -67,7 +67,7 @@ namespace kyun.GameScreen
             Controls.Add(Logo);
             Controls.Add(lComp);
             Controls.Add(EWarnImage);
-            initTime = DateTime.Now;
+            initTime = KyunGame.Instance.GameTimeP.TotalGameTime.TotalSeconds;
             DONT_UPDATE = false;
 
             EffectsPlayer.PlayEffect(SpritesContent.Instance.WelcomeToOsuXd);
@@ -88,9 +88,9 @@ namespace kyun.GameScreen
 
             //return;
            
-            TimeSpan diff = (DateTime.Now - initTime);            
+            double diff = KyunGame.Instance.GameTimeP.TotalGameTime.TotalSeconds - initTime;            
 
-            if(diff.TotalSeconds > 2)
+            if(diff > 2)
             {
                 ScreenManager.ChangeTo(LoadScreen.Instance);
                 //ScreenManager.ChangeTo(game.GameModes.Test.TestScreen.GetInstance());

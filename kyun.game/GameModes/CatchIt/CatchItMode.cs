@@ -22,6 +22,7 @@ using kyun.GameScreen.UI.Buttons;
 using osuBMParser;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using kyun.game.GameScreen.UI;
+using System.Threading;
 
 namespace kyun.game.GameModes.CatchIt
 {
@@ -43,7 +44,9 @@ namespace kyun.game.GameModes.CatchIt
         internal List<FilledRectangle> rectangles = new List<FilledRectangle>();
         internal List<HitObject> HitObjectsRemain = new List<HitObject>();
 
-        internal List<Beatmap.IHitObj> OriginalHitObjects = new List<Beatmap.IHitObj>();
+        internal List<kyun.Beatmap.IHitObj> OriginalHitObjects = new List<kyun.Beatmap.IHitObj>();
+
+        public OsuGameMode _osuMode { get; private set; }
 
         internal ComboDisplay comboDisplay;
         internal long endToTime;
@@ -207,10 +210,93 @@ namespace kyun.game.GameModes.CatchIt
 
         private void _healthbar_OnFail()
         {
-            KyunGame.Instance.Player.Stop();
+            //KyunGame.Instance.Player.Stop();
+            //InGame = false;
+            //PauseOverlay.ShowFailed(this);
+            //ScreenManager.ShowOverlay(PauseOverlay.Instance);
+
+            if (!InGame)
+                return;
+
+
             InGame = false;
-            PauseOverlay.ShowFailed(this);
-            ScreenManager.ShowOverlay(PauseOverlay.Instance);
+            bool killVel = false;
+            KyunGame.Instance.Player.SetVelocity(.5f);
+            new Task(() =>
+            {
+                int time = 2000;
+                for (int a = time; a > 0; a--)
+                {
+                    if (killVel)
+                    {
+                        killVel = false;
+                        KyunGame.Instance.Player.SetVelocity(1);
+                        break;
+                    }
+
+
+                    if (a == 1950)
+                    {
+                        EffectsPlayer.PlayEffect(SpritesContent.instance.FailTransition);
+                    }
+                    KyunGame.Instance.Player.SetVelocity(((float)a / 1000f / (time / 1000)) / 2f);
+                    Thread.Sleep(1);
+                }
+            }).Start();
+
+            new Task(() =>
+            {
+                Thread.Sleep(2000);
+
+                killVel = true;
+                KyunGame.Instance.Player.SetVelocity(1);
+
+                KyunGame.Instance.Player.Velocity = 1;
+                KyunGame.Instance.Player.Stop();
+
+
+
+                PauseOverlay.ShowFailed(this);
+                ScreenManager.ShowOverlay(PauseOverlay.Instance);
+            }).Start();
+
+            for (int c = 0; c < Controls.Count; c++)
+            {
+                UIObjectBase control = Controls.ElementAt(c);
+
+                if (control is HitBase)
+                {
+                    control.Died = true;
+                    control.Visible = false;
+
+                    HitObjectParticle pr = particleEngine.AddNewHitObjectParticle(control.Texture,
+                      new Vector2(2),
+                      new Vector2(control.Position.X, control.Position.Y),
+                      10,
+                      0,
+                      Color.White
+                      ) as HitObjectParticle;
+                    pr.Scale = control.Scale;
+                    pr.Velocity = new Vector2(.5f);
+                    pr.Opacity = control.Opacity;
+                    pr.MoveTo(AnimationEffect.Linear, 60000, new Vector2(control.Position.X, control.Position.Y + 60));
+                    pr.TextureColor = Color.Violet;
+
+                    ParticleScore sc = particleEngine.AddNewScoreParticle(SpritesContent.instance.MissTx,
+                       new Vector2(.05f),
+                       new Vector2(control.Position.X + (control.Texture.Height / 2) - (SpritesContent.instance.MissTx.Width / 2), control.Position.Y + (control.Texture.Height / 2) + (SpritesContent.instance.MissTx.Height + 10) * 1.5f),
+                       10,
+                       0,
+                       Color.White
+                       ) as ParticleScore;
+
+                    sc.Scale = control.Scale;
+                    sc.Velocity = new Vector2(.5f);
+                    sc.Opacity = control.Opacity;
+                    sc.MoveTo(AnimationEffect.Linear, 60000, new Vector2(control.Position.X, control.Position.Y + 50));
+                    sc.TextureColor = Color.Violet;
+                }
+            }
 
         }
 
@@ -329,7 +415,7 @@ namespace kyun.game.GameModes.CatchIt
             ChangeBackground(KyunGame.Instance.SelectedBeatmap.Background);
             Beatmap = beatmap;
             OriginalHitObjects = Beatmap.HitObjects.ToArray().ToList();
-
+            _osuMode = beatmap.Osu_Gamemode;
             //Remove
 
             OriginalHitObjects = OriginalHitObjects.Distinct(new HitObjectComparer()).ToList();

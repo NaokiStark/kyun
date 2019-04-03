@@ -94,8 +94,9 @@ namespace kyun.GameScreen
             comboFrameRate.Text = Settings1.Default.FrameRate.ToString();
             if (Settings1.Default.VSync)
             {
-                comboFrameRate.Text = "60";
-                comboFrameRate.Items.Add("60");
+                string refreshRate = ScreenModeManager.GetMonitorFreq();
+                comboFrameRate.Text = refreshRate;
+                comboFrameRate.Items.Add(refreshRate);
             }
             else
             {
@@ -342,7 +343,10 @@ namespace kyun.GameScreen
                 if (isFullScreen)
                     KyunGame.Instance.ToggleFullscreen(true);
 
-                notifier.ShowDialog("kyun! needs to restart to add osu beatmaps, please, just do it.", 10000, NotificationType.Critical);
+                //notifier.ShowDialog("kyun! needs to restart to add osu beatmaps, please, just do it.", 10000, NotificationType.Critical);
+                LoadScreen.Instance = null;
+                ScreenManager.ChangeTo(new LoadScreen(true));
+                notifier.ShowDialog("Reloading database, please wait!", 10000, NotificationType.Critical);
             };
 
 
@@ -455,9 +459,11 @@ namespace kyun.GameScreen
 
             if (((CheckBox)sender).Checked)
             {
-                comboFrameRate.Text = "60";
+                string refreshRate = ScreenModeManager.GetMonitorFreq();
+                comboFrameRate.Text = refreshRate;
+                
                 comboFrameRate.Items.Clear();
-                comboFrameRate.Items.Add("60");
+                comboFrameRate.Items.Add(refreshRate);
             }
             else
             {

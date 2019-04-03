@@ -1,4 +1,5 @@
 ﻿using ICSharpCode.SharpZipLib.Zip;
+using kyun.Beatmap;
 using kyun.game.Database;
 using kyun.GameScreen;
 using kyun.GameScreen.UI;
@@ -101,7 +102,7 @@ namespace kyun.game.GameScreen
 
                     FileInfo[] fl = new DirectoryInfo(dlPath).GetFiles();
 
-                    Beatmap.Mapset bmms = null;
+                    Mapset bmms = null;
                     foreach (FileInfo fff in fl)
                     {
                         if (fff.Extension.ToLower() == ".osu")
@@ -110,7 +111,7 @@ namespace kyun.game.GameScreen
                             if (bmp != null)
                             {
                                 if (bmms == null)
-                                    bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator, bmp.Tags);
+                                    bmms = new Mapset(bmp.Title, bmp.Artist, bmp.Creator, bmp.Tags);
                                 bmms.Add(bmp);
 
 
@@ -120,7 +121,7 @@ namespace kyun.game.GameScreen
                     }
                     if (bmms != null)
                     {
-                        Beatmap.Mapset mapst = Beatmap.Mapset.OrderByDiff(bmms);
+                        Mapset mapst = Mapset.OrderByDiff(bmms);
 
                         //Add to database
                         DatabaseInterface.Instance.InsertMapset(bmms);

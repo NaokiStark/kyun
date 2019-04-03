@@ -121,6 +121,7 @@ namespace kyun.GameScreen
 
             try
             {
+                OsuBeatMap.rnd.Seed = (uint)DateTime.Now.Ticks;
                 int nxt = OsuBeatMap.rnd.Next(0, sDirs.Length - 1);
                 DirectoryInfo dr = sDirs[nxt];
 
@@ -131,19 +132,20 @@ namespace kyun.GameScreen
                     if (!file.Name.ToLower().EndsWith(".json"))
                         continue;
 
-                    StreamReader streader = File.OpenText(file.FullName);
+                    //StreamReader streader = File.OpenText(file.FullName);
 
-                    JObject jo = JObject.Parse(streader.ReadToEnd());
+                    //JObject jo = JObject.Parse(streader.ReadToEnd());
 
-                    var songInfo = new SongInfo();
-                    songInfo.Artist = (string)jo["artist"];
-                    songInfo.Title = (string)jo["title"];
-                    songInfo.Cover = Path.Combine(file.DirectoryName, (string)jo["cover"]);
-                    songInfo.Song = Path.Combine(file.DirectoryName, (string)jo["song"]);
+                    var songInfo = SongInfo.FromFile(file.FullName);
+                    //var songInfo = new SongInfo();
+                    //songInfo.Artist = (string)jo["artist"];
+                    //songInfo.Title = (string)jo["title"];
+                    //songInfo.Cover = Path.Combine(file.DirectoryName, (string)jo["cover"]);
+                    //songInfo.Song = Path.Combine(file.DirectoryName, (string)jo["song"]);
                     selected_song = songInfo;
 
-                    streader.Close();
-                    streader.Dispose();
+                    //streader.Close();
+                    //streader.Dispose();
 
                     break;
 

@@ -1,4 +1,5 @@
-﻿using kyun.GameScreen;
+﻿using kyun.game.GameScreen;
+using kyun.GameScreen;
 using kyun.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,7 +10,7 @@ using System.Text;
 
 namespace kyun.Overlay
 {
-    public class OverlayScreen : ScreenBase, IOverlay
+    public class OverlayScreen : AnimatedScreenBase, IOverlay
     {
         public OverlayType Type { get; set; }
 
@@ -26,6 +27,8 @@ namespace kyun.Overlay
             
             BackgroundDim = 0.5f;
         }
+
+        
         
     }
 }

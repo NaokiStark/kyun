@@ -379,7 +379,7 @@ namespace kyun.GameScreen
 
         }
 
-        private void updateAnimation()
+        internal void updateAnimation()
         {
             if (animationType == AnimationType.None)
             {
@@ -439,13 +439,31 @@ namespace kyun.GameScreen
                     float actualX = (initialPosX - destPosX) * scalePosX;
                     float actualY = (initialPosY - destPosY) * scalePosY;
 
+
                     if (initialPosX < destPosX)
                     {
                         actualX = (destPosX - initialPosX) * scalePosX;
                     }
+                    else if (initialPosX == destPosX)
+                    {
+                        actualX = initialPosX;
+                    }
+                    else
+                    {
+                        actualX = (destPosX + initialPosX) * scalePosX;
+                    }
+
                     if (initialPosY < destPosY)
                     {
-                        actualX = (destPosY - initialPosY) * scalePosY;
+                        actualY = (destPosY - initialPosY) * scalePosY + Position.Y;
+                    }
+                    else if (initialPosY == destPosY)
+                    {
+                        actualY = initialPosY;
+                    }
+                    else
+                    {
+                        actualY = (destPosY + initialPosY) * scalePosY;
                     }
 
                     Position = new Vector2(actualX, actualY);
@@ -494,10 +512,28 @@ namespace kyun.GameScreen
                     {
                         actualX = (destPosX - initialPosX) * scalePosX;
                     }
+                    else if(initialPosX == destPosX)
+                    {
+                        actualX = initialPosX;
+                    }
+                    else
+                    {
+                        actualX = (destPosX + initialPosX) * scalePosX;
+                    }
+
                     if (initialPosY < destPosY)
                     {
                         actualY = (destPosY - initialPosY) * scalePosY;
                     }
+                    else if (initialPosY == destPosY)
+                    {
+                        actualY = initialPosY;
+                    }
+                    else
+                    {
+                        actualY = (destPosY + initialPosY) * scalePosY;
+                    }
+
 
                     Position = new Vector2(actualX, actualY);
                     if (animationElapsed >= animationDuration)

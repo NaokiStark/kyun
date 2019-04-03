@@ -269,10 +269,86 @@ namespace kyun.GameModes.OsuMode
 
         private void _healthbar_OnFail()
         {
-            KyunGame.Instance.Player.Stop();
+            //KyunGame.Instance.Player.Stop();
+            if (!InGame)
+                return;
+
+
             InGame = false;
-            PauseOverlay.ShowFailed(this);
-            ScreenManager.ShowOverlay(PauseOverlay.Instance);
+            bool killVel = false;
+            KyunGame.Instance.Player.SetVelocity(.5f);
+            new Task(() =>
+            {
+                int time = 2000;
+                for (int a = time; a > 0; a--)
+                {
+                    if (killVel)
+                    {
+                        killVel = false;
+                        break;
+                    }
+                        
+
+                    if(a == 1950)
+                    {
+                        EffectsPlayer.PlayEffect(SpritesContent.instance.FailTransition);
+                    }
+                    KyunGame.Instance.Player.SetVelocity(((float)a / 1000f / (time / 1000)) / 2f);
+                    Thread.Sleep(1);
+                }
+            }).Start();
+
+            new Task(() =>
+            {
+                Thread.Sleep(2000);
+
+                killVel = true;
+                KyunGame.Instance.Player.Pause();
+                KyunGame.Instance.Player.SetVelocity(1);
+                KyunGame.Instance.Player.Velocity = 1;
+
+
+                PauseOverlay.ShowFailed(this);
+                ScreenManager.ShowOverlay(PauseOverlay.Instance);
+            }).Start();
+
+            for (int c = 0; c < Controls.Count; c++)
+            {
+                UIObjectBase control = Controls.ElementAt(c);
+
+                if (control is HitBase)
+                {
+                    control.Died = true;
+                    control.Visible = false;
+
+                    HitObjectParticle pr = _particleEngine.AddNewHitObjectParticle(control.Texture,
+                      new Vector2(2),
+                      new Vector2(control.Position.X, control.Position.Y),
+                      10,
+                      0,
+                      Color.White
+                      ) as HitObjectParticle;
+                    pr.Scale = control.Scale;
+                    pr.Velocity = new Vector2(.5f);
+                    pr.Opacity = control.Opacity;
+                    pr.MoveTo(GameScreen.AnimationEffect.Linear, 60000, new Vector2(control.Position.X, control.Position.Y + 50));
+                    pr.TextureColor = Color.Violet;
+
+                    ParticleScore sc = _particleEngine.AddNewScoreParticle(SpritesContent.instance.MissTx,
+                       new Vector2(.05f),
+                       new Vector2(control.Position.X + (control.Texture.Height / 2) - (SpritesContent.instance.MissTx.Width / 2), control.Position.Y + (control.Texture.Height / 2) + (SpritesContent.instance.MissTx.Height + 10) * 1.5f),
+                       10,
+                       0,
+                       Color.White
+                       ) as ParticleScore;
+
+                    sc.Scale = control.Scale;
+                    sc.Velocity = new Vector2(.5f);
+                    sc.Opacity = control.Opacity;
+                    sc.MoveTo(GameScreen.AnimationEffect.Linear, 60000, new Vector2(control.Position.X, control.Position.Y + 50));
+                    sc.TextureColor = Color.Violet;
+                }
+            }
 
         }
 
@@ -641,7 +717,7 @@ namespace kyun.GameModes.OsuMode
                     }
                     else
                     {
-                        
+
 
                     }
                 }
@@ -720,9 +796,9 @@ namespace kyun.GameModes.OsuMode
         {
             // "autopilot" mod: move quicker between objects
 
-            t = StringHelper.clamp(t * .95f, 0f, 1f);
-            t = bezierBlend(t * .95f);
-            return new Vector2(startX + (endX - startX) * t, startY + (endY - startY) * t);
+            float te = StringHelper.clamp(t, 0f, 1f);
+            float tee = bezierBlend(te * .95f);
+            return new Vector2(startX + (endX - startX) * tee, startY + (endY - startY) * te);
         }
 
         internal float bezierBlend(float t)

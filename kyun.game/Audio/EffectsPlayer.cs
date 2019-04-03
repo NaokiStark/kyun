@@ -40,7 +40,7 @@ namespace kyun.Audio
             tm.Start();
         }
 
-        public static int PlayEffect(int sample)
+        public static int PlayEffect(int sample, float volume = 1f)
         {
 
             if (sample != 0)
@@ -51,7 +51,7 @@ namespace kyun.Audio
                 //Bass.BASS_ChannelGetAttribute(channel, BASSAttribute.BASS_ATTRIB_FREQ, ref initialFrequency);
 
 
-                Bass.BASS_ChannelSetAttribute(channel, BASSAttribute.BASS_ATTRIB_VOL, KyunGame.Instance.GeneralVolume);
+                Bass.BASS_ChannelSetAttribute(channel, BASSAttribute.BASS_ATTRIB_VOL, KyunGame.Instance.GeneralVolume * volume);
                 Bass.BASS_ChannelPlay(channel, false);
 
                 Bass.BASS_StreamFree(channel);

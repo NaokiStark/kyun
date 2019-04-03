@@ -1,6 +1,7 @@
 ﻿using kyun.game;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace kyun.Utils
@@ -20,15 +21,20 @@ namespace kyun.Utils
         public bool IntancedBeatmaps;
 
         public static bool SoftwareRendering { get; private set; }
+        public bool IsRunning { get; set; }
 
+        private SynchronizationContext syncContext;
         public static bool Repair = false;
+
+        public delegate void MainThrRel();
+        public static MainThrRel deleg;
 
         //old launcher
         public InstanceManager(bool softwareRendering = false)
         {
             Settings1.Default.WindowsRender = softwareRendering;
 
-            
+            deleg = Reload;
 
             Logger.Instance.Severe("|");
             Logger.Instance.Severe("| Notice:");
@@ -47,7 +53,9 @@ namespace kyun.Utils
         public InstanceManager(bool softwareRendering = false, bool repair = false)
         {
 
-            
+            syncContext = System.Threading.SynchronizationContext.Current;
+            deleg = Reload;
+
 
             Repair = repair;
             Settings1.Default.WindowsRender = softwareRendering;
@@ -75,25 +83,34 @@ namespace kyun.Utils
         {
             try
             {
-                kyun.Logger.Instance.Debug(System.Threading.Thread.GetDomainID().ToString());
-                using (ubeat = new KyunGame(SoftwareRendering, Repair))
+                do
+                {
+                    IsRunning = false;
+                    kyun.Logger.Instance.Debug(System.Threading.Thread.GetDomainID().ToString());
+                    ubeat = new KyunGame(SoftwareRendering, Repair);
+
                     ubeat.Run();
+                }
+                while (IsRunning);
+               
             }
             catch (Exception nsgdex)
             {
-                MessageBox.Show("Well, your graphics card is too old, but not everything is lost, kyun will start with CPU rendering (VERY SLOWER [30FPS]).", "kyun!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                MessageBox.Show("If you want to load without this message, set 'Software Rendering' in Settings screen.", "IMPORTANT MESSAGE", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                
-                using (ubeat = new KyunGame(true))
-                    ubeat.Run();
+                kyun.Logger.Instance.Debug(System.Threading.Thread.GetDomainID().ToString());
+                ubeat = new KyunGame(SoftwareRendering, Repair);
+                ubeat.Run();
             }
         }
 
         public void Reload()
         {
-            //ubeat.Dispose();
-            Application.Restart();
-            Application.Exit();
+
+            ubeat.StopAll();
+        }
+
+        private void Ubeat_Disposed(object sender, EventArgs e)
+        {
+           
         }
 
         public void Dispose()

@@ -41,7 +41,7 @@ namespace kyun.game.Overlay
 
         public ModeOverlay() : base(OverlayType.Normal)
         {
-            Visible = false;
+ 
             rPeak = false;
             ltitle = new Label(0)
             {
@@ -111,7 +111,6 @@ namespace kyun.game.Overlay
             BeatmapScreen i = (BeatmapScreen.Instance as BeatmapScreen);
             i._gamemode = GameMode.CatchIt;
 
-            Visible = false;
             ScreenManager.RemoveOverlay();
         }
 
@@ -121,7 +120,6 @@ namespace kyun.game.Overlay
 
             i._gamemode = GameMode.Osu;
 
-            Visible = false;
             ScreenManager.RemoveOverlay();
             //if (i._gamemode == GameMode.Osu)
             //{
@@ -156,7 +154,6 @@ namespace kyun.game.Overlay
         {
             BeatmapScreen i = (BeatmapScreen.Instance as BeatmapScreen);
             i._gamemode = GameMode.Classic;
-            Visible = false;
 
             ScreenManager.RemoveOverlay();
             //if (i._gamemode == GameMode.CatchIt || i._gamemode == GameMode.Osu)
@@ -189,7 +186,6 @@ namespace kyun.game.Overlay
             else
                 Background = SpritesContent.Instance.DefaultBackground;
 
-            Visible = true;
         }
     }
 }

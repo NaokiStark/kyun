@@ -48,14 +48,25 @@ namespace kyun.GameScreen
             }
         }
 
-        public static void ShowOverlay(IOverlay _overlay)
+        public static void ShowOverlay(OverlayScreen _overlay)
         {
+
+            _overlay.Opacity = 0;
+
             Overlay = _overlay;
+
+            _overlay.Visible = true;
+
+            _overlay.FadeIn(AnimationEffect.Linear, 500);
         }
 
         public static void RemoveOverlay()
         {
-            Overlay = null;
+            ((OverlayScreen)Overlay).FadeOut(AnimationEffect.Linear, 100, () =>
+            {
+                ((OverlayScreen)Overlay).Opacity = 1;
+                Overlay = null;
+            });
         }
 
         public static void Start()
@@ -166,7 +177,19 @@ namespace kyun.GameScreen
 
             if (Opacity > 0.00001)
             {
-                KyunGame.Instance.SpriteBatch.Draw(TopEffect, new Rectangle(0, 0, TopEffect.Width, TopEffect.Height), Color.White * Opacity);
+                var ActualScreenMode = Screen.ScreenModeManager.GetActualMode();
+                float screenWidth = ActualScreenMode.Width;
+                float screenHeight = ActualScreenMode.Height;
+
+                var screenRectangle = new Rectangle((int)screenWidth / 2, (int)screenHeight / 2, (int)(((float)TopEffect.Width / (float)TopEffect.Height) * (float)screenHeight), (int)screenHeight);
+
+                if (screenRectangle.Width < screenWidth)
+                {
+                    screenRectangle = new Rectangle(screenRectangle.X, screenRectangle.Y, (int)screenWidth, (int)(((float)TopEffect.Height / (float)TopEffect.Width) * (float)screenWidth));
+                }
+                KyunGame.Instance.SpriteBatch.Draw(TopEffect, screenRectangle, null, Color.White * Opacity, 0, new Vector2(TopEffect.Width / 2, TopEffect.Height / 2), SpriteEffects.None, 0);
+
+                //KyunGame.Instance.SpriteBatch.Draw(TopEffect, new Rectangle(0, 0, TopEffect.Width, TopEffect.Height), Color.White * Opacity);
             }
 
         }

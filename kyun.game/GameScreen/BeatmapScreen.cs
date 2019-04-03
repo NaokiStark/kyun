@@ -179,7 +179,13 @@ namespace kyun.GameScreen
             if (lBDff.selectedIndex < 0 || lBDff.selectedIndex > lBDff.Items.Count - 1) return;
             //AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.SelectorHit);
             EffectsPlayer.PlayEffect(SpritesContent.Instance.SelectorHit);
-            lblTitleDesc.Text = lBDff.Items.Beatmaps[lBDff.selectedIndex].Artist + " - " + lBDff.Items.Beatmaps[lBDff.selectedIndex].Title;
+
+            ubeatBeatMap selectd = lBDff.Items.Beatmaps[lBDff.selectedIndex];
+
+            lblTitleDesc.Text = selectd.Artist + " - " + selectd.Title;
+            lbldesc.Text = $"Mapped by " + selectd.Creator;
+            lblDiffDesc.Text = $"Diff: {selectd.Version} | OD: {selectd.OverallDifficulty} | AP: {selectd.ApproachRate} | CS: {selectd.CircleSize} | HD: {selectd.HPDrainRate}";
+
             if (lastDiffIndex != lBDff.selectedIndex)
             {
 
@@ -208,9 +214,22 @@ namespace kyun.GameScreen
             if (lbox.selectedIndex < 0 || lbox.selectedIndex > lbox.Items.Count - 1) return;
             //AudioPlaybackEngine.Instance.PlaySound(SpritesContent.Instance.SelectorHit);
             EffectsPlayer.PlayEffect(SpritesContent.Instance.SelectorHit);
-            lblTitleDesc.Text = lbox.Items[lbox.selectedIndex].Beatmaps[0].Artist + " - " + lbox.Items[lbox.selectedIndex].Beatmaps[0].Title;
 
-            ChangeBeatmapDisplay(lbox.Items[lbox.selectedIndex].Beatmaps[0]);
+            ubeatBeatMap selectd = lbox.Items[lbox.selectedIndex].Beatmaps[0];
+
+            if(selectd != null)
+            {
+                lblTitleDesc.Text = selectd.Artist + " - " + selectd.Title;
+                lbldesc.Text = $"Mapped by " + selectd.Creator;
+                lblDiffDesc.Text = $"Diff: {selectd.Version} | OD: {selectd.OverallDifficulty} | AP: {selectd.ApproachRate} | CS: {selectd.CircleSize} | HD: {selectd.HPDrainRate}";
+            }
+
+           
+            
+            
+            //lblTitleDesc.Text = lbox.Items[lbox.selectedIndex].Beatmaps[0].Artist + " - " + lbox.Items[lbox.selectedIndex].Beatmaps[0].Title;
+
+            ChangeBeatmapDisplay(selectd);
 
             ((MainScreen)MainScreen.Instance).ChangeMainDisplay(lbox.selectedIndex);
 

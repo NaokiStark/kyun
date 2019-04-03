@@ -35,7 +35,7 @@ namespace kyun.Overlay
         }
         public QuestionOverlay() : base(OverlayType.Normal)
         {
-            Visible = false;
+            
             ltitle = new Label(0)
             {
                 Text = "",
@@ -66,7 +66,7 @@ namespace kyun.Overlay
             };
 
             btnNo.Click += (obj, args) => {
-                Visible = false;
+                
                 ScreenManager.RemoveOverlay();
             };
 

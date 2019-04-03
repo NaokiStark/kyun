@@ -43,12 +43,39 @@ namespace kyunMono
                     (obj, args) =>
                     {
                         Text = $"Installing, please wait...";
-                        var c = Process.Start("msiexec", $" /i \"{Path.Combine(localPath, "XNA_Framework_4_Refresh.msi")}\"");
+                        var c = ExecuteAsAdmin("msiexec", $" /i \"{Path.Combine(localPath, "XNA_Framework_4_Refresh.msi")}\"");
+                        //var c = ExecuteAsAdmin(Path.Combine(localPath, "XNA_Framework_4_Refresh.msi"));
+                        c.Start();
                         c.WaitForExit();
                         Close();
                     }
                     ));
 
+        }
+
+        public Process ExecuteAsAdmin(string fileName, string args)
+        {
+            Process proc = new Process();
+            proc.StartInfo.FileName = fileName;
+            proc.StartInfo.Arguments = args;
+            proc.StartInfo.UseShellExecute = true;
+            //proc.StartInfo.RedirectStandardInput = true;
+            proc.StartInfo.Verb = "runas";
+            
+            return proc;
+        }
+
+        public Process ExecuteAsAdmin(string fileName)
+        {
+            Process proc = new Process();
+            proc.StartInfo.FileName = fileName;
+
+            proc.StartInfo.UseShellExecute = true;
+            proc.StartInfo.Verb = "runas";
+            //proc.StartInfo.RedirectStandardInput = true;
+
+
+            return proc;
         }
 
         public void DownloadFile(string address, string location, DownloadProgressChangedEventHandler progress, AsyncCompletedEventHandler complete)

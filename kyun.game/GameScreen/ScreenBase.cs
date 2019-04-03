@@ -8,6 +8,7 @@ using kyun.Beatmap;
 using kyun.Utils;
 using kyun.Video;
 using kyun.GameScreen.UI;
+using kyun.game.GameScreen;
 
 namespace kyun.GameScreen
 {
@@ -48,7 +49,7 @@ namespace kyun.GameScreen
 
         internal static AudioVideoPlayer avp;
 
-        
+
         public bool AllowVideo { get; set; }
 
         private FilledRectangle backgroundTransitionLayer;
@@ -65,9 +66,10 @@ namespace kyun.GameScreen
             OnLoad += _OnLoad;
             Controls = new List<UIObjectBase>();
             KyunGame.Instance.touchHandler.onTouchScreen += ScreenBase_onTouch;
-            BackgroundBeat = new UI.Image(SpritesContent.Instance.TopEffect) {
+            BackgroundBeat = new UI.Image(SpritesContent.Instance.TopEffect)
+            {
                 Position = Vector2.Zero,
-                                
+
             };
             BackgroundFlash = new FilledRectangle(new Vector2(ActualScreenMode.Width, ActualScreenMode.Height), Color.White * .05f);
             BackgroundDim = 1;
@@ -87,7 +89,7 @@ namespace kyun.GameScreen
 
         private void ScreenBase_onKeyPress(object sender, InputEvents.KeyPressEventArgs args)
         {
-            if(args.Key == Keys.F11)
+            if (args.Key == Keys.F11)
             {
                 KyunGame.Instance.ToggleFullscreen(!KyunGame.Instance.Graphics.IsFullScreen);
             }
@@ -96,7 +98,7 @@ namespace kyun.GameScreen
         private void ScreenBase_OnLoad(object sender, EventArgs e)
         {
 
-           // Controls.Add(BackgroundBeat);
+            // Controls.Add(BackgroundBeat);
         }
 
         internal static bool isDed(UIObjectBase i)
@@ -116,7 +118,7 @@ namespace kyun.GameScreen
 
         private void ScreenBase_onTouch(object sender, ubeatTouchEventArgs e)
         {
-            if(Visible)
+            if (Visible)
                 onTouch?.Invoke(this, e);
         }
 
@@ -130,31 +132,31 @@ namespace kyun.GameScreen
 
                 var screenRectangle = new Rectangle((int)screenWidth / 2, (int)screenHeight / 2, (int)(((float)Background.Width / (float)Background.Height) * (float)screenHeight), (int)screenHeight);
 
-                if(screenRectangle.Width < screenWidth)
+                if (screenRectangle.Width < screenWidth)
                 {
                     screenRectangle = new Rectangle(screenRectangle.X, screenRectangle.Y, (int)screenWidth, (int)(((float)Background.Height / (float)Background.Width) * (float)screenWidth));
                 }
 
-                
+
                 try
                 {
-                    if(Background != null && !Background.IsDisposed)
-                        if(!VideoDecoder.Instance.decoding)   
-                            KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.White, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                    if (Background != null && !Background.IsDisposed)
+                        if (!VideoDecoder.Instance.decoding)
+                            KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.White * Opacity, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
                 }
                 catch
                 {
                     //
                 }
-                
+
             }
 
             if (AllowVideo)
             {
                 AVPlayer.Render();
             }
-            
-            
+
+
         }
 
         internal void renderGoodies()
@@ -185,9 +187,9 @@ namespace kyun.GameScreen
                     backgroundTransitionLayer.Opacity = 1;
                     inTransition = false;
                     onFadeInEnd?.Invoke(this, new EventArgs());
-                    
+
                     return; //Wait for next update
-                }                    
+                }
 
                 backgroundTransitionLayer.Opacity += sum;
             }
@@ -195,7 +197,7 @@ namespace kyun.GameScreen
             {
                 float diff = KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * (transitionDelay - 0.002154f);
 
-                if(backgroundTransitionLayer.Opacity - diff < 0.001)
+                if (backgroundTransitionLayer.Opacity - diff < 0.001)
                 {
                     backgroundTransitionLayer.Opacity = 0;
                     fadeInBg = true;
@@ -212,7 +214,8 @@ namespace kyun.GameScreen
         {
             try
             {
-                foreach (UIObjectBase obj in Controls) {
+                foreach (UIObjectBase obj in Controls)
+                {
                     if (obj.Texture != null)
                     {
                         if (obj.Texture == SpritesContent.Instance.TopEffect)
@@ -229,7 +232,7 @@ namespace kyun.GameScreen
                         obj.Render();
                     }
                 }
-                    
+
             }
             catch
             {
@@ -266,9 +269,9 @@ namespace kyun.GameScreen
                 {
                     if (Background != null && !Background.IsDisposed && !VideoDecoder.Instance.decoding)
                     {
-                        KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.FromNonPremultiplied((int)(255f - 255f*BackgroundDim), (int)(255f - 255f * BackgroundDim), (int)(255f - 255f * BackgroundDim), (int)(255f * BackgroundDim)), 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                        KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.FromNonPremultiplied((int)(255f - 255f * BackgroundDim), (int)(255f - 255f * BackgroundDim), (int)(255f - 255f * BackgroundDim), (int)(255f * BackgroundDim)), 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
                     }
-                        //
+                    //
                 }
                 catch
                 {
@@ -283,7 +286,7 @@ namespace kyun.GameScreen
         {
             if (!Visible || isDisposing) return;
 
-
+            ActualScreenMode = Screen.ScreenModeManager.GetActualMode();
 
             KeyboardState actualState = Keyboard.GetState();
 
@@ -304,7 +307,7 @@ namespace kyun.GameScreen
             {
                 AVPlayer.Update();
             }
-            
+
             UpdateScroll();
 
             UpdateControls();
@@ -414,7 +417,8 @@ namespace kyun.GameScreen
             {
                 if (kbOldState.IsKeyUp(aKey))
                 {
-                    onKeyPress?.Invoke(this, new InputEvents.KeyPressEventArgs{
+                    onKeyPress?.Invoke(this, new InputEvents.KeyPressEventArgs
+                    {
                         Key = aKey
                     });
                 }
@@ -427,7 +431,7 @@ namespace kyun.GameScreen
         {
 
             Screen.ScreenMode actmode = Screen.ScreenModeManager.GetActualMode();
-            KyunGame.Instance.SpriteBatch.Draw(BackgroundBeat.Texture, new Rectangle(0, 0, actmode.Width, actmode.Height), null, Color.White * BackgroundBeat.Opacity * .8f, BackgroundBeat.AngleRotation, Vector2.Zero, (!rightBgEffect)?SpriteEffects.None:SpriteEffects.FlipHorizontally, 0);
+            KyunGame.Instance.SpriteBatch.Draw(BackgroundBeat.Texture, new Rectangle(0, 0, actmode.Width, actmode.Height), null, Color.White * BackgroundBeat.Opacity * .8f, BackgroundBeat.AngleRotation, Vector2.Zero, (!rightBgEffect) ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
             BackgroundFlash.Render();
         }
 
@@ -436,7 +440,7 @@ namespace kyun.GameScreen
             //Experimental
             float pScale = KyunGame.Instance.Player.PeakVol;
             if (pScale > 1) pScale = 1;
-            if (pScale > (InstanceManager.MaxPeak  * 99.999995f /100f))
+            if (pScale > (InstanceManager.MaxPeak * 99.999995f / 100f))
                 pScale = 1;
             else
                 pScale = 0f;
@@ -445,7 +449,7 @@ namespace kyun.GameScreen
 
             peak = pScale;
 
-            if(KyunGame.Instance.Player.PeakVol >= InstanceManager.MaxPeak - 0.001)
+            if (KyunGame.Instance.Player.PeakVol >= InstanceManager.MaxPeak - 0.001)
             {
                 peaked = true;
             }
@@ -455,7 +459,7 @@ namespace kyun.GameScreen
                 peak -= (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f);
             }
 
-            BackgroundFlash.Opacity = BackgroundBeat.Opacity = Math.Max(BackgroundBeat.Opacity - ((float)KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.003f),0f);
+            BackgroundFlash.Opacity = BackgroundBeat.Opacity = Math.Max(BackgroundBeat.Opacity - ((float)KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.003f), 0f);
 
             if (peaked && BackgroundBeat.Opacity == 0)
             {
@@ -470,7 +474,7 @@ namespace kyun.GameScreen
         {
             //List<ComboBox> cmbs = new List<ComboBox>();
 
-            foreach(UIObjectBase obj in Controls)
+            foreach (UIObjectBase obj in Controls)
             {
                 if (!(obj is ComboBox))
                     continue;
@@ -482,10 +486,10 @@ namespace kyun.GameScreen
                     cobj.Update();
                     return;
                 }
-                    
+
             }
 
-            
+
             foreach (UIObjectBase obj in Controls)
                 obj.Update();
 
@@ -494,7 +498,7 @@ namespace kyun.GameScreen
         public void BackPressed(IScreen screen)
         {
             ScreenManager.ChangeTo(screen);
-        }        
+        }
 
         public void OnLoadScreen()
         {
@@ -523,7 +527,7 @@ namespace kyun.GameScreen
 
         public void ChangeBackground(Texture2D tx)
         {
-            if(tx!=null)
+            if (tx != null)
             {
                 Background = tx;
             }
@@ -531,7 +535,7 @@ namespace kyun.GameScreen
             {
                 Background = SpritesContent.Instance.DefaultBackground;
             }
-            
+
         }
 
         public void ChangeBackground(string backgroundPath)
@@ -539,7 +543,7 @@ namespace kyun.GameScreen
             //if (!backgroundPath.EndsWith(".png") && !backgroundPath.EndsWith(".jpg"))
             //    return;
 
-            
+
 
             if (!File.Exists(backgroundPath))
             {
@@ -586,7 +590,8 @@ namespace kyun.GameScreen
             fadeInBg = true;
 
 
-            onFadeInEnd = (e, ar) => {
+            onFadeInEnd = (e, ar) =>
+            {
 
                 if (overrideBg)
                 {
@@ -604,7 +609,7 @@ namespace kyun.GameScreen
                 }*/
                 AVPlayer.Play(bm.SongPath, bm.Video, true);
 
-               
+
 
                 fadeInBg = false;
                 inTransition = true;
@@ -629,12 +634,14 @@ namespace kyun.GameScreen
         private bool mouseEventsCancelled;
         private bool scrollInvoked;
 
-        public float BackgroundDim {
+        public float BackgroundDim
+        {
             get
             {
                 return Math.Abs(bgdim - 1f);
             }
-            set {
+            set
+            {
                 bgdim = value;
             }
         }
@@ -642,7 +649,24 @@ namespace kyun.GameScreen
         internal float bgdim = 1;
         public Texture2D Background { get; set; }
         public List<UIObjectBase> Controls { get; set; }
-        public float Opacity { get; set; }
+
+        float opacity = 1;
+        public float Opacity
+        {
+            get
+            {
+                return opacity;
+            }
+            set
+            {
+                opacity = value;
+                foreach (UIObjectBase obj in Controls)
+                {
+                    obj.Opacity = opacity;
+                }
+            }
+        }
+
         public IScreen ScreenInstance { get; set; }
         public bool Visible { get; set; }
         public string Name { get; set; }

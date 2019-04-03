@@ -11,6 +11,7 @@ using kyun.Audio;
 using Microsoft.Xna.Framework.Input;
 using kyun.GameScreen.UI.Particles;
 using kyun.Score;
+using kyun.game.Beatmap.Generators;
 
 namespace kyun.GameModes.OsuMode
 {
@@ -102,6 +103,19 @@ namespace kyun.GameModes.OsuMode
             {
                 _beatmap.ApproachRate = _beatmap.OverallDifficulty;
             }
+            
+            if(screenInstance._osuMode != OsuGameMode.Standard && screenInstance._osuMode != OsuGameMode.CTB)
+            {
+                if (_beatmap.OverallDifficulty >= 7)
+                {
+                    _beatmap.ApproachRate = Math.Min(_beatmap.OverallDifficulty + 2, 10);
+                }
+                else if(_beatmap.OverallDifficulty >= 5)
+                {
+                    _beatmap.ApproachRate = Math.Min(_beatmap.OverallDifficulty + 2, 10);
+                }
+            }
+
             approachObj = new ApproachObj(Position, _beatmap.ApproachRate, Time, Instance);
 
             float scaledCircle = (CircleRadius * 2) / 160;
@@ -126,18 +140,20 @@ namespace kyun.GameModes.OsuMode
             {
                 //In Mania case, make spawn in the middle screen
                 case OsuGameMode.Mania:
-                    finalPos = getMiddleScreen();
+                    //finalPos = getMiddleScreen();
+                    finalPos = RandomGenerator.MakeRandom(_beatmap.OverallDifficulty);
                     break;
                 //To test
                 case OsuGameMode.CTB:
                     break;
                 //Same as Mania
                 case OsuGameMode.Taiko:
-                    finalPos = getMiddleScreen();
+                    finalPos = RandomGenerator.MakeRandom(_beatmap.OverallDifficulty);
+                    //finalPos = getMiddleScreen();
                     break;
             }
 
-            
+
             Position = CalculatePosition(finalPos);
 
             approachObj.Position = Position;
@@ -148,7 +164,7 @@ namespace kyun.GameModes.OsuMode
             else
                 approachObj.TextureColor = Color.FromNonPremultiplied(14, 201, 255, 255);
 
-            
+
 
             Click += HitSingle_Click;
 
@@ -204,7 +220,7 @@ namespace kyun.GameModes.OsuMode
                 else if (mouseState.RightButton == ButtonState.Pressed && lastMouse.RightButton != ButtonState.Pressed)
                     makeClick();
             }
-           
+
         }
 
         internal virtual void makeClick()
@@ -217,7 +233,7 @@ namespace kyun.GameModes.OsuMode
 
         internal virtual void HitSingle_Click(object sender, EventArgs e)
         {
-          
+
         }
 
         private Vector2 CalculatePosition(Vector2 pos)
@@ -289,7 +305,7 @@ namespace kyun.GameModes.OsuMode
         internal virtual void updateLogic()
         {
 
-            if (approachObj.Visible && (MoveEnabled || (screenInstance._osuMode & OsuGameMode.Taiko) == OsuGameMode.Taiko || (screenInstance._osuMode & OsuGameMode.Mania) == OsuGameMode.Mania))
+            if (approachObj.Visible && MoveEnabled)
             {
                 //party owo
 
@@ -302,7 +318,7 @@ namespace kyun.GameModes.OsuMode
 
                 if (Time > 1000)
                 {
-                    if (Math.Abs(Time % 10) % 4 == 0 || (screenInstance._osuMode & OsuGameMode.Taiko) == OsuGameMode.Taiko || (screenInstance._osuMode & OsuGameMode.Mania) == OsuGameMode.Mania)
+                    if (Math.Abs(Time % 10) % 4 == 0)
                     {
                         if (velocityAndMovement == Vector2.Zero)
                         {
@@ -330,7 +346,7 @@ namespace kyun.GameModes.OsuMode
                 if (IsFirst)
                 {
 
-                   
+
                 }
                 if (screenInstance.GamePosition >= Time)
                 {
@@ -358,7 +374,7 @@ namespace kyun.GameModes.OsuMode
                 {
                     pressedTime = -1;
                     calculateScore();
-                    
+
                 }
 
 
@@ -417,7 +433,7 @@ namespace kyun.GameModes.OsuMode
 
         }
 
-       
+
 
         internal void UpdateTime()
         {
@@ -440,32 +456,33 @@ namespace kyun.GameModes.OsuMode
 
             }
 
-            playHitsound();
-
             Texture2D particle = null; //Using a no assingned var
 
             switch (finalScore)
             {
                 case Score.ScoreType.Miss:
-
+                    playHitsound(true);
                     screenInstance._healthBar.Substract((2 * _beatmap.OverallDifficulty) * Math.Max(1, 1));
                     Combo.Instance.Miss();
 
                     particle = SpritesContent.Instance.MissTx;
                     break;
                 case Score.ScoreType.Good:
+                    playHitsound();
                     screenInstance._healthBar.Add(1);
                     Combo.Instance.Add();
                     screenInstance.FailsCount = 1;
                     particle = SpritesContent.Instance.GoodTx;
                     break;
                 case Score.ScoreType.Excellent:
+                    playHitsound();
                     screenInstance._healthBar.Add(2);
                     screenInstance.FailsCount = 1;
                     Combo.Instance.Add();
                     particle = SpritesContent.Instance.ExcellentTx;
                     break;
                 case Score.ScoreType.Perfect:
+                    playHitsound();
                     screenInstance._healthBar.Add(4);
                     screenInstance.FailsCount = 1;
                     Combo.Instance.Add();
@@ -495,6 +512,13 @@ namespace kyun.GameModes.OsuMode
 
             pr.Opacity = .6f;
             pr.Scale = Scale;
+            if(finalScore == ScoreType.Miss)
+            {
+                pr.Opacity = .8f;
+                pr.MoveTo(GameScreen.AnimationEffect.Linear, 5000, new Vector2(Position.X, Position.Y + 50));
+                pr.TextureColor = Color.Violet;
+            }
+            
 
             Died = true;
         }
@@ -504,7 +528,7 @@ namespace kyun.GameModes.OsuMode
 
         }
 
-        internal virtual void playHitsound()
+        internal virtual void playHitsound(bool miss = false)
         {
             int hsound = 0;
             switch (HitSound)
@@ -523,7 +547,7 @@ namespace kyun.GameModes.OsuMode
                     break;
             }
 
-            EffectsPlayer.PlayEffect(hsound);
+            EffectsPlayer.PlayEffect(hsound, (miss) ? .2f : 1);
         }
 
 

@@ -21,6 +21,7 @@ namespace kyun.GameScreen.UI.Particles
 
         public override void Update()
         {
+            updateAnimation(); //xd
             float positionY = 0;
             float positionX = 0;
 

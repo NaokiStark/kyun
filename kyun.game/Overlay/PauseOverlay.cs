@@ -43,7 +43,6 @@ namespace kyun.Overlay
         public PauseOverlay() : base(OverlayType.Pause)
         {
 
-            Visible = false;
             ltitle = new Label(0)
             {
                 Text = "",
@@ -86,13 +85,12 @@ namespace kyun.Overlay
                 EffectsPlayer.StopAll();
                 i.Play(i.Beatmap, i.gameMod); //restart game
 
-                Visible = false;
                 ScreenManager.RemoveOverlay();
             };
 
             btnRestart.Click += (obj, args) =>
             {
-                Visible = false;
+                
                 EffectsPlayer.StopAll();
                 ScreenManager.RemoveOverlay();
                 ScreenManager.ChangeTo(BeatmapScreen.Instance);
@@ -108,7 +106,7 @@ namespace kyun.Overlay
 
             btnYes.Click += (obj, args) =>
             {
-                Visible = false;
+                
                 ScreenManager.RemoveOverlay();
                 AVPlayer.audioplayer.Play();
                 EffectsPlayer.StopAll();
@@ -134,7 +132,7 @@ namespace kyun.Overlay
 
             if (Instance.btnYes.Visible == false)
             {
-                Visible = false;
+                
 
                 ScreenManager.RemoveOverlay();
                 ScreenManager.ChangeTo(BeatmapScreen.Instance);
@@ -150,7 +148,7 @@ namespace kyun.Overlay
             }
 
 
-            Visible = false;
+            
             ScreenManager.RemoveOverlay();
             AVPlayer.audioplayer.Play();
 

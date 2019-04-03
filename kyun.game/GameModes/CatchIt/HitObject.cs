@@ -13,7 +13,7 @@ using kyun.Audio;
 using kyun.Score;
 using osuBMParser;
 using kyun.Screen;
-
+using kyun.game.Beatmap.Generators;
 
 namespace kyun.game.GameModes.CatchIt
 {
@@ -106,16 +106,35 @@ namespace kyun.game.GameModes.CatchIt
 
             _parent = parent;
 
+            Vector2 oLoc = hitObject.OsuLocation;
+            switch (i._osuMode)
+            {
+                case OsuGameMode.Taiko:
+                    if (_parent == null)
+                        oLoc = RandomGenerator.MakeRandom(9);
+
+                    //finalPos = getMiddleScreen();
+                    break;
+            }
+
             //384 = max value of Y in osu!
 
             int row = 384 / i.fieldSlots;
 
-            int positionInRow = (int)Math.Floor((hitObject.OsuLocation.X / (float)row));
+            int positionInRow = (int)Math.Floor((oLoc.X / (float)row));
 
             positionInRow = Math.Min(i.fieldSlots, positionInRow);
             positionInRow = Math.Max(1, positionInRow);
 
-            PositionInRow = positionInRow;
+            if (_parent == null)
+            {
+                PositionInRow = positionInRow;
+            }
+            else
+            {
+                PositionInRow = _parent.PositionInRow;
+            }
+
 
             int inFieldPosition = (int)(i.FieldSize.Y / i.fieldSlots);
 
@@ -124,7 +143,10 @@ namespace kyun.game.GameModes.CatchIt
             Size = i.PlayerSize * .95f;
 
             Position = new Vector2(i.ActualScreenMode.Width, inFieldPosition + i.FieldPosition.Y + ((Size.Y / 2) - (Size.Y / 2)));
-
+            if (_parent != null)
+            {
+                Position = new Vector2(i.ActualScreenMode.Width, _parent.Position.Y);
+            }
 
 
             switch (hitObject.HitSound)
@@ -335,11 +357,11 @@ namespace kyun.game.GameModes.CatchIt
                 {
                     if (_parent != null)
                     {
-                       
-                      
+
+
 
                         KyunGame.Instance.SpriteBatch.Draw(i.LongTail, new Rectangle((int)Position.X + (int)Size.X / 2, (int)Position.Y + (((int)Size.Y / 2)) / 2, ((int)_parent.Position.X + (int)Size.X) - (int)Position.X - (int)Size.X, ((int)Size.Y / 2)), TextureColor * Opacity);
-                        
+
                         _parent?.Render();
                         base.Render();
                         base.Render();

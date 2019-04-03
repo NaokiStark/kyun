@@ -19,7 +19,7 @@ namespace kyun.GameScreen
     {
         public bool Jukebox { get; set; }
         int lastIndex = 0;
-        static IScreen instance = null;
+        public static IScreen instance = null;
         public static IScreen Instance
         {
             get

@@ -32,7 +32,7 @@ namespace kyun.GameScreen.UI
             }
         }
 
-
+        public bool Repeat { get; internal set; }
 
         public Image(Texture2D texture)
         {
@@ -117,8 +117,25 @@ namespace kyun.GameScreen.UI
                 rg = new Rectangle((int)this.Position.X + (this.Texture.Width / 2), (int)this.Position.Y + (this.Texture.Height / 2), (int)(this.Texture.Width * RenderScale), (int)(this.Texture.Height * RenderScale));
 
             }
+
             if(Texture !=null && !Texture.IsDisposed)
-                KyunGame.Instance.SpriteBatch.Draw(this.Texture, rg, null, TextureColor * Opacity, AngleRotation, new Vector2((this.Texture.Width / 2), (this.Texture.Height / 2)), SpriteEffects.None, 0);
+            {
+                if (!Repeat)
+                {
+                    KyunGame.Instance.SpriteBatch.Draw(this.Texture, rg, null, TextureColor * Opacity, AngleRotation, new Vector2((this.Texture.Width / 2), (this.Texture.Height / 2)), SpriteEffects.None, 0);
+                }
+                else
+                {
+                    int actualFillSize = 0;
+                    for(int a = 0; actualFillSize < ScreenMode.Height + ((Texture.Width * Scale) * 2); a++)
+                    {
+                        actualFillSize = (int)Math.Abs(Texture.Width * Scale) * a;
+                        Rectangle positionRepeat = new Rectangle(actualFillSize, rg.Y, rg.Width, rg.Height);
+                        KyunGame.Instance.SpriteBatch.Draw(this.Texture, positionRepeat, null, TextureColor * Opacity, AngleRotation, new Vector2((this.Texture.Width / 2), (this.Texture.Height / 2)), SpriteEffects.None, 0);
+                    }
+                }
+            }
+                
 
             if (Effect != null && KyunGame.Instance.Graphics.GraphicsProfile == GraphicsProfile.HiDef)
             {

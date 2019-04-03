@@ -36,7 +36,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UITests|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\UITests\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;WINDOWS BETA</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WINDOWS BETA UITEST</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -141,6 +141,7 @@
     <Compile Include="Audio\BPlayer.cs" />
     <Compile Include="Audio\EffectsPlayer.cs" />
     <Compile Include="Beatmap\Break.cs" />
+    <Compile Include="Beatmap\Generators\RandomGenerator.cs" />
     <Compile Include="Beatmap\HitButton.cs" />
     <Compile Include="Beatmap\HitHolder.cs" />
     <Compile Include="Beatmap\IBeatmap.cs" />
@@ -174,6 +175,7 @@
     <Compile Include="GameModes\Test\Egg.cs" />
     <Compile Include="GameModes\Test\TestPlayer.cs" />
     <Compile Include="GameModes\Test\TestScreen.cs" />
+    <Compile Include="GameScreen\AnimatedScreenBase.cs" />
     <Compile Include="GameScreen\BeatmapLoader.cs" />
     <Compile Include="GameScreen\BeatmapScreen.cs" />
     <Compile Include="GameScreen\BeatmapScreen.Desing.cs" />
@@ -320,6 +322,9 @@
     <Content Include="Assets\Effects\failsound.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Effects\failtrans.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Effects\MenuTransition.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -339,6 +344,18 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\songs\2\pepensow.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\3\cover.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\3\Remix makaroni.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\4\cover.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\4\Remix makaroni.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\test.png">
@@ -539,6 +556,12 @@
     <Content Include="Content\OsuTip.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Assets\songs\3\songinfo.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\songs\4\songinfo.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Catcher.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -567,6 +590,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\cursor.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\cinta_testing.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Content\DiffSelector.xnb">

@@ -27,10 +27,11 @@ using kyun.Notifications;
 using kyun.game.Winforms;
 using kyun.game.Database;
 using System.Threading;
+using kyun.Screen;
 
 namespace kyun
 {
-    public class KyunGame : Game
+    public class KyunGame : Game, IDisposable
     {
         //Puto
 
@@ -46,6 +47,7 @@ namespace kyun
 
         public static System.Windows.Forms.Form WinForm = null;
 
+        static DateTime updated = DateTime.Now;
 
 #if !BETA
         public static string CompilationStatus = "Unstable";
@@ -88,7 +90,15 @@ namespace kyun
         private System.Threading.SynchronizationContext syncContext;
 
         bool gameIsRunning;
+        private TimeSpan timeStart;
+
+        public DateTime gameStart { get; private set; }
+
+        private Thread tk;
+        public bool stopping;
         double timeToCrash = 0;
+
+
 
         public Notifier Notifications { get; private set; }
 
@@ -122,10 +132,9 @@ namespace kyun
             }
         }
 
-
+        
         public KyunGame(bool softwareRendering = false, bool repair = false)
         {
-
             if (repair)
             {
                 Settings1.Default.Reset();
@@ -254,7 +263,12 @@ namespace kyun
 
             gameIsRunning = true;
 
-            TimeSpan gameStart = DateTime.Now - DateTime.Now;
+            stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            timeStart = stopwatch.Elapsed;
+
+            gameStart =  DateTime.Now;
             updateEvent = cUpdate;
 
             RecallAndNotify(null);
@@ -286,15 +300,17 @@ namespace kyun
                 }
             }
 
-            TimeSpan gameStart = DateTime.Now - DateTime.Now;
+           
             updateEvent = cUpdate;
             syncContext = System.Threading.SynchronizationContext.Current;
             gameIsRunning = true;
 
-            Thread tk = new Thread(() =>
+            bool disableMulticore = false;
+
+            tk = new Thread(() =>
             {
                 // Run on another core as possible
-                if (Environment.ProcessorCount > 1)
+                if (Environment.ProcessorCount > 1 && !disableMulticore)
                 {
                     Thread.BeginThreadAffinity();
 
@@ -319,14 +335,23 @@ namespace kyun
                     {
                         elapsed = (DateTime.Now - startTime).TotalMilliseconds;
                         startTime = DateTime.Now;
-
+                        TimeSpan startedGT = stopwatch.Elapsed - timeStart;
                         syncContext.Send(state =>
                         {
-                            updateEvent.Invoke(new GameTime(gameStart, TimeSpan.FromMilliseconds(elapsed), false));
+                            //updateEvent.Invoke(new GameTime(gameStart, TimeSpan.FromMilliseconds(elapsed), false));
+                            cUpdate(new GameTime(startedGT, TimeSpan.FromMilliseconds(elapsed), false));
                         }, null);
 
-                        System.Threading.Thread.Sleep((int)(750f / Settings1.Default.FrameRate));
-                        //throw new Exception("Test");
+                        if (Settings1.Default.VSync)
+                        {
+                            //Wait for sync
+                            Thread.Sleep(1); //much as possible
+                        }
+                        else
+                        {
+                            System.Threading.Thread.Sleep((int)(750f / Settings1.Default.FrameRate));
+                        }
+                        
                     }
                     catch (Exception pex)
                     {
@@ -339,6 +364,7 @@ namespace kyun
                         return;
                     }
                 }
+                stopped = true; //Avoid thread abortion ex
                 if (Environment.ProcessorCount > 1)
                 {
                     Thread.EndThreadAffinity();
@@ -347,6 +373,7 @@ namespace kyun
 
             gameIsRunning = true;
             tk.Start();
+            
             Attemps++;
         }
 
@@ -358,6 +385,22 @@ namespace kyun
 
         private void FormGame_DragLeave(object sender, EventArgs e)
         {
+        }
+
+        /// <summary>
+        /// This isn't work
+        /// </summary>
+        public void StopAll()
+        {
+           // UnloadContent();
+            tk.Abort();
+            //while (!stopped) { } //Wait for thread end
+
+            SpritesContent.instance = null; //this is a buggy thing
+            InstanceManager.Instance.IsRunning = true;
+            
+
+            Exit();
         }
 
         private void FormGame_DragEnter(object sender, System.Windows.Forms.DragEventArgs e)
@@ -437,6 +480,13 @@ namespace kyun
             uLabelMsgVer.Scale = .75f;
             uLabelMsgVer.ForegroundColor = Color.WhiteSmoke * .75f;
 
+            imageTesting = new Image(SpritesContent.instance.TestingBar)
+            {
+                Position = Vector2.Zero,
+                Repeat = true, 
+                BeatReact = false,
+                Opacity = .8f
+            };
 
 
             FrameDisplay = new Label()
@@ -453,14 +503,20 @@ namespace kyun
             };
 
             Notifications = new Notifier();
-
-            ScreenManager.ChangeTo(new LogoScreen());
             EffectsPlayer.StartEngine();//Clear
             Player.OnStopped += () =>
             {
                 maxPeak = 0.1f;
                 InstanceManager.MaxPeak = 0.1f;
             };
+
+#if !UITEST
+            ScreenManager.ChangeTo(new LogoScreen());
+
+#else
+            ScreenManager.ChangeTo(LoadScreen.Instance);
+#endif
+
 
         }
 
@@ -469,11 +525,17 @@ namespace kyun
         public TouchHandler touchHandler;
         private Label uLabelVer;
         private Label uLabelMsgVer;
+        private Image imageTesting;
         private Label FrameDisplay;
 
         public Image Cursor { get; private set; }
+    
 
         private RenderTarget2D renderTarget2D;
+        public bool stopped;
+        private DateTime lastCheckedDay;
+
+        private Stopwatch stopwatch;
 
         protected override void LoadContent()
         {
@@ -513,9 +575,10 @@ namespace kyun
             discordHandler.Shutdown();
 
             Logger.Instance.Info("Bye!");
+            
         }
 
-        #endregion
+#endregion
 
         void updatePeak(GameTime gm)
         {
@@ -585,10 +648,10 @@ namespace kyun
             lastSongPos = lastPos;
         }
 
-        #region GameUpdates
+#region GameUpdates
         protected void cUpdate(GameTime gameTime)
         {
-
+            updated = DateTime.Now;
             //IsMouseVisible = false;
 
             //Cursor.Position = new Vector2(MouseHandler.GetState().X - (SpritesContent.Instance.GameCursor.Width / 2), MouseHandler.GetState().Y - (SpritesContent.Instance.GameCursor.Height / 2));
@@ -632,6 +695,7 @@ namespace kyun
 
             uLabelVer.Update();
             uLabelMsgVer.Update();
+            imageTesting.Update();
 
             //base.Update(gameTime);
 
@@ -639,6 +703,7 @@ namespace kyun
             string lAv = frameCounter.AverageFramesPerSecond.ToString("000", CultureInfo.InvariantCulture);
 
             FrameDisplay.Text = $"{lAv} UPS | {vAv} FPS | {(1000 / frameCounter.AverageFramesPerSecond).ToString("000", CultureInfo.InvariantCulture)}ms";
+            FrameDisplay.ForegroundColor = Color.White;
             FrameDisplay?.Update();
 
             Notifications?.Update();
@@ -658,10 +723,26 @@ namespace kyun
             }
 
             VolumeControl.Instance.Update();
+
+            
         }
 
         protected override void Draw(GameTime gameTime)
         {
+            if (!gameIsRunning)
+                return;
+
+            lastCheckedDay = DateTime.Now;
+
+            //Help time hack
+            //updated == lastCheckedDay
+            //if (/*updated + TimeSpan.FromMilliseconds(100) < DateTime.Now || */updated.Millisecond == 0)
+            //{
+            //    cUpdate(gameTime);
+            //    FrameDisplay.Text = $"{FrameDisplay.Text} :: USING RENDER LOOP FOR UPDATE!";
+            //    FrameDisplay.ForegroundColor = Color.IndianRed;
+            //}
+
             VideoCounter.Update(gameTime);
 
             GraphicsDevice.SetRenderTarget(renderTarget2D);
@@ -759,6 +840,10 @@ namespace kyun
 
             Notifications?.Render();
 
+
+#if TESTING || UITEST
+            imageTesting.Render();
+#endif
             VolumeControl.Instance.Render();
 
 
@@ -768,10 +853,13 @@ namespace kyun
             GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Clear(Color.Black);
 
-            SpriteBatch.Begin(SpriteSortMode.Texture, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
+            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
 
 
             var actualMode = Screen.ScreenModeManager.GetActualMode();
+
+            SpriteBatch.Draw(renderTarget2D, new Rectangle(0, 0, actualMode.ScaledWidth, actualMode.ScaledHeight), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0);
+
             MouseEvent mouseState = MouseHandler.GetStateNonScaled();
             Cursor.Scale = .8f;
 
@@ -779,18 +867,21 @@ namespace kyun
             Cursor.Update();
             Cursor.Render();
 
-            SpriteBatch.Draw(renderTarget2D, new Rectangle(0, 0, actualMode.ScaledWidth, actualMode.ScaledHeight), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0);
 
             SpriteBatch.End();
             base.Draw(gameTime);
         }
 
-        #endregion
+#endregion
 
         public void ChangeResolution(Screen.ScreenMode screenMode)
         {
             SuppressDraw();
 
+            ScreenModeManager.Change();
+
+                                   
+            renderTarget2D = new RenderTarget2D(GraphicsDevice, screenMode.Width, screenMode.Height);
 
             if (screenMode.WindowMode != Screen.WindowDisposition.Windowed)
             {
@@ -810,7 +901,7 @@ namespace kyun
             this.Graphics.PreferredBackBufferWidth = (int)wSize.X;
             this.Graphics.PreferredBackBufferHeight = (int)wSize.Y;
 
-            this.Graphics.ApplyChanges();
+            
             Screen.ScreenModeManager.Change();
             ((ScreenBase)MainScreen.Instance)?.Dispose();
             ((ScreenBase)BeatmapScreen.Instance)?.Dispose();
@@ -827,9 +918,9 @@ namespace kyun
             }
 
             ((ScreenBase)QuestionOverlay.Instance)?.Dispose();
-            MainScreen.Instance = null;
-            BeatmapScreen.Instance = null;
-            SettingsScreen.Instance = null;
+            MainScreen.instance = null;
+            BeatmapScreen.instance = null;
+            SettingsScreen.instance = null;
             ClassicModeScreen.SetInstance(null);
             ScorePanel.Instance = null;
             QuestionOverlay.Instance = null;
@@ -838,9 +929,10 @@ namespace kyun
             GC.Collect();
 
 
-
+            this.Graphics.ApplyChanges();
+            
             ScreenManager.ChangeTo(SettingsScreen.Instance); //return 
-            FrameDisplay.Position = new Vector2(0, wSize.Y - SpritesContent.Instance.GeneralBig.MeasureString("123").Y);
+            FrameDisplay.Position = new Vector2(0, screenMode.Height - SpritesContent.Instance.GeneralBig.MeasureString("123").Y);
             uLabelMsgVer.Position = new Vector2(wSize.X / 2, wSize.Y - 25);
 
         }
@@ -883,8 +975,19 @@ namespace kyun
 
         public void ChangeFrameRate(float fps)
         {
+            IsFixedTimeStep = true;
             TargetElapsedTime = TimeSpan.FromSeconds(1.0f / fps);
             //TargetElapsedTime = TimeSpan.FromTicks(5000);
+        }
+
+        public new void Dispose()
+        {
+            // Dispose of unmanaged resources.
+            Dispose(true);
+            stopped = true;
+            // Suppress finalization.
+            GC.SuppressFinalize(this);
+            
         }
 
         public struct IconInfo

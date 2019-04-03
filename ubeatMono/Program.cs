@@ -76,6 +76,7 @@ namespace kyunMono
             string pFiles = ProgramFilesx86();
             string XNAPath = Path.Combine(pFiles, "Microsoft XNA\\XNA Game Studio\\v4.0");
 
+
             if (!new DirectoryInfo(XNAPath).Exists)
             {
                 MessageBox.Show("XNA Framework 4 is not installed that is required for kyun!\r\n\r\nI'll try to install it right now.\r\n\r\nIf this fails, try to install manually.", "kyun!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);

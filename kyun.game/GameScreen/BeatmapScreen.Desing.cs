@@ -22,7 +22,7 @@ namespace kyun.GameScreen
     public partial class BeatmapScreen : ScreenBase
     {
 
-        static IScreen instance = null;
+        public static IScreen instance = null;
         public static IScreen Instance
         {
             get
@@ -151,7 +151,8 @@ namespace kyun.GameScreen
             {
                 Position = new Vector2(actualMode.Width - SpritesContent.Instance.ButtonStandard.Width - 20, (filledRectBottom.Position.Y + 75 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
                 Caption = "Play!",
-                ForegroundColor = Color.White
+                ForegroundColor = Color.White,
+                Tooltip = new game.GameScreen.UI.Tooltip() { Text = "Play now!"}
             };
 
             autoBtn = new ButtonStandard(Color.DimGray)
@@ -160,8 +161,8 @@ namespace kyun.GameScreen
 
                 //Scale=.85f,
                 ForegroundColor = Color.White,
-                Caption = "Auto"
-
+                Caption = "Auto",
+                Tooltip = new game.GameScreen.UI.Tooltip() { Text = "kyun! plays for you, makes a 'perfect' score." }
             };
 
             doubleBtn = new ButtonStandard(Color.DimGray)
@@ -170,7 +171,8 @@ namespace kyun.GameScreen
 
                 //Scale=.85f,
                 ForegroundColor = Color.White,
-                Caption = "Double"
+                Caption = "Double",
+                Tooltip = new game.GameScreen.UI.Tooltip() { Text = "Makes things faster!" }
 
             };
 
@@ -180,7 +182,8 @@ namespace kyun.GameScreen
 
                 //Scale=.85f,
                 ForegroundColor = Color.White,
-                Caption = "Random"
+                Caption = "Random",
+                Tooltip = new game.GameScreen.UI.Tooltip() { Text = "Pick a random song." }
 
             };
 
@@ -190,8 +193,8 @@ namespace kyun.GameScreen
 
                 //Scale=.85f,
                 ForegroundColor = Color.White,
-                Caption = "Modes"
-
+                Caption = "Modes",
+                Tooltip = new game.GameScreen.UI.Tooltip() { Text = "Choose between 3 game modes." }
             };
 
             osuModeBtn2 = new ButtonStandard(Color.DimGray)
@@ -246,6 +249,20 @@ namespace kyun.GameScreen
                 RoundCorners = true
             };
 
+            lbldesc = new Label(0)
+            {
+                Text = "Test",
+                Position = new Vector2(lblTitleDesc.Position.X, 24),
+                Font = SpritesContent.instance.GeneralBig
+            };
+
+            lblDiffDesc = new Label(0)
+            {
+                Text = "Test",
+                Position = new Vector2(lblTitleDesc.Position.X, 42),
+                Font = SpritesContent.instance.GeneralBig
+            };
+
             backButton.Click += BackButton_Click;
 
             autoBtn.Click += autoBtn_Click;
@@ -280,6 +297,11 @@ namespace kyun.GameScreen
 
             Controls.Add(coverImage);
 
+
+            //Beatmap desc
+            Controls.Add(lbldesc);
+            Controls.Add(lblDiffDesc);
+
             // Label "Sort By"
 
             Controls.Add(lblSortBy);
@@ -301,14 +323,20 @@ namespace kyun.GameScreen
             //Controls.Add(filledRect1);
 
             Controls.Add(lblTitleDesc);
-            Controls.Add(autoBtn);
-            Controls.Add(randomBtn);
-            Controls.Add(doubleBtn);
+                      
 
-            Controls.Add(osuModeBtn);
             //Controls.Add(osuModeBtn2);
 
             Controls.Add(btnStart);
+
+            Controls.Add(autoBtn);
+
+            Controls.Add(doubleBtn);
+
+            Controls.Add(randomBtn);
+
+            Controls.Add(osuModeBtn);
+
             Controls.Add(lblSearch);
             
             Controls.Add(backButton);
@@ -542,6 +570,10 @@ namespace kyun.GameScreen
         private Label lblSortBy;
         private Label btnByTitle;
         private Label btnByArtist;
+        private Label lbldesc;
+
+        public Label lblDiffDesc { get; private set; }
+
         public Image songDescImg;
         private Image songListDiffImg;
 

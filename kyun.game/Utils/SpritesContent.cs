@@ -18,7 +18,7 @@ namespace kyun.Utils
 
         #region Local Vars
 
-        private static SpritesContent instance;
+        public static SpritesContent instance;
 
         const string ASSETS_PATH = "Assets";
         private string _fullpath;
@@ -50,7 +50,7 @@ namespace kyun.Utils
 
         public SpritesContent()
         {
-            Un4seen.Bass.BassNet.Registration("nikumi@hotmail.com", "2X14292918312422");
+            Un4seen.Bass.BassNet.Registration("dymmy@dummy.com", "thecode");
 
 #if LINUX
             bool bassLoaded = Bass.LoadMe(AppDomain.CurrentDomain.BaseDirectory + "x86/bass.dll");
@@ -183,6 +183,7 @@ namespace kyun.Utils
 
             NotificationSound = LoadSoundBass("Effects\\Notification.mp3");
             FailSound = LoadSoundBass("Effects\\failsound.mp3");
+            FailTransition = LoadSoundBass("Effects\\failtrans.wav");
         }
 
         private void LoadFonts(SpriteBatch spriteBatch)
@@ -320,6 +321,8 @@ namespace kyun.Utils
 
             CatchTip = Content.Load<Texture2D>("CatchTip");
             OsuTip = Content.Load<Texture2D>("OsuTip");
+
+            TestingBar = Content.Load<Texture2D>("cinta_testing");
         }
 
         public void AddTexture(string name, Texture2D tex)
@@ -643,6 +646,8 @@ namespace kyun.Utils
 
         public Texture2D OsuTip { get; set; }
 
+        public Texture2D TestingBar { get; set; }
+
         #endregion
 
         #region FontsVars
@@ -685,6 +690,7 @@ namespace kyun.Utils
         public Texture2D CircleNote { get; set; }
         public Texture2D CircleNoteHolder { get; set; }
         public int FailSound { get; set; }
+        public int FailTransition { get; private set; }
         public Texture2D GameCursor { get; set; }
         public Texture2D DiffSelector { get; set; }
 
