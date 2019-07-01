@@ -23,6 +23,7 @@ using osuBMParser;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using kyun.game.GameScreen.UI;
 using System.Threading;
+using kyun.game.Video;
 
 namespace kyun.game.GameModes.CatchIt
 {
@@ -713,9 +714,14 @@ namespace kyun.game.GameModes.CatchIt
             Controls.RemoveAll(isDed);
             HitObjectsRemain.RemoveAll(item => item.Died);
 
+            bool decoding = false;
+            if(FFmpegDecoder.Instance != null)
+            {
+                decoding = FFmpegDecoder.Instance.Decoding;
+            }
 
 
-            endToTime = (Settings1.Default.Video && !VideoDecoder.Instance.decoding) ? avp.audioplayer.Length - (long)OriginalHitObjects.Last().EndTime : 3000;
+            endToTime = (Settings1.Default.Video && !decoding) ? avp.audioplayer.Length - (long)OriginalHitObjects.Last().EndTime : 3000;
 
             int hitCount = HitObjectsRemain.Count;
 

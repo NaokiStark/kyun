@@ -8,6 +8,8 @@ using kyun.Audio;
 using kyun.GameScreen;
 using kyun.Screen;
 using kyun.game;
+using kyun.game.Video;
+using System.IO;
 
 namespace kyun.Video
 {
@@ -67,10 +69,14 @@ namespace kyun.Video
         public Texture2D[] frameBuffer;
         public int frameIndex = 0;
         public int videoFramerate = 60;
+        private int workingOn;
+        private Texture2D lastAliveFrameTexture;
+
+        Texture2D tx;
+        private byte[] lastWorkingFrame;
 
         public AudioVideoPlayer()
         {
-
 
             //??
             videoplayer = VideoPlayer.Instance;
@@ -81,7 +87,7 @@ namespace kyun.Video
 
         public void SeekTime(int tm)
         {
-            videoplayer.vdc?.Seek(tm);
+            //videoplayer.FFmpegDecoder?.Seek(tm);
         }
 
         public void Play(string audio, string video = "", bool fadein = false, float opacity = 0.75f)
@@ -101,31 +107,31 @@ namespace kyun.Video
             }
             else
             {
-                if (!videoplayer.Stopped)
-                {
-                    if (!videoplayer.vdc.Disposing)
-                    {
-                        videoplayer.vdc?.Seek(0);
-                    }
-                    else
-                    {
-
-                    }
-                }
+                VideoPlayer.Instance.vdc.Dispose();
 
             }
 
             vBuffer.Clear();
             hasGotFrame = false;
 
-            if (KyunGame.Instance.VideoEnabled && anotherfuckingvideovar != "")
+            bool isDir = false;
+            if (anotherfuckingvideovar != "")
+            {
+                if (File.Exists(anotherfuckingvideovar))
+                {
+                    isDir = IsFolder(anotherfuckingvideovar);
+                }               
+            }
+                                  
+
+            if (KyunGame.Instance.VideoEnabled && anotherfuckingvideovar != "" && !isDir)
             {
 
                 videoplayer.Play(anotherfuckingvideovar);
                 //updateBuffer(true);
             }
             frameIndex = 0;
-            
+
             videoFramerate = 3;
 
             frameBuffer = new Texture2D[videoFramerate];
@@ -142,6 +148,44 @@ namespace kyun.Video
 
         }
 
+        /// <summary>
+        /// Whether the <paramref name="path"/> is a folder (existing or not); 
+        /// optionally assume that if it doesn't "look like" a file then it's a directory.
+        /// </summary>
+        /// <param name="path">Path to check</param>
+        /// <param name="assumeDneLookAlike">If the <paramref name="path"/> doesn't exist, does it at least look like a directory name?  As in, it doesn't look like a file.</param>
+        /// <returns><c>True</c> if a folder/directory, <c>false</c> if not.</returns>
+        public static bool IsFolder(string path, bool assumeDneLookAlike = true)
+        {
+            // https://stackoverflow.com/questions/1395205/better-way-to-check-if-path-is-a-file-or-a-directory
+            // turns out to be about the same as https://stackoverflow.com/a/19596821/1037948
+
+            // check in order of verisimilitude
+
+            // exists or ends with a directory separator -- files cannot end with directory separator, right?
+            if (Directory.Exists(path)
+                // use system values rather than assume slashes
+                || path.EndsWith("" + Path.DirectorySeparatorChar)
+                || path.EndsWith("" + Path.AltDirectorySeparatorChar))
+                return true;
+
+            // if we know for sure that it's an actual file...
+            if (File.Exists(path))
+                return false;
+
+            // if it has an extension it should be a file, so vice versa
+            // although technically directories can have extensions...
+            if (!Path.HasExtension(path) && assumeDneLookAlike)
+                return true;
+
+            // only works for existing files, kinda redundant with `.Exists` above
+            //if( File.GetAttributes(path).HasFlag(FileAttributes.Directory) ) ...; 
+
+            // no idea -- could return an 'indeterminate' value (nullable bool)
+            // or assume that if we don't know then it's not a folder
+            return false;
+        }
+
         public void updateBufferV2(bool callZero = false)
         {
             int framerate = 3;
@@ -151,32 +195,46 @@ namespace kyun.Video
             {
                 frameIndex = 0;
                 long position = audioplayer.Position;
+
                 for (int a = 0; a < frameBuffer.Length; a++)
                 {
+                    workingOn = a;
                     byte[] frame = videoplayer.GetFrame((long)((float)position + pos));
 
                     if (frame != null)
                     {
                         lastAliveFrame = frame;
 
-                        if(frameBuffer[a] == null)
-                            frameBuffer[a] = new Texture2D(KyunGame.Instance.GraphicsDevice, videoplayer.vdc.width, videoplayer.vdc.height);
+                        if (frameBuffer[a] == null)
+                            frameBuffer[a] = new Texture2D(KyunGame.Instance.GraphicsDevice, videoplayer.vdc.VIDEOWIDTH, videoplayer.vdc.VIDEOHEIGHT);
 
+                        if (KyunGame.Instance.GraphicsDevice.Textures[0] == frameBuffer[a])
+                        {
+                            KyunGame.Instance.GraphicsDevice.Textures[0] = null;
+                        }
                         frameBuffer[a].SetData(frame);
+
                     }
                     else
                     {
-                        if (frameBuffer[a] == null)
-                            frameBuffer[a] = new Texture2D(KyunGame.Instance.GraphicsDevice, videoplayer.vdc.width, videoplayer.vdc.height);
 
-                        if(lastAliveFrame != null)
+                        if (frameBuffer[a] == null)
+                            frameBuffer[a] = new Texture2D(KyunGame.Instance.GraphicsDevice, videoplayer.vdc.VIDEOWIDTH, videoplayer.vdc.VIDEOHEIGHT);
+
+                        if (KyunGame.Instance.GraphicsDevice.Textures[0] == frameBuffer[a])
+                        {
+                            KyunGame.Instance.GraphicsDevice.Textures[0] = null;
+                        }
+                        if (lastAliveFrame != null)
                             frameBuffer[a].SetData(lastAliveFrame);
                     }
                     pos += (int)((1000f * audioplayer.Velocity) / framerate);
-                }                
+
+                }
+
             }
 
-           
+
         }
 
         private void updateBuffer(bool callZero = false)
@@ -218,7 +276,7 @@ namespace kyun.Video
 
             if (vBuffer.Count < KyunGame.Instance.VideoCounter.AverageFramesPerSecond / 2)
             {
-                
+
 
                 if (!callZero)
                     position = audioplayer.Position - 400;
@@ -227,7 +285,7 @@ namespace kyun.Video
                 //int bcount = vBuffer.Count;
                 for (int a = vBuffer.Count; a < framRate; a++)
                 {
-                    if(a == vBuffer.Count)
+                    if (a == vBuffer.Count)
                     {
                         pos = 500;
                     }
@@ -265,17 +323,76 @@ namespace kyun.Video
                 return;
 
             long position = audioplayer.Position;
-            updateBufferV2();
+
         }
 
         public override void Render()
         {
-            RenderVideoFrame();
+            //updateBufferV2(); //Fuck main thread
+            RenderVideoFrame(true);
         }
 
 
+        private void RenderVideoFrame(bool newRender)
+        {
+            if (!KyunGame.Instance.VideoEnabled)
+                return;
+
+
+            if (audioplayer.PlayState == BassPlayState.Stopped)
+                return;
+
+            if (videoplayer.vdc == null)
+            {
+                return;
+            }
+
+            if (videoplayer.vdc.GetBufferCount() < 1)
+                return;
+
+            if(tx == null)
+            {
+                tx = new Texture2D(KyunGame.Instance.GraphicsDevice, videoplayer.vdc.VIDEOWIDTH, videoplayer.vdc.VIDEOHEIGHT);
+
+            }
+
+            ScreenMode actualMode = ScreenModeManager.GetActualMode();
+
+            int screenWidth = actualMode.Width;
+            int screenHeight = actualMode.Height;
+
+            Rectangle screenVideoRectangle = new Rectangle();
+
+            screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)tx.Width / (float)tx.Height) * (float)screenHeight), screenHeight);
+            if (screenVideoRectangle.Width < screenWidth)
+            {
+                screenVideoRectangle = new Rectangle(screenVideoRectangle.X, screenVideoRectangle.Y, (int)screenWidth, (int)(((float)tx.Height / (float)tx.Width) * (float)screenWidth));
+            }
+
+            long position = audioplayer.Position;
+
+            byte[] frame = videoplayer.GetFrame(position);
+
+            if (frame != null)
+            {
+                tx.SetData(frame);
+
+                KyunGame.Instance.SpriteBatch.Draw(tx, screenVideoRectangle, null, Color.White * .8f, 0, new Vector2(tx.Width / 2, tx.Height / 2), SpriteEffects.None, 0);
+
+                lastWorkingFrame = frame;
+            }
+
+            if (lastWorkingFrame != null && frame == null)
+            {
+                tx.SetData(lastWorkingFrame);
+                KyunGame.Instance.SpriteBatch.Draw(tx, screenVideoRectangle, null, Color.White * .8f, 0, new Vector2(tx.Width / 2, tx.Height / 2), SpriteEffects.None, 0);
+
+            }
+        }
+
         private void RenderVideoFrame()
         {
+
             if (!KyunGame.Instance.VideoEnabled)
                 return;
 
@@ -303,9 +420,14 @@ namespace kyun.Video
                 frameBuffer = new Texture2D[videoFramerate];
 
             if (frameIndex >= frameBuffer.Length)
-                texture = frameBuffer[frameBuffer.Length -1 ];
+                texture = frameBuffer[frameBuffer.Length - 1];
             else
                 texture = frameBuffer[frameIndex];
+
+            if (workingOn == frameIndex)
+            {
+                texture = lastAliveFrameTexture;
+            }
 
 
             frameIndex++;
@@ -331,6 +453,11 @@ namespace kyun.Video
             {
                 //KyunGame.Instance.SpriteBatch.Draw(texture, screenVideoRectangle, null, Color.White, 0, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 0);
                 KyunGame.Instance.SpriteBatch.Draw(texture, screenVideoRectangle, null, Color.White * .8f, 0, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 0);
+
+                lastAliveFrameTexture = new Texture2D(KyunGame.Instance.GraphicsDevice, texture.Width, texture.Height);
+                Color[] dcolor = new Color[texture.Width * texture.Height];
+                texture.GetData(dcolor);
+                lastAliveFrameTexture.SetData(dcolor);
 
 
             }

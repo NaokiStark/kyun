@@ -11,7 +11,7 @@ namespace kyun.GameScreen.UI.Particles
     public class ParticleEngine : UIObjectBase
     {
 
-        HashSet<Particle> particles = new HashSet<Particle>();
+        public List<Particle> particles = new List<Particle>();
 
         public int ParticleCount
         {
@@ -107,10 +107,10 @@ namespace kyun.GameScreen.UI.Particles
                 particle.Update();
             }
 
-            particles.RemoveWhere(p => p.TimeToDie <= 0);
+            particles.RemoveAll(p => p.TimeToDie <= 0);
 
 
-            particles = new HashSet<Particle>(particles.OrderByDescending(p => p.Scale));
+            particles = new List<Particle>(particles.OrderByDescending(p => p.Scale));
         }
 
         /// <summary>
@@ -121,15 +121,16 @@ namespace kyun.GameScreen.UI.Particles
             if (Settings1.Default.MyPCSucks)
                 return;
 
-            
-
-            foreach (UIObjectBase particle in particles)
+            for(int a = 0; a < particles.Count; a++)
             {
-                if(particle is SquareParticle)
+
+                Particle particle = particles[a];
+
+                if (particle is SquareParticle)
                 {
                     ((SquareParticle)particle).Render();
                 }
-                else if(particle is ParticleScore)
+                else if (particle is ParticleScore)
                 {
                     ((ParticleScore)particle).Render();
                 }
@@ -141,8 +142,7 @@ namespace kyun.GameScreen.UI.Particles
                 {
                     ((Particle)particle).Render();
                 }
-                
-            }
+            }         
         }
     }
 }

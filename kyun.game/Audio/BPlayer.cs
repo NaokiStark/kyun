@@ -11,6 +11,7 @@ namespace kyun.Audio
     {
         int stream = 0;
 
+
         public float PeakVol {
             get
             {
@@ -18,6 +19,7 @@ namespace kyun.Audio
                     return 0;
                 return GetLevel(stream);
             }
+
         }
 
         public delegate void PlayerEvents();

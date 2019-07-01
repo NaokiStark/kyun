@@ -773,7 +773,7 @@ namespace kyun.GameScreen
 
                             KyunGame.Instance.SpriteBatch.Draw(bg, new Rectangle(0, 0, screenWidth, screenHeight), Color.Black);
 
-                            Texture2D texture = new Texture2D(KyunGame.Instance.GraphicsDevice, videoplayer.vdc.width, videoplayer.vdc.height);
+                            Texture2D texture = new Texture2D(KyunGame.Instance.GraphicsDevice, videoplayer.vdc.VIDEOWIDTH, videoplayer.vdc.VIDEOHEIGHT);
                             screenVideoRectangle = new Rectangle(screenWidth / 2, screenHeight / 2, (int)(((float)texture.Width / (float)texture.Height) * (float)screenHeight), screenHeight);
                             texture.SetData(frame);
                             lastFrameOfVid = texture;

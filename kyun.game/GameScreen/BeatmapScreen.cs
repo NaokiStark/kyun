@@ -23,6 +23,23 @@ namespace kyun.GameScreen
         private int lastDiffIndex = 0;
         internal GameMode _gamemode = GameMode.CatchIt;
 
+        private bool onlineSelector;
+
+        public bool OnlineSelector
+        {
+            get
+            {
+                return onlineSelector;
+            }
+            set
+            {
+                onlineSelector = value;
+                toggleSelector();
+            }
+        }
+
+       
+
         public BeatmapScreen()
             : base("BeatmapScreen")
         {
@@ -32,6 +49,25 @@ namespace kyun.GameScreen
             onKeyPress += BeatmapScreen_onKeyPress;
             AllowVideo = true;
 
+            //OnlineSelector = true;
+        }
+
+        private void toggleSelector()
+        {
+            //
+            if (onlineSelector)
+            {
+                btnStart.Caption = "Select";
+                btnStart.Tooltip.Text = "Select this beatmap";
+                autoBtn.Visible = false;
+            }
+            else
+            {
+                btnStart.Caption = "Play!";
+                btnStart.Tooltip.Text = "Play now!";
+                autoBtn.Visible = true;
+                
+            }
         }
 
         private void BeatmapScreen_onKeyPress(object sender, InputEvents.KeyPressEventArgs args)

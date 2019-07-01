@@ -9,6 +9,8 @@ using kyun.Utils;
 using kyun.Video;
 using kyun.GameScreen.UI;
 using kyun.game.GameScreen;
+using kyun.game.Winforms;
+using kyun.game.Video;
 
 namespace kyun.GameScreen
 {
@@ -93,6 +95,10 @@ namespace kyun.GameScreen
             {
                 KyunGame.Instance.ToggleFullscreen(!KyunGame.Instance.Graphics.IsFullScreen);
             }
+            else if(args.Key == Keys.F12)
+            {
+                new Experiments().Show();
+            }
         }
 
         private void ScreenBase_OnLoad(object sender, EventArgs e)
@@ -141,8 +147,14 @@ namespace kyun.GameScreen
                 try
                 {
                     if (Background != null && !Background.IsDisposed)
-                        if (!VideoDecoder.Instance.decoding)
+                    {
+                        if (FFmpegDecoder.Instance == null)
                             KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.White * Opacity, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                        else
+                            if (!FFmpegDecoder.Instance.Decoding)
+                            KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.White * Opacity, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                    }
+                        
                 }
                 catch
                 {
@@ -212,10 +224,12 @@ namespace kyun.GameScreen
 
         internal virtual void RenderObjects()
         {
+            
             try
             {
-                foreach (UIObjectBase obj in Controls)
+                for(int a = 0; a < Controls.Count; a++)
                 {
+                    UIObjectBase obj = Controls[a];
                     if (obj.Texture != null)
                     {
                         if (obj.Texture == SpritesContent.Instance.TopEffect)
@@ -243,7 +257,7 @@ namespace kyun.GameScreen
         public virtual void Render()
         {
             if (!Visible || isDisposing) return;
-
+         
             RenderDim();
             renderGoodies();
             RenderObjects();
@@ -267,10 +281,18 @@ namespace kyun.GameScreen
 
                 try
                 {
-                    if (Background != null && !Background.IsDisposed && !VideoDecoder.Instance.decoding)
+                    if(FFmpegDecoder.Instance == null)
                     {
                         KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.FromNonPremultiplied((int)(255f - 255f * BackgroundDim), (int)(255f - 255f * BackgroundDim), (int)(255f - 255f * BackgroundDim), (int)(255f * BackgroundDim)), 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
                     }
+                    else
+                    {
+                        if (Background != null && !Background.IsDisposed && !FFmpegDecoder.Instance.Decoding)
+                        {
+                            KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.FromNonPremultiplied((int)(255f - 255f * BackgroundDim), (int)(255f - 255f * BackgroundDim), (int)(255f - 255f * BackgroundDim), (int)(255f * BackgroundDim)), 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
+                        }
+                    }
+                    
                     //
                 }
                 catch
@@ -288,7 +310,7 @@ namespace kyun.GameScreen
 
             ActualScreenMode = Screen.ScreenModeManager.GetActualMode();
 
-            KeyboardState actualState = Keyboard.GetState();
+            
 
             if (actualState.IsKeyDown(Keys.Escape))
                 EscapeAlredyPressed = true;
@@ -302,7 +324,9 @@ namespace kyun.GameScreen
                 }
             }
 
-            checkKeyboardEvents(keyboardOldState, actualState);
+
+ 
+
             if (AllowVideo)
             {
                 AVPlayer.Update();
@@ -404,7 +428,7 @@ namespace kyun.GameScreen
             }
         }
 
-        private void checkKeyboardEvents(KeyboardState kbOldState, KeyboardState kbActualState)
+        public void checkKeyboardEvents(KeyboardState kbOldState, KeyboardState kbActualState)
         {
             Keys[] currentPressedKeys = kbActualState.GetPressedKeys();
             Keys[] oldPressedKeys = kbOldState.GetPressedKeys();
@@ -651,6 +675,8 @@ namespace kyun.GameScreen
         public List<UIObjectBase> Controls { get; set; }
 
         float opacity = 1;
+        private KeyboardState actualState;
+
         public float Opacity
         {
             get

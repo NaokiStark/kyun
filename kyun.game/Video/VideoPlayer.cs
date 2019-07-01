@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System;
+using kyun.game.Video;
 
 namespace kyun.Video
 {
@@ -21,13 +22,13 @@ namespace kyun.Video
         }
 
         public Texture2D FrameVideo { get; set; }
-        int width = 0;
-        int height = 0;
+        public int width = 0;
+        public int height = 0;
         
         public Queue<byte[]> Buffer = new System.Collections.Generic.Queue<byte[]>();
         public Queue<Texture2D> BufferTx = new System.Collections.Generic.Queue<Texture2D>();
         public bool Stopped = true;
-        public VideoDecoder vdc;
+        public FFmpegDecoder vdc;
 
         
 
@@ -46,20 +47,16 @@ namespace kyun.Video
             }
             Stopped = false;
 
-            if(VideoDecoder.__instance != null)
-                VideoDecoder.__instance?.Dispose(); //CLEANUP SHIT BUFFER
+            if(FFmpegDecoder.Instance != null)
+                FFmpegDecoder.Instance?.Dispose(); //CLEANUP SHIT BUFFER
 
-            vdc = VideoDecoder.Instance;
-            
-            bool oppenned = vdc.Open(VideoPath);
-            //vdc.Seek(64); //TEST
-            if (oppenned == false)
-            {
-                Stopped = true;
-                return;
-            }
-            this.width = vdc.width;
-            this.height = vdc.height;
+            vdc = new FFmpegDecoder(VideoPath);
+            vdc.Decode();
+            width = vdc.VIDEOWIDTH;
+            height = vdc.VIDEOWIDTH;
+            //vdc.WaitForDecoder();
+
+           
         }
 
         public void Stop()
@@ -74,7 +71,6 @@ namespace kyun.Video
         {
             if (Stopped) return null;
             if (vdc == null) return null;
-            if (Buffer.Count > 2) return null;
 
             byte[] frame = vdc.GetFrame((int)KyunGame.Instance.Player.Position);
             if (frame == null) return null;
@@ -85,7 +81,6 @@ namespace kyun.Video
         {
             if (Stopped) return null;
             if (vdc == null) return null;
-            if (Buffer.Count > 2) return null;
 
             byte[] frame = vdc.GetFrame((int)v);
             if (frame == null) return null;

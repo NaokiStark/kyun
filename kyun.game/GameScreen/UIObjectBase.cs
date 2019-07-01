@@ -165,7 +165,7 @@ namespace kyun.GameScreen
             UpdateTouchEvents(rg);
 
 
-            if (System.Windows.Forms.Form.ActiveForm != KyunGame.WinForm) return;
+            if (!KyunGame.Instance.isMainWindowActive) return;
 
             if (Tooltip != null)
                 Tooltip?.Update();

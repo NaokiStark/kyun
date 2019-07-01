@@ -504,7 +504,7 @@ namespace kyun.GameScreen
         public override void Render()
         {
             RenderBg();
-            float elapsed = (float)KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalSeconds * 12;
+            float elapsed = (float)KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * 0.012f;
             spinnerRotation += elapsed;
 
             float circle = MathHelper.Pi * 2;

@@ -851,7 +851,7 @@ namespace kyun.GameModes.OsuMode
 
             if (x.StartTime == y.StartTime)
                 return true;
-            else if (Math.Abs(x.StartTime - y.StartTime) < 25)
+            else if (Math.Abs(x.StartTime - y.StartTime) < 3)
             {
                 return true;
             }

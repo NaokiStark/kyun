@@ -12,14 +12,17 @@ using kyun.OsuUtils;
 using kyun.Audio;
 using kyun.game;
 using System.Diagnostics;
+using kyun.game.GameScreen;
 
 namespace kyun.GameScreen
 {
     public partial class MainScreen : ScreenBase
     {
-        public bool Jukebox { get; set; }
+        public bool jukebox { get; set; }
         int lastIndex = 0;
         public static IScreen instance = null;
+
+        
         public static IScreen Instance
         {
             get
@@ -212,10 +215,13 @@ namespace kyun.GameScreen
                     ExtBtn_Click(new object(), new EventArgs());
                     break;
                 case Microsoft.Xna.Framework.Input.Keys.F10:
-                    Jukebox = !Jukebox;
-                    string act = "activated";
-                    string deact = "disabled";
-                    ntfr.ShowDialog($"Jukebox mode {((Jukebox)?act:deact)}, press F10 to toggle");
+
+                    //Jukebox = !Jukebox;
+                    //string act = "activated";
+                    //string deact = "disabled";
+                    //ntfr.ShowDialog($"Jukebox mode {((Jukebox)?act:deact)}, press F10 to toggle");
+                    (Jukebox.Instance as Jukebox).ChangeSongDisplay();
+                    ScreenManager.ChangeTo(Jukebox.Instance);
                     break;                
                 case Microsoft.Xna.Framework.Input.Keys.F5:
                     AVPlayer.Play(KyunGame.Instance.Player.ActualSong);
@@ -484,12 +490,31 @@ namespace kyun.GameScreen
                 lcc++;
             }
 
+            for (int a = 0; a < particleEngine.particles.Count; a++)
+            {
+                if (particleEngine.particles[a] is SquareParticle)
+                {
+                    int[] selectedEnph = new int[3];
+                    int magicColor = OsuBeatMap.rnd.Next(0, sColors.Count - 1);
+
+                    selectedEnph = sColors[magicColor];
+                    Color ccolor = Color.FromNonPremultiplied(selectedEnph[0], selectedEnph[1], selectedEnph[2], 255)/*Color.FromNonPremultiplied(black_rand, black_rand, black_rand, 255)Color.Lerp(Color.FromNonPremultiplied(selectedEnph[0], selectedEnph[1], selectedEnph[2], 255), Color.Black,.7f)*/;
+
+                    (particleEngine.particles[a] as SquareParticle).squareColor = ccolor;
+                }
+            }
+         
+            KyunGame.Instance.maxPeak = 2f;
         }
 
         public void ChangeMainDisplay(int mps)
         {
-            Label1.Text = InstanceManager.AllBeatmaps[mps].Beatmaps[0].Artist + " - " + InstanceManager.AllBeatmaps[mps].Beatmaps[0].Title;
+            KyunGame.Instance.SelectedMapset = InstanceManager.AllBeatmaps[mps];
+            Label1.Text = KyunGame.Instance.SelectedMapset.Artist + " - " + KyunGame.Instance.SelectedMapset.Title;
+
             lastIndex = mps;
+
+            changeEmphasis();
         }
 
         private void _next()

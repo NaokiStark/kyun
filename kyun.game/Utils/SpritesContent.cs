@@ -323,6 +323,13 @@ namespace kyun.Utils
             OsuTip = Content.Load<Texture2D>("OsuTip");
 
             TestingBar = Content.Load<Texture2D>("cinta_testing");
+
+            TripleAScore = Content.Load<Texture2D>("tascore");
+            DoubleAScore = Content.Load<Texture2D>("dascore");
+            AScore = Content.Load<Texture2D>("ascore");
+            BScore = Content.Load<Texture2D>("bscore");
+            CScore = Content.Load<Texture2D>("cscore");
+            FScore = Content.Load<Texture2D>("fscore");
         }
 
         public void AddTexture(string name, Texture2D tex)
@@ -647,6 +654,13 @@ namespace kyun.Utils
         public Texture2D OsuTip { get; set; }
 
         public Texture2D TestingBar { get; set; }
+
+        public Texture2D TripleAScore { get; set; }
+        public Texture2D DoubleAScore { get; set; }
+        public Texture2D AScore { get; set; }
+        public Texture2D BScore { get; set; }
+        public Texture2D CScore { get; set; }
+        public Texture2D FScore { get; set; }
 
         #endregion
 

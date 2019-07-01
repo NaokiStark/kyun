@@ -44,7 +44,7 @@ namespace kyun
         public static KyunGame Instance = null;
         public KeyboardManager KeyBoardManager;
         private IKeyboardMouseEvents m_GlobalHook;
-
+        public IntPtr windHandle;
         public static System.Windows.Forms.Form WinForm = null;
 
         static DateTime updated = DateTime.Now;
@@ -72,8 +72,9 @@ namespace kyun
         public FrameCounter VideoCounter;
         public static bool RunningOverWine;
         public static bool xmas = false;
-        public float maxPeak { get; private set; }
+        public float maxPeak { get; set; }
         public NikuClientApi server { get; set; }
+        public bool isMainWindowActive = true;
 
         public static int Attemps = 0;
 
@@ -87,7 +88,7 @@ namespace kyun
 
         delegate void shit(GameTime tm);
         event shit updateEvent;
-        private System.Threading.SynchronizationContext syncContext;
+        public System.Threading.SynchronizationContext syncContext;
 
         bool gameIsRunning;
         private TimeSpan timeStart;
@@ -141,6 +142,7 @@ namespace kyun
                 Settings1.Default.Save();
             }
 
+            syncContext = System.Threading.SynchronizationContext.Current;
 
             if (Settings1.Default.Token != "" && Settings1.Default.User != "")
                 server = new NikuClientApi(Settings1.Default.User, Settings1.Default.Token);
@@ -154,6 +156,7 @@ namespace kyun
 
             WinForm = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(Window.Handle);
             WinForm?.Focus();
+            windHandle = WinForm.Handle;
 
             System.Drawing.Bitmap bmcursor = (System.Drawing.Bitmap)System.Drawing.Bitmap.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets/cursor.png"));
 
@@ -271,7 +274,10 @@ namespace kyun
             gameStart =  DateTime.Now;
             updateEvent = cUpdate;
 
-            RecallAndNotify(null);
+
+            bool disableMultiThread = false;
+            if(!disableMultiThread)
+                RecallAndNotify(null);
         }
 
         public void RecallAndNotify(Exception ex)
@@ -302,45 +308,45 @@ namespace kyun
 
            
             updateEvent = cUpdate;
-            syncContext = System.Threading.SynchronizationContext.Current;
+
             gameIsRunning = true;
 
             bool disableMulticore = false;
 
             tk = new Thread(() =>
             {
+                int thisThreadId = GetCurrentThreadId();
+
+                ProcessThread CurrentThread = (from ProcessThread th in Process.GetCurrentProcess().Threads
+                                               where th.Id == thisThreadId
+                                               select th).Single();
                 // Run on another core as possible
                 if (Environment.ProcessorCount > 1 && !disableMulticore)
                 {
                     Thread.BeginThreadAffinity();
 
-                    int thisThreadId = GetCurrentThreadId();
-
-                    ProcessThread CurrentThread = (from ProcessThread th in Process.GetCurrentProcess().Threads
-                                                   where th.Id == thisThreadId
-                                                   select th).Single();
+                   
                     CurrentThread.ProcessorAffinity = (IntPtr)0x0002;
 
-                    // rise thread priority
-                    CurrentThread.PriorityLevel = ThreadPriorityLevel.Highest;
+
                 }
+                // rise thread priority
+                CurrentThread.PriorityLevel = ThreadPriorityLevel.TimeCritical;
 
                 DateTime startTime;
                 startTime = DateTime.Now;
                 while (gameIsRunning)
                 {
-
-
                     try
                     {
                         elapsed = (DateTime.Now - startTime).TotalMilliseconds;
                         startTime = DateTime.Now;
                         TimeSpan startedGT = stopwatch.Elapsed - timeStart;
-                        syncContext.Send(state =>
-                        {
-                            //updateEvent.Invoke(new GameTime(gameStart, TimeSpan.FromMilliseconds(elapsed), false));
-                            cUpdate(new GameTime(startedGT, TimeSpan.FromMilliseconds(elapsed), false));
-                        }, null);
+                        cUpdate(new GameTime(startedGT, TimeSpan.FromMilliseconds(elapsed), false));
+                        //syncContext.Send(state =>
+                        //{
+                           
+                        //}, null);
 
                         if (Settings1.Default.VSync)
                         {
@@ -379,8 +385,9 @@ namespace kyun
 
         protected override void Update(GameTime tm)
         {
+            
             //Double
-
+            //cUpdate(tm);
         }
 
         private void FormGame_DragLeave(object sender, EventArgs e)
@@ -426,19 +433,23 @@ namespace kyun
 
         public void ToggleVSync(bool b)
         {
-            if (b)
+            syncContext.Send(state =>
             {
-                IsFixedTimeStep = false;
-                Graphics.SynchronizeWithVerticalRetrace = b;
-            }
-            else
-            {
-                Graphics.SynchronizeWithVerticalRetrace = b;
-                IsFixedTimeStep = true;
-                ChangeFrameRate(Settings1.Default.FrameRate);
-            }
+                if (b)
+                {
+                    IsFixedTimeStep = false;
+                    Graphics.SynchronizeWithVerticalRetrace = b;
+                }
+                else
+                {
+                    Graphics.SynchronizeWithVerticalRetrace = b;
+                    IsFixedTimeStep = true;
+                    ChangeFrameRate(Settings1.Default.FrameRate);
+                }
 
-            Graphics.ApplyChanges();
+                Graphics.ApplyChanges();
+            }, null);
+          
         }
 
         void mainWindow_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
@@ -536,6 +547,8 @@ namespace kyun
         private DateTime lastCheckedDay;
 
         private Stopwatch stopwatch;
+        private KeyboardState keyboardOldState;
+        private KeyboardState actualState;
 
         protected override void LoadContent()
         {
@@ -665,32 +678,11 @@ namespace kyun
             touchHandler?.Update();
             updatePeak(gameTime);
 
-
-            if (Player.PlayState == BassPlayState.Playing)
-            {
-
-                if (SelectedBeatmap != null)
-                {
-                    WinForm.Text = "kyun! - Playing: " + SelectedBeatmap.Artist + " - " + SelectedBeatmap.Title;
-                }
-
-            }
-            else
-            {
-                WinForm.Text = "kyun!";
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Add))
-                GeneralVolume = GeneralVolume + (gameTime.ElapsedGameTime.Milliseconds) * .0005f;
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Subtract))
-                GeneralVolume = GeneralVolume - (gameTime.ElapsedGameTime.Milliseconds) * .0005f;
-
             elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             float frameTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            KeyBoardManager.Update(gameTime);
+           
             ScreenManager.Update(gameTime);
 
             uLabelVer.Update();
@@ -732,7 +724,40 @@ namespace kyun
             if (!gameIsRunning)
                 return;
 
+
+            actualState = Keyboard.GetState();
+            if (ScreenManager.ActualScreen != null)
+            {
+                (ScreenManager.ActualScreen as ScreenBase).checkKeyboardEvents(keyboardOldState, actualState);
+            }
+            keyboardOldState = actualState;
+            
+
             lastCheckedDay = DateTime.Now;
+
+            isMainWindowActive = System.Windows.Forms.Form.ActiveForm == WinForm;
+            KeyBoardManager.Update(gameTime);
+            if (Player.PlayState == BassPlayState.Playing)
+            {
+
+                if (SelectedBeatmap != null)
+                {
+                    WinForm.Text = "kyun! - Playing: " + SelectedBeatmap.Artist + " - " + SelectedBeatmap.Title;
+                }
+
+            }
+            else
+            {
+                WinForm.Text = "kyun!";
+            }
+
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Add))
+                GeneralVolume = GeneralVolume + (gameTime.ElapsedGameTime.Milliseconds) * .0005f;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Subtract))
+                GeneralVolume = GeneralVolume - (gameTime.ElapsedGameTime.Milliseconds) * .0005f;
+
 
             //Help time hack
             //updated == lastCheckedDay

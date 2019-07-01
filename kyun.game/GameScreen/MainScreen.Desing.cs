@@ -536,7 +536,7 @@ namespace kyun.GameScreen
                 }
             }
 
-            if (Jukebox)
+            if (jukebox)
             {
 
                 coverBox.Opacity = coverimg.Opacity = coverLabel.Opacity = coverLabelArt.Opacity = 1;

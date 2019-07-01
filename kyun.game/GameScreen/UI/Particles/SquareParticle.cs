@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using kyun.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -10,7 +11,7 @@ namespace kyun.GameScreen.UI.Particles
     public class SquareParticle : Particle
     {
 
-        private Color squareColor;
+        public Color squareColor;
         public SquareParticle(Texture2D tx, Vector2 velocity, Vector2 startUpPosition, int timeToDie, float angleVelocity, Color pColor) : base(tx, velocity, startUpPosition, timeToDie, angleVelocity)
         {
             StopAtBottom = false;
@@ -32,7 +33,7 @@ namespace kyun.GameScreen.UI.Particles
             float positionY = 0;
             float positionX = 0;
 
-            Vector2 VelocityP = new Vector2(Velocity.X * KyunGame.Instance.Player.PeakVol, Math.Max((Math.Abs(Scale - 1)/1.1f) * KyunGame.Instance.Player.PeakVol, 0.05f));
+            Vector2 VelocityP = new Vector2(Velocity.X * KyunGame.Instance.maxPeak, Math.Max((Math.Abs(Scale - 1)/1.1f) * KyunGame.Instance.maxPeak, 0.05f));
 
             if (StopAtBottom)
             {

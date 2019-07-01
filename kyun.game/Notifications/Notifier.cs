@@ -59,8 +59,11 @@ namespace kyun.Notifications
 
         public override void Render()
         {
-            foreach (NotificationBox box in Notifications)
+            for(int a = 0;a< Notifications.Count; a++)
+            {
+                NotificationBox box = Notifications[a];
                 box.Render();
+            }   
         }
 
         #endregion

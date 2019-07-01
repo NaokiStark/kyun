@@ -145,7 +145,7 @@ namespace kyun.Screen
         public static string GetMonitorFreq()
         {
 
-            IntPtr hwnd = KyunGame.WinForm.Handle;
+            IntPtr hwnd = KyunGame.Instance.windHandle;
 
             // 2. Get a monitor handle ("HMONITOR") for the window. 
             //    If the window is straddling more than one monitor, Windows will pick the "best" one.

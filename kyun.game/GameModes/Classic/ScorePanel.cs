@@ -2,6 +2,7 @@
 using kyun.Beatmap;
 using kyun.game.Database;
 using kyun.game.GameModes.CatchIt;
+using kyun.game.GameScreen;
 using kyun.game.GameScreen.UI;
 using kyun.game.GameScreen.UI.Scoreboard;
 using kyun.game.NikuClient;
@@ -13,6 +14,7 @@ using kyun.Utils;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -57,26 +59,39 @@ namespace kyun.GameModes.Classic
         private Image greatimg;
         private Image badimg;
         private Image missimg;
+
+        private Label loadingLabel;
+        private Label beatmapDisplayLabel;
+        private Label detailsLabel;
+        private Image coverimg;
         Vector2 mStr;
 
         int cmargin = 65;
         private ButtonStandard backButton;
         private ButtonStandard tryAgainBtn;
         private ButtonStandard replayBtn;
+
+        public Image ScoreLetter { get; private set; }
+
         public Replay rpl;
+
+        private int infoMargin = 300;
 
         public ScorePanel()
         {
+            infoMargin = ActualScreenMode.Width / 2 - infoMargin;
             AllowVideo = true;
             mStr = SpritesContent.Instance.ScoreBig.MeasureString("la puta madre que te pario");
 
             var aMode = ActualScreenMode;
 
-
+            var rnkPnlPos = new Vector2(ActualScreenMode.Width /2 + 50,
+                aMode.Height / 2 - (SpritesContent.Instance.RankingPanel.Height / 2));
             rankingPanel = new Image(SpritesContent.Instance.RankingPanel)
             {
-                Position = new Vector2(aMode.Width / 2 - (SpritesContent.Instance.RankingPanel.Width / 2), aMode.Height / 2 - (SpritesContent.Instance.RankingPanel.Height / 2)),
-                BeatReact = false
+                //Position = new Vector2(aMode.Width / 2 - (SpritesContent.Instance.RankingPanel.Width / 2), aMode.Height / 2 - (SpritesContent.Instance.RankingPanel.Height / 2)),
+                Position = rnkPnlPos,
+                BeatReact = false,
             };
 
 
@@ -193,8 +208,48 @@ namespace kyun.GameModes.Classic
                 Position = new Vector2(tryAgainBtn.Position.X, tryAgainBtn.Position.Y - SpritesContent.Instance.ButtonStandard.Height - 10),
             };
 
+            ScoreLetter = new Image(SpritesContent.instance.FScore)
+            {
+                BeatReact = false,
+                
+            };
+
+            loadingLabel = new Label(0)
+            {
+                Text = "Beatmap Passed",
+                Centered = true,
+                Position = new Vector2(infoMargin,
+                    ActualScreenMode.Height / 2 - SpritesContent.Instance.ListboxFont.MeasureString("ewe").Y * 3),
+
+                Font = SpritesContent.Instance.ListboxFont
+            };
+
+            beatmapDisplayLabel = new Label(0)
+            {
+                Text = "",
+                Centered = true,
+                Position = new Vector2(infoMargin, loadingLabel.Position.Y + loadingLabel.Font.MeasureString(":3").Y + 5),
+                Font = SpritesContent.Instance.TitleFont
+            };
+
+            detailsLabel = new Label(0)
+            {
+                Text = "",
+                Centered = true,
+                Position = new Vector2(infoMargin, beatmapDisplayLabel.Position.Y + beatmapDisplayLabel.Font.MeasureString("uwu").Y + 5),
+                Font = SpritesContent.Instance.ListboxFont,
+                Scale = .5f
+            };
+
+            coverimg = new Image(SpritesContent.Instance.DefaultBackground)
+            {
+                Position = new Vector2(infoMargin - (BeatmapScreen.Instance as BeatmapScreen).coverSize / 2, loadingLabel.Position.Y - (BeatmapScreen.Instance as BeatmapScreen).coverSize / 2),
+                //Texture = BmScr.coverimg.Texture,
+                BeatReact = false
+            };
+
             Controls.Add(rankingPanel);
-            Controls.Add(mapNameLabel);
+            //Controls.Add(mapNameLabel);
             Controls.Add(scoreLabel);
 
             Controls.Add(perfectlbl);
@@ -212,9 +267,12 @@ namespace kyun.GameModes.Classic
             Controls.Add(backButton);
             Controls.Add(tryAgainBtn);
             Controls.Add(replayBtn);
-
-
-
+            
+            Controls.Add(loadingLabel);
+            Controls.Add(beatmapDisplayLabel);
+            Controls.Add(detailsLabel);
+            Controls.Add(coverimg);
+            Controls.Add(ScoreLetter);
             onKeyPress += (obj, args) =>
             {
                 if (args.Key == Microsoft.Xna.Framework.Input.Keys.Escape)
@@ -233,6 +291,7 @@ namespace kyun.GameModes.Classic
                 Displaying = false;
                 EffectsPlayer.StopAll();
                 AVPlayer.audioplayer.Play();
+                AVPlayer.videoplayer.Play(i.Beatmap.Video);
                 ScreenManager.ChangeTo(BeatmapScreen.Instance);
             };
 
@@ -266,11 +325,16 @@ namespace kyun.GameModes.Classic
             if (Displaying)
                 return;
 
+
             Displaying = true;
+            ChangeImgDisplay(ins.Beatmap.Background);
+            beatmapDisplayLabel.Text = StringHelper.WrapText(beatmapDisplayLabel.Font, $"{ins.Beatmap.Artist} - {ins.Beatmap.Title}", ActualScreenMode.Width - 200);
+            detailsLabel.Text = $"Difficulty: {ins.Beatmap.Version}\r\nBy {ins.Beatmap.Creator}";
+
             i = ins;
             AVPlayer.audioplayer.SetVelocity(1);
             EffectsPlayer.PlayEffect(SpritesContent.Instance.Applause);
-            Background = i.Background;
+            Background = GameLoader.GetInstance().Background;
 
             GameMod mods = i.gameMod;
             string mmods = "";
@@ -368,6 +432,35 @@ namespace kyun.GameModes.Classic
             perfectlbl.Text = $"{perfectCount}";
             acclbl.Text = $"{((float)acc / (float)i.HitObjects.Count).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)}%";
 
+            if(((float)acc / (float)i.HitObjects.Count) == 100)
+            {
+                if((i.gameMod & GameMod.DoubleTime) == GameMod.DoubleTime)
+                {
+                    ScoreLetter.Texture = SpritesContent.instance.TripleAScore;
+                }
+                else
+                {
+                    ScoreLetter.Texture = SpritesContent.instance.DoubleAScore;
+                }
+            }
+            else if(((float)acc / (float)i.HitObjects.Count) >= 90)
+            {
+                ScoreLetter.Texture = SpritesContent.instance.AScore;
+            }
+            else if (((float)acc / (float)i.HitObjects.Count) >= 80)
+            {
+                ScoreLetter.Texture = SpritesContent.instance.BScore;
+            }
+            else if(((float)acc / (float)i.HitObjects.Count) >= 50)
+            {
+                ScoreLetter.Texture = SpritesContent.instance.CScore;
+            }
+            else
+            {
+                ScoreLetter.Texture = SpritesContent.instance.FScore;
+            }
+
+
             string rawMovements = await rpl.ToString();
 
             if ((mods & GameMod.Auto) == GameMod.Auto)
@@ -398,6 +491,68 @@ namespace kyun.GameModes.Classic
             }
         }
 
+        private void ChangeImgDisplay(string image)
+        {
+            int coverSize = 300;
+
+            coverimg.Position = new Vector2(infoMargin - coverSize / 2, loadingLabel.Position.Y - coverSize / 2);
+
+            System.Drawing.Image cimg = null;
+
+            if (!File.Exists(image))
+            {
+                if (SpritesContent.Instance.CroppedBg == null)
+                {
+                    using (FileStream ff = File.Open(SpritesContent.Instance.defaultbg, FileMode.Open))
+                    {
+                        cimg = System.Drawing.Image.FromStream(ff);
+                        SpritesContent.Instance.CroppedBg = cimg;
+                    }
+
+                }
+
+            }
+            else if (File.GetAttributes(image) == FileAttributes.Directory)
+            {
+                if (SpritesContent.Instance.CroppedBg == null)
+                {
+                    using (FileStream ff = File.Open(SpritesContent.Instance.defaultbg, FileMode.Open))
+                    {
+                        cimg = System.Drawing.Image.FromStream(ff);
+                        SpritesContent.Instance.CroppedBg = cimg;
+                    }
+
+                }
+            }
+            else
+            {
+                cimg = System.Drawing.Image.FromFile(image);
+            }
+
+            if (cimg == null)
+            {
+                cimg = SpritesContent.Instance.CroppedBg;
+            }
+
+
+            System.Drawing.Bitmap cbimg = SpritesContent.ResizeImage(cimg, (int)(((float)cimg.Width / (float)cimg.Height) * coverSize), (int)coverSize);
+
+            System.Drawing.Bitmap ccbimg;
+            MemoryStream istream;
+            if (true)
+            {
+                ccbimg = SpritesContent.cropAtRect(cbimg, new System.Drawing.Rectangle((int)((cbimg.Width - coverSize) / 2), (int)((cbimg.Height - coverSize / 2.2f) / 2f), (int)coverSize, (int)(coverSize / 2.2f)));
+                istream = SpritesContent.BitmapToStream(ccbimg);
+            }
+            else
+            {
+                istream = SpritesContent.BitmapToStream(cbimg);
+            }
+
+            coverimg.Texture = SpritesContent.RoundCorners(ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, istream), 5);
+
+        }
+
         public override void Update(GameTime tm)
         {
             base.Update(tm);
@@ -413,6 +568,10 @@ namespace kyun.GameModes.Classic
             greatimg.Position = perfectimg.Position + new Vector2(300, 0);
             badimg.Position = perfectimg.Position + new Vector2(0, perfectimg.Texture.Height + cmargin);
             missimg.Position = badimg.Position + new Vector2(300, 0);
+
+            ScoreLetter.Position = new Vector2(coverimg.Position.X + 160, coverimg.Position.Y);
+            ScoreLetter.AngleRotation = 0;
+            ScoreLetter.Scale = .5f;
         }
     }
 }

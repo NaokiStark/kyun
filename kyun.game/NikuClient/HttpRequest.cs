@@ -11,7 +11,12 @@ namespace kyun.game.NikuClient
     public class HttpRequest
     {
         static CookieContainer _cookies = null;
-        public static CookieContainer CookiesJar {
+
+        /// <summary>
+        /// Cookie container
+        /// </summary>
+        public static CookieContainer CookiesJar
+        {
             get
             {
                 if (_cookies == null)
@@ -20,16 +25,34 @@ namespace kyun.game.NikuClient
             }
         }
 
-        public static async Task<string> Get(string url)
-        {            
-            using (var handler = new HttpClientHandler() { /*CookieContainer = CookiesJar*/ })
+        /// <summary>
+        /// Get Request
+        /// </summary>
+        /// <param name="url">url</param>
+        /// <returns>Task of string</returns>
+        public static async Task<string> Get(string url, bool cookies = false)
+        {
+            using (var handler = new HttpClientHandler{
+                CookieContainer = (cookies) ? CookiesJar : new CookieContainer()
+            })
+            {
                 using (HttpClient client = new HttpClient(handler))
-                    return await client.GetStringAsync(url);                            
+                    return await client.GetStringAsync(url);
+            }            
         }
 
-        public static async Task<string> Post(string url, HttpQueryString data = null)
-        {           
-            using (var handler = new HttpClientHandler() { /*CookieContainer = CookiesJar*/ })
+        /// <summary>
+        /// Get Request
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="data"></param>
+        /// <param name="cookies"></param>
+        /// <returns>Task of string</returns>
+        public static async Task<string> Post(string url, HttpQueryString data = null, bool cookies = false)
+        {
+            using (var handler = new HttpClientHandler{
+                CookieContainer = (cookies)?CookiesJar:new CookieContainer()
+            })
             {
                 using (HttpClient client = new HttpClient(handler))
                 {
@@ -38,7 +61,7 @@ namespace kyun.game.NikuClient
 
                     return await result.Content.ReadAsStringAsync();
                 }
-            }            
+            }
         }
     }
 }

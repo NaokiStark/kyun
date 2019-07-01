@@ -183,6 +183,7 @@
     <Compile Include="GameScreen\Grid.cs" />
     <Compile Include="GameScreen\InputEvents\KeyPressEventArgs.cs" />
     <Compile Include="GameScreen\IScreen.cs" />
+    <Compile Include="GameScreen\Jukebox.cs" />
     <Compile Include="GameScreen\LeaveScreen.cs" />
     <Compile Include="GameScreen\LoadScreen.cs" />
     <Compile Include="GameScreen\LogoScreen.cs" />
@@ -285,9 +286,16 @@
     </Compile>
     <Compile Include="Video\AudioVideoPlayer.cs" />
     <Compile Include="Video\FFmpeg.cs" />
+    <Compile Include="Video\FFmpegDecoder.cs" />
     <Compile Include="Video\FrameBuffer.cs" />
     <Compile Include="Video\VideoDecoder.cs" />
     <Compile Include="Video\VideoPlayer.cs" />
+    <Compile Include="Winforms\Experiments.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Winforms\Experiments.Designer.cs">
+      <DependentUpon>Experiments.cs</DependentUpon>
+    </Compile>
     <Compile Include="Winforms\FailForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -305,6 +313,9 @@
     <EmbeddedResource Include="Resource1.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource11.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Winforms\Experiments.resx">
+      <DependentUpon>Experiments.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Winforms\FailForm.resx">
       <DependentUpon>FailForm.cs</DependentUpon>
@@ -359,6 +370,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\test.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ffmpeg.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Maps\Cash Cash - Overtime\bg.jpg">
@@ -562,6 +576,12 @@
     <None Include="Assets\songs\4\songinfo.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Content\ascore.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\bscore.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Catcher.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -595,7 +615,16 @@
     <Content Include="Content\cinta_testing.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Content\cscore.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\dascore.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Content\DiffSelector.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\fscore.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\RGBShift.xnb">
@@ -628,6 +657,9 @@
     <Content Include="Content\scorebar.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Content\tascore.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Settings1.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

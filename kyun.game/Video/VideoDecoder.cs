@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Linq;
 
 namespace kyun.Video
 {
@@ -38,7 +40,8 @@ namespace kyun.Video
 
         public bool PlaybackStable { get { return (readCursor > 0 && gotNewFrame) || decodingFinished; } }
 
-
+        [DllImport("kernel32.dll")]
+        public static extern int GetCurrentThreadId();
 
         public static VideoDecoder __instance;
 
@@ -46,9 +49,8 @@ namespace kyun.Video
         {
             get
             {
-                if (__instance == null || __instance.Disposing)
-                    __instance = new VideoDecoder(8);
-                return __instance;
+              
+                return null;
             }
         }
 
@@ -93,6 +95,8 @@ namespace kyun.Video
 
         public VideoDecoder(int bufferSize)
         {
+            return;
+
             PIXEL_FORMAT = (int)FFmpeg.PixelFormat.PIX_FMT_RGB32;
             BufferSize = bufferSize;
             FrameBufferTimes = new double[BufferSize];
@@ -189,6 +193,7 @@ namespace kyun.Video
 
         public bool Open(byte[] bytes)
         {
+            return false;
             //Flag
             decoding = true;
 
@@ -268,7 +273,9 @@ namespace kyun.Video
                 FrameBuffer[i] = new byte[width * height * 4];
 
             decodingThread = new Thread(Decode);
-            decodingThread.IsBackground = true;
+
+            //decodingThread.IsBackground = true;
+
             decodingThread.Start();
 
             return true;
@@ -277,6 +284,25 @@ namespace kyun.Video
         [HandleProcessCorruptedStateExceptions]
         private void Decode()
         {
+            int thisThreadId = GetCurrentThreadId();
+
+            ProcessThread CurrentThread = (from ProcessThread th in Process.GetCurrentProcess().Threads
+                                           where th.Id == thisThreadId
+                                           select th).Single();
+
+            if (Environment.ProcessorCount > 1)
+            {
+                Thread.BeginThreadAffinity();
+
+
+                CurrentThread.ProcessorAffinity = (IntPtr)0x0002;
+
+               
+            }
+
+            // rise thread priority
+            CurrentThread.PriorityLevel = ThreadPriorityLevel.TimeCritical;
+
             try
             {
                 while (decoding)
@@ -347,6 +373,14 @@ namespace kyun.Video
             {
                 Logger.Instance.Warn(ex.Message + "\n\r" + ex.StackTrace);
             }
+            finally
+            {
+                if (Environment.ProcessorCount > 1)
+                {
+                    Thread.EndThreadAffinity();
+                }
+            }
+
         }
 
 
