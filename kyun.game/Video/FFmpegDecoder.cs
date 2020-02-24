@@ -125,14 +125,16 @@ namespace kyun.game.Video
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 StandardOutputEncoding = Encoding.UTF8,
+                
             };
 
             ffmpegProc = new Process
             {
                 StartInfo = startInfo
             };
+            
             ffmpegProc.Start();
-
+            ffmpegProc.PriorityClass = ProcessPriorityClass.High;
             //STDOUT
             var output = ffmpegProc.StandardOutput;
 
@@ -207,7 +209,7 @@ namespace kyun.game.Video
             }
             catch (Exception ex)
             {
-
+                Logger.Instance.Severe($"{ex.Message}\r\n{ex.StackTrace}");
                 Process[] prs = Process.GetProcessesByName("ffmpeg");
                 foreach (Process pr in prs)
                     pr.Kill();
@@ -232,7 +234,7 @@ namespace kyun.game.Video
         /// <returns></returns>
         public string GetDebugInfo()
         {
-            return $"LastFrameInBuffer:{lastFrameId} \nDecodedFrames:{frameIndex} \nFramesInBuffer:{frameList.Count} \nVideoFramerate:{VIDEOFRAMERATE} \n";
+            return $"LastFrameInBuffer: {lastFrameId} \nDecodedFrames: {frameIndex} \nFramesInBuffer: {frameList.Count} \nVideoFramerate: {VIDEOFRAMERATE} \n";
         }
 
         public int GetBufferCount()

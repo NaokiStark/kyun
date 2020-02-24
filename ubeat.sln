@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kyun.Niku", "kyun.Niku\kyun
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kyun.Logger", "kyun.Logger\kyun.Logger.csproj", "{8BB35046-3B18-4AEC-B598-B84325D6F9C9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AudioTests", "AudioTests", "{3119B681-2C8B-4952-9AF3-01D5A6A39F06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreqData", "FreqData\FreqData.csproj", "{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -191,9 +195,36 @@ Global
 		{8BB35046-3B18-4AEC-B598-B84325D6F9C9}.UITests|Mixed Platforms.Build.0 = UITests|Any CPU
 		{8BB35046-3B18-4AEC-B598-B84325D6F9C9}.UITests|x86.ActiveCfg = UITests|Any CPU
 		{8BB35046-3B18-4AEC-B598-B84325D6F9C9}.UITests|x86.Build.0 = UITests|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Debug|x86.Build.0 = Debug|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Profile|Any CPU.ActiveCfg = Release|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Profile|Any CPU.Build.0 = Release|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Profile|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Profile|Mixed Platforms.Build.0 = Release|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Profile|x86.ActiveCfg = Release|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Profile|x86.Build.0 = Release|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Release|x86.ActiveCfg = Release|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.Release|x86.Build.0 = Release|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.UITests|Any CPU.ActiveCfg = Release|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.UITests|Any CPU.Build.0 = Release|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.UITests|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.UITests|Mixed Platforms.Build.0 = Release|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.UITests|x86.ActiveCfg = Release|Any CPU
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF}.UITests|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A6FEE143-6D59-498C-B98E-EEA5BEF52ADF} = {3119B681-2C8B-4952-9AF3-01D5A6A39F06}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FB66C963-2B4D-4A19-988A-94C172C7B3A1}

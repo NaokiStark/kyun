@@ -607,6 +607,9 @@ namespace kyun.GameModes.OsuMode
 
             HitSingle firstEl = null;
             HitSingle secEl = null;
+
+            bool autoCursorMoved = false;
+
             for (int c = 0; c < Controls.Count; c++)
             {
                 UIObjectBase control = Controls.ElementAt(c);
@@ -639,7 +642,7 @@ namespace kyun.GameModes.OsuMode
                 for (int b = lastAutoId; b < HitObjects.Count; b++)
                 {
                     if (!HitObjects[b].Died)
-                    {
+                    { 
                         if (HitObjects.Count < 2)
                         {
                             firstEl = (HitSingle)HitObjects[0];
@@ -681,7 +684,13 @@ namespace kyun.GameModes.OsuMode
 
                             if (true)
                             {
+                                if(AutoCursor.Position != curPos)
+                                {
+                                    autoCursorMoved = true;
+                                }
+                                
                                 AutoCursor.Position = curPos;
+                                
                             }
                             else
                             {
@@ -707,10 +716,17 @@ namespace kyun.GameModes.OsuMode
                                     break;
                                 }
                             }
-
-                            AutoCursor.Position = new Vector2(
+                            var curDestn = new Vector2(
                                 replay.MousePositions[replayMouseIndex].Value.X - Math.Abs((AutoCursor.Size.X) / 2),
                                 replay.MousePositions[replayMouseIndex].Value.Y - Math.Abs((AutoCursor.Size.Y) / 2));
+
+                            if(AutoCursor.Position != curDestn)
+                            {
+                                autoCursorMoved = true;
+                            }
+
+                            AutoCursor.Position = curDestn;
+                            
                         }
 
 
@@ -748,16 +764,31 @@ namespace kyun.GameModes.OsuMode
                 {
                     var ps = getPointAt(AutoCursor.Position.X, AutoCursor.Position.Y,
                    dest.X, dest.Y, 1f - ((float)timeDiff / atime));
-                    AutoCursor.Position = new Vector2(ps.X + 10, ps.Y + 10);
+                    Vector2 curDest = new Vector2(ps.X + 10, ps.Y + 10);
+
+                    if (AutoCursor.Position != curDest)
+                        autoCursorMoved = true;
+
+                    AutoCursor.Position = curDest;
                 }
                 else
                 {
                     var ps2 = getPointAt(firstEl.Position.X, firstEl.Position.Y,
-                   dest.X, dest.Y, 1f - ((float)timeDiff / atime));
-                    AutoCursor.Position = new Vector2(ps2.X + 10, ps2.Y + 10);
+                   dest.X, dest.Y, 1f - ((float)timeDiff / 150));
+                    Vector2 curDest = new Vector2(ps2.X + 10, ps2.Y + 10);
+
+                    if (AutoCursor.Position != curDest)
+                        autoCursorMoved = true;
+
+                    AutoCursor.Position = curDest;
+                    
                 }
 
             }
+            AutoCursor.TextureColor = Color.YellowGreen;
+
+            if(autoCursorMoved)
+                _particleEngine.AddNewHitObjectParticle(AutoCursor.Texture, Vector2.Zero, AutoCursor.Position, 1, 0, Color.YellowGreen).Opacity = .6f;
         }
 
         float clampDiff()
@@ -797,8 +828,24 @@ namespace kyun.GameModes.OsuMode
             // "autopilot" mod: move quicker between objects
 
             float te = StringHelper.clamp(t, 0f, 1f);
+
+            bool addNoise = OsuUtils.OsuBeatMap.rnd.NextBoolean() && OsuUtils.OsuBeatMap.rnd.NextBoolean() && OsuUtils.OsuBeatMap.rnd.NextBoolean() && OsuUtils.OsuBeatMap.rnd.NextBoolean();
+            float NoiseToAdd = 0;
+            float NoiseToAddY = 0;
+            if (addNoise)
+            {
+                if(OsuUtils.OsuBeatMap.rnd.NextBoolean() && OsuUtils.OsuBeatMap.rnd.NextBoolean() && OsuUtils.OsuBeatMap.rnd.NextBoolean())
+                {
+                    NoiseToAdd = (float)OsuUtils.OsuBeatMap.rnd.Next(-3, 3);
+                }
+                if (OsuUtils.OsuBeatMap.rnd.NextBoolean() && OsuUtils.OsuBeatMap.rnd.NextBoolean() && OsuUtils.OsuBeatMap.rnd.NextBoolean())
+                {
+                    NoiseToAddY = (float)OsuUtils.OsuBeatMap.rnd.Next(-3, 3);
+                }
+            }
+
             float tee = bezierBlend(te * .95f);
-            return new Vector2(startX + (endX - startX) * tee, startY + (endY - startY) * te);
+            return new Vector2(startX + (endX - startX) * tee + NoiseToAdd, startY + (endY - startY) * tee + NoiseToAddY);
         }
 
         internal float bezierBlend(float t)

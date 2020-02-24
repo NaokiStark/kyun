@@ -38,7 +38,7 @@ namespace kyun.UIObjs
         void tickSize_Tick()
         {
 
-            float twidth = (Size.X * Scale) * 2f;
+            float twidth = (Size.X * Scale) * 2.5f;
 
             int appr = (int)(1950 - approachrate * 150);
 

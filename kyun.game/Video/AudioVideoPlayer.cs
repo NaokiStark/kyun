@@ -107,7 +107,7 @@ namespace kyun.Video
             }
             else
             {
-                VideoPlayer.Instance.vdc.Dispose();
+                VideoPlayer.Instance.vdc?.Dispose();
 
             }
 

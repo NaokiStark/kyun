@@ -342,11 +342,11 @@ namespace kyun
                         elapsed = (DateTime.Now - startTime).TotalMilliseconds;
                         startTime = DateTime.Now;
                         TimeSpan startedGT = stopwatch.Elapsed - timeStart;
-                        cUpdate(new GameTime(startedGT, TimeSpan.FromMilliseconds(elapsed), false));
-                        //syncContext.Send(state =>
-                        //{
-                           
-                        //}, null);
+                        //cUpdate(new GameTime(startedGT, TimeSpan.FromMilliseconds(elapsed), false));
+                        syncContext.Send(state =>
+                        {
+                           cUpdate(new GameTime(startedGT, TimeSpan.FromMilliseconds(elapsed), false));
+                        }, null);
 
                         if (Settings1.Default.VSync)
                         {
@@ -547,8 +547,8 @@ namespace kyun
         private DateTime lastCheckedDay;
 
         private Stopwatch stopwatch;
-        private KeyboardState keyboardOldState;
-        private KeyboardState actualState;
+        public KeyboardState KeyboardOldState;
+        public KeyboardState KeyboardActualState;
 
         protected override void LoadContent()
         {
@@ -725,12 +725,12 @@ namespace kyun
                 return;
 
 
-            actualState = Keyboard.GetState();
+            KeyboardActualState = Keyboard.GetState();
             if (ScreenManager.ActualScreen != null)
             {
-                (ScreenManager.ActualScreen as ScreenBase).checkKeyboardEvents(keyboardOldState, actualState);
+                (ScreenManager.ActualScreen as ScreenBase).checkKeyboardEvents(KeyboardOldState, KeyboardActualState);
             }
-            keyboardOldState = actualState;
+            KeyboardOldState = KeyboardActualState;
             
 
             lastCheckedDay = DateTime.Now;

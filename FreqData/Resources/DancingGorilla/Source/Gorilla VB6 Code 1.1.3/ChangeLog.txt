@@ -1,0 +1,57 @@
+From v1.1.3 to v1.1.4
+Coreected error where Gorilla crashes when changing StepMania/DWI directory
+
+From v1.02 to v1.1.3
+Added small help pannel
+Added more tooltips
+More usefull errors (hopefuly)
+Inform user (On first run) if no manula configuration is required
+
+From v1.0.1 to v1.0.2
+fixed "runtime error 13" bug.
+
+From v1.0.0 to v1.0.1
+Bug Fixes
+Associate .gor files with Gorilla
+Allow dropping songs/directories onto gorilla icon to start gorilla with a song list
+Added "Bulk Changes" button and form.
+double-click on a directory in main page expands directory
+save-on-exit only offered when songlist has been changed.
+
+
+From v0.10.9 to 1.0.0
+
+Added "Turbo" option
+Added Timers and ETA to Busy screen
+Added "Abort Now"
+Added "Viewe Log" context menu to "Busy" page.
+Gorilla now imports COnfiguration and SongList files from v0.9.x to v0.11.x
+Some screen changes
+Increased BPM detection accuracy
+Decreased DancingMonkeys.exe's priority
+Bug fixes
+Settings file now always saved and loaded form install directory, even if new shortcuts are made.
+
+
+v0.10.7 - August 18, 2006 - Release with v1.04. (David Flink)
+
+Major code re-write and cleanup
+Improved screen handeling
+Some display improvements and changes
+Improvements in file handeling
+Stability improved.
+Added "Copy Artwork" to use Windows MediaPlayer artwork as song banner (SM only)
+Defaults moved to configuration screen. 
+Ability to "re-process" files (i.e. remove ok/failed flag). 
+Delve rejects directories that match DM, SM or DWI directories.
+Bug fixes
+
+v0.9.4beta - July 25, 2006 - Original release with v1.03. (David Flink)
+
+Configure pannel annotated. 
+Directories for DancingMonkeys, StepMania and DanceWithIntensity auto-detected. <default> settings now won't allow mutually exclusive options. 
+Version of Dancing Monkies auto-detected
+Added OLE Drag-and-drop to job list. Improved directory selection pannel.
+Improved directory handeling.
+Added Icon.
+Bug fixes.

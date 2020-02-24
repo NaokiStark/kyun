@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using kyun.GameModes.OsuMode;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,13 @@ namespace kyun.game.Beatmap.Generators
         {
             float dividedDiff = diff / 10f;
             return MakeRandom((int)(MaxX), (int)(MaxY), dividedDiff);
+        }
+
+        public static Vector2 MakeRandomForMania(HitSingle obj)
+        {
+            float y = obj._hitButton.OsuLocation.Y + OsuUtils.OsuBeatMap.rnd.Next(-200, 200);
+
+            return new Vector2(obj._hitButton.OsuLocation.X + OsuUtils.OsuBeatMap.rnd.Next(-10, 10), y);
         }
     }
 }

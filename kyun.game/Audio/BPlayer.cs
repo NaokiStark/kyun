@@ -12,7 +12,8 @@ namespace kyun.Audio
         int stream = 0;
 
 
-        public float PeakVol {
+        public float PeakVol
+        {
             get
             {
                 if (PlayState != BassPlayState.Playing)
@@ -38,7 +39,7 @@ namespace kyun.Audio
                 if (paused)
                 {
                     paused = value;
-                    if(!paused)
+                    if (!paused)
                         Play();//plays this shit
                 }
                 else
@@ -69,15 +70,16 @@ namespace kyun.Audio
             get
             {
                 var pos = Bass.BASS_ChannelGetPosition(stream);
-                
-                return (long)Math.Round((decimal)(Bass.BASS_ChannelBytes2Seconds(stream, pos) * 1000));
+
+                return (long)((decimal)Bass.BASS_ChannelBytes2Seconds(stream, pos) * (decimal)1000);
             }
             set
             {
-                //Bass.BASS_ChannelPause(stream);
-                var pos = Bass.BASS_ChannelSeconds2Bytes(stream, ((double)value / 1000d));
+                Bass.BASS_ChannelPause(stream);
+                var pos = Bass.BASS_ChannelSeconds2Bytes(stream, (value / 1000f));
+
                 Bass.BASS_ChannelSetPosition(stream, pos, BASSMode.BASS_POS_BYTE);
-                //Bass.BASS_ChannelPlay(stream, false);
+                Bass.BASS_ChannelPlay(stream, false);
             }
         }
 
@@ -127,7 +129,7 @@ namespace kyun.Audio
 
             tmm.Interval = 10;
             tmm.Start();
-       
+
         }
 
         public void Dispose()
@@ -157,7 +159,7 @@ namespace kyun.Audio
                     Bass.BASS_StreamFree(stream);
                     stream = 0;
                 }
-                
+
                 stream = Bass.BASS_StreamCreateFile(fileName, 0, 0, BASSFlag.BASS_SAMPLE_FLOAT | BASSFlag.BASS_STREAM_DECODE);
                 stream = BassFx.BASS_FX_TempoCreate(stream, BASSFlag.BASS_DEFAULT);
                 float pbrate = velocity * 100;
@@ -196,11 +198,11 @@ namespace kyun.Audio
 
         public void Pause()
         {
-            if(PlayState == BassPlayState.Stopped)
+            if (PlayState == BassPlayState.Stopped)
                 Play(ActualSong);
             else
             {
-                if(PlayState == BassPlayState.Paused)
+                if (PlayState == BassPlayState.Paused)
                 {
                     Bass.BASS_ChannelPlay(stream, false);
                     PlayState = BassPlayState.Playing;
@@ -219,6 +221,14 @@ namespace kyun.Audio
             PlayState = BassPlayState.Stopped;
         }
 
+        public static int FFTFrequency2Index(int frequency, int length, int samplerate)
+        {
+            int bin = (int)Math.Round((double)length * (double)frequency / (double)samplerate);
+            if (bin > length / 2 - 1)
+                bin = length / 2 - 1;
+            return bin;
+        }
+
         private float GetLevel(int channel)
         {
             int level = Bass.BASS_ChannelGetLevel(channel);
@@ -226,8 +236,72 @@ namespace kyun.Audio
             float right = (float)((float)Un4seen.Bass.Utils.HighWord32(level) / 5f) / 65535f * 10; // the right level
             //left = Math.Min(left, 1); //Limit to 0db
             //right = Math.Min(right, 1); //Limit to 0db
-            return Math.Max(left, right)*.9f;
-            
+            return Math.Max(left, right) * .9f;
+
+        }
+
+        float[] fft = new float[2048];
+
+        public float DetectFrequency(int freq1, int freq2, int size = 1024)
+        {
+            if (freq1 < 1 || freq2 < 1 || freq1 > freq2 || stream == 0)
+                return 0f;
+
+            float sum = 0f;
+            int delta = 1;
+            try
+            {
+                int bassdatafft = 1024;
+                switch (size)
+                {
+                    case 256:
+                        bassdatafft = (int)BASSData.BASS_DATA_FFT512;
+                        break;
+                    case 512:
+                        bassdatafft = (int)BASSData.BASS_DATA_FFT1024;
+                        break;
+                    case 1024:
+                        bassdatafft = (int)BASSData.BASS_DATA_FFT2048;
+                        break;
+                }
+                // get the fft data
+                if (Bass.BASS_ChannelGetData(stream, fft, bassdatafft) > 0)
+                {
+                    BASS_CHANNELINFO info = new BASS_CHANNELINFO();
+                    if (Bass.BASS_ChannelGetInfo(stream, info))
+                    {
+                        // see, if we got the desired frequency here
+                        // we need to calculate the bin for the frequency...
+                        int bin1 = Un4seen.Bass.Utils.FFTFrequency2Index(freq1, size, info.freq);
+
+                        int bin2 = Un4seen.Bass.Utils.FFTFrequency2Index(freq2, size, info.freq);
+
+                        float maxP = 0;
+
+                        for (int a = bin1; a <= bin2; a++)
+                        {
+                            float pval = fft[a];
+                            //if (pval < 0.1f)
+                            //    continue;
+
+                            //sum += fft[a] * 10f;
+
+                            //sum += pval;
+
+                            if (pval > maxP) maxP = pval;
+                        }
+
+                        return maxP;
+                    }
+                }
+            }
+            catch
+            {
+                // error false
+                return 0f;
+            }
+            // interpolate the result
+            return Math.Min(sum / delta, 1f);
         }
     }
 

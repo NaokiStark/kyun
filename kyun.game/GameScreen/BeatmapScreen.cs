@@ -220,7 +220,7 @@ namespace kyun.GameScreen
 
             lblTitleDesc.Text = selectd.Artist + " - " + selectd.Title;
             lbldesc.Text = $"Mapped by " + selectd.Creator;
-            lblDiffDesc.Text = $"Diff: {selectd.Version} | OD: {selectd.OverallDifficulty} | AP: {selectd.ApproachRate} | CS: {selectd.CircleSize} | HD: {selectd.HPDrainRate}";
+            lblDiffDesc.Text = $"Diff: {selectd.Version} | OD: {selectd.OverallDifficulty} | AR: {selectd.ApproachRate} | CS: {selectd.CircleSize} | HD: {selectd.HPDrainRate}";
 
             if (lastDiffIndex != lBDff.selectedIndex)
             {
@@ -257,7 +257,7 @@ namespace kyun.GameScreen
             {
                 lblTitleDesc.Text = selectd.Artist + " - " + selectd.Title;
                 lbldesc.Text = $"Mapped by " + selectd.Creator;
-                lblDiffDesc.Text = $"Diff: {selectd.Version} | OD: {selectd.OverallDifficulty} | AP: {selectd.ApproachRate} | CS: {selectd.CircleSize} | HD: {selectd.HPDrainRate}";
+                lblDiffDesc.Text = $"Diff: {selectd.Version} | OD: {selectd.OverallDifficulty} | AR: {selectd.ApproachRate} | CS: {selectd.CircleSize} | HD: {selectd.HPDrainRate}";
             }
 
            

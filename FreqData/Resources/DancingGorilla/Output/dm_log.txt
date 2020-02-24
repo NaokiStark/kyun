@@ -1,0 +1,21 @@
+===============================================================================
+Start Time: 1:29:31 12/09/2019 (U.S. format)
+----------------------------------------------------------------
+Begin processing input file C:\Program Files (x86)\osu!\Songs\822630 Giga - BRING IT ON\audio.mp3
+
+ERROR: conversion of MP3 to WAV failed. Try first converting your file to a fixed rate MP3 or WAV file using another sound program.
+End Time: 1:29:35 12/09/2019 (U.S. format)
+===============================================================================
+Start Time: 1:31:05 12/09/2019 (U.S. format)
+----------------------------------------------------------------
+Begin processing input file C:\Program Files (x86)\osu!\Songs\641882 YUC'e - macaron moon\audio.mp3
+Normal BPM test: 89.000000 to 205.000000
+Calculated BPM: 169.974947
+           Gap in seconds: 1.042721
+           Confidence: 20.691270 (minimum is 10.000000)
+End Time: 1:33:15 12/09/2019 (U.S. format)
+Begin processing input file C:\Program Files (x86)\osu!\Songs\705038 Nanahira x Camellia - INFINITI MOFULITY short ver\audio.mp3
+Normal BPM test: 89.000000 to 205.000000
+Calculated BPM: 179.987756
+           Gap in seconds: 0.787914
+           Confidence: 29.889578 (minimum is 10.000000)

@@ -61,7 +61,7 @@ namespace kyun.GameModes.OsuMode
                 return;
             }
 
-            KeyboardState kbstate = Keyboard.GetState();
+            KeyboardState kbstate = KyunGame.Instance.KeyboardActualState;
             MouseEvent mouseState = MouseHandler.GetState();
 
             if (kbstate.IsKeyDown(Keys.X) || kbstate.IsKeyDown(Keys.Z) 
@@ -107,7 +107,7 @@ namespace kyun.GameModes.OsuMode
         public override void Update()
         {
             base.Update();
-            kbLast = Keyboard.GetState();
+            kbLast = KyunGame.Instance.KeyboardOldState;
             lastMouse = MouseHandler.GetState();
 
         }

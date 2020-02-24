@@ -149,7 +149,7 @@ namespace kyun.Beatmap
 
             for (var i = TimingPoints.Count - 1; i >= 0; i--)
             {
-                if (TimingPoints[i].Offset <= time && (!TimingPoints[i].Inherited && inherited)) { return TimingPoints[i]; }
+                if (TimingPoints[i].Offset <= time && (!(TimingPoints[i].MsPerBeat < 0) && !inherited)) { return TimingPoints[i]; }
             }
             return TimingPoints[0];
         }

@@ -141,7 +141,7 @@ namespace kyun.GameModes.OsuMode
                 //In Mania case, make spawn in the middle screen
                 case OsuGameMode.Mania:
                     //finalPos = getMiddleScreen();
-                    finalPos = RandomGenerator.MakeRandom(_beatmap.OverallDifficulty);
+                    finalPos = RandomGenerator.MakeRandomForMania(this);
                     break;
                 //To test
                 case OsuGameMode.CTB:
@@ -179,24 +179,6 @@ namespace kyun.GameModes.OsuMode
             return new Vector2(width, height);
         }
 
-        //internal virtual void HitSingle_Over(object sender, EventArgs e)
-        //{
-        //    if (kbLast.IsKeyDown(Keys.X) && kbLast.IsKeyDown(Keys.Z))
-        //    {
-        //        return;
-        //    }
-
-        //    KeyboardState kbstate = Keyboard.GetState();
-
-        //    if (kbstate.IsKeyDown(Keys.X) || kbstate.IsKeyDown(Keys.Z))
-        //    {
-        //        if(kbstate.IsKeyDown(Keys.X) && !kbLast.IsKeyDown(Keys.X))
-        //            HitSingle_Click(this, new EventArgs());
-        //        else if(kbstate.IsKeyDown(Keys.Z) && !kbLast.IsKeyDown(Keys.Z))
-        //            HitSingle_Click(this, new EventArgs());
-        //    }
-        //}
-
         internal virtual void HitSingle_Over(object sender, EventArgs e)
         {
             if (kbLast.IsKeyDown(Keys.X) && kbLast.IsKeyDown(Keys.Z) &&
@@ -205,7 +187,8 @@ namespace kyun.GameModes.OsuMode
                 return;
             }
 
-            KeyboardState kbstate = Keyboard.GetState();
+            //KeyboardState kbstate = Keyboard.GetState();
+            KeyboardState kbstate = KyunGame.Instance.KeyboardActualState;
             MouseEvent mouseState = MouseHandler.GetState();
 
             if (kbstate.IsKeyDown(Keys.X) || kbstate.IsKeyDown(Keys.Z)
@@ -272,7 +255,7 @@ namespace kyun.GameModes.OsuMode
 
             GameTime gt = KyunGame.Instance.GameTimeP;
 
-            float toAdd = 0.005f * (float)gt.ElapsedGameTime.Milliseconds;
+            float toAdd = 0.003f * (float)gt.ElapsedGameTime.Milliseconds;
 
 
             Opacity = Math.Min(toAdd + Opacity, 1);
@@ -298,7 +281,7 @@ namespace kyun.GameModes.OsuMode
 
             approachObj.Position = Position;
             approachObj.Update();
-            kbLast = Keyboard.GetState();
+            kbLast = KyunGame.Instance.KeyboardOldState;
             lastMouse = MouseHandler.GetState();
         }
 

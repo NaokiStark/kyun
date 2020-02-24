@@ -50,10 +50,13 @@ namespace kyun.Video
             if(FFmpegDecoder.Instance != null)
                 FFmpegDecoder.Instance?.Dispose(); //CLEANUP SHIT BUFFER
 
+            int ratio = (int)((480f / 853f) * (float)Math.Min(1280f, Screen.ScreenModeManager.GetActualMode().Width));
+
+            //vdc = new FFmpegDecoder(VideoPath, Screen.ScreenModeManager.GetActualMode().Width, ratio);
             vdc = new FFmpegDecoder(VideoPath);
             vdc.Decode();
             width = vdc.VIDEOWIDTH;
-            height = vdc.VIDEOWIDTH;
+            height = vdc.VIDEOHEIGHT;
             //vdc.WaitForDecoder();
 
            
@@ -72,7 +75,7 @@ namespace kyun.Video
             if (Stopped) return null;
             if (vdc == null) return null;
 
-            byte[] frame = vdc.GetFrame((int)KyunGame.Instance.Player.Position);
+             byte[] frame = vdc.GetFrame((int)KyunGame.Instance.Player.Position);
             if (frame == null) return null;
             return frame;
         }

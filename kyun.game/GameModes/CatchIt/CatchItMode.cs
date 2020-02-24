@@ -95,8 +95,13 @@ namespace kyun.game.GameModes.CatchIt
         internal TimingPoint NonInheritedPoint;
         internal TimingPoint InheritedPoint;
 
-        internal long lastTime = 0;
+        internal BPlayer GeneratorPlayer;
 
+        internal long lastTime = 0;
+        private bool generateNotes;
+        private bool generating;
+        private bool generatingBg;
+        Label lbpeak;
         public static CatchItMode GetInstance()
         {
             if (Instance == null)
@@ -106,6 +111,8 @@ namespace kyun.game.GameModes.CatchIt
 
         public CatchItMode() : base("CatchIt")
         {
+            GeneratorPlayer = new BPlayer();
+
             AllowVideo = true;
             mid = 0;
             HitObjects = new List<HitBase>();
@@ -172,7 +179,14 @@ namespace kyun.game.GameModes.CatchIt
                 Visible = false
             };
 
+            lbpeak = new Label
+            {
+                Text = "0"
+            };
+
             Controls.Add(UserBox.GetInstance());
+            Controls.Add(lbpeak);
+
             Controls.Add(Player);
             Controls.Add(comboDisplay);
             Controls.Add(_healthbar);
@@ -204,7 +218,7 @@ namespace kyun.game.GameModes.CatchIt
             {
                 skipped = true;
                 skipButton.Visible = false;
-                avp.audioplayer.Position = (long)OriginalHitObjects[0].StartTime - 3000;
+                avp.audioplayer.Position = (long)OriginalHitObjects[0].StartTime - 2000;
                 EffectsPlayer.PlayEffect(SpritesContent.Instance.MenuTransition);
             }
         }
@@ -417,6 +431,7 @@ namespace kyun.game.GameModes.CatchIt
             Beatmap = beatmap;
             OriginalHitObjects = Beatmap.HitObjects.ToArray().ToList();
             _osuMode = beatmap.Osu_Gamemode;
+
             //Remove
 
             OriginalHitObjects = OriginalHitObjects.Distinct(new HitObjectComparer()).ToList();
@@ -443,6 +458,14 @@ namespace kyun.game.GameModes.CatchIt
             _healthbar.IsActive = true;
             gameMod = GameMods;
             Combo.Instance.ResetAll();
+
+            generateNotes = false;
+
+            if (OriginalHitObjects.Count() < 2)
+            {
+                OriginalHitObjects = new List<IHitObj>();
+                generateNotes = true;
+            }
 
             if ((gameMod & GameMod.Replay) == GameMod.Replay && (gameMod & GameMod.Auto) != GameMod.Auto)
             {
@@ -481,10 +504,40 @@ namespace kyun.game.GameModes.CatchIt
                     }
                 }
             }
+
             KyunGame.Instance.discordHandler.SetState("Catching things", $"{Beatmap.Artist} - {Beatmap.Title}", "idle_large", "classic_small");
             clearObjects();
+            generating = false;
+            generatingBg = false;
+            if (generateNotes)
+            {
+                startGenerating(Beatmap);
+            }
 
             InGame = true;
+        }
+
+        private void startGenerating(IBeatmap beatmap)
+        {
+            generating = true;
+            generatingBg = true;
+
+
+            max1 = max2 = max3 = max4 = 0;
+            Task.Run(() =>
+            {
+                GeneratorPlayer.Play(beatmap.SongPath);
+                GeneratorPlayer.SetVelocity(4f);
+                GeneratorPlayer.Volume = 0;
+                while (GeneratorPlayer.Position < 15 * 1000)
+                {
+
+                }
+                generatingBg = false;
+
+            });
+
+
         }
 
         public void Play(IBeatmap beatmap, GameMod GameMods, int slots)
@@ -500,10 +553,117 @@ namespace kyun.game.GameModes.CatchIt
             Play(Beatmap, GameMods);
         }
 
+        float lastpeak = 0;
+        float max1, max2, max3, max4;
+        bool sust1, sust2, sust3, sust4;
         internal virtual void checkObjects()
         {
 
+            if (generateNotes && generating)
+            {
+                lastpeak = (float)Math.Max(0f, (float)lastpeak - (float)KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * .00004f);
+                long playpos = GeneratorPlayer.Position;
+                var val1 = GeneratorPlayer.DetectFrequency(61, 250);
+                var val2 = GeneratorPlayer.DetectFrequency(251, 2000);
+                var val3 = GeneratorPlayer.DetectFrequency(2001, 4000);
+                var val4 = GeneratorPlayer.DetectFrequency(4001, 20000);
+
+                if (max1 < val1) max1 = val1;
+                if (max2 < val2) max2 = val2;
+                if (max3 < val3) max3 = val3;
+                if (max4 < val4) max4 = val4;
+
+                lbpeak.Text = $"{OriginalHitObjects.Count}";
+
+                bool detected = false;
+
+                if (val1 >= (max1 - (max1 * .5f)) && max1 > 0.05f)
+                {
+                    if (!sust1)
+                    {
+                        sust1 = detected = true;
+
+                        OriginalHitObjects.Add(new HitButton
+                        {
+                            BeatmapContainer = Beatmap,
+                            StartTime = playpos,
+                            HitSound = 0,
+                            OsuLocation = new Vector2(384 / 4)
+                        });
+                    }
+                }
+                else
+                {
+                    sust1 = false;
+                }
+
+                if (val2 >= (max2 - (max2 * .5f)) && max2 > 0.05f)
+                {
+                    if (!sust2 && !detected)
+                    {
+                        sust2 = detected = true;
+                        OriginalHitObjects.Add(new HitButton
+                        {
+                            BeatmapContainer = Beatmap,
+                            StartTime = playpos,
+                            HitSound = 0,
+                            OsuLocation = new Vector2(384 / 4 * 2)
+                        });
+                    }
+                }
+                else
+                {
+                    sust2 = false;
+                }
+
+                if (val3 >= (max3 - (max3 * .5f)) && max3 > 0.05f)
+                {
+                    if (!sust3 && !detected)
+                    {
+                        sust3 = detected = true;
+                        OriginalHitObjects.Add(new HitButton
+                        {
+                            BeatmapContainer = Beatmap,
+                            StartTime = playpos,
+                            HitSound = 0,
+                            OsuLocation = new Vector2(384 / 4 * 3)
+                        });
+                    }
+                }
+                else
+                {
+                    sust3 = false;
+                }
+
+                if (val4 >= (max4 - (max4 * .5f)) && max4 > 0.05f)
+                {
+                    if (!sust4 && !detected)
+                    {
+                        sust4 = detected = true;
+                        OriginalHitObjects.Add(new HitButton
+                        {
+                            BeatmapContainer = Beatmap,
+                            StartTime = playpos,
+                            HitSound = 0,
+                            OsuLocation = new Vector2(384 / 4 * 4)
+                        });
+                    }
+                }
+                else
+                {
+                    sust4 = false;
+                }
+
+                max1 = Math.Max(0, max1 - .00001f);
+                max2 = Math.Max(0, max2 - .00001f * 2f);
+                max3 = Math.Max(0, max3 - .00001f * 3f);
+                max4 = Math.Max(0, max4 - .00001f * 4f);
+            }
+
+            if (generatingBg) return;
+
             if (!InGame) return;
+
             InheritedPoint = Beatmap.GetInheritedPointFor(AVPlayer.audioplayer.Position);
             if (InheritedPoint == null)
             {
@@ -552,14 +712,28 @@ namespace kyun.game.GameModes.CatchIt
 
             if (lastIndex >= OriginalHitObjects.Count)
             {
-                InGame = false;
-                return;
+                if (generateNotes && GeneratorPlayer.PlayState == BassPlayState.Stopped)
+                {
+                    InGame = false;
+                    return;
+                }
             }
 
             long actualTime = GamePosition;
+            IHitObj lastObject;
+            try
+            {
+                if (OriginalHitObjects.Count <= lastIndex)
+                {
+                    return;
+                }
+                lastObject = OriginalHitObjects[lastIndex];
+            }
+            catch
+            {
+                return;
+            }
 
-
-            IHitObj lastObject = OriginalHitObjects[lastIndex];
 
 
             if (!skipped && actualTime > OriginalHitObjects[0].StartTime - 3000)
@@ -682,10 +856,14 @@ namespace kyun.game.GameModes.CatchIt
                 }
             }
 
-            if (KyunGame.Instance.Player.PlayState == BassPlayState.Stopped)
-                GamePosition += (long)KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds;
-            else
-                GamePosition = KyunGame.Instance.Player.Position + Beatmap.SleepTime;
+            if (!generatingBg)
+            {
+                if (KyunGame.Instance.Player.PlayState == BassPlayState.Stopped && !generateNotes)
+                    GamePosition += (long)KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds;
+                else
+                    GamePosition = KyunGame.Instance.Player.Position + Beatmap.SleepTime;
+            }
+
 
             catcherElapsed += tm.ElapsedGameTime.Milliseconds;
             catcherToIdle += tm.ElapsedGameTime.Milliseconds;
@@ -715,13 +893,19 @@ namespace kyun.game.GameModes.CatchIt
             HitObjectsRemain.RemoveAll(item => item.Died);
 
             bool decoding = false;
-            if(FFmpegDecoder.Instance != null)
+            if (FFmpegDecoder.Instance != null)
             {
                 decoding = FFmpegDecoder.Instance.Decoding;
             }
 
+            if (OriginalHitObjects.Count < 1)
+            {
+                return;
+            }
 
-            endToTime = (Settings1.Default.Video && !decoding) ? avp.audioplayer.Length - (long)OriginalHitObjects.Last().EndTime : 3000;
+            IHitObj last = OriginalHitObjects.Last();
+
+            endToTime = (Settings1.Default.Video && !decoding) ? avp.audioplayer.Length - (long)((last.EndTime == 0) ? last.StartTime : last.EndTime) : 3000;
 
             int hitCount = HitObjectsRemain.Count;
 
