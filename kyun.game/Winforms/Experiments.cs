@@ -28,5 +28,10 @@ namespace kyun.game.Winforms
             Settings1.Default.DoubleRender = checkBox1.Checked;
             Settings1.Default.Save();
         }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            KyunGame.Instance.AutoMode = checkBox2.Checked;
+        }
     }
 }

@@ -43,10 +43,17 @@ namespace kyun.game.GameModes.CatchIt
 
         private TimingPoint _TimingPoint;
 
+        public long startTimeTmp = 0;
+
         public long Time
         {
             get
             {
+                if (startTimeTmp > 0)
+                {
+                    return startTimeTmp;
+                }
+
                 if (_longNote)
                 {
                     if (_hitButton.EndTime >= KyunGame.Instance.Player.Length)
@@ -60,6 +67,10 @@ namespace kyun.game.GameModes.CatchIt
                 }
 
                 return (long)_hitButton.StartTime;
+            }
+            set
+            {
+                startTimeTmp = value;
             }
         }
 
@@ -98,7 +109,9 @@ namespace kyun.game.GameModes.CatchIt
 
             if (_longNote)
             {
-                parent.Texture = Texture = SpritesContent.Instance.CircleNoteHolder;
+                parent.Texture = SpritesContent.Instance.Holder_Start;
+                Texture = SpritesContent.Instance.Holder_End;
+                chechAndAdd(hitObject, beatmap, Instance);
             }
 
             Visible = true;
@@ -111,7 +124,11 @@ namespace kyun.game.GameModes.CatchIt
             {
                 case OsuGameMode.Taiko:
                     if (_parent == null)
-                        oLoc = RandomGenerator.MakeRandom(9);
+                    {
+                        //oLoc = RandomGenerator.MakeRandom(8);
+                        oLoc = hitObject.OsuLocation;
+                    }
+
 
                     //finalPos = getMiddleScreen();
                     break;
@@ -129,6 +146,21 @@ namespace kyun.game.GameModes.CatchIt
             if (_parent == null)
             {
                 PositionInRow = positionInRow;
+                if (i.objectIndx > 0)
+                {
+                    var lastpos = (i.HitObjects[i.objectIndx - 1] as HitObject).PositionInRow;
+                    if (Math.Abs(lastpos - PositionInRow) > 2)
+                    {
+                        if (lastpos == 1)
+                        {
+                            PositionInRow = positionInRow = 3;
+                        }
+                        else
+                        {
+                            PositionInRow = positionInRow = 2;
+                        }
+                    }
+                }
             }
             else
             {
@@ -140,9 +172,9 @@ namespace kyun.game.GameModes.CatchIt
 
             inFieldPosition *= positionInRow;
 
-            Size = i.PlayerSize * .95f;
+            Size = i.PlayerSize * .8f;
 
-            Position = new Vector2(i.ActualScreenMode.Width, inFieldPosition + i.FieldPosition.Y + ((Size.Y / 2) - (Size.Y / 2)));
+            Position = new Vector2(i.ActualScreenMode.Width, inFieldPosition + i.FieldPosition.Y + ((i.PlayerSize.Y / 2) - (Size.Y / 2)));
             if (_parent != null)
             {
                 Position = new Vector2(i.ActualScreenMode.Width, _parent.Position.Y);
@@ -167,6 +199,52 @@ namespace kyun.game.GameModes.CatchIt
             }
 
             _TimingPoint = i.Beatmap.GetTimingPointFor((long)_hitButton.StartTime, false);
+
+
+        }
+
+        private void chechAndAdd(IHitObj hitObject, IBeatmap beatmap, CatchItMode instance)
+        {
+            int repeats = (hitObject as kyun.Beatmap.HitHolder).osuRepeat;
+
+            for (int a = 1; a < repeats; a++)
+            {
+                decimal stime = ((hitObject.EndTime - hitObject.StartTime) / (decimal)repeats) * (decimal)a;
+
+                HitButton hbtn = new HitButton()
+                {
+                    StartTime = hitObject.StartTime + stime,
+                    EndTime = hitObject.StartTime + stime,
+                    BeatmapContainer = beatmap,
+                    OsuLocation = hitObject.OsuLocation,
+                    MsPerBeat = hitObject.MsPerBeat,
+                    HitSound = hitObject.HitSound,
+                };
+
+                var cobj = new HitObject(hbtn, beatmap, instance);
+
+                instance.HitObjects.Add(cobj);
+                instance.HitObjectsRemain.Add(cobj);
+                cobj.Texture = SpritesContent.instance.MenuSnow;
+                cobj.Scale = .5f;
+                
+                instance.Controls.Add(cobj);
+            }
+        }
+
+        internal void updateRowPos()
+        {
+            int inFieldPosition = (int)(i.FieldSize.Y / i.fieldSlots);
+
+            inFieldPosition *= PositionInRow;
+
+            Size = i.PlayerSize * .95f;
+
+            Position = new Vector2(i.ActualScreenMode.Width, inFieldPosition + i.FieldPosition.Y + ((Size.Y / 2) - (Size.Y / 2)));
+            if (_parent != null)
+            {
+                Position = new Vector2(i.ActualScreenMode.Width, _parent.Position.Y);
+            }
         }
 
         internal virtual void updatePosition()
@@ -176,10 +254,6 @@ namespace kyun.game.GameModes.CatchIt
             float twidth = 1024 - (i.PlayerSize.X + i.Player.Position.X);
 
 
-            //experimental zone
-
-
-            //eof experimental zone
 
             float appr = ((i.gameMod & GameMod.DoubleTime) != GameMod.DoubleTime) ? MsPerBeat : MsPerBeat * 1.5f /*(int)(1000f * ((float)a.Width / 500f))*/;
 
@@ -194,7 +268,7 @@ namespace kyun.game.GameModes.CatchIt
             Rectangle thisRg = new Rectangle((int)Position.X, (int)Position.Y, (int)Size.X, (int)Size.Y);
             Rectangle catcherRg = new Rectangle((int)i.Player.Position.X, (int)i.Player.Position.Y, (int)i.PlayerSize.X, (int)i.PlayerSize.Y);
 
-            if ((i.gameMod & GameMod.Auto) == GameMod.Auto)
+            if ((i.gameMod & GameMod.Auto) == GameMod.Auto && !(this is FakeHitObject))
             {
                 if (Position.X < catcherRg.Width + 10)
                 {
@@ -207,6 +281,36 @@ namespace kyun.game.GameModes.CatchIt
                 }
 
             }
+
+            if ((i.gameMod & GameMod.Auto) == GameMod.Auto && this is FakeHitObject)
+            {
+                if (Position.X < catcherRg.Width + 10)
+                {
+                    if (i.playerLinePosition == PositionInRow)
+                    {
+                        if (i.playerLinePosition >= 2)
+                        {
+                            if (i.playerLinePosition == 4)
+                            {
+                                i.playerLinePosition = PositionInRow - 1;
+                            }
+                            else if (i.playerLinePosition == 2)
+                            {
+                                i.playerLinePosition = OsuUtils.OsuBeatMap.rnd.NextBoolean() ? 1 : 3;
+                            }
+                            else if (i.playerLinePosition == 3)
+                            {
+                                i.playerLinePosition = OsuUtils.OsuBeatMap.rnd.NextBoolean() ? 2 : 4;
+                            }
+
+                        }
+                        else if (i.playerLinePosition < 2)
+                        {
+                            i.playerLinePosition = PositionInRow + 1;
+                        }
+                    }
+                }
+            }
             /*
             if ((i.gameMod & GameMod.Replay) == GameMod.Replay)
             {
@@ -218,31 +322,71 @@ namespace kyun.game.GameModes.CatchIt
 
             if (thisRg.Intersects(catcherRg))
             {
+                if (this is FakeHitObject)
+                {
+                    CollisionAt = i.GamePosition;
+                    if (!((i.gameMod & GameMod.Replay) == GameMod.Replay))
+                        PositionAtCollision = PositionInRow;
 
-                CollisionAt = i.GamePosition;
-                if (!((i.gameMod & GameMod.Replay) == GameMod.Replay))
-                    PositionAtCollision = PositionInRow;
+                    if (!(CollisionAt <= Time + (_beatmap.Timing300 / 2)) || (i.gameMod & GameMod.Auto) == GameMod.Auto)
+                    {
+                        // ok, not toooo hard, this mean doesnt hit in front
+                        //Died = true;
+                        return;
+                    }
+                    else
+                    {
+                        i._healthbar.Substract((2 * _beatmap.OverallDifficulty) * i.FailsCount);
+                        Combo.Instance.Miss();
+                        i.catcherToIdle = 0;
+                        i.changeCatcherTx(PlayerTxType.Miss);
+                        CheckScore();
+                        //playHitsound();
+                        Died = true;
+                        return;
+                    }
+                }
+                else
+                {
+                    CollisionAt = i.GamePosition;
+                    if (!((i.gameMod & GameMod.Replay) == GameMod.Replay))
+                        PositionAtCollision = PositionInRow;
 
-                Combo.Instance.Add();
-                CheckScore();
-                playHitsound();
-                Died = true;
-                return;
+                    Combo.Instance.Add();
+                    CheckScore();
+                    playHitsound();
+                    Died = true;
+                    return;
+                }
+
             }
 
-            if (Position.X <= 0)
+            if (Position.X <= 0 - Size.X)
             {
-                if (!((i.gameMod & GameMod.Replay) == GameMod.Replay))
-                    PositionAtCollision = i.playerLinePosition;
+                if (this is FakeHitObject)
+                {
 
-                CollisionAt = i.GamePosition + 1000;
-                CheckScore();
-                i._healthbar.Substract((2 * _beatmap.OverallDifficulty) * i.FailsCount);
-                Combo.Instance.Miss();
-                i.catcherToIdle = 0;
-                i.changeCatcherTx(PlayerTxType.Miss);
-                //playHitsound();
-                Died = true;
+                    CollisionAt = Time;
+                    (this as FakeHitObject).checkOkScore();
+                    Combo.Instance.Add();
+
+                    Died = true;
+
+                }
+                else
+                {
+                    if (!((i.gameMod & GameMod.Replay) == GameMod.Replay))
+                        PositionAtCollision = i.playerLinePosition;
+
+                    CollisionAt = i.GamePosition + 1000;
+                    CheckScore();
+                    i._healthbar.Substract((2 * _beatmap.OverallDifficulty) * i.FailsCount);
+                    Combo.Instance.Miss();
+                    i.catcherToIdle = 0;
+                    i.changeCatcherTx(PlayerTxType.Miss);
+                    //playHitsound();
+                    Died = true;
+                }
             }
 
 
@@ -287,17 +431,21 @@ namespace kyun.game.GameModes.CatchIt
                 particle = SpritesContent.Instance.GoodTx;
             }
 
+            Texture2D donePartice = Texture;
+            if (_longNote || Texture == SpritesContent.Instance.Holder_Start)
+            {
+                donePartice = SpritesContent.Instance.CircleNoteHolder;
+            }
 
-
-            var gnpr = i.particleEngine.AddNewHitObjectParticle(Texture,
+            var gnpr = i.particleEngine.AddNewHitObjectParticle(donePartice,
                new Vector2(2f),
-               new Vector2(Position.X, Position.Y),
+               new Vector2((score == ScoreType.Good || score == ScoreType.Miss) ? Position.X : i.PlayerSize.X, Position.Y),
                10,
                0,
-               ((score & ScoreType.Miss) == ScoreType.Miss) ? Color.Violet : TextureColor
+               ((score & ScoreType.Miss) == ScoreType.Miss) ? Color.Black : TextureColor
                );
             gnpr.Opacity = .6f;
-            gnpr.Size = i.PlayerSize;
+            gnpr.Size = Size;
 
             i._scoreDisplay.Add((((int)score / 50) * Math.Max(Combo.Instance.ActualMultiplier, 1)) / 2);
             i._scoreDisplay.CalcAcc(score);
@@ -336,7 +484,22 @@ namespace kyun.game.GameModes.CatchIt
                     break;
             }
 
-            EffectsPlayer.PlayEffect(hsound);
+            TimingPoint tm = (i.InheritedPoint == null) ? i.NonInheritedPoint : i.InheritedPoint;
+
+            if (i.sampleSet != null)
+            {
+                if (tm.SampleType > 0 && tm.SampleSet > 0)
+                {
+                    var tempSound = i.sampleSet.GetSample(tm.SampleType, HitSound, tm.SampleSet);
+                    if (tempSound != 0)
+                    {
+                        hsound = tempSound;
+                    }
+                }
+
+            }
+
+            EffectsPlayer.PlayEffect(hsound, tm.Volume / 100f);
         }
 
 
@@ -350,19 +513,34 @@ namespace kyun.game.GameModes.CatchIt
         public override void Render()
         {
 
+            if (Position.X > ScreenMode.Width + Size.X * 2 && !_longNote)
+            {
+                return;
+            }
 
             if (_longNote && ((OsuUtils.OsuBeatMap)_beatmap).osuBeatmapType <= 1)
             {
+                int posx = (int)(_parent.Position.X + _parent.Size.X / 2) - 1;
+                int posy = (int)_parent.Position.Y;
+                int elmWidth = (int)Math.Abs(posx - (Position.X + (Size.X / 2))) + 1;
+                int elmHeigth = (int)Size.Y;
+
+                var rg = new Rectangle(posx, posy, elmWidth, elmHeigth);
                 if (Position.X > i.Player.Position.X + i.PlayerSize.X)
                 {
                     if (_parent != null)
                     {
+                        KyunGame.Instance.SpriteBatch.Draw(
+                            SpritesContent.Instance.Holder_Middle,
+                            rg,
+                            TextureColor * Opacity);
 
-
-
-                        KyunGame.Instance.SpriteBatch.Draw(i.LongTail, new Rectangle((int)Position.X + (int)Size.X / 2, (int)Position.Y + (((int)Size.Y / 2)) / 2, ((int)_parent.Position.X + (int)Size.X) - (int)Position.X - (int)Size.X, ((int)Size.Y / 2)), TextureColor * Opacity);
-
+                        if (_parent.Died)
+                        {
+                            _parent.Position = new Vector2(i.PlayerSize.X, _parent.Position.Y);
+                        }
                         _parent?.Render();
+
                         base.Render();
                         base.Render();
 

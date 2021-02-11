@@ -38,18 +38,14 @@ namespace kyunMono
             {
                 kyun.Logger.Instance.Info("");
                 kyun.Logger.Instance.Info("");
-                kyun.Logger.Instance.Info("╔══════════════════════════════╗");
-                kyun.Logger.Instance.Info("║                              ║");
-                kyun.Logger.Instance.Info("║             Beta             ║");
-                kyun.Logger.Instance.Info("║                              ║");
-                kyun.Logger.Instance.Info("╚══════════════════════════════╝");
-                kyun.Logger.Instance.Info("");
-                kyun.Logger.Instance.Info("=====================================");
-                kyun.Logger.Instance.Info("=                                   =");
-                kyun.Logger.Instance.Info("=           Welcome to kyun!        =");
-                kyun.Logger.Instance.Info("=       Developed by Fabi With ♥    =");
-                kyun.Logger.Instance.Info("=                                   =");
-                kyun.Logger.Instance.Info("=====================================");
+                kyun.Logger.Instance.Info("======================================");
+                kyun.Logger.Instance.Info("=                                    =");
+                kyun.Logger.Instance.Info("=          Welcome to kyun!          =");
+                kyun.Logger.Instance.Info("=      Developed by Fabi With ♥      =");
+                kyun.Logger.Instance.Info("=                                    =");
+                kyun.Logger.Instance.Info("=        Powered by MonoGame         =");
+                kyun.Logger.Instance.Info("=                                    =");
+                kyun.Logger.Instance.Info("======================================");
                 kyun.Logger.Instance.Info("");
 
 
@@ -72,6 +68,8 @@ namespace kyunMono
 
                 kyun.Logger.Instance.Severe("Beep boop, something went wrong.");
                 kyun.Logger.Instance.Warn("You can try run kyun! with \"repair\" argument if you can't run kyun! anymore.");
+                kyun.Logger.Instance.Severe("");
+                kyun.Logger.Instance.Severe("kyun repair");
                 kyun.Logger.Instance.Severe("");
                 kyun.Logger.Instance.Severe("Some info to developer: ");
                 kyun.Logger.Instance.Severe("");

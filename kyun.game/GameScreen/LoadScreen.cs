@@ -39,7 +39,7 @@ namespace kyun.GameScreen
         private bool _resetDb;
         static IScreen instance = null;
 
-        
+
 
         public static IScreen Instance
         {
@@ -308,7 +308,7 @@ namespace kyun.GameScreen
 
             System.Windows.Forms.Application.DoEvents();
 
-            
+
 
             Thread tr = new Thread(new ThreadStart(loadBeatmaps));
             //tr.IsBackground = true;
@@ -319,8 +319,8 @@ namespace kyun.GameScreen
             //bplayer.Play(selected_song[0]);
             //auplayer.Play(AppDomain.CurrentDomain.BaseDirectory + @"\Assets\Junk - enchanted.mp3", "", true);
 
-            
-            KyunGame.Instance.Notifications.ShowDialog(suggestions[OsuBeatMap.rnd.Next(0, suggestions.Length-1)], 15000, Notifications.NotificationType.Info);
+            KyunGame.Instance.Notifications.ShowDialog(suggestions[OsuBeatMap.rnd.Next(0, suggestions.Length - 1)], 15000, Notifications.NotificationType.Info);
+
             //UbeatGame.Instance.OnPeak += Instance_OnPeak;
         }
 
@@ -552,7 +552,7 @@ namespace kyun.GameScreen
         {
             return Settings1.Default.BeatmapsCount;
         }
-        
+
         void loadBeatmaps()
         {
             if (_resetDb)
@@ -594,11 +594,11 @@ namespace kyun.GameScreen
                 {
                     DirectoryInfo[] osuMapsDirs = osuDirPath.GetDirectories();
 
-                    
+
                     int flieCnt = 0;
                     int bmcount = getBeatmapsCount();
                     //int dbcount = dbBeatmaps.Count;
-                    
+
 
                     if (dbMapsets.Count > 0)
                     {
@@ -631,22 +631,22 @@ namespace kyun.GameScreen
 
                                 flieCnt++;
                                 OsuUtils.OsuBeatMap bmp = OsuUtils.OsuBeatMap.FromFile(fff.FullName);
-  
+
                                 if (bmp != null)
                                 {
                                     bid++;
                                     bmp.Id = bid;
-                                    
+
                                     //Beatmaps.Add(bmp);
                                     if (bmms == null)
                                     {
                                         id++;
                                         bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator, bmp.Tags) { Id = id };
-                                        
+
                                     }
                                     else
                                     {
-                                        
+
                                     }
                                     bmms.Add(bmp);
 
@@ -743,7 +743,7 @@ namespace kyun.GameScreen
                             {
                                 bid++;
                                 bmp.Id = bid;
-                                
+
                                 if (bmp.Title.Contains("kyun! Tutorial"))
                                 {
                                     TutorialBeatmap = bmp;
@@ -754,7 +754,7 @@ namespace kyun.GameScreen
                                 {
                                     id++;
                                     bmms = new Beatmap.Mapset(bmp.Title, bmp.Artist, bmp.Creator, bmp.Tags) { Id = id };
-                                    
+
                                 }
 
                                 bmms.Add(bmp);
@@ -807,14 +807,9 @@ namespace kyun.GameScreen
 
         private string[] suggestions = new string[] { "You can add your osu! library on Config",
                                                       "You can breathe",
-                                                      "Use [X] or [Y] to make fast combos on Circles! mode",
+                                                      "Use [X] or [Y] to make fast combos on Circles! mode",                                                      
                                                       "To add beatmaps, Drag And Drop \".osz\" files in this window",
                                                       "Need beatmaps? Download in bloodcat.com/osu/ and drop \".osz\" files here!",
-                                                      "Thank you for play! --- You can leave a comment or suggestion in fabistark.itch.io/kyun",
-                                                      "This is a beta version",
-                                                      "owo",
-                                                      "uwu",
-                                                      "¿Hola? ¿Hay alguien aquí?",
                                                       "Here should be a suggestion, but I could not think of one, sorry"};
     }
 }

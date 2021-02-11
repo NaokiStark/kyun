@@ -48,6 +48,13 @@
             this.tMetronome = new System.Windows.Forms.TrackBar();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.button4 = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.tEff)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tMusic)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tMetronome)).BeginInit();
@@ -56,12 +63,12 @@
             // 
             // opnBtn
             // 
-            this.opnBtn.Location = new System.Drawing.Point(14, 17);
+            this.opnBtn.Location = new System.Drawing.Point(12, 507);
             this.opnBtn.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.opnBtn.Name = "opnBtn";
-            this.opnBtn.Size = new System.Drawing.Size(184, 86);
+            this.opnBtn.Size = new System.Drawing.Size(86, 86);
             this.opnBtn.TabIndex = 1;
-            this.opnBtn.Text = "Open";
+            this.opnBtn.Text = "Open MP3";
             this.opnBtn.UseVisualStyleBackColor = true;
             this.opnBtn.Click += new System.EventHandler(this.opnBtn_Click);
             // 
@@ -78,12 +85,14 @@
             "1/3",
             "1/6",
             "1/12",
-            "1/24"});
+            "1/24",
+            "1/32"});
             this.comboBox1.Location = new System.Drawing.Point(316, 13);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(86, 25);
             this.comboBox1.TabIndex = 2;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -164,6 +173,7 @@
             // timer1
             // 
             this.timer1.Enabled = true;
+            this.timer1.Interval = 10;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // tEff
@@ -248,11 +258,78 @@
             this.trackBar1.Value = 5;
             this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(14, 17);
+            this.button4.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(184, 86);
+            this.button4.TabIndex = 19;
+            this.button4.Text = "Open Beatmap";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.Color.Firebrick;
+            this.panel1.Location = new System.Drawing.Point(14, 415);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(50, 50);
+            this.panel1.TabIndex = 20;
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.Green;
+            this.panel2.Location = new System.Drawing.Point(70, 415);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(50, 50);
+            this.panel2.TabIndex = 21;
+            // 
+            // panel3
+            // 
+            this.panel3.BackColor = System.Drawing.Color.CornflowerBlue;
+            this.panel3.Location = new System.Drawing.Point(126, 415);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(50, 50);
+            this.panel3.TabIndex = 21;
+            // 
+            // panel4
+            // 
+            this.panel4.BackColor = System.Drawing.Color.DarkMagenta;
+            this.panel4.Location = new System.Drawing.Point(182, 415);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(50, 50);
+            this.panel4.TabIndex = 21;
+            // 
+            // panel5
+            // 
+            this.panel5.BackColor = System.Drawing.Color.MidnightBlue;
+            this.panel5.Location = new System.Drawing.Point(357, 415);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(65, 50);
+            this.panel5.TabIndex = 22;
+            this.panel5.Visible = false;
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Location = new System.Drawing.Point(238, 440);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(101, 25);
+            this.comboBox2.TabIndex = 23;
+            // 
             // Mapper
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(449, 411);
+            this.ClientSize = new System.Drawing.Size(449, 477);
+            this.Controls.Add(this.comboBox2);
+            this.Controls.Add(this.panel5);
+            this.Controls.Add(this.panel4);
+            this.Controls.Add(this.panel3);
+            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.trackBar1);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.label5);
@@ -307,5 +384,12 @@
         internal System.Windows.Forms.TrackBar tMetronome;
         internal System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.TrackBar trackBar1;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.ComboBox comboBox2;
     }
 }

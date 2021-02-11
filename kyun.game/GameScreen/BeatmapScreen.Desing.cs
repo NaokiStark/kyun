@@ -52,7 +52,7 @@ namespace kyun.GameScreen
         private Image topBarTail;
         ButtonStandard autoBtn;
 
-        bool AMode = false;
+        public bool AMode = false;
 
         public void LoadInterface()
         {

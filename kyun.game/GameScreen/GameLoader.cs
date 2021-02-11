@@ -11,13 +11,15 @@ using kyun.Utils;
 using kyun.GameScreen.UI;
 using Redux.Utilities.Managers;
 using System.IO;
+//using FreqData;
+using kyun.game.Winforms;
 
 namespace kyun.game.GameScreen
 {
     //This shit loads hitobjects of beatmap if is not loaded
     public class GameLoader : ScreenBase
     {
-        private static GameLoader instance;
+        public static GameLoader instance;
 
         public static GameLoader GetInstance()
         {
@@ -40,6 +42,7 @@ namespace kyun.game.GameScreen
         public Image ImgTip { get; }
 
         BeatmapScreen BmScr;
+        private bool generatingBm;
 
         bool loading { get; set; }
 
@@ -72,7 +75,7 @@ namespace kyun.game.GameScreen
                 Centered = true,
                 Position = new Vector2(ActualScreenMode.Width / 2, beatmapDisplayLabel.Position.Y + beatmapDisplayLabel.Font.MeasureString("uwu").Y + 5),
                 Font = SpritesContent.Instance.ListboxFont,
-                Scale = .5f
+                Scale = .7f
             };
 
             coverimg = new Image(SpritesContent.Instance.DefaultBackground)
@@ -217,11 +220,78 @@ namespace kyun.game.GameScreen
             ScreenManager.ChangeTo(this);
         }
 
+        /// <summary>
+        /// Loads and execute game with mp3 song
+        /// </summary>
+        /// <param name="beatmap"></param>
+        /// <param name="gameScreen"></param>
+        public async void LoadBeatmapAndRun(string song, GameModeScreenBase gameScreen, GameMod mods = GameMod.None)
+        {
+            if (gameScreen is GameModes.CatchIt.CatchItMode)
+            {
+                ImgTip.Texture = SpritesContent.Instance.CatchTip;
+                ImgTip.Visible = true;
+            }
+            else if (gameScreen is kyun.GameModes.OsuMode.OsuMode)
+            {
+                ImgTip.Texture = SpritesContent.Instance.OsuTip;
+                ImgTip.Visible = true;
+            }
+            else
+            {
+                ImgTip.Visible = false;
+            }
+
+            Background = SpritesContent.Instance.DefaultBackground;
+            ChangeImgDisplay("");
+            loading = false;
+            countToRun = 0;
+            //_beatmap = beatmap;
+            _gameScreen = gameScreen;
+            _mods = mods;
+
+            beatmapDisplayLabel.Text = StringHelper.WrapText(beatmapDisplayLabel.Font, $"Loading...", ActualScreenMode.Width - 200);
+            detailsLabel.Text = $"Generating beatmap, please wait";
+            //coverimg.Texture = BmScr.coverimg.Texture;
+            //Start update
+            KyunGame.Instance.KeyBoardManager.Enabled = false;
+            ScreenManager.ChangeTo(this);
+
+            generatingBm = loading = true;
+            AVPlayer.Play(song);
+
+            new bmDiff().ShowDialog();
+
+
+            //string newbeatmap = await TestGenerator.GenNew(song, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Maps"),
+            //    bmDiff.BmDiff,
+            //    new string[] { bmDiff.Artist, bmDiff.CName },
+            //    new TestGenerator.StageChangedHandler((obj, args)=> {
+            //    beatmapDisplayLabel.Text = $"{(args.porcentage * 100f).ToString("0")}%";
+            //    detailsLabel.Text = $"Status: {args.stageName}";
+            //}));
+
+            //if ((BeatmapScreen.Instance as BeatmapScreen).AMode)
+            //{
+            //    _mods |= GameMod.Auto;
+            //}
+
+            //if ((BeatmapScreen.Instance as BeatmapScreen).doubleTime)
+            //{
+            //    _mods |= GameMod.DoubleTime;
+            //}
+            //_beatmap = OsuUtils.OsuBeatMap.FromFile(newbeatmap, true);
+            generatingBm = loading = false;
+        }
+
         public override void Update(GameTime tm)
         {
             base.Update(tm);
 
             if (!Visible)
+                return;
+
+            if (generatingBm)
                 return;
 
             countToRun += tm.ElapsedGameTime.Milliseconds;

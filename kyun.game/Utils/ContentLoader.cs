@@ -22,7 +22,7 @@ namespace kyun.Utils
 
             using (FileStream fs = new FileStream(fInfo.FullName, FileMode.Open))
             {
-                if (KyunGame.RunningOverWine)
+                if (true)
                     tx = FromStream(KyunGame.Instance.GraphicsDevice, fs); //More shitting import from stream
                 else
                     tx = Texture2D.FromStream(KyunGame.Instance.GraphicsDevice, fs);
@@ -46,6 +46,24 @@ namespace kyun.Utils
             {
                 tx = FromStream(KyunGame.Instance.GraphicsDevice, fs);
             }
+
+            return tx;
+        }
+
+        public static Texture2D LoadTextureFromContent(string asset)
+        {
+
+            FileInfo fInfo = new FileInfo(Path.Combine(Application.StartupPath, "Content", asset));
+
+            if (!fInfo.Exists)
+                throw new FileNotFoundException(string.Concat("Asset: ", fInfo.Name, " can't be loaded. (is not fucking exist"));
+
+            Texture2D tx = LoadTexture(fInfo.FullName);
+            /*
+            using (FileStream fs = new FileStream(fInfo.FullName, FileMode.Open))
+            {
+                tx = FromStream(KyunGame.Instance.GraphicsDevice, fs);
+            }*/
 
             return tx;
         }

@@ -1,6 +1,8 @@
 ﻿using kyun.game;
+using kyun.game.Winforms;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -96,16 +98,19 @@ namespace kyun.Utils
             }
             catch (Exception nsgdex)
             {
-                kyun.Logger.Instance.Debug(System.Threading.Thread.GetDomainID().ToString());
-                ubeat = new KyunGame(SoftwareRendering, Repair);
-                ubeat.Run();
+                var frm = new FailForm();
+                frm.ShowForm(nsgdex);
             }
+
+            Environment.Exit(0);
         }
 
         public void Reload()
         {
-
-            ubeat.StopAll();
+            IsRunning = false;
+            var process = Process.GetCurrentProcess();
+            Process.Start(process.MainModule.FileName);
+            Environment.Exit(0);
         }
 
         private void Ubeat_Disposed(object sender, EventArgs e)

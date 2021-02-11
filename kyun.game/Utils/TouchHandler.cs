@@ -80,7 +80,7 @@ namespace kyun.Utils
             touchUp = true;
 
             this.handle = handle;
-
+            /*
             touchHandler = Windows7.Multitouch.WinForms.Factory.CreateHandler<Windows7.Multitouch.TouchHandler>(handle);
             touchHandler.TouchDown += TouchHandler_TouchDown;
             touchHandler.TouchUp += TouchHandler_TouchUp;
@@ -88,7 +88,7 @@ namespace kyun.Utils
             
            
             screenScaling = getScalingFactor();
-
+            */
         }
 
    

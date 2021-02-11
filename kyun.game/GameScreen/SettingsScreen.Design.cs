@@ -11,6 +11,7 @@ using kyun.Utils;
 using kyun.GameScreen.UI.Buttons;
 using kyun.game.Utils;
 using kyun.game.GameScreen.UI;
+using System.IO;
 
 namespace kyun.GameScreen
 {
@@ -314,30 +315,48 @@ namespace kyun.GameScreen
                 Text = "kyun! can load osu!Beatmaps, select 'osu!\\Songs' folder. Note: when you try to add new osu!Beatmaps here, this will installed in your osu! Songs folder."
             };
 
-            selectbm.Click += (o, e) =>
+            selectbm.Click += async(o, e) =>
             {
                 var isFullScreen = KyunGame.Instance.Graphics.IsFullScreen;
 
                 if (isFullScreen)
                     KyunGame.Instance.ToggleFullscreen(false);
 
-                var fdlg = new System.Windows.Forms.FolderBrowserDialog();
-
-                System.Windows.Forms.DialogResult rst = fdlg.ShowDialog();
-
-                if (rst == System.Windows.Forms.DialogResult.Abort || rst == System.Windows.Forms.DialogResult.Cancel)
-                    return;
-
-                if (fdlg.SelectedPath.Length < 1)
-                    return;
-
-                if (!fdlg.SelectedPath.ToLower().EndsWith("songs\\") && !fdlg.SelectedPath.ToLower().EndsWith("songs"))
+                var msgboxResult = MessageBox.Show("kyun!", "Do you want to import osu! beatmaps now?\r\n\r\nThis can take time if you have too many beatmaps", new[] { "Forget", "Yes!" });
+                var r = await msgboxResult;
+                if(r == 0)
                 {
-                    notifier.ShowDialog("Hmm, This doesn't seem to be osu!'s songs folder. (osu!/Songs)", 10000, NotificationType.Critical);
                     return;
                 }
 
-                Settings1.Default.osuBeatmaps = fdlg.SelectedPath;
+                var path = Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\osu!\Songs");
+                if(!(new DirectoryInfo(path).Exists))
+                {
+                    await MessageBox.Show("kyun!", "osu! Songs folder not found, please select osu!'s Songs folder", new[] { "Ok" });
+                    var fdlg = new System.Windows.Forms.FolderBrowserDialog();
+
+                    System.Windows.Forms.DialogResult rst = fdlg.ShowDialog();
+
+                    if (rst == System.Windows.Forms.DialogResult.Abort || rst == System.Windows.Forms.DialogResult.Cancel)
+                        return;
+
+                    if (fdlg.SelectedPath.Length < 1)
+                        return;
+
+                    if (!fdlg.SelectedPath.ToLower().EndsWith("songs\\") && !fdlg.SelectedPath.ToLower().EndsWith("songs"))
+                    {
+                        notifier.ShowDialog("Hmm, This doesn't seem to be osu!'s songs folder. (osu!/Songs)", 10000, NotificationType.Critical);
+                        return;
+                    }
+
+                    Settings1.Default.osuBeatmaps = fdlg.SelectedPath;
+                }
+                else
+                {
+                    Settings1.Default.osuBeatmaps = path;
+                }
+
+                
                 Settings1.Default.Save();
 
                 if (isFullScreen)
@@ -393,7 +412,7 @@ namespace kyun.GameScreen
 
             Settings1.Default.Skin = cm.SelectedIndex;
             Settings1.Default.Save();
-            cm.Text = cm.Items[cm.SelectedIndex].ToString();
+            //cm.Text = cm.Items[cm.SelectedIndex].ToString();
         }
 
         private void CheckSoftwareRender_CheckChanged(object sender, EventArgs e)

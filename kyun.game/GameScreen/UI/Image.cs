@@ -90,18 +90,23 @@ namespace kyun.GameScreen.UI
             if (!Visible)
                 return;
 
-            if (Effect != null && KyunGame.Instance.Graphics.GraphicsProfile == GraphicsProfile.HiDef)
+            if (EffectParameters != null && KyunGame.Instance.Graphics.GraphicsProfile == GraphicsProfile.HiDef)
             {
                 KyunGame.Instance.SpriteBatch.End();
                 KyunGame.Instance.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone);
 
-                foreach (KeyValuePair<string, dynamic> parameter in EffectParameters)
+                foreach (KeyValuePair<string, dynamic> parameter in EffectParameters.Parameters)
                 {
-                    Effect.Parameters[parameter.Key].SetValue(parameter.Value);                    
+                    if(parameter.Key == "xColoredTexture")
+                    {
+                        EffectParameters.Effect.Parameters[parameter.Key].SetValue(Texture);
+                        continue;
+                    }
+                    EffectParameters.Effect.Parameters[parameter.Key].SetValue(parameter.Value);                    
                 }
 
-                Effect.CurrentTechnique = Effect.Techniques[0];
-                foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
+                EffectParameters.Effect.CurrentTechnique = EffectParameters.Effect.Techniques[0];
+                foreach (EffectPass pass in EffectParameters.Effect.CurrentTechnique.Passes)
                 {
                     pass.Apply();
                 }
@@ -137,7 +142,7 @@ namespace kyun.GameScreen.UI
             }
                 
 
-            if (Effect != null && KyunGame.Instance.Graphics.GraphicsProfile == GraphicsProfile.HiDef)
+            if (EffectParameters != null && KyunGame.Instance.Graphics.GraphicsProfile == GraphicsProfile.HiDef)
             {
                 KyunGame.Instance.SpriteBatch.End();
                 KyunGame.Instance.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone);

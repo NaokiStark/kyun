@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -59,41 +61,24 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\Lidgren.Network.dll</HintPath>
     </Reference>
-    <Reference Include="LiteDB, Version=4.1.4.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
-      <HintPath>..\packages\LiteDB.4.1.4\lib\net40\LiteDB.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="LiteDB, Version=5.0.8.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiteDB.5.0.8\lib\net45\LiteDB.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Ink, Version=6.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\ubeat\ubeat\ubeat\bin\x86\Debug\Microsoft.Ink.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ubeat\ubeat\ubeat\bin\x86\Debug\Microsoft.Xna.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ubeat\ubeat\ubeat\bin\x86\Debug\Microsoft.Xna.Framework.Content.Pipeline.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ubeat\ubeat\ubeat\bin\x86\Debug\Microsoft.Xna.Framework.Game.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Xna.Framework.GamerServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ubeat\ubeat\ubeat\bin\x86\Debug\Microsoft.Xna.Framework.GamerServices.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ubeat\ubeat\ubeat\bin\x86\Debug\Microsoft.Xna.Framework.Graphics.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Xna.Framework.Input.Touch, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\ubeat\ubeat\ubeat\bin\x86\Debug\Microsoft.Xna.Framework.Input.Touch.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Video, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
+    <Reference Include="MonoGame.Framework, Version=3.7.1.189, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ubeat\ubeat\ubeat\bin\x86\Debug\Microsoft.Xna.Framework.Video.dll</HintPath>
+      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoGame.Framework.Net, Version=3.7.1.189, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.Net.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -107,11 +92,42 @@
       <HintPath>..\packages\Thrower.4.3.0\lib\net45\PommaLabs.Thrower.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="SharpDX, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.Direct2D1.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.Direct3D11.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.DXGI, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.DXGI.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.MediaFoundation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.MediaFoundation.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.XAudio2, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.XAudio2.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.XInput, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.XInput.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Management.Instrumentation" />
+    <Reference Include="System.Runtime" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -147,12 +163,14 @@
     <Compile Include="Beatmap\IBeatmap.cs" />
     <Compile Include="Beatmap\IHitObj.cs" />
     <Compile Include="Beatmap\Mapset.cs" />
+    <Compile Include="Beatmap\CustomSampleSet.cs" />
     <Compile Include="Beatmap\ubeatBeatMap.cs" />
     <Compile Include="Database\DatabaseInterface.cs" />
     <Compile Include="Dialog\DialogLayer.cs" />
     <Compile Include="GameModes\CatchItCollab\CatchItCollabMode.cs" />
     <Compile Include="GameModes\CatchItCollab\HitObjectCollab.cs" />
     <Compile Include="GameModes\CatchIt\CatchItMode.cs" />
+    <Compile Include="GameModes\CatchIt\FakeHitObject.cs" />
     <Compile Include="GameModes\CatchIt\HitObject.cs" />
     <Compile Include="GameModes\Classic\ClassicModeScreen.cs" />
     <Compile Include="GameModes\Classic\Grid.cs" />
@@ -205,6 +223,9 @@
     <Compile Include="GameScreen\UI\Buttons\StartButton.cs" />
     <Compile Include="GameScreen\UI\CheckBox.cs" />
     <Compile Include="GameScreen\UI\ComboBox.cs" />
+    <Compile Include="GameScreen\UI\Effects\EffectParametersBase.cs" />
+    <Compile Include="GameScreen\UI\Effects\RGBShiftEffect.cs" />
+    <Compile Include="GameScreen\UI\EffectWrapper.cs" />
     <Compile Include="GameScreen\UI\ElementExample.cs" />
     <Compile Include="GameScreen\UI\FilledRectangle.cs" />
     <Compile Include="GameScreen\UI\Image.cs" />
@@ -290,6 +311,12 @@
     <Compile Include="Video\FrameBuffer.cs" />
     <Compile Include="Video\VideoDecoder.cs" />
     <Compile Include="Video\VideoPlayer.cs" />
+    <Compile Include="Winforms\bmDiff.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Winforms\bmDiff.Designer.cs">
+      <DependentUpon>bmDiff.cs</DependentUpon>
+    </Compile>
     <Compile Include="Winforms\Experiments.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -313,6 +340,9 @@
     <EmbeddedResource Include="Resource1.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource11.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Winforms\bmDiff.resx">
+      <DependentUpon>bmDiff.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Winforms\Experiments.resx">
       <DependentUpon>Experiments.cs</DependentUpon>
@@ -345,6 +375,9 @@
     <Content Include="Assets\Effects\tristan-lohengrin_8bit-introduction.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Effects\welcome.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\songs\1\Tenkitsune - To The Phantomile!.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -360,7 +393,7 @@
     <Content Include="Assets\songs\3\cover.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\songs\3\Remix makaroni.mp3">
+    <Content Include="Assets\songs\3\Mystic Girl.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\songs\4\cover.jpg">
@@ -369,20 +402,20 @@
     <Content Include="Assets\songs\4\Remix makaroni.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\songs\5\cover.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\songs\5\Remix makaroni.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\test.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\TxHelper\bomb.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="ffmpeg.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\Cash Cash - Overtime\bg.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\Cash Cash - Overtime\Overtime.mp3">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\Reol - Pinko Stick Luv\Reol - Pinko Stick Luv [Easy].osu">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\approach0.5.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -540,12 +573,6 @@
     <Content Include="Content\Ewarn.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\songs\1\songinfo.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\songs\2\songinfo.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Content\CHitObject.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -570,10 +597,19 @@
     <Content Include="Content\OsuTip.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Assets\songs\1\songinfo.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\songs\2\songinfo.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Assets\songs\3\songinfo.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Assets\songs\4\songinfo.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\songs\5\songinfo.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\ascore.xnb">
@@ -627,37 +663,97 @@
     <None Include="Content\fscore.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\RGBShift.xnb">
+    <None Include="Content\Note_Holder_End.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Content Include="Maps\Cash Cash - Overtime\Cash Cash - Overtime %28W h i t e%29 [Another].osu">
+    <None Include="Content\Note_Holder_Middle.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\Cash Cash - Overtime\Cash Cash - Overtime %28W h i t e%29 [Beginner].osu">
+    </None>
+    <None Include="Content\Note_Holder_Start.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\Cash Cash - Overtime\Cash Cash - Overtime %28W h i t e%29 [Extra].osu">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\Cash Cash - Overtime\Cash Cash - Overtime %28W h i t e%29 [G.G%27s Hyper].osu">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\Cash Cash - Overtime\Cash Cash - Overtime %28W h i t e%29 [G.G%27s Standard].osu">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\Cash Cash - Overtime\Cash Cash - Overtime %28W h i t e%29 [Hard].osu">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\Cash Cash - Overtime\Cash Cash - Overtime %28W h i t e%29 [Over Cash].osu">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Maps\Cash Cash - Overtime\Cash Cash - Overtime %28W h i t e%29.osb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
     <Content Include="Content\scorebar.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Content\rgbs.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\RGBShift.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Content\tascore.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\1014936 Thaehan - Bwa !\Thaehan - Bwa ! %28Sonnyc%29 [Bwa].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\1014936 Thaehan - Bwa !\Thaehan - Bwa ! %28Sonnyc%29 [Easy].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\1014936 Thaehan - Bwa !\Thaehan - Bwa ! %28Sonnyc%29 [Hard].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\1014936 Thaehan - Bwa !\Thaehan - Bwa ! %28Sonnyc%29 [Insane].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\1014936 Thaehan - Bwa !\Thaehan - Bwa ! %28Sonnyc%29 [Normal].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\1291874 Thaehan - Play\Thaehan - Play %28Nozhomi%29 [Easy].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\1291874 Thaehan - Play\Thaehan - Play %28Nozhomi%29 [Hard].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\1291874 Thaehan - Play\Thaehan - Play %28Nozhomi%29 [Insane].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\1291874 Thaehan - Play\Thaehan - Play %28Nozhomi%29 [Normal].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\1291874 Thaehan - Play\Thaehan - Play %28Nozhomi%29 [Try Again].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\1309729 Aethoro - Woodfairies\Aethoro - Woodfairies %28verychill%29 [Dance].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\1309729 Aethoro - Woodfairies\Aethoro - Woodfairies %28verychill%29 [Easy].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\1309729 Aethoro - Woodfairies\Aethoro - Woodfairies %28verychill%29 [Hard].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\1309729 Aethoro - Woodfairies\Aethoro - Woodfairies %28verychill%29 [Knight%27s Insane].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\1309729 Aethoro - Woodfairies\Aethoro - Woodfairies %28verychill%29 [Normal].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\602178 _namirin - The Noise of Rain\namirin - The Noise of Rain %28Trynna%29 [After Rain].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\602178 _namirin - The Noise of Rain\namirin - The Noise of Rain %28Trynna%29 [Edu%27s Hard].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\602178 _namirin - The Noise of Rain\namirin - The Noise of Rain %28Trynna%29 [Noffy%27s Normal].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\657084 Nasko - Break Through\Nasko - Break Through %28Evgerable%29 [BreakThrough].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\657084 Nasko - Break Through\Nasko - Break Through %28Evgerable%29 [Extra].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\657084 Nasko - Break Through\Nasko - Break Through %28Evgerable%29 [Hard].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\657084 Nasko - Break Through\Nasko - Break Through %28Evgerable%29 [Insane].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\657084 Nasko - Break Through\Nasko - Break Through %28Evgerable%29 [Normal].osu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Maps\657084 Nasko - Break Through\Nasko - Break Through %28Evgerable%29 [Ultra].osu">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
@@ -709,7 +805,7 @@
     <Content Include="Assets\Effects\SelectorHit.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Effects\welcome.mp3">
+    <Content Include="Assets\Effects\welcome_old.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\xmas2.jpg">
@@ -731,11 +827,536 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon.ico" />
-    <Content Include="Maps\Reol - Pinko Stick Luv\gg.mp3">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="Maps\1014936 Thaehan - Bwa !\audio.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Maps\Reol - Pinko Stick Luv\maxresdefault %281%29.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="Maps\1014936 Thaehan - Bwa !\BG.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1014936 Thaehan - Bwa !\normal-hitclap.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1014936 Thaehan - Bwa !\normal-hitnormal.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1291874 Thaehan - Play\audio.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1291874 Thaehan - Play\normal-hitnormal.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1291874 Thaehan - Play\play.jpeg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1291874 Thaehan - Play\soft-hitclap.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1291874 Thaehan - Play\soft-sliderslide.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\audio.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\bg.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\drum-hitnormal.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\drum-hitnormal57.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\drum-hitnormal58.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\drum-hitnormal59.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\drum-hitnormal60.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\drum-hitnormal61.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\drum-hitnormal62.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\drum-hitnormal63.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\drum-hitnormal66.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\drum-hitnormal67.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\drum-hitnormal68.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\drum-hitnormal69.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\drum-hitnormal70.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\drum-hitnormal73.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\normal-hitfinish.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\normal-hitnormal.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\normal-hitnormal57.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\normal-hitnormal58.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\normal-hitnormal59.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\normal-hitnormal62.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\normal-hitnormal65.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\normal-hitnormal66.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\normal-hitnormal68.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\normal-hitnormal70.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitclap14.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitclap17.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitclap18.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitclap20.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitclap22.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitclap34.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitclap36.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitclap37.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitclap51.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitclap55.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitfinish10.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitfinish54.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitnormal99.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle10.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle11.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle12.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle13.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle14.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle15.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle16.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle17.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle18.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle19.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle20.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle21.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle22.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle23.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle24.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle25.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle26.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle27.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle28.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle29.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle30.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle31.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle32.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle33.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle34.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle35.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle36.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle37.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle38.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle39.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle40.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle41.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle42.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle43.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle44.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle45.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle46.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle47.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle48.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle49.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle50.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle51.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle52.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle53.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle54.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle55.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle56.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle57.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle58.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle59.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle60.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle61.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle62.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle63.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle64.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle65.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle66.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle67.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle68.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle69.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle70.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle71.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle72.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-hitwhistle73.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide10.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide11.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide12.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide13.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide14.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide16.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide17.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide18.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide20.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide21.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide22.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide25.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide26.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide28.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide29.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide30.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide32.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide34.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide36.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide37.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide38.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide40.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide41.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide42.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide43.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide44.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide45.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide46.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide47.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide48.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide49.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide50.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide51.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide52.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide55.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide56.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide57.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide58.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide59.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide60.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide61.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide62.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide63.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide65.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide66.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide67.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide68.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide70.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide71.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide73.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-sliderslide99.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\1309729 Aethoro - Woodfairies\soft-slidertick.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\602178 _namirin - The Noise of Rain\audio.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\602178 _namirin - The Noise of Rain\namirin is cute.avi">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\602178 _namirin - The Noise of Rain\namirox.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\602178 _namirin - The Noise of Rain\normal-hitfinish.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\602178 _namirin - The Noise of Rain\soft-sliderslide.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\657084 Nasko - Break Through\audio.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\657084 Nasko - Break Through\BG.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\657084 Nasko - Break Through\soft-hitclap.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\657084 Nasko - Break Through\soft-hitfinish.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\657084 Nasko - Break Through\soft-hitwhistle.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Maps\657084 Nasko - Break Through\soft-sliderslide.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Nuclex.Fonts.Content.TrueTypeImporter.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -846,6 +1467,13 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\MonoGame.Framework.WindowsDX.3.8.0.1641\build\MonoGame.Framework.WindowsDX.targets" Condition="Exists('..\packages\MonoGame.Framework.WindowsDX.3.8.0.1641\build\MonoGame.Framework.WindowsDX.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Este proyecto hace referencia a los paquetes NuGet que faltan en este equipo. Use la restauración de paquetes NuGet para descargarlos. Para obtener más información, consulte http://go.microsoft.com/fwlink/?LinkID=322105. El archivo que falta es {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\MonoGame.Framework.WindowsDX.3.8.0.1641\build\MonoGame.Framework.WindowsDX.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MonoGame.Framework.WindowsDX.3.8.0.1641\build\MonoGame.Framework.WindowsDX.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

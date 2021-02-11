@@ -114,7 +114,7 @@ namespace kyun.Utils
             return Path.Combine(_fullpath, asset);
         }
 
-        private int LoadSoundBass(string asset)
+        public int LoadSoundBass(string asset)
         {
             //int sample = Bass.BASS_StreamCreateFile(getPath(asset), 0, 0, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_ASYNCFILE);
 
@@ -152,6 +152,11 @@ namespace kyun.Utils
                 Logger.Instance.Warn($"Error loading: {asset}");
                 return 0;
             }
+        }
+
+        public void FreeAudioChannel(int channel)
+        {
+            Bass.BASS_StreamFree(channel);
         }
         #endregion
 
@@ -305,7 +310,22 @@ namespace kyun.Utils
                 CroppedBg = System.Drawing.Image.FromStream(ff);
             }
 
-            RGBShiftEffect = Content.Load<Effect>("RGBShift");
+            try
+            {
+                RGBShiftEffect = Content.Load<Effect>("rgbs");
+               // RGBShiftEffect = new Effect(KyunGame.Instance.GraphicsDevice, File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Content/RGBShift.xnb")));
+                Settings1.Default.Shaders = true;
+                Settings1.Default.Save();
+            }
+            catch(Exception ex)
+            {
+                RGBShiftEffect = null;
+                Settings1.Default.Shaders = true;
+                Settings1.Default.Save();
+                Logger.Instance.Info("MonoGame does not support Dx9 Shaders");
+                Logger.Instance.Warn(ex.Message);
+            }
+            
 
             ApproachCircle = Content.Load<Texture2D>("approachcircle");
             CircleNote = Content.Load<Texture2D>("Note");
@@ -330,6 +350,10 @@ namespace kyun.Utils
             BScore = Content.Load<Texture2D>("bscore");
             CScore = Content.Load<Texture2D>("cscore");
             FScore = Content.Load<Texture2D>("fscore");
+
+            Holder_Start = Content.Load<Texture2D>("Note_Holder_Start");
+            Holder_Middle = Content.Load<Texture2D>("Note_Holder_Middle");
+            Holder_End = Content.Load<Texture2D>("Note_Holder_End");
         }
 
         public void AddTexture(string name, Texture2D tex)
@@ -707,6 +731,9 @@ namespace kyun.Utils
         public int FailTransition { get; private set; }
         public Texture2D GameCursor { get; set; }
         public Texture2D DiffSelector { get; set; }
+        public Texture2D Holder_Start { get; set; }
+        public Texture2D Holder_Middle { get; set; }
+        public Texture2D Holder_End { get; set; }
 
         #endregion
 

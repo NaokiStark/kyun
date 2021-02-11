@@ -53,7 +53,7 @@ namespace FreqData.Generator
         /// </summary>
         Stopwatch stw = new Stopwatch();
 
-
+        public TestGenerator frmInstance;
 
         TimeSpan elapsed = TimeSpan.FromMilliseconds(0);
 
@@ -79,7 +79,7 @@ namespace FreqData.Generator
             return await Task<SongPattern>.Run(() =>
             {
                 var patterns = new SongPattern { SongPath = filename };
-
+                patterns.difficulty = dificulty;
                 //get BPM and GAP
 
                 try
@@ -100,7 +100,12 @@ namespace FreqData.Generator
                         Console.WriteLine();
                         Console.WriteLine();
 
+                        frmInstance?.inform(.1f, "Getting more about song, this will take so long");
+
                         timelineValues = getBPMAndGap(filename);
+
+                        frmInstance?.inform(.9f, "Please wait...");
+
                         var fstream = bpmFile.Create();
                         //Save
                         var bytes1 = UTF8Encoding.UTF8.GetBytes(timelineValues[0] + "\n");
@@ -122,6 +127,7 @@ namespace FreqData.Generator
                     }
 
                     Console.WriteLine($"** BPM:{timelineValues[0]} | GAP: {timelineValues[1]}**");
+                    frmInstance?.inform(.99f, $"** BPM:{timelineValues[0]} | GAP: {timelineValues[1]}**");
                     Console.WriteLine();
 
                     patterns = startMapping(filename, timelineValues);
@@ -154,7 +160,7 @@ namespace FreqData.Generator
         {
 
             var tmpDict = new SongPattern();
-            NR3Q2Generator rn = new NR3Q2Generator(2645452);
+            NR3Generator rn = new NR3Generator(448844);
 
             // create stream
             var stream = Bass.BASS_StreamCreateFile(filename, 0, 0, BASSFlag.BASS_SAMPLE_FLOAT | BASSFlag.BASS_STREAM_DECODE | BASSFlag.BASS_STREAM_PRESCAN);
@@ -162,7 +168,9 @@ namespace FreqData.Generator
             int maxInrow = 4;
 
 
-            long gap = (long)(Math.Round(toDouble(timelineValues[1]), 4) * 1000f);
+
+            float gap = (float)(Math.Round(toDouble(timelineValues[1]), 4) * 1000f);
+            //gap -= 80;
             double bpm = toDouble(timelineValues[0]);
 
             string roundup = timelineValues[0].Split('.')[1];
@@ -193,11 +201,11 @@ namespace FreqData.Generator
             //For division
             double sixteenth = mspbRounded / 16d;
 
-            long nextBeat = gap;
-            long nextHalf = gap;
-            long nextQuarter = (long)(nextBeat + quarter);
-            long nextEighth = (long)(nextBeat + eighth);
-            long nextSixteenth = (long)(nextBeat + sixteenth);
+            float nextBeat = gap;
+            float nextHalf = gap;
+            float nextQuarter = (float)(nextBeat + quarter);
+            float nextEighth = (float)(nextBeat + eighth);
+            float nextSixteenth = (float)(nextBeat + sixteenth);
 
             maxs = getMaxPeaks(filename);
 
@@ -226,6 +234,22 @@ namespace FreqData.Generator
             BASS_CHANNELINFO info = new BASS_CHANNELINFO();
             Bass.BASS_ChannelGetInfo(stream, info);
 
+            float bitRate = 576/*1152*/;
+
+            bitRate = FFMpegMp3SkipFrame.getSkippingFrames(filename);
+
+            float sampleRate = 0;
+
+            Bass.BASS_ChannelGetAttribute(stream, BASSAttribute.BASS_ATTRIB_FREQ, ref sampleRate);
+
+            float msStartPadding = (bitRate / sampleRate) * 1000f;
+
+
+            // Add padding to gap
+
+            gap += msStartPadding;
+            gap -= 15f; // weirrrd offset
+
             float[] results = new float[freqs.Count];
 
             int length = 0;
@@ -236,24 +260,28 @@ namespace FreqData.Generator
             int pos = 0;
 
             long duration = (long)(1000d * Bass.BASS_ChannelBytes2Seconds(stream, Bass.BASS_ChannelGetLength(stream, BASSMode.BASS_POS_BYTE)));
-
-            getQuarters(mspb, gap, duration);
+            mspb = (float)mspbRounded;
+            getQuarters(mspbRounded, gap, duration);
             int qIndex = 0;
 
+            float prc = 1f / (float)quarters.Count * 100f;
 
+            var sleep = TimeSpan.FromTicks(1);
 
+            float[] actualPeaks = new float[] { 0, 0, 0, 0 };
             while ((read = Bass.BASS_ChannelGetData(stream, hGC.AddrOfPinnedObject(), bassdatafft + (int)BASSData.BASS_DATA_FLOAT)) > 0)
             {
 
-
-
-                Thread.Sleep(1);
+                Thread.Sleep(sleep);
 
                 pos += read;
 
-                long playerTime = (long)((decimal)Bass.BASS_ChannelBytes2Seconds(stream, pos) * (decimal)1000);
+                float playerTime = (float)((decimal)Bass.BASS_ChannelBytes2Seconds(stream, pos) * (decimal)1000);
 
-                playerTime -= 80;
+                //playerTime += 25;
+                //playerTime += msStartPadding;
+
+                prc = (float)(qIndex + 1) / (float)quarters.Count;
 
                 if (playerTime < gap) continue;
 
@@ -262,6 +290,8 @@ namespace FreqData.Generator
                 if (playerTime < quarters[qIndex]) continue;
 
                 int index = 0;
+
+                frmInstance?.inform(prc, "Making some patterns");
 
                 //Get peaks
                 foreach (KeyValuePair<int, int> pair in freqs)
@@ -282,7 +312,13 @@ namespace FreqData.Generator
 
                     }
 
-                    results[index] = (float)Math.Sqrt(maxP);
+                    if(index > 1)
+                    {
+                        results[index] = (float)Math.Sqrt(maxP);
+                    }
+                    else{
+                        results[index] = (float)Math.Sqrt(maxP);
+                    }                    
                     index++;
                 }
 
@@ -291,7 +327,7 @@ namespace FreqData.Generator
                 float maxLevel2 = (float)Math.Max(results[2], results[3]);
                 maxLevel = (float)Math.Max(maxLevel, maxLevel2);
 
-                if (maxLevel >= .01f)
+                if (maxLevel >= .0002f)
                 {
                     ///Get data
                     float[] values = results;
@@ -325,17 +361,27 @@ namespace FreqData.Generator
                         for (int a = 0; a < values.Length; a++)
                         {
 
-                            if (maxInLine >= maxInSame) break;
-                            maxInLine++;
+                            //if (maxInLine >= maxInSame) break;
+                            //maxInLine++;
                             float val = values[a];
 
                             // Compare to max peak if peak (with % calculation for each range) and fix minimun required
-                            
-                            if (val >= maxs[a] - getPrcFor(maxs[a], a) && val > 0.03f && maxs[a] > 0.03f)
+
+                            float maxLessTenth = maxs[a] - getPrcFor(maxs[a], a);
+
+                            if (val >= maxLessTenth && val > 0.03f /*&& maxs[a] > 0.03f*/)
                             {
                                 if (val > maxs[a]) maxs[a] = val;
-
-                                int rowpos = (Difficulty == BeatmapDiff.Easy) ? rn.Next(0, 4) : a;
+                                                                
+                                int rowpos = a;
+                                if(tmpDict.Patterns.Count > 1)
+                                {
+                                    var lastObj = tmpDict.Patterns.Last();
+                                    if (lastObj.Key - quarters[qIndex] <= mspb * NoteDuration.Eighth)
+                                    {
+                                        rowpos = lastObj.Value;
+                                    }
+                                }
 
                                 if (Difficulty == BeatmapDiff.Extra)
                                 {
@@ -380,14 +426,16 @@ namespace FreqData.Generator
                         for (int a = values.Length - 1; a > -1; a--)
                         {
 
-                            if (maxInLine >= maxInSame) break;
+                            //if (maxInLine >= maxInSame) break;
 
-                            maxInLine++;
+                            //maxInLine++;
 
                             float val = values[a];
 
                             // Compare to max peak if peak (with % calculation for each range) and fix minimun required
-                            if (val >= maxs[a] - getPrcFor(maxs[a], a) && val > 0.03f && maxs[a] > 0.03f)
+                            float maxLessTenth = maxs[a] - getPrcFor(maxs[a], a);
+
+                            if (val >= maxLessTenth && val > 0.03f /*&& maxs[a] > 0.03f*/)
                             {
                                 if (val > maxs[a]) maxs[a] = val;
 
@@ -423,7 +471,8 @@ namespace FreqData.Generator
 
                                 used[rowpos] = true;
 
-                                tmpDict.Add(quarters[qIndex], rowpos);
+                                //tmpDict.Add(quarters[qIndex], rowpos);
+                                tmpDict.Add(quarters[qIndex], a);
 
                                 Console.WriteLine($"{val.ToString("0.000000000", CultureInfo.InvariantCulture)} | { getPrcFor(maxs[a], a).ToString("0.000000000", CultureInfo.InvariantCulture)}");
                             }
@@ -432,8 +481,8 @@ namespace FreqData.Generator
 
                 }
 
-                float decay = 0.00001f;
-
+                float decay = 0.00008f;
+                
                 for (int d = 0; d < maxs.Length; d++)
                 {
                     if (qIndex == 0) break;
@@ -449,11 +498,11 @@ namespace FreqData.Generator
             return tmpDict;
         }
 
-        private void getQuarters(double mspb, long offset, long duration)
+        private void getQuarters(double mspb, float offset, long duration)
         {
             quarters.Clear();
             float time = offset;
-            NR3Q2Generator rn = new NR3Q2Generator(2645452);
+            NR3Generator rn = new NR3Generator(457710052);
             while (time < duration)
             {
                 float nDuration = NoteDuration.Half;
@@ -466,7 +515,7 @@ namespace FreqData.Generator
                         case BeatmapDiff.Easy:
                             if (rn.NextBoolean())
                             {
-                                nDuration = NoteDuration.Half;
+                                nDuration = NoteDuration.Quarter;
                             }
                             else
                             {
@@ -477,7 +526,7 @@ namespace FreqData.Generator
                         case BeatmapDiff.Normal:
                             if (rn.NextBoolean())
                             {
-                                nDuration = NoteDuration.Quarter;
+                                nDuration = NoteDuration.Eighth;
                             }
                             else
                             {
@@ -486,12 +535,8 @@ namespace FreqData.Generator
                             }
                             break;
                         case BeatmapDiff.Hard:
-                            int res = rn.Next(0, 3);
-                            if (res == 0)
-                            {
-                                nDuration = NoteDuration.Quarter;
-                            }
-                            else if (res == 1)
+                            int res = rn.Next(0, 4);
+                            if (res == 1 || res == 2)
                             {
                                 nDuration = NoteDuration.Eighth;
                             }
@@ -602,20 +647,20 @@ namespace FreqData.Generator
         {
             //10% by default
             float divider = .1f;
-
+            
             switch (freqRange)
             {
                 case 0:
-                    divider = .38f;
+                    divider = .001f;
                     break;
                 case 1:
-                    divider = .45f;
+                    divider = .005f;
                     break;
                 case 2:
-                    divider = .55f;
+                    divider = .03f;
                     break;
                 case 3:
-                    divider = .6f;
+                    divider = .01f;
                     break;
             }
 
@@ -685,7 +730,8 @@ namespace FreqData.Generator
 
                     if (peaks[index] < (float)Math.Sqrt(maxP))
                     {
-                        peaks[index] = (float)Math.Sqrt(maxP);
+                        //peaks[index] = (float)Math.Sqrt(maxP);
+                        peaks[index] = (float)maxP;
                     }
 
                     index++;
@@ -784,7 +830,7 @@ namespace FreqData.Generator
         }
     }
 
-    internal enum BeatmapDiff
+    public enum BeatmapDiff
     {
         Easy,
         Normal,

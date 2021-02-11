@@ -7,6 +7,7 @@ using kyun.game;
 using kyun.game.Screen;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Management;
 
 namespace kyun.Screen
 {
@@ -17,6 +18,8 @@ namespace kyun.Screen
 
         public static List<ScreenMode> GetSupportedModes()
         {
+
+            return GetSupportedModesv2();
             BaseResolutions.Add(new BaseResolution
             {
                 Width = 1024,
@@ -65,8 +68,11 @@ namespace kyun.Screen
 
                 screenMode.Add(new ScreenMode()
                 {
+                    /*
                     Width = _base.Width,
-                    Height = _base.Height,
+                    Height = _base.Height,*/
+                    Width = mode.Width,
+                    Height = mode.Height,
                     AspectRatio = mode.AspectRatio,
                     WindowMode = (mode.Width <= screenWidth && mode.Height < screenHeight) ? WindowDisposition.Windowed : WindowDisposition.Borderless,
                     Base = _base,
@@ -87,6 +93,58 @@ namespace kyun.Screen
             //    ScaledHeight = 1080
             //});
 
+            return screenMode;
+        }
+
+        public static List<ScreenMode> GetSupportedModesv2()
+        {
+            var scope = new ManagementScope();
+
+            var query = new ObjectQuery("SELECT * FROM CIM_VideoControllerResolution");
+
+            List<ScreenMode> screenMode = new List<ScreenMode>();
+
+            using (var searcher = new ManagementObjectSearcher(scope, query))
+            {
+                var results = searcher.Get();
+
+                foreach (var result in results)
+                {
+
+                    int wd = int.Parse(result["HorizontalResolution"].ToString());
+                    int he = int.Parse(result["VerticalResolution"].ToString());
+                    if (wd < 800 || he < 600) continue;
+
+                    WindowDisposition wnmode = WindowDisposition.Windowed;
+                    if (screenMode.Count > 0)
+                    {
+                        if (screenMode.Last().WindowMode == WindowDisposition.Windowed)
+                        {
+                            wnmode = WindowDisposition.Borderless;
+                        }
+                    }
+
+                    screenMode.Add(new ScreenMode()
+                    {
+                        /*
+                        Width = _base.Width,
+                        Height = _base.Height,*/
+                        Width = (wd == 800)?1024:wd,
+                        Height = (he == 600) ? 768: he,
+                        AspectRatio = (float)wd / (float)he,
+                        WindowMode = wnmode,
+                        Base = new BaseResolution()
+                        {
+                            Width = wd,
+                            Height = he
+                        },
+                        ScaledWidth = wd,
+                        ScaledHeight = he
+                    });
+
+
+                }
+            }
             return screenMode;
         }
 
@@ -111,8 +169,8 @@ namespace kyun.Screen
                     Settings1.Default.ScreenMode = 0;
                     Settings1.Default.Save();
                     _actualScreenMode = modes[0];
-                    
-                }               
+
+                }
 
             }
 
@@ -154,7 +212,7 @@ namespace kyun.Screen
             {
                 return "MonitorFromWindow returned NULL ☹";
             }
-            
+
 
             // 3. Get more information about the monitor.
             MONITORINFOEXW monitorInfo = new MONITORINFOEXW();

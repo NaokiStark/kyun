@@ -4,8 +4,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Redux.Utilities.Managers;
 using kyun.Audio;
@@ -28,6 +26,11 @@ using kyun.game.Winforms;
 using kyun.game.Database;
 using System.Threading;
 using kyun.Screen;
+using kyun.game.GameModes.CatchIt;
+using kyun.GameModes.OsuMode;
+using kyun.game.GameModes;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Audio;
 
 namespace kyun
 {
@@ -52,7 +55,7 @@ namespace kyun
 #if !BETA
         public static string CompilationStatus = "Unstable";
 #else
-        public static string CompilationStatus = "Beta";
+        public static string CompilationStatus = "Pre Release";
 #endif
 
         public static string CompilationVersion = "";
@@ -91,6 +94,9 @@ namespace kyun
         public System.Threading.SynchronizationContext syncContext;
 
         bool gameIsRunning;
+
+        public bool CallStop { get; private set; }
+
         private TimeSpan timeStart;
 
         public DateTime gameStart { get; private set; }
@@ -133,14 +139,17 @@ namespace kyun
             }
         }
 
-        
+
         public KyunGame(bool softwareRendering = false, bool repair = false)
         {
             if (repair)
             {
                 Settings1.Default.Reset();
                 Settings1.Default.Save();
+                DatabaseInterface.Instance.DeleteBeatmaps();
+
             }
+
 
             syncContext = System.Threading.SynchronizationContext.Current;
 
@@ -271,12 +280,12 @@ namespace kyun
 
             timeStart = stopwatch.Elapsed;
 
-            gameStart =  DateTime.Now;
+            gameStart = DateTime.Now;
             updateEvent = cUpdate;
 
 
             bool disableMultiThread = false;
-            if(!disableMultiThread)
+            if (!disableMultiThread)
                 RecallAndNotify(null);
         }
 
@@ -306,10 +315,12 @@ namespace kyun
                 }
             }
 
-           
+
             updateEvent = cUpdate;
 
             gameIsRunning = true;
+
+            CallStop = false;
 
             bool disableMulticore = false;
 
@@ -325,7 +336,7 @@ namespace kyun
                 {
                     Thread.BeginThreadAffinity();
 
-                   
+
                     CurrentThread.ProcessorAffinity = (IntPtr)0x0002;
 
 
@@ -345,7 +356,7 @@ namespace kyun
                         //cUpdate(new GameTime(startedGT, TimeSpan.FromMilliseconds(elapsed), false));
                         syncContext.Send(state =>
                         {
-                           cUpdate(new GameTime(startedGT, TimeSpan.FromMilliseconds(elapsed), false));
+                            cUpdate(new GameTime(startedGT, TimeSpan.FromMilliseconds(elapsed), false));
                         }, null);
 
                         if (Settings1.Default.VSync)
@@ -357,7 +368,7 @@ namespace kyun
                         {
                             System.Threading.Thread.Sleep((int)(750f / Settings1.Default.FrameRate));
                         }
-                        
+
                     }
                     catch (Exception pex)
                     {
@@ -378,14 +389,17 @@ namespace kyun
             });
 
             gameIsRunning = true;
-            tk.Start();
-            
-            Attemps++;
+            if (!CallStop)
+            {
+                tk.Start();
+
+                Attemps++;
+            }
         }
 
         protected override void Update(GameTime tm)
         {
-            
+
             //Double
             //cUpdate(tm);
         }
@@ -399,14 +413,17 @@ namespace kyun
         /// </summary>
         public void StopAll()
         {
-           // UnloadContent();
+            CallStop = true;
+            gameIsRunning = false;
+
+            //UnloadContent();
             tk.Abort();
             //while (!stopped) { } //Wait for thread end
 
             SpritesContent.instance = null; //this is a buggy thing
-            InstanceManager.Instance.IsRunning = true;
-            
+            InstanceManager.Instance.IsRunning = false;
 
+            Dispose();
             Exit();
         }
 
@@ -418,8 +435,29 @@ namespace kyun
 
         private void FormGame_DragDrop(object sender, System.Windows.Forms.DragEventArgs e)
         {
+
             string[] files = (string[])e.Data.GetData(System.Windows.Forms.DataFormats.FileDrop);
-            BeatmapLoader.GetInstance().LoadBeatmaps(files, (ScreenBase)ScreenManager.ActualScreen);
+
+            if (files[0].ToLower().EndsWith(".mp3"))
+            {
+
+                switch ((BeatmapScreen.Instance as BeatmapScreen)._gamemode)
+                {
+                    case GameMode.Classic:
+                        GameLoader.GetInstance().LoadBeatmapAndRun(files[0], ClassicModeScreen.GetInstance());
+                        break;
+                    case GameMode.Osu:
+                        GameLoader.GetInstance().LoadBeatmapAndRun(files[0], OsuMode.GetInstance());
+                        break;
+                    case GameMode.CatchIt:
+                        GameLoader.GetInstance().LoadBeatmapAndRun(files[0], CatchItMode.GetInstance());
+                        break;
+                }
+            }
+            else
+            {
+                BeatmapLoader.GetInstance().LoadBeatmaps(files, (ScreenBase)ScreenManager.ActualScreen);
+            }
         }
 
         protected override void Initialize()
@@ -449,7 +487,7 @@ namespace kyun
 
                 Graphics.ApplyChanges();
             }, null);
-          
+
         }
 
         void mainWindow_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
@@ -494,7 +532,7 @@ namespace kyun
             imageTesting = new Image(SpritesContent.instance.TestingBar)
             {
                 Position = Vector2.Zero,
-                Repeat = true, 
+                Repeat = true,
                 BeatReact = false,
                 Opacity = .8f
             };
@@ -540,7 +578,7 @@ namespace kyun
         private Label FrameDisplay;
 
         public Image Cursor { get; private set; }
-    
+        public bool AutoMode { get; set; }
 
         private RenderTarget2D renderTarget2D;
         public bool stopped;
@@ -549,6 +587,7 @@ namespace kyun
         private Stopwatch stopwatch;
         public KeyboardState KeyboardOldState;
         public KeyboardState KeyboardActualState;
+        private float rScale;
 
         protected override void LoadContent()
         {
@@ -588,10 +627,10 @@ namespace kyun
             discordHandler.Shutdown();
 
             Logger.Instance.Info("Bye!");
-            
+
         }
 
-#endregion
+        #endregion
 
         void updatePeak(GameTime gm)
         {
@@ -661,7 +700,7 @@ namespace kyun
             lastSongPos = lastPos;
         }
 
-#region GameUpdates
+        #region GameUpdates
         protected void cUpdate(GameTime gameTime)
         {
             updated = DateTime.Now;
@@ -682,7 +721,7 @@ namespace kyun
 
             float frameTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-           
+
             ScreenManager.Update(gameTime);
 
             uLabelVer.Update();
@@ -716,7 +755,7 @@ namespace kyun
 
             VolumeControl.Instance.Update();
 
-            
+
         }
 
         protected override void Draw(GameTime gameTime)
@@ -728,10 +767,10 @@ namespace kyun
             KeyboardActualState = Keyboard.GetState();
             if (ScreenManager.ActualScreen != null)
             {
-                (ScreenManager.ActualScreen as ScreenBase).checkKeyboardEvents(KeyboardOldState, KeyboardActualState);
+                (ScreenManager.ActualScreen as ScreenBase).checkKeyboardEvents(KeyboardOldState, KeyboardActualState, GamePad.GetState(PlayerIndex.One));
             }
             KeyboardOldState = KeyboardActualState;
-            
+
 
             lastCheckedDay = DateTime.Now;
 
@@ -752,10 +791,10 @@ namespace kyun
             }
 
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Add))
+            if (Keyboard.GetState().IsKeyDown(Keys.Add) || Keyboard.GetState().IsKeyDown(Keys.PageUp))
                 GeneralVolume = GeneralVolume + (gameTime.ElapsedGameTime.Milliseconds) * .0005f;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Subtract))
+            if (Keyboard.GetState().IsKeyDown(Keys.Subtract) || Keyboard.GetState().IsKeyDown(Keys.PageDown))
                 GeneralVolume = GeneralVolume - (gameTime.ElapsedGameTime.Milliseconds) * .0005f;
 
 
@@ -770,7 +809,183 @@ namespace kyun
 
             VideoCounter.Update(gameTime);
 
+            if (Settings1.Default.DoubleRender)
+            {
+                DrawRenderTarget();
+            }
+            else
+            {
+                DrawRaw();
+            }
+
+
+            base.Draw(gameTime);
+        }
+
+        public void DrawRenderTarget()
+        {
             GraphicsDevice.SetRenderTarget(renderTarget2D);
+
+            GraphicsDevice.Clear(Color.Black);
+
+            if (Settings1.Default.Shaders)
+            {
+                if (ScreenManager.ActualBackground != null)
+                {
+                    SpritesContent.Instance.RGBShiftEffect.Parameters["xColoredTexture"].SetValue(ScreenManager.ActualBackground);
+
+                    if (peak > 0)
+                    {
+                        peak = (float)Math.Max(peak - Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f, 0);
+                    }
+                    else if (peak < 0)
+                    {
+                        peak = (float)Math.Min(peak + Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.001f, 0);
+                    }
+
+
+                    if (peak == 0 || float.IsNaN(peak))
+                    {
+
+                        if (KyunGame.Instance.Player.PeakVol >= InstanceManager.MaxPeak - 0.11)
+                            peak = 2 * (magic / -magic);
+                    }
+
+                    dPeak = (float)Math.Max(dPeak - Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.01f, 0);
+
+                    if (KyunGame.Instance.Player.PeakVol >= InstanceManager.MaxPeak - 0.01)
+                    {
+                        dPeak = KyunGame.Instance.Player.PeakVol;
+                    }
+
+                    float distorsion = Math.Max(0, Math.Min(.1f, dPeak / 5));
+                    SpritesContent.Instance.RGBShiftEffect.Parameters["DisplacementDist"].SetValue(-distorsion);
+                    //SpritesContent.Instance.RGBShiftEffect.Parameters["DisplacementScroll"].SetValue(0f);
+                    SpritesContent.Instance.RGBShiftEffect.Parameters["DisplacementScroll"].SetValue((dPeak <=0f)?0f:(peak / 1000) *magic);
+                    SpritesContent.Instance.RGBShiftEffect.CurrentTechnique = SpritesContent.Instance.RGBShiftEffect.Techniques["Technique1"];
+
+                }
+
+                SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone, SpritesContent.Instance.RGBShiftEffect);
+                if (ScreenManager.ActualBackground != null)
+                {
+                    foreach (EffectPass pass in SpritesContent.Instance.RGBShiftEffect.CurrentTechnique.Passes)
+                    {
+                        pass.Apply();
+
+                    }
+                    if (ScreenManager.ActualScreen != null)
+                    {
+                        ((ScreenBase)ScreenManager.ActualScreen)?.RenderBg();
+                    }
+                    else if (ScreenManager.ToBeChanged != null)
+                    {
+                        ((ScreenBase)ScreenManager.ToBeChanged)?.RenderBg();
+                    }
+
+                }
+
+                SpriteBatch.End();
+            }
+            else
+            {
+                if (ScreenManager.ActualBackground != null)
+                {
+                    SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
+                    if (ScreenManager.ActualScreen != null)
+                    {
+                        ((ScreenBase)ScreenManager.ActualScreen)?.RenderBg();
+                    }
+                    else if (ScreenManager.ToBeChanged != null)
+                    {
+                        ((ScreenBase)ScreenManager.ToBeChanged)?.RenderBg();
+                    }
+                    SpriteBatch.End();
+                }
+            }
+
+
+            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
+
+
+            ScreenManager.Render();
+
+#if !BETA
+            uLabelMsgVer.Render();
+#endif
+            touchHandler?.Render();
+
+            //FrameDisplay?.Render();
+
+            Notifications?.Render();
+
+
+#if TESTING || UITEST
+            imageTesting.Render();
+#endif
+            VolumeControl.Instance.Render();
+
+
+
+            SpriteBatch.End();
+
+            GraphicsDevice.SetRenderTarget(null);
+            GraphicsDevice.Clear(Color.Black);
+
+            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
+
+
+            var actualMode = Screen.ScreenModeManager.GetActualMode();
+
+            float pScale = Player.PeakVol;
+            if (Player.PlayState != BassPlayState.Playing)
+            {
+                pScale = 0;
+            }
+
+            if (pScale >= KyunGame.Instance.maxPeak - 0.0001) pScale = 1.1f * 1;
+            if (pScale > 1.15 * rScale) pScale = 1.1f * 1;
+
+
+            if (pScale < rScale) pScale = rScale;
+
+
+            rScale = pScale;
+
+            if ((rScale) > 1)
+            {
+                rScale -= (float)(KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds * 0.0004f);
+            }
+            if (Player.PlayState != BassPlayState.Playing)
+            {
+                rScale = 0;
+            }
+
+            SpriteBatch.Draw(renderTarget2D,
+                new Rectangle((int)(actualMode.ScaledWidth / 2f), (int)(actualMode.ScaledHeight / 2f),
+                (int)(actualMode.ScaledWidth /* *rScale*/),
+                (int)(actualMode.ScaledHeight /** rScale*/)),
+                null,
+                Color.White,
+                0,
+                new Vector2(renderTarget2D.Width / 2f, renderTarget2D.Height / 2f),
+                SpriteEffects.None,
+                0);
+
+            MouseEvent mouseState = MouseHandler.GetStateNonScaled();
+            Cursor.Scale = .8f;
+
+            Cursor.Position = new Vector2(mouseState.X - Cursor.Size.X / 2, mouseState.Y - Cursor.Size.Y / 2);
+            Cursor.Update();
+            Cursor.Render();
+
+
+            SpriteBatch.End();
+        }
+
+        public void DrawRaw()
+        {
+            GraphicsDevice.SetRenderTarget(null);
 
             GraphicsDevice.Clear(Color.Black);
 
@@ -850,7 +1065,6 @@ namespace kyun
                 }
             }
 
-
             SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
 
 
@@ -866,24 +1080,10 @@ namespace kyun
             Notifications?.Render();
 
 
-#if TESTING || UITEST
+#if TESTING || UITEST || true
             imageTesting.Render();
 #endif
             VolumeControl.Instance.Render();
-
-
-
-            SpriteBatch.End();
-
-            GraphicsDevice.SetRenderTarget(null);
-            GraphicsDevice.Clear(Color.Black);
-
-            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
-
-
-            var actualMode = Screen.ScreenModeManager.GetActualMode();
-
-            SpriteBatch.Draw(renderTarget2D, new Rectangle(0, 0, actualMode.ScaledWidth, actualMode.ScaledHeight), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0);
 
             MouseEvent mouseState = MouseHandler.GetStateNonScaled();
             Cursor.Scale = .8f;
@@ -894,10 +1094,9 @@ namespace kyun
 
 
             SpriteBatch.End();
-            base.Draw(gameTime);
         }
 
-#endregion
+        #endregion
 
         public void ChangeResolution(Screen.ScreenMode screenMode)
         {
@@ -905,7 +1104,7 @@ namespace kyun
 
             ScreenModeManager.Change();
 
-                                   
+
             renderTarget2D = new RenderTarget2D(GraphicsDevice, screenMode.Width, screenMode.Height);
 
             if (screenMode.WindowMode != Screen.WindowDisposition.Windowed)
@@ -926,7 +1125,9 @@ namespace kyun
             this.Graphics.PreferredBackBufferWidth = (int)wSize.X;
             this.Graphics.PreferredBackBufferHeight = (int)wSize.Y;
 
-            
+            InstanceManager.Instance.Reload();
+            return;
+
             Screen.ScreenModeManager.Change();
             ((ScreenBase)MainScreen.Instance)?.Dispose();
             ((ScreenBase)BeatmapScreen.Instance)?.Dispose();
@@ -951,11 +1152,16 @@ namespace kyun
             QuestionOverlay.Instance = null;
             PauseOverlay.Instance = null;
 
+            //LoadScreen.Instance = null;
+            GameLoader.instance = null;
+            CatchItMode.Instance = null;
+            OsuMode.Instance = null;
+
             GC.Collect();
 
 
             this.Graphics.ApplyChanges();
-            
+
             ScreenManager.ChangeTo(SettingsScreen.Instance); //return 
             FrameDisplay.Position = new Vector2(0, screenMode.Height - SpritesContent.Instance.GeneralBig.MeasureString("123").Y);
             uLabelMsgVer.Position = new Vector2(wSize.X / 2, wSize.Y - 25);
@@ -1012,7 +1218,7 @@ namespace kyun
             stopped = true;
             // Suppress finalization.
             GC.SuppressFinalize(this);
-            
+
         }
 
         public struct IconInfo

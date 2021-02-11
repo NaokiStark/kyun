@@ -38,6 +38,13 @@ namespace kyun.OsuUtils
                         break;
                 }
 
+
+                // We only need std maps
+                if (tmpMode != OsuGameMode.Standard)
+                {
+                    return null;
+                }
+
                 OsuBeatMap tmpbm = new OsuBeatMap()
                 {
                     Artist = StringHelper.SanitizeUnicode(osbm.Artist),
@@ -276,7 +283,8 @@ namespace kyun.OsuUtils
                             //Location = lasN = GetRnd(97, 106, lasN)
                             Location = ((osbm.Source != "ubeat") ? lasN = GetRnd(97, 106, lasN) : fL + 96),
                             OsuLocation = new Microsoft.Xna.Framework.Vector2(ho.Position.x, ho.Position.y),
-                            HitSound = ho.HitSound
+                            HitSound = ho.HitSound,
+                            osuRepeat = slider.Repeat,
                         };
 
                         obj.MsPerBeat = tmc.MsPerBeat;
@@ -400,7 +408,7 @@ namespace kyun.OsuUtils
         //public static Random rnd = new Random(DateTime.Now.Millisecond);
         public static NR3Generator rnd = new NR3Generator();
 
-        
+
 
         public static int GetRnd(int min, int max, int last)
         {

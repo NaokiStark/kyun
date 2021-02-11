@@ -38,11 +38,24 @@ namespace kyun.Beatmap
         public decimal StartTime { get; set; }
         public IBeatmap BeatmapContainer { get; set; }
         public int Location { get; set; }
-        public decimal EndTime { get; set; }
+        private decimal EndTimeLocal = 0;
+        public int osuRepeat = 0;
+        public decimal EndTime
+        {
+            get
+            {
+                return (EndTimeLocal == 0) ? StartTime : EndTimeLocal;
+            }
+            set => EndTimeLocal = value;
+        }
+
         public Vector2 OsuLocation { get; set; }
         public int HitSound { get; set; }
 
         public float MsPerBeat { get; set; }
+
+        public bool isFakeOBj { get; set; }
+
         #endregion
 
         #region PrivateVars

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Troschuetz.Random.Generators;
 
 namespace FreqData
 {
@@ -16,6 +17,8 @@ namespace FreqData
         /// Song Path
         /// </summary>
         internal string SongPath { get; set; }
+
+        public BeatmapDiff difficulty = BeatmapDiff.Easy;
 
         internal float BPM { get; set; }
         internal int Offset { get; set; }
@@ -55,26 +58,34 @@ namespace FreqData
 
         internal List<HitObject> makePatternsAndAddSliders(Beatmap beatmap, int offset)
         {
+            NR3Generator rn = new NR3Generator(180207795);
+            
             var temp = new List<HitObject>();
 
             float beatlength = (60000f / (float)((int)BPM));
 
             for (int a = 0; a < splitedCols.Length; a++)
             {
+                var percusion = HitSoundType.Normal;
+                
                 int position = 64;
                 switch (a)
                 {
                     case 0:
                         position = 64;
+                       
                         break;
                     case 1:
                         position = 192;
+                       
                         break;
                     case 2:
                         position = 320;
+                        
                         break;
                     case 3:
                         position = 448;
+
                         break;
                 }
 
@@ -128,6 +139,23 @@ namespace FreqData
                         }
                     }
 
+
+                    if((difficulty == BeatmapDiff.Insane || difficulty == BeatmapDiff.Extra) && slider)
+                    {
+                        if(difficulty == BeatmapDiff.Extra)
+                        {
+                            slider = rn.NextBoolean(); 
+                        }
+                        else
+                        {
+                            int n = rn.Next(0, 2);
+                            if(n != 1)
+                            {
+                                slider = false;
+                            }
+                        }
+                    }
+
                     if (slider)
                     {
                         List<System.Numerics.Vector2> sliderPoints = new List<System.Numerics.Vector2>();
@@ -158,9 +186,32 @@ namespace FreqData
                     }
                     else
                     {
+                        switch (a)
+                        {
+                            case 0:
+                                var finishOpp = rn.Next(0, 20);
+                                if (finishOpp == 2)
+                                {
+                                    percusion = HitSoundType.Finish;
+                                }
+                                break;
+                            case 1:
+                                var clapOpp = rn.Next(0, 20);
+                                if (clapOpp == 2)
+                                {
+                                    percusion = HitSoundType.Clap;
+                                }
+                                break;
+                            case 2:
+                                percusion = HitSoundType.Normal;
+                                break;
+                            case 3:
+                                percusion = HitSoundType.Whistle;
+                                break;
+                        }
                         temp.Add(new Circle(new System.Numerics.Vector2(position, 0),
                                 (int)splitedCols[a][b] + offset, 0,
-                                HitSoundType.Normal, new Extras(), false, 0));
+                                percusion, new Extras(), false, 0));
                     }
                 }
             }

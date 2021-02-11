@@ -99,6 +99,9 @@ namespace kyun.GameScreen
                 case Keys.F3:
                     _scoreboard.Add(ScoreItem.BuildNew(UserBox.GetInstance().userAvatar.Texture, UserBox.GetInstance().nickLabel.Text, OsuUtils.OsuBeatMap.rnd.Next(10, 9999999), OsuUtils.OsuBeatMap.rnd.Next(10, 99999)));
                     break;
+                case Keys.Escape:
+                    ScreenManager.ChangeTo(MainScreen.instance);
+                    break;
             }
 
         }
@@ -220,7 +223,10 @@ namespace kyun.GameScreen
 
             lblTitleDesc.Text = selectd.Artist + " - " + selectd.Title;
             lbldesc.Text = $"Mapped by " + selectd.Creator;
-            lblDiffDesc.Text = $"Diff: {selectd.Version} | OD: {selectd.OverallDifficulty} | AR: {selectd.ApproachRate} | CS: {selectd.CircleSize} | HD: {selectd.HPDrainRate}";
+
+
+
+            lblDiffDesc.Text = $"Length: {getTotalTime(selectd)} | Diff: {selectd.Version} | OD: {selectd.OverallDifficulty} | AR: {selectd.ApproachRate} | CS: {selectd.CircleSize} | HD: {selectd.HPDrainRate}";
 
             if (lastDiffIndex != lBDff.selectedIndex)
             {
@@ -243,6 +249,15 @@ namespace kyun.GameScreen
             _scoreboard.AddList(ScoreItem.GetFromDb(lBDff.Items.Beatmaps[lBDff.selectedIndex]));
         }
 
+        string getTotalTime(ubeatBeatMap beatmap)
+        {
+            ubeatBeatMap beatMap = OsuUtils.OsuBeatMap.FromFile(beatmap.FilePath, true);
+            decimal songStart = beatMap.HitObjects.First().StartTime;
+            decimal songEnd = beatMap.HitObjects.Last().EndTime;
+
+            return TimeSpan.FromMilliseconds((double)Math.Abs(songEnd - songStart)).ToString(@"h\:mm\:ss");
+        }
+
         void lbox_IndexChanged(object sender, EventArgs e)
         {
             if (!Visible) return;
@@ -257,7 +272,7 @@ namespace kyun.GameScreen
             {
                 lblTitleDesc.Text = selectd.Artist + " - " + selectd.Title;
                 lbldesc.Text = $"Mapped by " + selectd.Creator;
-                lblDiffDesc.Text = $"Diff: {selectd.Version} | OD: {selectd.OverallDifficulty} | AR: {selectd.ApproachRate} | CS: {selectd.CircleSize} | HD: {selectd.HPDrainRate}";
+                lblDiffDesc.Text = $"Length: {getTotalTime(selectd)} | Diff: {selectd.Version} | OD: {selectd.OverallDifficulty} | AR: {selectd.ApproachRate} | CS: {selectd.CircleSize} | HD: {selectd.HPDrainRate}";
             }
 
            

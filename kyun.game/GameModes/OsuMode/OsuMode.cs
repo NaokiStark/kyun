@@ -28,7 +28,7 @@ namespace kyun.GameModes.OsuMode
         HashSet<HitBase> hitbaseObjects = new HashSet<HitBase>();
         bool End = false;
 
-        static OsuMode Instance;
+        public new static OsuMode Instance;
         private int timeToLeave;
         private bool mousePressedLeft;
         private bool mousePressedRight;
@@ -126,7 +126,7 @@ namespace kyun.GameModes.OsuMode
             Controls.Add(_scoreDisplay);
 
             Controls.Add(_healthBar);
-            Controls.Add(UserBox.GetInstance());
+            //Controls.Add(UserBox.GetInstance());
             Controls.Add(_particleEngine);
             Controls.Add(new ComboDisplay());
             Controls.Add(AutoCursor);

@@ -25,12 +25,10 @@ namespace kyun.GameScreen
         {
             get
             {
-
                 return Scale;
             }
         }
-
-
+        
         public Vector2 Position { get; set; }
 
         public Microsoft.Xna.Framework.Graphics.Texture2D Texture { get; set; }
@@ -60,6 +58,8 @@ namespace kyun.GameScreen
         private Vector2 toPosition = Vector2.Zero;
         private Vector2 initialPosition = Vector2.Zero;
 
+        public bool animating = false;
+
         public virtual Vector2 Size
         {
             get
@@ -85,7 +85,7 @@ namespace kyun.GameScreen
         public Screen.ScreenMode ScreenMode { get; set; }
 
         public Effect Effect { get; set; }
-        public List<KeyValuePair<string, dynamic>> EffectParameters = new List<KeyValuePair<string, dynamic>>();
+        public EffectParametersBase EffectParameters;
 
         public event EventHandler Click;
         public event EventHandler Over;
@@ -149,6 +149,7 @@ namespace kyun.GameScreen
             if (!Visible)
                 return;
 
+
             Elapsed = KyunGame.Instance.GameTimeP.ElapsedGameTime;
 
             //No Texture, no input update
@@ -169,6 +170,8 @@ namespace kyun.GameScreen
 
             if (Tooltip != null)
                 Tooltip?.Update();
+
+            EffectParameters?.Update();
 
             //if (!KyunGame.Instance.IsActive) return; //Fix events
 
@@ -335,21 +338,21 @@ namespace kyun.GameScreen
             if (Texture == null)
                 return;
 
-            if (Effect != null && KyunGame.Instance.Graphics.GraphicsProfile == GraphicsProfile.HiDef)
+            if (EffectParameters != null && KyunGame.Instance.Graphics.GraphicsProfile == GraphicsProfile.HiDef)
             {
                 KyunGame.Instance.SpriteBatch.End();
                 KyunGame.Instance.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone);
 
-                foreach (KeyValuePair<string, dynamic> parameter in EffectParameters)
+                foreach (KeyValuePair<string, dynamic> parameter in EffectParameters.Parameters)
                 {
 
-                    Effect.Parameters[parameter.Key].SetValue(parameter.Value);
+                    EffectParameters.Effect.Parameters[parameter.Key].SetValue(parameter.Value);
 
                 }
 
-                Effect.CurrentTechnique = Effect.Techniques[0];
+                EffectParameters.Effect.CurrentTechnique = EffectParameters.Effect.Techniques[0];
 
-                foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
+                foreach (EffectPass pass in EffectParameters.Effect.CurrentTechnique.Passes)
                 {
                     pass.Apply();
                 }
@@ -433,16 +436,21 @@ namespace kyun.GameScreen
                     float destPosX = toPosition.X;
                     float destPosY = toPosition.Y;
 
-                    float scalePosX = (initialPosX > destPosX) ? linearOut(animationElapsed, animationDuration) : linearIn(animationElapsed, animationDuration);
-                    float scalePosY = (initialPosY > destPosY) ? linearOut(animationElapsed, animationDuration) : linearIn(animationElapsed, animationDuration);
+                    float scalePosX = (initialPosX > destPosX) ? linearIn(animationElapsed, animationDuration) : linearIn(animationElapsed, animationDuration);
+                    float scalePosY = (initialPosY > destPosY) ? linearIn(animationElapsed, animationDuration) : linearIn(animationElapsed, animationDuration);
+
+                    scalePosX = scalePosY = linearIn(animationElapsed, animationDuration);
 
                     float actualX = (initialPosX - destPosX) * scalePosX;
                     float actualY = (initialPosY - destPosY) * scalePosY;
 
+                    float stepY = Math.Abs(initialPosY - destPosY) / 100f;
+                    float stepX = Math.Abs(initialPosX - destPosX) / 100f;
+
 
                     if (initialPosX < destPosX)
                     {
-                        actualX = (destPosX - initialPosX) * scalePosX;
+                        actualX = initialPosX + stepX * (scalePosX * 100);
                     }
                     else if (initialPosX == destPosX)
                     {
@@ -450,12 +458,13 @@ namespace kyun.GameScreen
                     }
                     else
                     {
-                        actualX = (destPosX + initialPosX) * scalePosX;
+                        actualX = initialPosX - stepX * (scalePosX * 100);
                     }
 
                     if (initialPosY < destPosY)
                     {
-                        actualY = (destPosY - initialPosY) * scalePosY + Position.Y;
+                        //actualY = Math.Abs((destPosY - initialPosY) * scalePosY);
+                        actualY = initialPosY + stepY * (scalePosY * 100);
                     }
                     else if (initialPosY == destPosY)
                     {
@@ -463,12 +472,15 @@ namespace kyun.GameScreen
                     }
                     else
                     {
-                        actualY = (destPosY + initialPosY) * scalePosY;
+                        //actualY = Math.Abs((destPosY - initialPosY) * scalePosY);
+                        actualY = initialPosY - stepY * (scalePosY * 100);
                     }
 
                     Position = new Vector2(actualX, actualY);
                     if (animationElapsed >= animationDuration)
                     {
+                        Position = toPosition;
+                        animating = false;
                         animationType = AnimationType.None;
                         OnMoveEnd?.Invoke(this, new EventArgs());
                     }
@@ -508,22 +520,32 @@ namespace kyun.GameScreen
                     float actualX = (initialPosX - destPosX) * scalePosX;
                     float actualY = (initialPosY - destPosY) * scalePosY;
 
+                    /* NEW */
+
+                    scalePosX = scalePosY = bezierBlend(linearIn(animationElapsed, animationDuration));
+
+                    
+                    float stepY = Math.Abs(initialPosY - destPosY) / 100f;
+                    float stepX = Math.Abs(initialPosX - destPosX) / 100f;
+
+
                     if (initialPosX < destPosX)
                     {
-                        actualX = (destPosX - initialPosX) * scalePosX;
+                        actualX = initialPosX + stepX * (scalePosX * 100);
                     }
-                    else if(initialPosX == destPosX)
+                    else if (initialPosX == destPosX)
                     {
                         actualX = initialPosX;
                     }
                     else
                     {
-                        actualX = (destPosX + initialPosX) * scalePosX;
+                        actualX = initialPosX - stepX * (scalePosX * 100);
                     }
 
                     if (initialPosY < destPosY)
                     {
-                        actualY = (destPosY - initialPosY) * scalePosY;
+                        //actualY = Math.Abs((destPosY - initialPosY) * scalePosY);
+                        actualY = initialPosY + stepY * (scalePosY * 100);
                     }
                     else if (initialPosY == destPosY)
                     {
@@ -531,13 +553,15 @@ namespace kyun.GameScreen
                     }
                     else
                     {
-                        actualY = (destPosY + initialPosY) * scalePosY;
+                        //actualY = Math.Abs((destPosY - initialPosY) * scalePosY);
+                        actualY = initialPosY - stepY * (scalePosY * 100);
                     }
 
 
                     Position = new Vector2(actualX, actualY);
                     if (animationElapsed >= animationDuration)
                     {
+                        animating = false;
                         animationType = AnimationType.None;
                         OnMoveEnd?.Invoke(this, new EventArgs());
                     }
@@ -609,6 +633,7 @@ namespace kyun.GameScreen
                     Position = new Vector2(actualX, actualY);
                     if (animationElapsed >= animationDuration)
                     {
+                        animating = false;
                         animationType = AnimationType.None;
                         OnMoveEnd?.Invoke(this, new EventArgs());
                     }
@@ -669,6 +694,12 @@ namespace kyun.GameScreen
 
         public void MoveTo(AnimationEffect effect, int duration, Vector2 to)
         {
+            if (animating)
+            {
+                Position = toPosition; //Skips                
+            }
+
+            animating = true;
             animationEffect = effect;
             toPosition = to;
             initialPosition = Position;
@@ -681,9 +712,16 @@ namespace kyun.GameScreen
             OnMoveEnd += (e, args) =>
             {
                 complete();
-                foreach (Delegate d in OnMoveEnd.GetInvocationList())
+                Delegate[] invListArr = OnMoveEnd?.GetInvocationList();
+                if(invListArr != null)
                 {
-                    OnMoveEnd -= (EventHandler)d;
+                    if(invListArr.Length > 0)
+                    {
+                        foreach (Delegate d in invListArr)
+                        {
+                            OnMoveEnd -= (EventHandler)d;
+                        }                        
+                    }
                 }
             };
 
@@ -692,7 +730,7 @@ namespace kyun.GameScreen
 
         internal float linearIn(float time, float duration)
         {
-            return Math.Min(time / (duration / 100f) / 100f, 1f);
+            return Math.Max(Math.Min(time / (duration / 100f) / 100f, 1f), 0.1f);
         }
 
         internal float linearOut(int time, int duration)

@@ -29,5 +29,9 @@ namespace kyun.Beatmap
         OldApproachObj apo { get; set; }
         Vector2 OsuLocation { get; set; }
         float MsPerBeat { get; set; }
+
+        /* fake kyun obj*/
+
+        bool isFakeOBj { get; set; }
     }
 }

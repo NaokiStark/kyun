@@ -37,12 +37,14 @@ namespace kyun.game.Database
 
             mapper.Entity<Score.ScoreInfo>().DbRef(x => x.Beatmap, "beatmaps");
 
-            db = new LiteDatabase("kyun.db");
+            //db = new LiteDatabase("kyun.db");
 
-            beatmaps = db.GetCollection<Mapset>("mapsets");
-            BMPS = db.GetCollection<ubeatBeatMap>("beatmaps");
+            db = new LiteDatabase("filename=kyun.db;upgrade=true");
+            
+            beatmaps = (LiteCollection<Mapset>)db.GetCollection<Mapset>("mapsets");
+            BMPS = (LiteCollection<ubeatBeatMap>)db.GetCollection<ubeatBeatMap>("beatmaps");
 
-            scores = db.GetCollection<Score.ScoreInfo>("scores");
+            scores = (LiteCollection<Score.ScoreInfo>)db.GetCollection<Score.ScoreInfo>("scores");
             
         }
 
@@ -65,8 +67,8 @@ namespace kyun.game.Database
 
         public void DeleteBeatmaps()
         {
-            beatmaps.Delete(x => true);
-            BMPS.Delete(x => true);
+            beatmaps.DeleteAll();
+            BMPS.DeleteAll();
         }
 
         public async void SaveScore(Score.ScoreInfo scoreInfo)
@@ -76,23 +78,29 @@ namespace kyun.game.Database
 
         public void SaveBeatmaps(List<Mapset> cbeatmaps)
         {
-            beatmaps.Delete(x => true);
-            BMPS.Delete(x => true);
+            beatmaps.DeleteAll();
+            BMPS.DeleteAll();
 
             foreach (Mapset mp in cbeatmaps)
             {
-                BMPS.InsertBulk(mp.Beatmaps);
+                //BMPS.InsertBulk(mp.Beatmaps);
+                try {
+                    BMPS.Insert(mp.Beatmaps);
+                }
+                catch { }
+                
                 
             }
-            beatmaps.InsertBulk(cbeatmaps);
-
+            //beatmaps.InsertBulk(cbeatmaps);
+            beatmaps.Insert(cbeatmaps);
         }
 
         public void InsertMapset(Mapset mpset)
         {
             try
             {
-                BMPS.InsertBulk(mpset.Beatmaps);
+                //BMPS.InsertBulk(mpset.Beatmaps);
+                BMPS.Insert(mpset.Beatmaps);
             }
             catch
             {

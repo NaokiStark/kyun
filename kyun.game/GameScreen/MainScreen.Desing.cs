@@ -238,7 +238,7 @@ namespace kyun.GameScreen
             Controls.Add(coverimg);
             Controls.Add(coverLabel);
             Controls.Add(coverLabelArt);
-            Controls.Add(userBox);
+            //Controls.Add(userBox);
             Controls.Add(DlbmLbl);
 
             OnLoad += MainScreen_OnLoad;

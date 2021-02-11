@@ -32,14 +32,14 @@ namespace kyunMono
         {
             //First, check XNA 
 
-            bool XNAResult = CheckXNAInstalled();
+            //bool XNAResult = CheckXNAInstalled();
 
-            if (!XNAResult)
-            {
-                var xnaDlr = new XNADownloader();
-                xnaDlr.ShowDialog();
-                //Download and install, when installed, return to game
-            }
+            //if (!XNAResult)
+            //{
+            //    var xnaDlr = new XNADownloader();
+            //    xnaDlr.ShowDialog();
+            //    //Download and install, when installed, return to game
+            //}
 
             if (args.Length > 0)
                 if (args[0] == "soft")
@@ -68,7 +68,7 @@ namespace kyunMono
 
             //ln.Show();
 
-            Environment.Exit(0); //Kill all
+            //Environment.Exit(0); //Kill all
         }
 
         public static bool CheckXNAInstalled()

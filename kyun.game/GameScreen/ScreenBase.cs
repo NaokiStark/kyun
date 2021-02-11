@@ -27,6 +27,7 @@ namespace kyun.GameScreen
         public event TouchHandler.TouchEventHandler onTouch;
 
         private KeyboardState keyboardOldState;
+        private GamePadState gamePadOldState;
 
         private event EventHandler onFadeInEnd;
         private event EventHandler onFadeOutEnd;
@@ -59,10 +60,11 @@ namespace kyun.GameScreen
 
         public ScreenBase(string name = "BaseScreen")
         {
-
+            renderBeat = true;
             avp = new AudioVideoPlayer();
             rPeak = true;
             keyboardOldState = Keyboard.GetState();
+            gamePadOldState = GamePad.GetState(PlayerIndex.One);
             ActualScreenMode = Screen.ScreenModeManager.GetActualMode();
             Name = name;
             OnLoad += _OnLoad;
@@ -85,8 +87,6 @@ namespace kyun.GameScreen
             OnLoad += ScreenBase_OnLoad;
 
             onKeyPress += ScreenBase_onKeyPress;
-
-
         }
 
         private void ScreenBase_onKeyPress(object sender, InputEvents.KeyPressEventArgs args)
@@ -95,7 +95,7 @@ namespace kyun.GameScreen
             {
                 KyunGame.Instance.ToggleFullscreen(!KyunGame.Instance.Graphics.IsFullScreen);
             }
-            else if(args.Key == Keys.F12)
+            else if (args.Key == Keys.F12)
             {
                 new Experiments().Show();
             }
@@ -154,7 +154,7 @@ namespace kyun.GameScreen
                             if (!FFmpegDecoder.Instance.Decoding)
                             KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.White * Opacity, 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
                     }
-                        
+
                 }
                 catch
                 {
@@ -224,10 +224,10 @@ namespace kyun.GameScreen
 
         internal virtual void RenderObjects()
         {
-            
+
             try
             {
-                for(int a = 0; a < Controls.Count; a++)
+                for (int a = 0; a < Controls.Count; a++)
                 {
                     UIObjectBase obj = Controls[a];
                     if (obj.Texture != null)
@@ -257,7 +257,7 @@ namespace kyun.GameScreen
         public virtual void Render()
         {
             if (!Visible || isDisposing) return;
-         
+
             RenderDim();
             renderGoodies();
             RenderObjects();
@@ -281,7 +281,7 @@ namespace kyun.GameScreen
 
                 try
                 {
-                    if(FFmpegDecoder.Instance == null)
+                    if (FFmpegDecoder.Instance == null)
                     {
                         KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.FromNonPremultiplied((int)(255f - 255f * BackgroundDim), (int)(255f - 255f * BackgroundDim), (int)(255f - 255f * BackgroundDim), (int)(255f * BackgroundDim)), 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
                     }
@@ -292,7 +292,7 @@ namespace kyun.GameScreen
                             KyunGame.Instance.SpriteBatch.Draw(Background, screenRectangle, null, Color.FromNonPremultiplied((int)(255f - 255f * BackgroundDim), (int)(255f - 255f * BackgroundDim), (int)(255f - 255f * BackgroundDim), (int)(255f * BackgroundDim)), 0, new Vector2(Background.Width / 2, Background.Height / 2), SpriteEffects.None, 0);
                         }
                     }
-                    
+
                     //
                 }
                 catch
@@ -310,7 +310,7 @@ namespace kyun.GameScreen
 
             ActualScreenMode = Screen.ScreenModeManager.GetActualMode();
 
-            
+
 
             if (actualState.IsKeyDown(Keys.Escape))
                 EscapeAlredyPressed = true;
@@ -325,7 +325,7 @@ namespace kyun.GameScreen
             }
 
 
- 
+
 
             if (AllowVideo)
             {
@@ -428,10 +428,16 @@ namespace kyun.GameScreen
             }
         }
 
-        public void checkKeyboardEvents(KeyboardState kbOldState, KeyboardState kbActualState)
+        public void checkKeyboardEvents(KeyboardState kbOldState, KeyboardState kbActualState, GamePadState gmState)
         {
             Keys[] currentPressedKeys = kbActualState.GetPressedKeys();
             Keys[] oldPressedKeys = kbOldState.GetPressedKeys();
+
+
+            if (gmState.IsConnected)
+            {
+                handleGamePad(gmState);
+            }
 
 
             if (currentPressedKeys.Length < 1 && oldPressedKeys.Length < 1)
@@ -448,14 +454,135 @@ namespace kyun.GameScreen
                 }
             }
 
+            gamePadOldState = gmState;
             keyboardOldState = kbActualState;
+        }
+
+        internal void handleGamePad(GamePadState gmState)
+        {
+            GamePadButtons actualBtns = gmState.Buttons;
+            GamePadButtons oldBtns = gamePadOldState.Buttons;
+
+
+            if (oldBtns.A == ButtonState.Released && actualBtns.A == ButtonState.Pressed)
+            {
+                onKeyPress?.Invoke(this, new InputEvents.KeyPressEventArgs
+                {
+                    Key = Keys.Enter
+                });
+            }
+
+            if (oldBtns.B == ButtonState.Released && actualBtns.B == ButtonState.Pressed)
+            {
+                onKeyPress?.Invoke(this, new InputEvents.KeyPressEventArgs
+                {
+                    Key = Keys.Escape
+                });
+            }
+
+            if (gamePadOldState.DPad.Down == ButtonState.Released && gmState.DPad.Down == ButtonState.Pressed)
+            {
+                onKeyPress?.Invoke(this, new InputEvents.KeyPressEventArgs
+                {
+                    Key = Keys.Down
+                });
+            }
+
+            if (gamePadOldState.DPad.Up == ButtonState.Released && gmState.DPad.Up == ButtonState.Pressed)
+            {
+                onKeyPress?.Invoke(this, new InputEvents.KeyPressEventArgs
+                {
+                    Key = Keys.Up
+                });
+            }
+
+            if (gamePadOldState.DPad.Left == ButtonState.Released && gmState.DPad.Left == ButtonState.Pressed)
+            {
+                onKeyPress?.Invoke(this, new InputEvents.KeyPressEventArgs
+                {
+                    Key = Keys.Left
+                });
+            }
+
+            if (gamePadOldState.DPad.Right == ButtonState.Released && gmState.DPad.Right == ButtonState.Pressed)
+            {
+                onKeyPress?.Invoke(this, new InputEvents.KeyPressEventArgs
+                {
+                    Key = Keys.Right
+                });
+            }
+            /*
+            if (gmState.Buttons.LeftShoulder == ButtonState.Pressed)
+            {
+                onKeyPress?.Invoke(this, new InputEvents.KeyPressEventArgs
+                {
+                    Key = Keys.LeftShift
+                });
+            }
+
+            if (gmState.Buttons.RightShoulder == ButtonState.Pressed)
+            {
+                onKeyPress?.Invoke(this, new InputEvents.KeyPressEventArgs
+                {
+                    Key = Keys.RightShift
+                });
+            }*/
+
+            // check dead zone
+            float deadZone = 0.18f;
+            float actualThumbX = gmState.ThumbSticks.Left.X;
+            float actualThumbY = gmState.ThumbSticks.Left.Y;
+
+            float oldThumbX = gamePadOldState.ThumbSticks.Left.X;
+            float oldThumbY = gamePadOldState.ThumbSticks.Left.Y;
+
+            if (oldThumbX < deadZone && actualThumbX > deadZone)
+            {
+                onKeyPress?.Invoke(this, new InputEvents.KeyPressEventArgs
+                {
+                    Key = Keys.Right
+                });
+            }
+
+            if (oldThumbX > -deadZone && actualThumbX < -deadZone)
+            {
+                onKeyPress?.Invoke(this, new InputEvents.KeyPressEventArgs
+                {
+                    Key = Keys.Left
+                });
+            }
+
+            if (oldThumbY < deadZone && actualThumbY > deadZone)
+            {
+                onKeyPress?.Invoke(this, new InputEvents.KeyPressEventArgs
+                {
+                    Key = Keys.Up
+                });
+            }
+
+            if (oldThumbY > -deadZone && actualThumbY < -deadZone)
+            {
+                onKeyPress?.Invoke(this, new InputEvents.KeyPressEventArgs
+                {
+                    Key = Keys.Down
+                });
+            }
+            gamePadOldState = gmState;
+        }
+
+        internal void RenderBeat()
+        {
+            Screen.ScreenMode actmode = Screen.ScreenModeManager.GetActualMode();
+
+            KyunGame.Instance.SpriteBatch.Draw(BackgroundBeat.Texture, new Rectangle(0, 0, actmode.Width, actmode.Height), null, Color.White * BackgroundBeat.Opacity * .8f, BackgroundBeat.AngleRotation, Vector2.Zero, (!rightBgEffect) ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
         }
 
         internal void RenderPeak()
         {
-
-            Screen.ScreenMode actmode = Screen.ScreenModeManager.GetActualMode();
-            KyunGame.Instance.SpriteBatch.Draw(BackgroundBeat.Texture, new Rectangle(0, 0, actmode.Width, actmode.Height), null, Color.White * BackgroundBeat.Opacity * .8f, BackgroundBeat.AngleRotation, Vector2.Zero, (!rightBgEffect) ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
+            if (renderBeat)
+            {
+                RenderBeat();
+            }
             BackgroundFlash.Render();
         }
 
@@ -676,6 +803,7 @@ namespace kyun.GameScreen
 
         float opacity = 1;
         private KeyboardState actualState;
+        public bool renderBeat;
 
         public float Opacity
         {

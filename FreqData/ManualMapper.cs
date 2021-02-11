@@ -1,6 +1,5 @@
 ﻿using Gma.System.MouseKeyHook;
 using Microsoft.Xna.Framework.Input;
-using mrousavy;
 using OsuParsers.Beatmaps;
 using OsuParsers.Beatmaps.Objects;
 using OsuParsers.Decoders;
@@ -71,6 +70,8 @@ namespace FreqData
         private SynchronizationContext syncContext;
         private KeyboardState keyboardOldState;
 
+        internal Beatmap bm;
+
         public ManualMapper(float tempoDivider = NoteDuration.Sixteenth)
         {
             p = new Player();
@@ -109,6 +110,27 @@ namespace FreqData
             loadTimeLine(mspb, gap, p.Length);
         }
 
+        internal void loadFile(Beatmap beatmap, string path)
+        {
+            hitObjects.Clear();
+            bm = beatmap;
+            File = Path.Combine((new FileInfo(path)).DirectoryName, beatmap.GeneralSection.AudioFilename);
+            p.Play(File);
+            p.Volume = (float)Mapper.Instance.tMusic.Value / 100f;
+            p.Pause();
+            Length = p.Length;
+
+            // For now only get 1st timing point
+            bpm = 60000d / beatmap.TimingPoints.First().BeatLength;
+            gap = beatmap.TimingPoints.First().Offset;
+
+            mspb = (float)beatmap.TimingPoints.First().BeatLength;
+
+            loadTimeLine(mspb, gap, p.Length);
+
+        }
+
+
         public void checkKeyboardEvents()
         {
             KeyboardState kbActualState = Keyboard.GetState();
@@ -117,8 +139,8 @@ namespace FreqData
 
             //if (currentPressedKeys.Length < 1 && oldPressedKeys.Length < 1)
             //    return;
-
-            foreach (XKeys aKey in (XKeys[])Enum.GetValues(typeof(XKeys)))
+            XKeys[] k = (XKeys[])Enum.GetValues(typeof(XKeys));
+            foreach (XKeys aKey in k)
             {
                 if (keyboardOldState.IsKeyUp(aKey) && kbActualState.IsKeyDown(aKey))
                 {
@@ -153,9 +175,11 @@ namespace FreqData
             return noteDuration * mpb;
         }
 
-        internal void Start()
+        internal void Start(float vel = 1)
         {
+            hitObjects.Clear();
             p.Play(File);
+            p.SetVelocity(vel);
             nextBeat = gap;
             syncContext = System.Threading.SynchronizationContext.Current;
             Task.Run(() =>
@@ -163,18 +187,19 @@ namespace FreqData
 
                 while (p.PlayState == BassPlayState.Playing)
                 {
-                    syncContext.Send(state =>
-                    {
-                        checkKeyboardEvents(); //Send in the main thread
-                    }, null);
 
-                    Thread.Sleep(TimeSpan.FromMilliseconds(0.1));
+                    //Thread.Sleep(TimeSpan.FromMilliseconds(0.1));
                     if (dividerIndex >= dividers.Count)
                     {
+                        syncContext.Send(state =>
+                        {
+                            checkKeyboardEvents(); //Send in the main thread
+                        }, null);
                         continue;
                     }
 
-                    float position = p.Position;
+
+                    float position = p.Position - 1;
                     if (position > dividers[dividerIndex]
                         && position > dividers[Math.Min(dividers.Count - 1, dividerIndex + 1)])
                     {
@@ -186,7 +211,14 @@ namespace FreqData
                     {
                         EffectsPlayer.PlayEffect(Mapper.metronome, (float)Mapper.Instance.tMetronome.Value / 100f);
                         nextBeat += (mspb * ((Mapper.Instance.checkBox1.Checked) ? TempoDivider : 1));
+                        Mapper.keys[4] = true;
+                        Task.Run(() => toggleKey(4, false, 30));
                     }
+
+                    syncContext.Send(state =>
+                    {
+                        checkKeyboardEvents(); //Send in the main thread
+                    }, null);
                 }
 
             });
@@ -214,14 +246,23 @@ namespace FreqData
                 System.IO.File.Create(osuFile).Close();
             }
 
+            string diff = "";
+
+            while (string.IsNullOrWhiteSpace(diff = Microsoft.VisualBasic.Interaction.InputBox("Diff Name", "Mapper"))) { }
+
+            string creator = "";
+
+            while (string.IsNullOrWhiteSpace(creator = Microsoft.VisualBasic.Interaction.InputBox("Creator name", "Mapper"))) { }
+
             // All osu! shit
 
             Beatmap beatmap = BeatmapDecoder.Decode(osuFile);
 
-            beatmap.MetadataSection.Artist = "kyun";
-            beatmap.MetadataSection.Creator = "[ NekoChan ]";
-            beatmap.MetadataSection.Title = "Beatmap generated";
-            beatmap.MetadataSection.Version = "MM";
+            beatmap.MetadataSection.Artist = bm.MetadataSection.Artist;
+            beatmap.MetadataSection.Creator = creator;
+            beatmap.MetadataSection.Title = bm.MetadataSection.Title;
+            beatmap.MetadataSection.TitleUnicode = bm.MetadataSection.TitleUnicode;
+            beatmap.MetadataSection.Version = diff;
             beatmap.MetadataSection.BeatmapID = -1;
             beatmap.GeneralSection.AudioFilename = new FileInfo(File).Name;
             beatmap.GeneralSection.Countdown = false;
@@ -293,6 +334,9 @@ namespace FreqData
             processKey(e);
         }
 
+        int lastCol = 0;
+        float lastTime = 0;
+
         private void processKey(KeyEventArgsTimed e)
         {
             if (p.PlayState != BassPlayState.Playing) return;
@@ -309,16 +353,24 @@ namespace FreqData
             {
                 if (states[keyIndex])
                 {
-                    if (e.Timestamp - events[keyIndex].Timestamp < mspb * TempoDivider)
+                    if (e.Timestamp - events[keyIndex].Timestamp < (mspb * p.Velocity) * TempoDivider)
                     {
                         //Console.WriteLine("added circle");
                         //Make circle
 
                         float time = dividers[dividerIndex];
 
+                        int actualCol = getColFor(keyIndex);
 
+                        if (lastCol == actualCol && time == lastTime)
+                        {
+                            return;
+                        }
 
-                        hitObjects.Add(new Circle(new System.Numerics.Vector2(getColFor(keyIndex), 0),
+                        lastCol = actualCol;
+                        lastTime = time;
+
+                        hitObjects.Add(new Circle(new System.Numerics.Vector2(actualCol, 0),
                                 (int)time, 0,
                                 HitSoundType.Normal, new Extras(), false, 0));
                     }
@@ -391,12 +443,13 @@ namespace FreqData
                     }
 
                     states[keyIndex] = false;
+                    Task.Run(() => toggleKey(keyIndex, false, 20));
                 }
             }
             else
             {
                 EffectsPlayer.PlayEffect(Mapper.eff, (float)Mapper.Instance.tEff.Value / 100f);
-                states[keyIndex] = true;
+                Mapper.keys[keyIndex] = states[keyIndex] = true;
 
             }
 
@@ -419,7 +472,11 @@ namespace FreqData
             return ptime;
         }
 
-
+        private void toggleKey(int keyIndex, bool k, int t = 20)
+        {
+            Thread.Sleep(t);
+            Mapper.keys[keyIndex] = k;
+        }
 
         private int findKeyTimeFor(float time)
         {
@@ -509,6 +566,7 @@ namespace FreqData
         public const float Quarter = 1f;
         public const float Eighth = 0.5f;
         public const float Sixteenth = 0.25f;
+        public const float Tempo32 = 0.125f; //omG THIS 
 
         public const float Third = 16f / 3f;
         public const float Sixth = 8f / 3f;

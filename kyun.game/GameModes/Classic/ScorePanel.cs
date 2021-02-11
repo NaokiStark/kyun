@@ -77,6 +77,10 @@ namespace kyun.GameModes.Classic
 
         private int infoMargin = 300;
 
+        int timetoEnd = 0;
+        int timeToChange = 10;
+        private bool changingBeatmap;
+
         public ScorePanel()
         {
             infoMargin = ActualScreenMode.Width / 2 - infoMargin;
@@ -85,7 +89,7 @@ namespace kyun.GameModes.Classic
 
             var aMode = ActualScreenMode;
 
-            var rnkPnlPos = new Vector2(ActualScreenMode.Width /2 + 50,
+            var rnkPnlPos = new Vector2(ActualScreenMode.Width / 2 + 50,
                 aMode.Height / 2 - (SpritesContent.Instance.RankingPanel.Height / 2));
             rankingPanel = new Image(SpritesContent.Instance.RankingPanel)
             {
@@ -211,7 +215,7 @@ namespace kyun.GameModes.Classic
             ScoreLetter = new Image(SpritesContent.instance.FScore)
             {
                 BeatReact = false,
-                
+
             };
 
             loadingLabel = new Label(0)
@@ -267,7 +271,7 @@ namespace kyun.GameModes.Classic
             Controls.Add(backButton);
             Controls.Add(tryAgainBtn);
             Controls.Add(replayBtn);
-            
+
             Controls.Add(loadingLabel);
             Controls.Add(beatmapDisplayLabel);
             Controls.Add(detailsLabel);
@@ -325,7 +329,7 @@ namespace kyun.GameModes.Classic
             if (Displaying)
                 return;
 
-
+            
             Displaying = true;
             ChangeImgDisplay(ins.Beatmap.Background);
             beatmapDisplayLabel.Text = StringHelper.WrapText(beatmapDisplayLabel.Font, $"{ins.Beatmap.Artist} - {ins.Beatmap.Title}", ActualScreenMode.Width - 200);
@@ -432,9 +436,9 @@ namespace kyun.GameModes.Classic
             perfectlbl.Text = $"{perfectCount}";
             acclbl.Text = $"{((float)acc / (float)i.HitObjects.Count).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)}%";
 
-            if(((float)acc / (float)i.HitObjects.Count) == 100)
+            if (((float)acc / (float)i.HitObjects.Count) == 100)
             {
-                if((i.gameMod & GameMod.DoubleTime) == GameMod.DoubleTime)
+                if ((i.gameMod & GameMod.DoubleTime) == GameMod.DoubleTime)
                 {
                     ScoreLetter.Texture = SpritesContent.instance.TripleAScore;
                 }
@@ -443,7 +447,7 @@ namespace kyun.GameModes.Classic
                     ScoreLetter.Texture = SpritesContent.instance.DoubleAScore;
                 }
             }
-            else if(((float)acc / (float)i.HitObjects.Count) >= 90)
+            else if (((float)acc / (float)i.HitObjects.Count) >= 90)
             {
                 ScoreLetter.Texture = SpritesContent.instance.AScore;
             }
@@ -451,7 +455,7 @@ namespace kyun.GameModes.Classic
             {
                 ScoreLetter.Texture = SpritesContent.instance.BScore;
             }
-            else if(((float)acc / (float)i.HitObjects.Count) >= 50)
+            else if (((float)acc / (float)i.HitObjects.Count) >= 50)
             {
                 ScoreLetter.Texture = SpritesContent.instance.CScore;
             }
@@ -469,7 +473,7 @@ namespace kyun.GameModes.Classic
             }
             else if ((i.gameMod & GameMod.Replay) == GameMod.Replay)
             {
-                
+
             }
             else
             {
@@ -493,6 +497,7 @@ namespace kyun.GameModes.Classic
 
         private void ChangeImgDisplay(string image)
         {
+
             int coverSize = 300;
 
             coverimg.Position = new Vector2(infoMargin - coverSize / 2, loadingLabel.Position.Y - coverSize / 2);
@@ -556,6 +561,16 @@ namespace kyun.GameModes.Classic
         public override void Update(GameTime tm)
         {
             base.Update(tm);
+            if (KyunGame.Instance.AutoMode && !changingBeatmap)
+            {               
+                if (timetoEnd > timeToChange)
+                {
+                    changingBeatmap = true;
+                    changeRandomMap();
+                    return;
+                }
+                timetoEnd += KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds;
+            }
 
             perfectlbl.Position = perfectimg.Position + new Vector2(perfectimg.Texture.Width + 10, -12);
             greatlbl.Position = greatimg.Position + new Vector2(perfectimg.Texture.Width + 50, -12);
@@ -573,5 +588,39 @@ namespace kyun.GameModes.Classic
             ScoreLetter.AngleRotation = 0;
             ScoreLetter.Scale = .5f;
         }
+
+        public void changeRandomMap()
+        {
+            int mstIndex = 0;
+
+            Random c = new Random(DateTime.Now.Millisecond);
+
+            List<Beatmap.Mapset> bms = InstanceManager.AllBeatmaps;
+
+            if (bms.Count < 1) return;
+            Beatmap.Mapset bsel;
+            if (bms.Count == 1)
+                bsel = bms[mstIndex];
+            else
+            {
+                mstIndex = OsuUtils.OsuBeatMap.GetRnd(0, InstanceManager.AllBeatmaps.Count - 1, -1);
+                bsel = bms[mstIndex];
+            }
+
+            Beatmap.ubeatBeatMap ubm;
+
+            if (bsel.Count == 1)
+            {
+                ubm = bsel.Beatmaps[0];
+            }
+            else
+            {
+                ubm = bsel.Beatmaps[OsuUtils.OsuBeatMap.rnd.Next(0, bsel.Count - 1)];
+            }
+            timetoEnd = 0;
+            changingBeatmap = false;
+            GameLoader.instance.LoadBeatmapAndRun(ubm, CatchItMode.Instance, GameMod.Auto);
+        }
     }
+
 }

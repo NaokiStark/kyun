@@ -33,6 +33,7 @@ namespace kyun.GameScreen.UI
                 return;
 
             int finalWidth = (int)(Value * MaxWidth / 100f);
+            Size = new Vector2(finalWidth, Background.Texture.Height);
             KyunGame.Instance.SpriteBatch.Draw(Background.Texture, new Rectangle((int)Position.X, (int)Position.Y, finalWidth, Background.Texture.Height), BarColor * Opacity);
             
         }
