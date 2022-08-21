@@ -34,11 +34,13 @@ namespace kyun.Beatmap
         List<TimingPoint> TimingPoints { get; set; }
         float SliderMultiplier { get; set; }
         TimingPoint GetTimingPointFor(long time, bool inherited = true);
+        TimingPoint GetTimingPointForV2(long time);
         TimingPoint GetInheritedPointFor(long time);
 
         OsuGameMode Osu_Gamemode { get; set; }
         float CircleSize { get; set; }
 
+        TimingPoint GetNextTimingPointFor(long offset);
     }
 
     public enum OsuGameMode

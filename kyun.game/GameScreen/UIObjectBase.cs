@@ -378,7 +378,9 @@ namespace kyun.GameScreen
 
             //Render over object
             if (Tooltip != null)
-                Tooltip?.Render();
+            {
+                KyunGame.Instance.tooltips.Add(Tooltip);
+            }
 
         }
 
@@ -416,8 +418,9 @@ namespace kyun.GameScreen
             {
                 case AnimationType.FadeIn:
                     Opacity = linearIn(animationElapsed, animationDuration);
-                    if (Opacity == 1f)
+                    if (Opacity >= 1f || animationElapsed > animationDuration)
                     {
+                        Opacity = 1f;
                         animationType = AnimationType.None;
                         OnFadeIn?.Invoke(this, new EventArgs());
                     }
@@ -426,6 +429,7 @@ namespace kyun.GameScreen
                     Opacity = Math.Max(linearOut(animationElapsed, animationDuration), 0f);
                     if (Opacity <= 0f || animationElapsed > animationDuration)
                     {
+                        Opacity = 0;
                         animationType = AnimationType.None;
                         OnFadeOut?.Invoke(this, new EventArgs());
                     }
@@ -655,12 +659,19 @@ namespace kyun.GameScreen
             {
                 complete();
 
-                foreach (Delegate d in OnFadeIn.GetInvocationList())
+                if(OnFadeIn != null)
                 {
-                    OnFadeIn -= (EventHandler)d;
+                    Delegate[] c = OnFadeIn.GetInvocationList();
+                    if(c != null)
+                    {
+                        foreach (Delegate d in c)
+                        {
+                            OnFadeIn -= (EventHandler)d;
+                        }
+                    }
                 }
+                
             };
-
 
             FadeIn(effect, duration);
         }
@@ -680,10 +691,17 @@ namespace kyun.GameScreen
             {
                 complete();
 
-                foreach (Delegate d in OnFadeOut.GetInvocationList())
+                if(OnFadeOut != null)
                 {
-                    OnFadeOut -= (EventHandler)d;
-                }
+                    Delegate[] c = OnFadeOut.GetInvocationList();
+                    if(c != null)
+                    {
+                        foreach (Delegate d in c)
+                        {
+                            OnFadeOut -= (EventHandler)d;
+                        }
+                    }
+                }                
             };
 
 

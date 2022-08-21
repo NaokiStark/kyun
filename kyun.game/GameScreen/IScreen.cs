@@ -16,10 +16,12 @@ namespace kyun.GameScreen
 
         void Update(GameTime tm);
         void Render();
-                
+
         //TODO: useless?
         void BackPressed(IScreen screen);
         void OnLoadScreen();
-        
+
+        bool renderBeat {get;set;}
+
     }
 }

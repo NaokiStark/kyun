@@ -1,5 +1,8 @@
-﻿using System;
+﻿using kyun.game.Audio;
+using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Un4seen.Bass;
@@ -52,6 +55,9 @@ namespace kyun.Audio
         }
 
         public BassPlayState PlayState;
+        public int framepassed = 0;
+
+        public TimeScroller timer = new TimeScroller();
 
         public string ActualSong { get; private set; }
 
@@ -79,6 +85,43 @@ namespace kyun.Audio
                 var pos = Bass.BASS_ChannelSeconds2Bytes(stream, (value / 1000f));
 
                 Bass.BASS_ChannelSetPosition(stream, pos, BASSMode.BASS_POS_BYTE);
+                Bass.BASS_ChannelPlay(stream, false);
+            }
+        }
+
+        public double PositionD
+        {
+            get
+            {
+                var pos = Bass.BASS_ChannelGetPosition(stream);
+
+                return (Bass.BASS_ChannelBytes2Seconds(stream, pos) * 1000d);
+            }
+            set
+            {
+                Bass.BASS_ChannelPause(stream);
+                var pos = Bass.BASS_ChannelSeconds2Bytes(stream, (value / 1000f));
+
+                Bass.BASS_ChannelSetPosition(stream, pos, BASSMode.BASS_POS_BYTE);
+                Bass.BASS_ChannelPlay(stream, false);
+            }
+        }
+
+        public long PositionV2
+        {
+            get
+            {
+                var pos = timer.Position;
+
+                return (long)pos;
+            }
+            set
+            {
+                Bass.BASS_ChannelPause(stream);
+                var pos = Bass.BASS_ChannelSeconds2Bytes(stream, (value / 1000f));
+
+                Bass.BASS_ChannelSetPosition(stream, pos, BASSMode.BASS_POS_BYTE);
+                timer.SetTime(value);
                 Bass.BASS_ChannelPlay(stream, false);
             }
         }
@@ -142,6 +185,7 @@ namespace kyun.Audio
         public void SetVelocity(float vl)
         {
             Velocity = vl;
+            timer.SetVelocity(vl);
             float pbrate = vl * 100;
             Bass.BASS_ChannelSetAttribute(stream, BASSAttribute.BASS_ATTRIB_TEMPO, pbrate - 100);
 
@@ -149,8 +193,10 @@ namespace kyun.Audio
 
         public void Play(string fileName = null, float velocity = 1f, float pitch = 1, bool fadeIn = false)
         {
-            var flags = BASSFlag.BASS_SAMPLE_LOOP | BASSFlag.BASS_STREAM_DECODE | BASSFlag.BASS_SAMPLE_FLOAT | BASSFlag.BASS_STREAM_PRESCAN | BASSFlag.BASS_FX_TEMPO_ALGO_LINEAR | BASSFlag.BASS_SAMPLE_FX;
 
+            var flags = BASSFlag.BASS_SAMPLE_LOOP | BASSFlag.BASS_STREAM_DECODE | BASSFlag.BASS_SAMPLE_FLOAT | BASSFlag.BASS_STREAM_PRESCAN | BASSFlag.BASS_FX_TEMPO_ALGO_LINEAR | BASSFlag.BASS_SAMPLE_FX;
+            timer.SetVelocity(velocity);
+            timer.SetTime(0);
             if (fileName != null)
             {
                 if (stream != 0)
@@ -173,8 +219,10 @@ namespace kyun.Audio
                 {
                     // play the stream channel
                     Volume = KyunGame.Instance.GeneralVolume;
-                    Bass.BASS_ChannelPlay(stream, false);
                     ActualSong = fileName;
+                    Bass.BASS_ChannelPlay(stream, false);
+                    timer.SetTime(Position);
+                    
                     PlayState = BassPlayState.Playing;
                 }
                 else
@@ -191,7 +239,34 @@ namespace kyun.Audio
                     throw new Exception("No audio");
                 Volume = KyunGame.Instance.GeneralVolume;
                 Bass.BASS_ChannelPlay(stream, false);
+                timer.SetTime(Position);
                 PlayState = BassPlayState.Playing;
+            }
+
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            
+            if (PlayState != BassPlayState.Playing)
+            {
+                return;
+            }
+            double pos = PositionD;
+
+
+            //if ((double)pos - (double)timer.Position > 21d)
+            if ((double)Math.Abs((double)timer.Position - (double)pos) > 21d)
+            {
+
+                timer.SetTime(pos+5);
+                //Console.WriteLine("er");
+            }
+            else
+            {
+
+                timer.Add(gameTime.ElapsedGameTime);
+
             }
 
         }
@@ -199,13 +274,17 @@ namespace kyun.Audio
         public void Pause()
         {
             if (PlayState == BassPlayState.Stopped)
+            {
                 Play(ActualSong);
+                timer.SetTime(PositionD);
+            }
             else
             {
                 if (PlayState == BassPlayState.Paused)
                 {
                     Bass.BASS_ChannelPlay(stream, false);
                     PlayState = BassPlayState.Playing;
+                    timer.SetTime(PositionD);
                 }
                 else
                 {
@@ -241,6 +320,12 @@ namespace kyun.Audio
         }
 
         float[] fft = new float[2048];
+
+        float Lerp(float a, float b, float t)
+        {
+            return a * t + b * (1 - t);
+            //return (1f - t) * a + t * b;
+        }
 
         public float DetectFrequency(int freq1, int freq2, int size = 1024)
         {

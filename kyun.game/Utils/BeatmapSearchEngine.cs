@@ -6,12 +6,12 @@ namespace kyun.Utils
 {
     public static class BeatmapSearchEngine
     {
-        public static List<Beatmap.Mapset> SearchBeatmaps(string keyword)
+        public static List<Beatmap.Mapset> SearchBeatmaps(string keyword, List<Beatmap.Mapset> list)
         {
             if (keyword == null)
                 return InstanceManager.AllBeatmaps;
 
-            Logger.Instance.Info("Keyword: {0}", keyword);
+            //Logger.Instance.Info("Keyword: {0}", keyword);
 
             keyword = keyword.Trim().ToLower();
 

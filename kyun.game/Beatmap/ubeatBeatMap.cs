@@ -10,17 +10,17 @@ namespace kyun.Beatmap
     public class ubeatBeatMap : IBeatmap
     {
         public int Id { get; set; }
-        public string Title { get;  set; }
-        public string Artist { get;  set; }
-        public string Creator { get;  set; }
-        public string Version { get;  set; }
-        public List<string> Tags { get;  set; }
-        public float BPM { get;  set; }
-        public long MSPB { get;  set; }
+        public string Title { get; set; }
+        public string Artist { get; set; }
+        public string Creator { get; set; }
+        public string Version { get; set; }
+        public List<string> Tags { get; set; }
+        public float BPM { get; set; }
+        public long MSPB { get; set; }
         public List<IHitObj> HitObjects { get; set; }
-        public string SongPath { get;  set; }
-        public float HPDrainRate { get;  set; }
-        public float OverallDifficulty { get;  set; }
+        public string SongPath { get; set; }
+        public float HPDrainRate { get; set; }
+        public float OverallDifficulty { get; set; }
         public float ApproachRate { get; set; }
         public string Background { get; set; }
         public string Video { get; set; }
@@ -84,8 +84,9 @@ namespace kyun.Beatmap
 
             OsuGameMode tmpMode = OsuGameMode.Standard;
 
-           
-            ubeatBeatMap tmpmap = new ubeatBeatMap() {
+
+            ubeatBeatMap tmpmap = new ubeatBeatMap()
+            {
                 ApproachRate = float.Parse(jMap["approachRate"].ToString()),
                 Artist = (string)jMap["artist"],
                 Creator = (string)jMap["creator"],
@@ -128,8 +129,8 @@ namespace kyun.Beatmap
                     {
                         StartTime = int.Parse(jamap[a]["start"].ToString()),
                         EndTime = int.Parse(jamap[a]["end"].ToString()),
-                        Length=int.Parse(jamap[a]["length"].ToString()),
-                        Location=int.Parse(jamap[a]["location"].ToString()),
+                        Length = int.Parse(jamap[a]["length"].ToString()),
+                        Location = int.Parse(jamap[a]["location"].ToString()),
                         BeatmapContainer = tmpmap,
                         HitSound = 0
                     };
@@ -145,7 +146,17 @@ namespace kyun.Beatmap
         public TimingPoint GetTimingPointFor(long time, bool inherited = true)
         {
             if (TimingPoints == null)
-                return null;
+            {
+                return new TimingPoint(0, -100, TimingPoints[0].Meter, TimingPoints[0].SampleType, TimingPoints[0].SampleSet, TimingPoints[0].Volume, false, false);
+            }
+            else if (time == 0 && !inherited)
+            {
+                return TimingPoints[0];
+            }
+            else if (time == 0 && inherited)
+            {
+                return new TimingPoint(0, -100, TimingPoints[0].Meter, TimingPoints[0].SampleType, TimingPoints[0].SampleSet, TimingPoints[0].Volume, true, false); ;
+            }
 
             for (var i = TimingPoints.Count - 1; i >= 0; i--)
             {
@@ -154,14 +165,55 @@ namespace kyun.Beatmap
             return TimingPoints[0];
         }
 
+        public TimingPoint GetTimingPointForV2(long time)
+        {
+            if (TimingPoints == null)
+                return null;
+
+            TimingPoint tm = TimingPoints[0];
+            for (var i = TimingPoints.Count - 1; i > -1; i--)
+            {
+                if (TimingPoints[i].Offset <= time)
+                {
+                    tm = TimingPoints[i];
+                    break;
+                }
+            }
+
+            return tm;
+        }
+
+        public TimingPoint GetNextTimingPointFor(long offset)
+        {
+            if (TimingPoints == null)
+                return null;
+
+            TimingPoint tm = TimingPoints[0];
+            for (var i = TimingPoints.Count - 1; i > -1; i--)
+            {
+                if (i + 1 < TimingPoints.Count)
+                {
+                    if (TimingPoints[i].Offset <= offset)
+                    {
+                        tm = TimingPoints[i + 1];
+                        break;
+                    }
+                }   
+                //tm = TimingPoints[i];                
+            }
+
+            return tm;
+        }
+
         public TimingPoint GetInheritedPointFor(long time)
         {
             if (TimingPoints == null)
                 return null;
 
-            return TimingPoints.Find((x) => {
+            return TimingPoints.Find((x) =>
+            {
                 return (x.MsPerBeat < 0) && x.Offset >= time;
-                });
+            });
         }
     }
 }

@@ -70,6 +70,9 @@ namespace kyun.game.GameModes.CatchIt
                     alreadySounded = true;
                     playHitsound();
                 }
+               /* AngleRotation += KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * .01f;
+                OriginRender = new Vector2(Texture.Width/ 2f, Texture.Height/2f);*/
+                
             }
 
             if (/*i.catcherElapsed > Math.Max(i.NonInheritedPoint.MsPerBeat * 0.99f, 1000f / 150f)*/ false)

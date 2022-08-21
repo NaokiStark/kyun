@@ -99,18 +99,56 @@ namespace kyun.GameScreen
                 case Keys.F3:
                     _scoreboard.Add(ScoreItem.BuildNew(UserBox.GetInstance().userAvatar.Texture, UserBox.GetInstance().nickLabel.Text, OsuUtils.OsuBeatMap.rnd.Next(10, 9999999), OsuUtils.OsuBeatMap.rnd.Next(10, 99999)));
                     break;
+                case Keys.F9:
+                    if (_gamemode != GameMode.Classic)
+                    {
+                        _gamemode = GameMode.Classic;
+
+                        BtnStart_Click(this, new EventArgs());
+                        KyunGame.Instance.Notifications.ShowDialog("Switched to Old and ugly mode (ubeat)");
+                    }
+                    else
+                    {
+                        _gamemode = GameMode.CatchIt;
+                        KyunGame.Instance.Notifications.ShowDialog("Switched to Catch It!");
+                    }
+                    break;
                 case Keys.Escape:
-                    ScreenManager.ChangeTo(MainScreen.instance);
+                    if (string.IsNullOrWhiteSpace(KyunGame.Instance.KeyBoardManager.Text))
+                    {
+                        ScreenManager.ChangeTo(MainScreen.instance);
+                    }
+                    else
+                    {
+                        KyunGame.Instance.Notifications.ShowDialog("Press [ESC] again to exit", 1000);
+                        lastStr = "";
+                        kbmgr_OnKeyPress(true);
+                    }
                     break;
             }
 
         }
 
-        void kbmgr_OnKeyPress()
+        void kbmgr_OnKeyPress(bool clear = false)
         {
-            lastStr = KyunGame.Instance.KeyBoardManager.Text;
-            lblSearch.Text = lastStr;
-            lbox.Items = BeatmapSearchEngine.SearchBeatmaps(lastStr);
+            if (!clear)
+            {
+                lastStr = KyunGame.Instance.KeyBoardManager.Text;
+            }
+            else
+            {
+                KyunGame.Instance.KeyBoardManager.Text = "";
+            }
+            lblSearch.Text = string.IsNullOrWhiteSpace(lastStr)?"*Type to search*":lastStr;            
+            if (string.IsNullOrWhiteSpace(lastStr))
+            {
+                lbox.Items = InstanceManager.AllBeatmaps;
+            }
+            else
+            {
+                var findedMapset = BeatmapSearchEngine.SearchBeatmaps(lastStr, InstanceManager.AllBeatmaps);
+                lbox.Items = findedMapset;
+            }
             lbox.vertOffset = 0;
             int lastind = lbox.selectedIndex;
             lbox.selectedIndex = -1;
@@ -121,16 +159,14 @@ namespace kyun.GameScreen
         {
             lastStr = "";
 
-            int rnd = OsuUtils.OsuBeatMap.GetRnd(0, InstanceManager.AllBeatmaps.Count - 1, -1);
+            int rnd = OsuUtils.OsuBeatMap.GetRnd(0, lbox.Items.Count - 1, -1);
 
             lbox.selectedIndex = rnd;
             lbox.vertOffset = (rnd > 2) ? rnd - 1 : 0;
 
-            //UbeatGame.Instance.SelectedBeatmap = InstanceManager.AllBeatmaps[rnd][0];
-            ((MainScreen)MainScreen.Instance).ChangeMainDisplay(rnd);
 
-
-            ChangeBeatmapDisplay(InstanceManager.AllBeatmaps[rnd].Beatmaps[0]);
+            ChangeBeatmapDisplay(lbox.Items[rnd].Beatmaps[0]);
+            ((MainScreen)MainScreen.Instance).ChangeMainDisplay(lbox.Items[rnd]);
 
         }
 
@@ -197,7 +233,7 @@ namespace kyun.GameScreen
                     GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items.Beatmaps[lBDff.selectedIndex], ClassicModeScreen.GetInstance(), modes);
                     break;
                 case GameMode.Osu:
-
+                    OsuMode.GetInstance().MoveEnabled = CrazyMode;
                     GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items.Beatmaps[lBDff.selectedIndex], OsuMode.GetInstance(), modes);
 
                     break;
@@ -282,7 +318,7 @@ namespace kyun.GameScreen
 
             ChangeBeatmapDisplay(selectd);
 
-            ((MainScreen)MainScreen.Instance).ChangeMainDisplay(lbox.selectedIndex);
+            ((MainScreen)MainScreen.Instance).ChangeMainDisplay(lbox.Items[lbox.selectedIndex]);
 
             lBDff.Items = Mapset.OrderByDiff(lbox.Items[lbox.selectedIndex]);
             lBDff.selectedIndex = 0;
@@ -330,6 +366,9 @@ namespace kyun.GameScreen
             ((MainScreen)MainScreen.Instance).coverBox.Resize(new Microsoft.Xna.Framework.Vector2((maxSize * .8f) + 20, ((MainScreen)MainScreen.Instance).coverSize));
             ((MainScreen)MainScreen.Instance).coverLabel.Text = beatMap.Title;
             ((MainScreen)MainScreen.Instance).coverLabelArt.Text = beatMap.Artist;
+
+            ((MainScreen)MainScreen.Instance).ActualTimingPoint = KyunGame.Instance.SelectedBeatmap.TimingPoints[0];
+            ((MainScreen)MainScreen.Instance).NextTimingPoint = KyunGame.Instance.SelectedBeatmap.GetNextTimingPointFor(((MainScreen)MainScreen.Instance).ActualTimingPoint.Offset + 50);
 
 
             changeCoverDisplay(beatMap.Background);

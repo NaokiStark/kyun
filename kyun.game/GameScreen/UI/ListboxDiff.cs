@@ -185,10 +185,22 @@ namespace kyun.GameScreen.UI
             {
                 string o2 = Items.Beatmaps[i + vertOffset].Version;
                 string o = "";
-                for (int a = horizontalOffset; a < o2.Length && a < maxCharsCanHold + horizontalOffset; a++)
+                try
                 {
-                    o += o2[a];
+                    if(o2 == null)
+                    {
+                        o = "Play";
+                    }
+                    else
+                    {
+                        for (int a = horizontalOffset; a < o2.Length && a < maxCharsCanHold + horizontalOffset; a++)
+                        {
+                            o += o2[a];
+                        }
+                    }
+
                 }
+                catch { o = "Play"; }
                 Color textColor = Color.White;
                 Color backColor = Color.Black;
                 Color selectedColor = Color.Brown;

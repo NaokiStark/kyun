@@ -24,13 +24,13 @@ namespace kyun.game.Winforms
 
         public void ShowForm(Exception ex)
         {
-            Show();
             DevMsg.Text = "Dev Info: " + ex.Message;
+            ShowDialog();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            KyunGame.Instance.Exit();
+            Close();
         }
     }
 }

@@ -76,7 +76,7 @@ namespace kyun.GameScreen
             Logo.MoveTo(AnimationEffect.bounceOut, 1000, logoPosition);
             lComp.FadeIn(AnimationEffect.Ease, 1000);
             EWarnImage.FadeIn(AnimationEffect.Ease, 1000);
-            KyunGame.Instance.Notifications.ShowDialog("Volume control: PageUP | PageDown keys", 15000, Notifications.NotificationType.Critical);
+            KyunGame.Instance.Notifications.ShowDialog("Volume control: PageUP | PageDown keys", 2000, Notifications.NotificationType.Critical);
 
 
         }

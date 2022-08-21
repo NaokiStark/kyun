@@ -18,6 +18,8 @@ using kyun.GameScreen.UI.Buttons;
 using osuBMParser;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using kyun.game.GameScreen.UI;
+using kyun.game.Beatmap;
+using System.IO;
 
 namespace kyun.GameModes.OsuMode
 {
@@ -43,17 +45,42 @@ namespace kyun.GameModes.OsuMode
         public Image AutoCursor { get; private set; }
 
         public List<KeyValuePair<long, Vector2>> RecordedMousePositions { get; set; }
+        public TimingPoint ActualTimingPoint { get; set; }
+        public TimingPoint NextTimingPoint { get; private set; }
+        public int cursorFrame { get; private set; }
+        public bool allowTrail { get; private set; }
+        public Image followPointStart { get; set; }
+        public Image followPointEnd { get; set; }
+        public Image followPointTail { get; set; }
 
+        public CustomSampleSet sampleSet;
         float elapsedMsToMouse = 0;
         static float MOUSE_FRAMERATE_MS = 1000 / 60;
-
+        internal ProgressBar timeProgressBar;
         int lastAutoId = 0;
         public Replay replay;
-
+        public bool showingFail;
         int replayMouseIndex = 0;
+
+        public bool MoveEnabled;
 
         public OsuGameMode _osuMode = OsuGameMode.Standard;
 
+        public int comboNumber = 1;
+
+        private Color[] comboColors = new Color[] {
+            Color.FromNonPremultiplied(164, 100, 240, 255),
+            Color.FromNonPremultiplied(230, 110, 150, 255),
+            Color.FromNonPremultiplied(100, 200, 200, 255),
+            Color.FromNonPremultiplied(130, 120, 255, 255),
+        };
+        private Color comboColor = Color.Red;
+        private int comboColorIndex = 0;
+
+        public Vector2 comboTxSize1;
+        public Vector2 comboTxSize2;
+        public Vector2 comboTxSize3;
+        public Vector2 comboTxSize4;
         public static OsuMode GetInstance()
         {
             if (Instance == null)
@@ -65,7 +92,12 @@ namespace kyun.GameModes.OsuMode
         public OsuMode()
             : base("OsuMode")
         {
+            comboTxSize1 = SpritesContent.instance.ScoreBig.MeasureString("0");
+            comboTxSize2 = SpritesContent.instance.ScoreBig.MeasureString("00");
+            comboTxSize3 = SpritesContent.instance.ScoreBig.MeasureString("000");
+            comboTxSize4 = SpritesContent.instance.ScoreBig.MeasureString("0000");
 
+            renderBeat = false;
             Instance = this;
 
             ChangeBackground(KyunGame.Instance.SelectedBeatmap.Background);
@@ -74,6 +106,10 @@ namespace kyun.GameModes.OsuMode
 
                 if (args.Key == Microsoft.Xna.Framework.Input.Keys.Escape)
                 {
+                    if (showingFail)
+                    {
+                        return;
+                    }
                     togglePause();
                 }
 
@@ -120,6 +156,16 @@ namespace kyun.GameModes.OsuMode
                 Position = new Vector2(ActualScreenMode.Width - SpritesContent.Instance.ButtonDefault.Width, ActualScreenMode.Height - SpritesContent.Instance.ButtonDefault.Height),
                 Visible = false
             };
+            timeProgressBar = new ProgressBar(ActualScreenMode.Width, 20)
+            {
+                Position = new Vector2(0, ActualScreenMode.Height - 20),
+            };
+            Microsoft.Xna.Framework.Graphics.Texture2D followPoint = new Microsoft.Xna.Framework.Graphics.Texture2D(KyunGame.Instance.GraphicsDevice, 2, 2);
+            followPoint.SetData(new Color[] { Color.White, Color.White, Color.White, Color.White });
+            followPointStart = new Image(followPoint);
+            followPointEnd = new Image(followPoint);
+            followPointStart.Visible = followPointEnd.Visible = false;
+
             skipButton.Click += SkipButton_Click;
 
             OnMouseMove += OsuMode_OnMouseMove;
@@ -132,6 +178,9 @@ namespace kyun.GameModes.OsuMode
             Controls.Add(AutoCursor);
             Controls.Add(replayLabel);
             Controls.Add(skipButton);
+            Controls.Add(timeProgressBar);
+            Controls.Add(followPointStart);
+            Controls.Add(followPointEnd);
         }
 
         private void OsuMode_OnMouseMove(object sender, EventArgs e)
@@ -161,7 +210,7 @@ namespace kyun.GameModes.OsuMode
             {
                 skipped = true;
                 skipButton.Visible = false;
-                avp.audioplayer.Position = (long)OriginalHitObjects.First().StartTime - 3000;
+                avp.audioplayer.Position = (long)OriginalHitObjects.First().StartTime - 2000;
                 EffectsPlayer.PlayEffect(SpritesContent.Instance.MenuTransition);
             }
         }
@@ -178,14 +227,17 @@ namespace kyun.GameModes.OsuMode
                 AutoCursor.Visible = true;
                 lastAutoId = 0;
                 replayMouseIndex = 0;
+                KyunGame.Instance.discordHandler.SetState("Watching kyun! clicking circles", $"{beatmap.Artist} - {beatmap.Title} [{beatmap.Version}]", "idle_large", "classic_small");
             }
             else
             {
                 AutoCursor.Visible = false;
+                KyunGame.Instance.discordHandler.SetState("Clicking circles", $"{beatmap.Artist} - {beatmap.Title} [{beatmap.Version}]", "idle_large", "classic_small");
+
             }
 
-            KyunGame.Instance.discordHandler.SetState("Clicking circles", $"{beatmap.Artist} - {beatmap.Title}", "idle_large", "classic_small");
-
+            showingFail = false;
+            lastSlider = null;
             RecordedMousePositions = new List<KeyValuePair<long, Vector2>>();
             replayMouseIndex = 0;
             AllowVideo = true;
@@ -197,7 +249,7 @@ namespace kyun.GameModes.OsuMode
             base.gameMod = GameMods;
             KyunGame.Instance.Player.Stop();
             Beatmap = beatmap;
-            GamePosition = 0;
+            GamePosition = -3000;
             InGame = true;
             lastIndex = 0;
             ChangeBackground(KyunGame.Instance.SelectedBeatmap.Background);
@@ -211,16 +263,35 @@ namespace kyun.GameModes.OsuMode
             timeToLeave = 0;
             _scoreDisplay.Reset();
             _scoreDisplay.IsActive = true;
-
+            ActualTimingPoint = Beatmap.TimingPoints[0];
+            NextTimingPoint = Beatmap.GetNextTimingPointFor(ActualTimingPoint.Offset + 50);
             _osuMode = beatmap.Osu_Gamemode;
 
             OriginalHitObjects.Clear();
 
             OriginalHitObjects = Beatmap.HitObjects.ToArray().ToList();
 
+            try
+            {
+                FileInfo sampleInfo = new FileInfo(beatmap.SongPath);
+
+                sampleSet = CustomSampleSet.LoadFromBeatmap(sampleInfo.DirectoryName);
+            }
+            catch
+            {
+                sampleSet = null;
+                Logger.Instance.Info("Error getting sampleset");
+            }
             //Remove
 
-            OriginalHitObjects = OriginalHitObjects.Distinct(new HitObjectComparer()).ToList();
+            if (beatmap.Title.ToLower() == "the empress" || beatmap.Title.ToLower() == "centipede")
+            {
+
+            }
+            else
+            {
+                OriginalHitObjects = OriginalHitObjects.Distinct(new HitObjectComparer()).ToList();
+            }
 
             if (game.Settings1.Default.Video)
             {
@@ -277,6 +348,7 @@ namespace kyun.GameModes.OsuMode
             InGame = false;
             bool killVel = false;
             KyunGame.Instance.Player.SetVelocity(.5f);
+            showingFail = true;
             new Task(() =>
             {
                 int time = 2000;
@@ -287,9 +359,9 @@ namespace kyun.GameModes.OsuMode
                         killVel = false;
                         break;
                     }
-                        
 
-                    if(a == 1950)
+
+                    if (a == 1950)
                     {
                         EffectsPlayer.PlayEffect(SpritesContent.instance.FailTransition);
                     }
@@ -380,15 +452,18 @@ namespace kyun.GameModes.OsuMode
             if (KyunGame.Instance.Player.PlayState == BassPlayState.Stopped)
                 GamePosition += (long)KyunGame.Instance.GameTimeP.ElapsedGameTime.TotalMilliseconds;
             else
-                GamePosition = KyunGame.Instance.Player.Position + Beatmap.SleepTime;
+                GamePosition = KyunGame.Instance.Player.PositionV2;
 
             if (!InGame) return;
+
 
             if (InGame && GamePosition > Beatmap.SleepTime && KyunGame.Instance.Player.PlayState == BassPlayState.Stopped)
             {
                 if (!End)
                 {
                     KyunGame.Instance.Player.Play(Beatmap.SongPath);
+                    ActualTimingPoint = Beatmap.TimingPoints[0];
+                    NextTimingPoint = Beatmap.GetNextTimingPointFor(ActualTimingPoint.Offset + 50);
 
                     KyunGame.Instance.Player.Volume = KyunGame.Instance.GeneralVolume;
                     if ((gameMod & GameMod.DoubleTime) == GameMod.DoubleTime)
@@ -410,6 +485,7 @@ namespace kyun.GameModes.OsuMode
 
 
             IHitObj lastObject = OriginalHitObjects[lastIndex];
+            IHitObj afterOjb = lastIndex == 0 ? null : OriginalHitObjects[lastIndex - 1];
 
             long approachStart = (long)(ModeConstants.APPROACH_TIME_BASE - Beatmap.ApproachRate * 150f) + 500;
 
@@ -418,6 +494,13 @@ namespace kyun.GameModes.OsuMode
 
             if (actualTime > nextObjStart)
             {
+                if (lastObject.isNewCombo)
+                {
+                    comboNumber = 0;
+                    comboColorIndex = (comboColorIndex + 1 >= comboColors.Length) ? 0 : comboColorIndex + 1;
+                    comboColor = comboColors[comboColorIndex];
+                }
+                comboNumber++;
                 if (lastObject is HitButton)
                 {
                     var obj = new HitSingle(lastObject, Beatmap, this);
@@ -425,6 +508,9 @@ namespace kyun.GameModes.OsuMode
                     hitbaseObjects.Add(obj);
                     HitObjects.Add(obj);
                     obj.Id = HitObjects.Count - 1;
+                    obj.MoveEnabled = MoveEnabled;
+                    obj.ComboColor = comboColor;
+                    obj.ComboNumber = comboNumber;
 
                     if ((gameMod & GameMod.Replay) == GameMod.Replay)
                     {
@@ -432,9 +518,21 @@ namespace kyun.GameModes.OsuMode
                     }
 
                     Controls.Add(obj);
+
+                    if (afterOjb != null)
+                    {
+                        if (afterOjb.OsuLocation.Equals(lastObject.OsuLocation))
+                        {
+                            obj.Position = Vector2.Add(obj.Position, new Vector2(10));
+                        }
+                    }
                 }
                 else
                 {
+                    if (lastObject.isNewCombo)
+                    {
+                        comboNumber = 1;
+                    }
                     var obj = new HitHolder(lastObject, Beatmap, this);
                     obj.Opacity = 0;
 
@@ -444,7 +542,8 @@ namespace kyun.GameModes.OsuMode
                         var tm = Beatmap.GetTimingPointFor(GamePosition, false);
                         obj.EndTime = (int)(obj.Time + tm.MsPerBeat); //just 1 tick (or beat?) in milliseconds
                     }
-
+                    obj.ComboColor = comboColor;
+                    obj.ComboNumber = comboNumber;
                     hitbaseObjects.Add(obj);
                     HitObjects.Add(obj);
                     obj.Id = HitObjects.Count - 1;
@@ -456,6 +555,14 @@ namespace kyun.GameModes.OsuMode
                     }
 
                     Controls.Add(obj);
+
+                    if (afterOjb != null)
+                    {
+                        if (afterOjb.OsuLocation.Equals(lastObject.OsuLocation))
+                        {
+                            obj.Position = Vector2.Add(obj.Position, new Vector2(10));
+                        }
+                    }
                 }
 
                 lastIndex++;
@@ -463,13 +570,33 @@ namespace kyun.GameModes.OsuMode
 
         }
 
-
-
         public override void Update(GameTime tm)
         {
             if (!Visible || isDisposing) return;
             checkObjectsInTime();
             base.Update(tm);
+            if (NextTimingPoint == null)
+            {
+                ActualTimingPoint = Beatmap.TimingPoints[0];
+                NextTimingPoint = Beatmap.GetNextTimingPointFor(ActualTimingPoint.Offset + 50);
+            }
+            else
+            {
+                if (AVPlayer.audioplayer.PositionV2 >= NextTimingPoint.Offset - 50)
+                {
+                    ActualTimingPoint = NextTimingPoint;/*Beatmap.GetTimingPointForV2(AVPlayer.audioplayer.PositionV2 + 50);*/
+                    NextTimingPoint = Beatmap.GetNextTimingPointFor(ActualTimingPoint.Offset + 50);
+                }
+            }
+            renderBeat = ActualTimingPoint.KiaiMode;
+
+
+            cursorFrame += tm.ElapsedGameTime.Milliseconds;
+            if (cursorFrame > 16)
+            {
+                cursorFrame = 0;
+                allowTrail = true;
+            }
 
             int leaveTime = 3000;
 
@@ -489,7 +616,7 @@ namespace kyun.GameModes.OsuMode
                 }
             }
 
-
+            timeProgressBar.Value = ((float)KyunGame.Instance.Player.PositionV2 / (float)Beatmap.HitObjects.Last().EndTime * 100f);
             if (lastIndex >= OriginalHitObjects.Count)
             {
                 if (OriginalHitObjects.Last() is kyun.Beatmap.HitHolder)
@@ -535,6 +662,27 @@ namespace kyun.GameModes.OsuMode
         {
             try
             {
+                for (int i = Controls.Count - 1; i >= 0; i--)
+                {
+                    var obj = Controls[i];
+                    if (obj == null)
+                        continue; //wtf
+                    if (obj.Texture != null)
+                    {
+                        if (obj.Texture == SpritesContent.Instance.TopEffect)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            obj.Render();
+                        }
+                    }
+                    else
+                    {
+                        obj.Render();
+                    }
+                }/*
                 foreach (UIObjectBase obj in Controls.Reverse<UIObjectBase>())
                 {
                     if (obj == null)
@@ -554,7 +702,7 @@ namespace kyun.GameModes.OsuMode
                     {
                         obj.Render();
                     }
-                }
+                }*/
 
             }
             catch
@@ -609,15 +757,27 @@ namespace kyun.GameModes.OsuMode
             HitSingle secEl = null;
 
             bool autoCursorMoved = false;
-
+            HitBase lastHitBaseControl = null;
             for (int c = 0; c < Controls.Count; c++)
             {
                 UIObjectBase control = Controls.ElementAt(c);
 
                 if (control is HitBase)
                 {
+                    Rectangle posNow = new Rectangle((int)control.Position.X, (int)control.Position.Y, (int)control.Size.X, (int)control.Size.Y);
 
-                    if (!first)
+                    bool intersects = false;
+                    if (lastHitBaseControl != null)
+                    {
+                        intersects = (new Rectangle(
+                            (int)lastHitBaseControl.Position.X,
+                            (int)lastHitBaseControl.Position.Y,
+                            (int)lastHitBaseControl.Size.X,
+                            (int)lastHitBaseControl.Size.Y
+                            ).Intersects(posNow));
+                    }
+
+                    if (!first || AVPlayer.audioplayer.PositionV2 >= (control as HitSingle).Time - Beatmap.Timing50 && !intersects)
                     {
                         if (!control.Died)
                         {
@@ -625,7 +785,7 @@ namespace kyun.GameModes.OsuMode
 
                         }
                     }
-
+                    lastHitBaseControl = (HitBase)control;
                 }
 
                 control.Update();
@@ -637,12 +797,25 @@ namespace kyun.GameModes.OsuMode
                 }
             }
 
+            int lastForSlider = 0;
             if ((gameMod & GameMod.Auto) == GameMod.Auto)
             {
                 for (int b = lastAutoId; b < HitObjects.Count; b++)
                 {
                     if (!HitObjects[b].Died)
-                    { 
+                    {
+                        lastForSlider = b;
+                        break;
+                    }
+                }
+            }
+
+            if ((gameMod & GameMod.Auto) == GameMod.Auto)
+            {
+                for (int b = lastAutoId; b < HitObjects.Count; b++)
+                {
+                    if (!HitObjects[b].Died)
+                    {
                         if (HitObjects.Count < 2)
                         {
                             firstEl = (HitSingle)HitObjects[0];
@@ -684,13 +857,13 @@ namespace kyun.GameModes.OsuMode
 
                             if (true)
                             {
-                                if(AutoCursor.Position != curPos)
+                                if (AutoCursor.Position != curPos)
                                 {
                                     autoCursorMoved = true;
                                 }
-                                
+
                                 AutoCursor.Position = curPos;
-                                
+
                             }
                             else
                             {
@@ -720,16 +893,14 @@ namespace kyun.GameModes.OsuMode
                                 replay.MousePositions[replayMouseIndex].Value.X - Math.Abs((AutoCursor.Size.X) / 2),
                                 replay.MousePositions[replayMouseIndex].Value.Y - Math.Abs((AutoCursor.Size.Y) / 2));
 
-                            if(AutoCursor.Position != curDestn)
+                            if (AutoCursor.Position != curDestn)
                             {
                                 autoCursorMoved = true;
                             }
 
                             AutoCursor.Position = curDestn;
-                            
+
                         }
-
-
                     }
                     else
                     {
@@ -740,7 +911,9 @@ namespace kyun.GameModes.OsuMode
 
             }
 
-            if (firstEl != null && (gameMod & GameMod.Auto) == GameMod.Auto)
+            bool lastSliderDead = (lastSlider == null) ? true : lastSlider.Died;
+
+            if (firstEl != null && (gameMod & GameMod.Auto) == GameMod.Auto && lastSliderDead)
             {
 
                 long timeDiff = 0;
@@ -750,20 +923,26 @@ namespace kyun.GameModes.OsuMode
                     timeDiff = firstEl.Time - GamePosition;
 
                     dest = new Vector2(firstEl.Position.X, firstEl.Position.Y);
+
                 }
                 else
                 {
                     timeDiff = secEl.Time - 20 - GamePosition;
 
                     dest = new Vector2(secEl.Position.X, secEl.Position.Y);
+
                 }
 
                 float atime = clampDiff();
 
                 if (secEl == null)
                 {
+
+
                     var ps = getPointAt(AutoCursor.Position.X, AutoCursor.Position.Y,
                    dest.X, dest.Y, 1f - ((float)timeDiff / atime));
+
+
                     Vector2 curDest = new Vector2(ps.X + 10, ps.Y + 10);
 
                     if (AutoCursor.Position != curDest)
@@ -781,22 +960,56 @@ namespace kyun.GameModes.OsuMode
                         autoCursorMoved = true;
 
                     AutoCursor.Position = curDest;
-                    
-                }
 
+                } 
             }
-            AutoCursor.TextureColor = Color.YellowGreen;
+            
+            if (!autoCursorMoved)
+            {
+                if (HitObjects.Count < 1)
+                {
 
-            if(autoCursorMoved)
+                }
+                else
+                {
+                    HitBase hitb = HitObjects[lastForSlider];
+
+                    if (hitb != null)
+                    {
+                        if (!hitb.Died)
+                        {
+                            if (hitb is HitHolder && (hitb as HitHolder)._hitButton.osuHitObject is osuBMParser.HitSlider)
+                            {
+                                lastSlider = hitb;
+                                if (AutoCursor.Position != (hitb as HitHolder).SliderFollowCirclePos && allowTrail)
+                                {
+                                    _particleEngine.AddNewHitObjectParticle(AutoCursor.Texture, Vector2.Zero, (hitb as HitHolder).SliderFollowCirclePos, 1, 0, Color.YellowGreen).Opacity = .6f;
+                                    allowTrail = false;
+                                }
+
+                                AutoCursor.Position = (hitb as HitHolder).SliderFollowCirclePos;                               
+                                
+                            }
+                        }
+                    }
+                }
+            }
+            AutoCursor.TextureColor = Color.YellowGreen;/*
+            followPointEnd.Position = AutoCursor.Position;
+            followPointEnd.Visible = true;*/
+            if (autoCursorMoved && allowTrail)
+            {
                 _particleEngine.AddNewHitObjectParticle(AutoCursor.Texture, Vector2.Zero, AutoCursor.Position, 1, 0, Color.YellowGreen).Opacity = .6f;
+                allowTrail = false;
+            }
         }
 
         float clampDiff()
         {
             float atime = 1000;
             float min = 1800;
-            float mid = 1200;
-            float max = 450;
+            float mid = 800;
+            float max = 150;
             if (Beatmap.ApproachRate > 5f)
                 atime = mid + (max - mid) * (Beatmap.ApproachRate - 5f) / 5f;
             else if (Beatmap.ApproachRate < 5f)
@@ -832,9 +1045,9 @@ namespace kyun.GameModes.OsuMode
             bool addNoise = OsuUtils.OsuBeatMap.rnd.NextBoolean() && OsuUtils.OsuBeatMap.rnd.NextBoolean() && OsuUtils.OsuBeatMap.rnd.NextBoolean() && OsuUtils.OsuBeatMap.rnd.NextBoolean();
             float NoiseToAdd = 0;
             float NoiseToAddY = 0;
-            if (addNoise)
+            if (false)
             {
-                if(OsuUtils.OsuBeatMap.rnd.NextBoolean() && OsuUtils.OsuBeatMap.rnd.NextBoolean() && OsuUtils.OsuBeatMap.rnd.NextBoolean())
+                if (OsuUtils.OsuBeatMap.rnd.NextBoolean() && OsuUtils.OsuBeatMap.rnd.NextBoolean() && OsuUtils.OsuBeatMap.rnd.NextBoolean())
                 {
                     NoiseToAdd = (float)OsuUtils.OsuBeatMap.rnd.Next(-3, 3);
                 }
@@ -875,6 +1088,7 @@ namespace kyun.GameModes.OsuMode
             b9 = 63f / 64f;
 
         float b0 = 1f / (4f / 11f) / (4f / 11f);
+        private HitBase lastSlider;
     }
     class HitObjectComparer : IEqualityComparer<IHitObj>
     {

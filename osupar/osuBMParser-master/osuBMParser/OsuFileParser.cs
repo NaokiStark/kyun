@@ -351,7 +351,7 @@ namespace osuBMParser
 
             //Specific stuff
 
-            actualTimmingPoint = getActualTimingPoint(hitObject.Time);
+            actualTimmingPoint = getActualTimingPoint(hitObject.Time+50);
 
             if (hitObject is HitCircle)
             {
@@ -449,11 +449,15 @@ namespace osuBMParser
 
         private TimingPoint getActualTimingPoint(int time)
         {
+            var tmppoint = new TimingPoint(0, -100, beatmap.TimingPoints[0].Meter, beatmap.TimingPoints[0].SampleType, beatmap.TimingPoints[0].SampleSet, beatmap.TimingPoints[0].Volume, true, false);
             for (var i = beatmap.TimingPoints.Count - 1; i >= 0; i--)
             {
-                if (beatmap.TimingPoints[i].Offset <= time && !beatmap.TimingPoints[i].Inherited) { return beatmap.TimingPoints[i]; }
+                if (beatmap.TimingPoints[i].Offset <= time && beatmap.TimingPoints[i].MsPerBeat < 0) {
+                    return beatmap.TimingPoints[i]; 
+                }
             }
-            return beatmap.TimingPoints[0];
+            
+            return tmppoint;
         }
 
         private int[] getAdditionsAsIntArray(string additionToken)

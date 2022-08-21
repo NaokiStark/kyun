@@ -25,9 +25,12 @@ namespace kyun.Beatmap
         public int Y = 0;
         public int X = 0;
         public decimal StartTime { get; set; }
+        public bool isNewCombo { get; set; }
         public IBeatmap BeatmapContainer { get; set; }
         public int Location { get; set; }
         private decimal EndTimeLocal = 0;
+
+        public osuBMParser.HitObject osuHitObject { get; set; }
         public decimal EndTime
         {
             get

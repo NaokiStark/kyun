@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using kyun.UIObjs;
-
+using osuBMParser;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 namespace kyun.Beatmap
 {
     public interface IHitObj
@@ -29,6 +30,10 @@ namespace kyun.Beatmap
         OldApproachObj apo { get; set; }
         Vector2 OsuLocation { get; set; }
         float MsPerBeat { get; set; }
+
+        bool isNewCombo { get; set; }
+
+        HitObject osuHitObject { get; set; }
 
         /* fake kyun obj*/
 

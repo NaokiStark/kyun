@@ -23,6 +23,7 @@ namespace kyun.GameModes.Classic
         internal ApproachObj approachObj;
 
         internal ClassicModeScreen screenInstance;
+
         public int HitSound {
             get
             {

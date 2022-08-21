@@ -19,7 +19,7 @@ namespace kyun.Screen
         public static List<ScreenMode> GetSupportedModes()
         {
 
-            return GetSupportedModesv2();
+            //return GetSupportedModesv2();
             BaseResolutions.Add(new BaseResolution
             {
                 Width = 1024,
@@ -66,19 +66,35 @@ namespace kyun.Screen
                 if (_base == null)
                     continue;
 
-                screenMode.Add(new ScreenMode()
+                if (mode.Width > 800)
                 {
-                    /*
-                    Width = _base.Width,
-                    Height = _base.Height,*/
-                    Width = mode.Width,
-                    Height = mode.Height,
-                    AspectRatio = mode.AspectRatio,
-                    WindowMode = (mode.Width <= screenWidth && mode.Height < screenHeight) ? WindowDisposition.Windowed : WindowDisposition.Borderless,
-                    Base = _base,
-                    ScaledWidth = mode.Width,
-                    ScaledHeight = mode.Height
-                });
+                    screenMode.Add(new ScreenMode()
+                    {
+                        /*
+                        Width = _base.Width,
+                        Height = _base.Height,*/
+                        Width = mode.Width,
+                        Height = mode.Height,
+                        AspectRatio = mode.AspectRatio,
+                        WindowMode = (mode.Width <= screenWidth && mode.Height < screenHeight) ? WindowDisposition.Windowed : WindowDisposition.Borderless,
+                        Base = _base,
+                        ScaledWidth = mode.Width,
+                        ScaledHeight = mode.Height
+                    });
+                }
+                else
+                {
+                    screenMode.Add(new ScreenMode()
+                    {
+                        Width = 1024,
+                        Height = 768,
+                        AspectRatio = mode.AspectRatio,
+                        WindowMode = (mode.Width <= screenWidth && mode.Height < screenHeight) ? WindowDisposition.Windowed : WindowDisposition.Borderless,
+                        Base = _base,
+                        ScaledWidth = mode.Width,
+                        ScaledHeight = mode.Height,
+                    });
+                }
             }
 
             //BaseResolution c = BaseResolutions.Find(x => x.AspectRatio == 2560f / 1080f);
@@ -202,6 +218,7 @@ namespace kyun.Screen
 
         public static string GetMonitorFreq()
         {
+            return "60";
 
             IntPtr hwnd = KyunGame.Instance.windHandle;
 

@@ -9,6 +9,8 @@ using Microsoft.Xna.Framework;
 using kyun.Score;
 using Microsoft.Xna.Framework.Input;
 using static kyun.GameScreen.ScreenBase;
+using kyun.GameScreen.UI;
+using kyun.GameScreen.UI.Particles;
 
 namespace kyun.GameModes.OsuMode
 {
@@ -21,6 +23,9 @@ namespace kyun.GameModes.OsuMode
         private float porcent;
         private float length;
 
+        public Vector2 SliderFollowCirclePos = Vector2.Zero;
+        public List<Vector2> SliderPath;
+        List<Vector2> points = new List<Vector2>();
         public bool Missed = false;
 
         private bool replayhasmissed = false;
@@ -29,12 +34,26 @@ namespace kyun.GameModes.OsuMode
 
         MouseEvent lastMouse;
 
+        Image end;
+        Image sliderTx;
+
+        Texture2D sliderrg;
+        private int repeatCount = 0;
+        private int actualSliderPoint;
+        private int lastSliderIndex;
 
         public HitHolder(IHitObj hitObject, IBeatmap beatmap, OsuMode Instance, bool shared = false)
             : base(hitObject, beatmap, Instance)
         {
+
             lastMouse = MouseHandler.GetState();
-            Texture = SpritesContent.Instance.CircleNoteHolder;
+            Texture = SpritesContent.Instance.osu_circle;
+            end = new Image(Texture);
+            SliderPath = new List<Vector2>();
+
+
+            generateSliderTx();
+
             approachObj.Texture = SpritesContent.Instance.ApproachCircle;
             // approachObj.Scale = Scale = Math.Min(Math.Max(Math.Abs(_beatmap.OverallDifficulty - 10), 1), 2) / 2;
 
@@ -45,12 +64,86 @@ namespace kyun.GameModes.OsuMode
             approachObj.Scale = Scale = scaledCircle;
             Size = new Vector2(150);
 
-            if (shared)
-                approachObj.TextureColor = Color.Yellow;
-            else
-                approachObj.TextureColor = Color.FromNonPremultiplied(255, 66, 11, 255);
+            
+                
 
 
+            SliderFollowCirclePos = Position;
+            if (_hitButton.osuHitObject is osuBMParser.HitSpinner)
+            {
+                Position = CalculatePosition(new Vector2(512f / 2f, 384f / 2f));
+            }
+        }
+
+        void generateSliderTx()
+        {
+            sliderrg = SpritesContent.instance.Slider;
+
+            if (_hitButton.osuHitObject is osuBMParser.HitSpinner)
+            {
+                return;
+            }
+
+            var sld = _hitButton.osuHitObject as osuBMParser.HitSlider;
+            SpriteBatch sp = KyunGame.Instance.SpriteBatch;
+
+            Vector2 cpos = Position;
+            if (sld.Type == osuBMParser.HitSlider.SliderType.BREZIER || sld.Type == osuBMParser.HitSlider.SliderType.CATMULL)
+            {
+
+                points.Add(cpos);
+                foreach (osuBMParser.HitSliderSegment segm in sld.HitSliderSegments)
+                {
+                    points.Add(CalculatePosition(new Vector2(segm.position.x, segm.position.y)));
+                }
+
+                end.Position = points.Last();
+                end.Opacity = Opacity;
+                end.Scale = Scale;
+                if(sld.Type == osuBMParser.HitSlider.SliderType.CATMULL)
+                {
+                    SliderPath = MonoGame.Primitives2D.CreateCatmull(points);
+                }
+                else
+                {
+                    SliderPath = MonoGame.Primitives2D.CreateBezierLine(points);
+                }
+            }
+            else if (sld.Type == osuBMParser.HitSlider.SliderType.LINEAR)
+            {
+                /*
+                osuBMParser.HitSliderSegment sgm = sld.HitSliderSegments.Last();
+                MonoGame.Primitives2D.DrawLine(sp, cpos, CalculatePosition(new Vector2(sgm.position.x, sgm.position.y)), Color.Green * Opacity, Size.X);*/
+
+                points.Add(cpos);
+                if (sld.HitSliderSegments.Count < 3)
+                {
+                    points.Add(Vector2.LerpPrecise(cpos, CalculatePosition(new Vector2(sld.HitSliderSegments.Last().position.x, sld.HitSliderSegments.Last().position.y)), .5f));
+                }
+                foreach (osuBMParser.HitSliderSegment segm in sld.HitSliderSegments)
+                {
+                    points.Add(CalculatePosition(new Vector2(segm.position.x, segm.position.y)));
+                }
+                SliderPath = MonoGame.Primitives2D.CreateLinear(points);
+                end.Position = points.Last();
+                end.Opacity = Opacity;
+                end.Scale = Scale;
+
+            }
+            else if (sld.Type == osuBMParser.HitSlider.SliderType.PASSTHROUGH)
+            {
+
+
+                points.Add(cpos);
+                foreach (osuBMParser.HitSliderSegment segm in sld.HitSliderSegments)
+                {
+                    points.Add(CalculatePosition(new Vector2(segm.position.x, segm.position.y)));
+                }
+                end.Position = points.Last();
+                end.Opacity = Opacity;
+                end.Scale = Scale;
+                SliderPath = MonoGame.Primitives2D.CreateOsuArc(points);
+            }
         }
 
         internal override void HitSingle_Over(object sender, EventArgs e)
@@ -64,7 +157,7 @@ namespace kyun.GameModes.OsuMode
             KeyboardState kbstate = KyunGame.Instance.KeyboardActualState;
             MouseEvent mouseState = MouseHandler.GetState();
 
-            if (kbstate.IsKeyDown(Keys.X) || kbstate.IsKeyDown(Keys.Z) 
+            if (kbstate.IsKeyDown(Keys.X) || kbstate.IsKeyDown(Keys.Z)
                 || mouseState.RightButton == ButtonState.Pressed || mouseState.LeftButton == ButtonState.Pressed)
             {
                 if (kbstate.IsKeyDown(Keys.X) && !kbLast.IsKeyDown(Keys.X))
@@ -93,16 +186,94 @@ namespace kyun.GameModes.OsuMode
             mouseClicked = true;
         }
 
-        internal virtual void HitSingle_Click(object sender, EventArgs e)
-        {
-           
-        }
 
         internal override void calculateScore()
         {
             Died = true;
+            var finalScore = GetScore();
+
+            if (finalScore != Score.ScoreType.Miss)
+            {
+
+
+            }
+
+            Texture2D particle = null; //Using a no assingned var
+
+            switch (finalScore)
+            {
+                case Score.ScoreType.Miss:
+                    playHitsound(true);
+                    screenInstance._healthBar.Substract((2 * _beatmap.OverallDifficulty) * Math.Max(1, 1));
+                    Combo.Instance.Miss();
+
+                    particle = SpritesContent.Instance.MissTx;
+                    break;
+                case Score.ScoreType.Good:
+                    playHitsound();
+                    screenInstance._healthBar.Add(1);
+                    Combo.Instance.Add();
+                    screenInstance.FailsCount = 1;
+                    particle = SpritesContent.Instance.GoodTx;
+                    break;
+                case Score.ScoreType.Excellent:
+                    playHitsound();
+                    screenInstance._healthBar.Add(2);
+                    screenInstance.FailsCount = 1;
+                    Combo.Instance.Add();
+                    particle = SpritesContent.Instance.ExcellentTx;
+                    break;
+                case Score.ScoreType.Perfect:
+                    playHitsound();
+                    screenInstance._healthBar.Add(4);
+                    screenInstance.FailsCount = 1;
+                    Combo.Instance.Add();
+                    particle = SpritesContent.Instance.PerfectTx;
+                    break;
+            }
+
+            screenInstance._scoreDisplay.Add((((int)finalScore / 50) * Math.Max(Combo.Instance.ActualMultiplier, 1)) / 2);
+
+            screenInstance._scoreDisplay.CalcAcc(finalScore);
+            Vector2 partPos = end.Position;
+            if (_hitButton.osuHitObject is osuBMParser.HitSpinner)
+            {
+                partPos = Position;
+            }
+            screenInstance._particleEngine.AddNewScoreParticle(particle,
+            new Vector2(.05f),
+            new Vector2(partPos.X + (Texture.Height / 2) - (particle.Width / 2), partPos.Y + (Texture.Height / 2) + (particle.Height + 10) * 1.5f),
+            10,
+            0,
+            Color.White
+            ).Scale = Scale;
+
+            Particle pr = screenInstance._particleEngine.AddNewHitObjectParticle(SpritesContent.Instance.osu_circle_top,
+                       new Vector2(2),
+                       new Vector2(partPos.X, partPos.Y),
+                       10,
+                       0,
+                       Color.White
+                       );
+
+            pr.Opacity = .6f;
+            pr.Scale = Scale;
+            if (finalScore == ScoreType.Miss)
+            {
+                pr.Opacity = .8f;
+                pr.MoveTo(GameScreen.AnimationEffect.Linear, 5000, new Vector2(partPos.X, partPos.Y + 50));
+                pr.TextureColor = Color.Violet;
+            }
+
+
+            Died = true;
+            Position = partPos;
+        }/*
+        internal override void calculateScore()
+        {
+            Died = true;
             base.calculateScore();
-        }
+        }*/
 
         public override void Update()
         {
@@ -110,17 +281,93 @@ namespace kyun.GameModes.OsuMode
             kbLast = KyunGame.Instance.KeyboardOldState;
             lastMouse = MouseHandler.GetState();
 
+            moveSliderCircle();
+
+            if(end != null)
+            {
+                end.TextureColor = ComboColor;
+            }
         }
+
+        internal void moveSliderCircle()
+        {
+            if (!Visible)
+            {
+                return;
+            }
+            if (_hitButton.osuHitObject is osuBMParser.HitSpinner || SliderPath.Count < 1)
+            {
+                return;
+            }
+            var sld = _hitButton.osuHitObject as osuBMParser.HitSlider;
+            if (holding)
+            {
+                int repeat = sld.Repeat;
+
+                decimal totalLength = (EndTime - Time) / repeat;
+
+                decimal t = getT(screenInstance.GamePosition, Time, totalLength);
+
+                if (repeat > 1 && repeatCount > 0 && t >= 1)
+                {
+                    t = Math.Abs((Decimal)MathHelper.Clamp((float)t, 0, repeat) - repeatCount);
+                }
+
+                int index = (int)Math.Floor((decimal)(SliderPath.Count) * t);
+                index = MathHelper.Clamp(index, 0, SliderPath.Count - 1);
+                decimal sliderStep = totalLength / (decimal)SliderPath.Count;
+
+                decimal sliderToTotal = (sliderStep * index) + Time;
+
+                float sliderT = (float)getT(screenInstance.GamePosition, sliderToTotal, sliderStep);
+                if (index >= SliderPath.Count - 1)
+                {
+                    if (repeat > 1 && t > repeatCount + 1)
+                    {
+                        playHitsound(false);
+                        SliderPath.Reverse();
+                        repeatCount++;
+                    }
+                    SliderFollowCirclePos = SliderPath[index];
+                }
+                else
+                {/*
+                    if(lastSliderIndex == index)
+                    {*/
+
+                    SliderFollowCirclePos = getTPointAt(SliderPath[index].X, SliderPath[index].Y, SliderPath[index + 1].X, SliderPath[index + 1].Y, sliderT);
+                    /*}
+                    else
+                    {
+                        SliderFollowCirclePos = SliderPath[index];                        
+                    }*/
+                }
+                lastSliderIndex = index;
+            }
+        }
+
+        internal decimal getT(decimal time, decimal startT, decimal totalT)
+        {
+            return ((decimal)time - startT) / Math.Max(totalT, 0.1M);
+        }
+
+        internal Vector2 getTPointAt(float startX, float startY, float endX, float endY, float t)
+        {
+            float te = StringHelper.clamp(t, 0f, 1f);
+
+            return new Vector2(startX + (endX - startX) * te, startY + (endY - startY) * te);
+        }
+
         internal override void updateLogic()
         {
-            if(EndTime - Time < 0)
+            if (EndTime - Time < 0)
             {
                 EndTime = (long)(Time + (60000f / _beatmap.BPM));
             }
 
             if ((screenInstance.gameMod & GameMod.Auto) == GameMod.Auto)
             {
-                
+
 
                 if (screenInstance.GamePosition > Time && !holding)
                 {
@@ -129,7 +376,7 @@ namespace kyun.GameModes.OsuMode
                     playHitsound();
                 }
 
-                if (holding && screenInstance.GamePosition > EndTime)
+                if (holding && screenInstance.GamePosition >= EndTime)
                 {
                     leaveTime = EndTime;
                     calculateScore();
@@ -285,10 +532,117 @@ namespace kyun.GameModes.OsuMode
 
         }
 
+
+
         public override void Render()
         {
             if (Died || !Visible)
                 return;
+            if (_hitButton.osuHitObject is osuBMParser.HitSpinner)
+            {
+                renderHolder();
+            }
+            else
+            {
+               
+                //renderSliderV2();
+                renderSlider();
+                end.Opacity = Opacity;
+                end.Render();
+            }
+
+            base.Render();
+
+
+
+            //base.Render();
+
+            //drawCombo();
+        }
+
+        private List<Vector2> centerPoints(List<Vector2> p)
+        {
+            var tmpp = new List<Vector2>();
+            foreach(Vector2 pn in p)
+            {
+                tmpp.Add(pn + ((Size * Scale) / 2f) + new Vector2(11));
+            }
+
+            return tmpp;
+        }
+
+        private void renderSliderV2()
+        {
+            if (points.Count < 1)
+            {
+                return;
+            }/*
+            var brsh = new LilyPath.TextureBrush(sliderrg);
+            brsh.Color = brsh.Color * Opacity;
+            var pn = new LilyPath.Pens.PathGradientPen(ComboColor * Opacity, Color.White * Opacity);
+            
+            pn.Width = (Size.X * Scale) + 10;
+            GraphicsPath graphicsPath = new GraphicsPath(pn, centerPoints(SliderPath));
+            KyunGame.Instance.SpriteBatch.End();
+            KyunGame.drawBatch.Begin(DrawSortMode.Immediate, BlendState.AlphaBlend);
+            KyunGame.drawBatch.DrawPath(graphicsPath);
+            KyunGame.drawBatch.End();
+            KyunGame.Instance.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
+            */
+        }
+        private void renderSlider()
+        {
+            var sld = _hitButton.osuHitObject as osuBMParser.HitSlider;
+            SpriteBatch sp = KyunGame.Instance.SpriteBatch;
+
+            Vector2 cpos = Position /*+ new Vector2(Size.X / 2f)*/;
+            if (SliderPath.Count < 1)
+            {
+                renderHolder();
+                return;
+            }
+            if (sld.Type == osuBMParser.HitSlider.SliderType.BREZIER || sld.Type == osuBMParser.HitSlider.SliderType.CATMULL)
+            {
+
+                end.Position = SliderPath.Last();
+                end.Opacity = Opacity;
+                end.Scale = Scale;
+                MonoGame.Primitives2D.DrawBezierv2(sp, SliderPath, ComboColor * Opacity, Size * Scale, sliderrg, 1);
+                //end.Render();
+            }
+            else if (sld.Type == osuBMParser.HitSlider.SliderType.LINEAR)
+            {
+
+                MonoGame.Primitives2D.DrawBezierv2(sp, SliderPath, ComboColor * Opacity, Size, sliderrg, Scale);
+
+                end.Position = SliderPath.Last();
+                end.Opacity = Opacity;
+                end.Scale = Scale;
+                
+            }
+            else if (sld.Type == osuBMParser.HitSlider.SliderType.PASSTHROUGH)
+            {
+                end.Position = SliderPath.Last();
+                end.Opacity = Opacity;
+                end.Scale = Scale;
+                MonoGame.Primitives2D.DrawOsuArc(sp, SliderPath, ComboColor * Opacity, Size, sliderrg, Scale);
+                //end.Render();
+            }
+            else
+            {
+                renderHolder();
+            }
+
+        }
+
+
+        internal void RenderPoints()
+        {
+
+        }
+
+        internal void renderHolder()
+        {
             float ppeak = (KyunGame.Instance.maxPeak / 4) + 1;
 
             if (ppeak > 1.4f)
@@ -296,21 +650,18 @@ namespace kyun.GameModes.OsuMode
                 ppeak = 1.4f;
             }
 
-            
+
 
             if (holding)
             {
-               
-                Texture2D fill = null;
-                fill = SpritesContent.Instance.Fill_1;
+
+                Texture2D fill = SpritesContent.Instance.Fill_1;
 
                 Color c = (pressed || (screenInstance.gameMod & GameMod.Auto) == GameMod.Auto || (screenInstance.gameMod & GameMod.Replay) == GameMod.Replay) ? Color.White : Color.Red;
 
-
-
                 float circlepresition = 1.07f;
-                Vector2 vpos = new Vector2(this.Position.X + (Texture.Width / 2),
-                            this.Position.Y + (Texture.Height / 2));
+                Vector2 vpos = new Vector2(Position.X + (Texture.Width / 2),
+                            Position.Y + (Texture.Height / 2));
                 Vector2 vcent = new Vector2(fill.Width / 2, fill.Height / 2);
 
                 for (float a = 0; a < porcent;)
@@ -333,47 +684,11 @@ namespace kyun.GameModes.OsuMode
                             SpriteEffects.None, 0);
                     }
 
-                    /*
-                    if (a - circlepresition <= 0)
-                    {
-
-                        KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.FillStartEnd,
-                            new Vector2(this.Position.X + (Texture.Width / 2),
-                            this.Position.Y + (Texture.Height / 2)),
-                            null,
-                            Color.White,
-                            0,
-                            new Vector2(SpritesContent.Instance.FillStartEnd.Width / 2, SpritesContent.Instance.FillStartEnd.Height / 2),
-                            ppeak * Scale,
-                            SpriteEffects.None, 0);
-                    }
-
-                    
-                    if (porcent <= a && (int)porcent < 96)
-                    {
-                        float cc = cp + 0.25f;
-                        KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.FillStartEnd,
-                            new Vector2(this.Position.X + (Texture.Width / 2),
-                            this.Position.Y + (Texture.Height / 2)),
-                            null,
-                            Color.White,
-                            cc,
-                            new Vector2(SpritesContent.Instance.FillStartEnd.Width / 2, SpritesContent.Instance.FillStartEnd.Height / 2),
-                            ppeak * Scale,
-                            SpriteEffects.None, 0);
-                    }*/
                 }
 
                 float cpeak = Math.Max(Math.Min(ppeak, .3f), 0.2f);
 
-                
-
             }
-           
-            
-           
-
-            base.Render();
         }
     }
 }

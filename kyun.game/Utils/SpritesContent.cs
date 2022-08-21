@@ -312,18 +312,27 @@ namespace kyun.Utils
 
             try
             {
-                RGBShiftEffect = Content.Load<Effect>("rgbs");
+                RGBShiftEffect = Content.Load<Effect>("RGBShift");
                // RGBShiftEffect = new Effect(KyunGame.Instance.GraphicsDevice, File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Content/RGBShift.xnb")));
-                Settings1.Default.Shaders = true;
-                Settings1.Default.Save();
+                //Settings1.Default.Shaders = true;
+                //Settings1.Default.Save();
             }
             catch(Exception ex)
             {
-                RGBShiftEffect = null;
-                Settings1.Default.Shaders = true;
-                Settings1.Default.Save();
-                Logger.Instance.Info("MonoGame does not support Dx9 Shaders");
-                Logger.Instance.Warn(ex.Message);
+                try
+                {
+                    RGBShiftEffect = Content.Load<Effect>("DxRGBShift");
+                    //Settings1.Default.Shaders = true;
+                    //Settings1.Default.Save();
+                }
+                catch
+                {
+                    RGBShiftEffect = null;
+                    Settings1.Default.Shaders = false;
+                    Settings1.Default.Save();
+                    Logger.Instance.Info("MonoGame does not support Dx9 Shaders");
+                    Logger.Instance.Warn(ex.Message);
+                }
             }
             
 
@@ -354,6 +363,12 @@ namespace kyun.Utils
             Holder_Start = Content.Load<Texture2D>("Note_Holder_Start");
             Holder_Middle = Content.Load<Texture2D>("Note_Holder_Middle");
             Holder_End = Content.Load<Texture2D>("Note_Holder_End");
+
+            Slider = Content.Load<Texture2D>("slider");
+            osu_circle = Content.Load<Texture2D>("osu_circle");
+            osu_circle_top = Content.Load<Texture2D>("osu_circle_top");
+            powerup_guide = Content.Load<Texture2D>("powerup_guide");
+
         }
 
         public void AddTexture(string name, Texture2D tex)
@@ -685,6 +700,11 @@ namespace kyun.Utils
         public Texture2D BScore { get; set; }
         public Texture2D CScore { get; set; }
         public Texture2D FScore { get; set; }
+
+        public Texture2D Slider { get; set; }
+        public Texture2D osu_circle { get; private set; }
+        public Texture2D osu_circle_top { get; private set; }
+        public Texture2D powerup_guide { get; private set; }
 
         #endregion
 

@@ -11,6 +11,7 @@ using kyun.GameScreen.UI;
 using kyun.game.GameScreen;
 using kyun.game.Winforms;
 using kyun.game.Video;
+using kyun.game;
 
 namespace kyun.GameScreen
 {
@@ -51,7 +52,8 @@ namespace kyun.GameScreen
         }
 
         internal static AudioVideoPlayer avp;
-
+        internal int framerateIndex = 0;
+        private float[] framerates = new float[] { 60, 120, 240, 500, 1000};
 
         public bool AllowVideo { get; set; }
 
@@ -60,6 +62,24 @@ namespace kyun.GameScreen
 
         public ScreenBase(string name = "BaseScreen")
         {
+            switch (Settings1.Default.FrameRate)
+            {
+                case 60:
+                    framerateIndex = 0;
+                    break;
+                case 120:
+                    framerateIndex = 1;
+                    break;
+                case 240:
+                    framerateIndex = 2;
+                    break;
+                case 500:
+                    framerateIndex = 3;
+                    break;
+                case 1000:
+                    framerateIndex = 4;
+                    break;
+            }
             renderBeat = true;
             avp = new AudioVideoPlayer();
             rPeak = true;
@@ -94,6 +114,15 @@ namespace kyun.GameScreen
             if (args.Key == Keys.F11)
             {
                 KyunGame.Instance.ToggleFullscreen(!KyunGame.Instance.Graphics.IsFullScreen);
+            }
+            else if(args.Key == Keys.F7)            {                                
+                framerateIndex++;
+                if (framerateIndex == framerates.Length)
+                {
+                    framerateIndex = 0;
+                }
+                KyunGame.Instance.ChangeFrameRate(framerates[framerateIndex]);
+                KyunGame.Instance.Notifications.ShowDialog($"Changed to {framerates[framerateIndex]} FPS", 1000, Notifications.NotificationType.Info);
             }
             else if (args.Key == Keys.F12)
             {
@@ -173,7 +202,7 @@ namespace kyun.GameScreen
 
         internal void renderGoodies()
         {
-            if (rPeak)
+            if (rPeak && renderBeat)
             {
                 RenderPeak();
             }
@@ -581,7 +610,7 @@ namespace kyun.GameScreen
         {
             if (renderBeat)
             {
-                RenderBeat();
+                //RenderBeat();
             }
             BackgroundFlash.Render();
         }
@@ -749,16 +778,19 @@ namespace kyun.GameScreen
                     ChangeBackground(bm.Background);
                 }
 
-                /*
+                
                 if (KyunGame.Instance.SelectedBeatmap == null)
                 {
                     AVPlayer.Play(bm.SongPath, bm.Video, true);
+                    AVPlayer.VideoOffset = (int)bm.VideoStartUp;
                 }
-                else if (KyunGame.Instance.SelectedBeatmap.SongPath != bm.SongPath)
-                {
-                   
-                }*/
-                AVPlayer.Play(bm.SongPath, bm.Video, true);
+                else if (AVPlayer.audioplayer.ActualSong != bm.SongPath)
+                {                    
+                    AVPlayer.Play(bm.SongPath, bm.Video, true);
+                    AVPlayer.VideoOffset = (int)bm.VideoStartUp;
+                }
+
+                //AVPlayer.Play(bm.SongPath, bm.Video, true);
 
 
 
@@ -803,7 +835,7 @@ namespace kyun.GameScreen
 
         float opacity = 1;
         private KeyboardState actualState;
-        public bool renderBeat;
+        public bool renderBeat { get; set; }
 
         public float Opacity
         {

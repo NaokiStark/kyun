@@ -329,7 +329,27 @@ namespace kyun.GameScreen
 
         public override void Update(GameTime tm)
         {
-
+            if(KyunGame.Instance.SelectedBeatmap != null)
+            {
+                if (NextTimingPoint == null)
+                {
+                    ActualTimingPoint = KyunGame.Instance.SelectedBeatmap.TimingPoints[0];
+                    NextTimingPoint = KyunGame.Instance.SelectedBeatmap.GetNextTimingPointFor(ActualTimingPoint.Offset + 50);
+                }
+                else
+                {
+                    if (AVPlayer.audioplayer.PositionV2 >= NextTimingPoint.Offset - 50)
+                    {
+                        ActualTimingPoint = NextTimingPoint;/*Beatmap.GetTimingPointForV2(AVPlayer.audioplayer.PositionV2 + 50);*/
+                        NextTimingPoint = KyunGame.Instance.SelectedBeatmap.GetNextTimingPointFor(ActualTimingPoint.Offset + 50);
+                    }
+                }
+            }
+            else
+            {
+                ActualTimingPoint = new osuBMParser.TimingPoint { Offset = 0, KiaiMode = true };
+            }
+            renderBeat = ActualTimingPoint.KiaiMode;
             //FPSMetter.Text = Game1.Instance.frameCounter.AverageFramesPerSecond.ToString("0", CultureInfo.InvariantCulture) +" FPS";
 
             int fps = (int)Math.Round(KyunGame.Instance.frameCounter.AverageFramesPerSecond, 0);
@@ -595,6 +615,8 @@ namespace kyun.GameScreen
         private bool logoMoving;
         bool doneLogo = false;
         public ubeatBeatMap mainBm { get; private set; }
+        public osuBMParser.TimingPoint ActualTimingPoint { get; set; }
+        public osuBMParser.TimingPoint NextTimingPoint { get; set; }
         #endregion
 
     }

@@ -119,7 +119,8 @@ namespace kyun.game.Database
 
         ~DatabaseInterface()
         {
-            db?.Dispose();
+
+            try { db?.Dispose(); } catch { }
         }
 
         public void Dispose()

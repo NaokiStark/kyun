@@ -163,7 +163,10 @@ namespace kyun.GameScreen.UI
                 }          */   
             }
 
-            Tooltip?.Render();
+            if (Tooltip != null)
+            {
+                KyunGame.Instance.tooltips.Add(Tooltip);
+            }
         }
 
         public bool Centered { get; set; }

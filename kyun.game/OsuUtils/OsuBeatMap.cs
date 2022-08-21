@@ -40,7 +40,7 @@ namespace kyun.OsuUtils
 
 
                 // We only need std maps
-                if (tmpMode != OsuGameMode.Standard)
+                if (tmpMode != OsuGameMode.Standard && tmpMode != OsuGameMode.CTB)
                 {
                     return null;
                 }
@@ -126,8 +126,9 @@ namespace kyun.OsuUtils
                 }
 
                 // Check this shit 
+                /*
                 if (osbm.HitObjects[0].Time < 2500)
-                    leadIn = 2500;
+                    leadIn = 2500;*/
 
                 tmpbm.SleepTime = leadIn; // audio-Video
 
@@ -208,7 +209,9 @@ namespace kyun.OsuUtils
                             //Location = lasN = GetRnd(97, 106,lasN)
                             Location = ((osbm.Source != "ubeat") ? lasN = GetRnd(97, 106, lasN) : fL + 96),
                             OsuLocation = new Microsoft.Xna.Framework.Vector2(ho.Position.x, ho.Position.y),
-                            HitSound = ho.HitSound
+                            HitSound = ho.HitSound,
+                            isNewCombo = ho.IsNewCombo,
+                            osuHitObject = ho,
                         };
 
                         int lastCh = 0;
@@ -285,6 +288,8 @@ namespace kyun.OsuUtils
                             OsuLocation = new Microsoft.Xna.Framework.Vector2(ho.Position.x, ho.Position.y),
                             HitSound = ho.HitSound,
                             osuRepeat = slider.Repeat,
+                            isNewCombo = ho.IsNewCombo,
+                            osuHitObject = ho,
                         };
 
                         obj.MsPerBeat = tmc.MsPerBeat;
@@ -354,7 +359,9 @@ namespace kyun.OsuUtils
                             Location = ((osbm.Source != "ubeat") ? lasN = GetRnd(97, 106, lasN) : fL + 96),
                             BeatmapContainer = tmpbm,
                             OsuLocation = new Microsoft.Xna.Framework.Vector2(640 / 2, 480 / 2),
-                            HitSound = ho.HitSound
+                            HitSound = ho.HitSound,
+                            isNewCombo = ho.IsNewCombo,
+                            osuHitObject = ho,
                         };
 
                         obj.MsPerBeat = getTimingPoint((int)obj.StartTime, osbm).MsPerBeat;

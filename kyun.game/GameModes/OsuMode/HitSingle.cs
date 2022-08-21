@@ -12,12 +12,14 @@ using Microsoft.Xna.Framework.Input;
 using kyun.GameScreen.UI.Particles;
 using kyun.Score;
 using kyun.game.Beatmap.Generators;
+using TimingPoint = osuBMParser.TimingPoint;
+using kyun.GameScreen.UI;
 
 namespace kyun.GameModes.OsuMode
 {
     public class HitSingle : HitBase
     {
-        internal IHitObj _hitButton;
+        public IHitObj _hitButton;
         internal IBeatmap _beatmap;
 
         internal ApproachObj approachObj;
@@ -82,18 +84,22 @@ namespace kyun.GameModes.OsuMode
         internal bool avaiableToClick { get; set; }
         internal bool mouseClicked { get; set; }
 
+
+        public Color ComboColor;
+        public int ComboNumber;
+
         public int Id = 0;
         internal KeyboardState kbLast;
+        private Image circle_top;
 
         /// <summary>
         /// New Instance of HitSingle
         /// </summary>
         /// <param name="hitObject">HitObject</param>
         public HitSingle(IHitObj hitObject, IBeatmap beatmap, OsuMode Instance, bool shared = false)
-            : base(SpritesContent.Instance.CircleNote)
+            : base(SpritesContent.Instance.osu_circle)
         {
             lastMouse = MouseHandler.GetState();
-
             _hitButton = hitObject;
             _beatmap = beatmap;
             screenInstance = Instance;
@@ -103,14 +109,14 @@ namespace kyun.GameModes.OsuMode
             {
                 _beatmap.ApproachRate = _beatmap.OverallDifficulty;
             }
-            
-            if(screenInstance._osuMode != OsuGameMode.Standard && screenInstance._osuMode != OsuGameMode.CTB)
+
+            if (screenInstance._osuMode != OsuGameMode.Standard && screenInstance._osuMode != OsuGameMode.CTB)
             {
                 if (_beatmap.OverallDifficulty >= 7)
                 {
                     _beatmap.ApproachRate = Math.Min(_beatmap.OverallDifficulty + 2, 10);
                 }
-                else if(_beatmap.OverallDifficulty >= 5)
+                else if (_beatmap.OverallDifficulty >= 5)
                 {
                     _beatmap.ApproachRate = Math.Min(_beatmap.OverallDifficulty + 2, 10);
                 }
@@ -123,6 +129,7 @@ namespace kyun.GameModes.OsuMode
             Size = new Vector2(150);
 
             approachObj.Scale = Scale = scaledCircle;
+          
 
             //approachObj.Scale = Scale = Math.Min(Math.Max(Math.Abs(_beatmap.OverallDifficulty - 10), 1), 2) / 2;
 
@@ -159,12 +166,15 @@ namespace kyun.GameModes.OsuMode
             approachObj.Position = Position;
             approachObj.Opacity = 0;
 
-            if (shared)
-                approachObj.TextureColor = Color.Yellow;
-            else
-                approachObj.TextureColor = Color.FromNonPremultiplied(14, 201, 255, 255);
-
-
+            circle_top = new Image(SpritesContent.Instance.osu_circle_top)
+            {
+                TextureColor = Color.White,
+                Size = Size,
+                Scale = Scale,
+                Opacity = Opacity,
+                Position = Position,
+                BeatReact=false,
+            };
 
             Click += HitSingle_Click;
 
@@ -219,14 +229,14 @@ namespace kyun.GameModes.OsuMode
 
         }
 
-        private Vector2 CalculatePosition(Vector2 pos)
+        internal Vector2 CalculatePosition(Vector2 pos)
         {
 
             Screen.ScreenMode actualMode = Screen.ScreenModeManager.GetActualMode();
             int aWidth = (int)((float)actualMode.Width);
             int aHeight = (int)((float)actualMode.Height * .95f);
 
-            int heightNoScaled = aHeight - Texture.Height;
+            int heightNoScaled = aHeight - (int)Size.Y;
 
             int widthScaled = (int)((512f / 384f) * (float)heightNoScaled);
             int widthScaledForPosition = (int)((512f / 384f) * (float)aHeight);
@@ -258,11 +268,11 @@ namespace kyun.GameModes.OsuMode
             float toAdd = 0.003f * (float)gt.ElapsedGameTime.Milliseconds;
 
 
-            Opacity = Math.Min(toAdd + Opacity, 1);
+            Opacity = Math.Min(toAdd + Opacity, .85f);
             approachObj.Opacity = Opacity;
 
 
-            if (Opacity >= 1)
+            if (Opacity >= .85f)
             {
                 startShow = false;
 
@@ -272,7 +282,7 @@ namespace kyun.GameModes.OsuMode
 
         public override void Update()
         {
-
+            
             base.Update();
 
             updateOpacity();
@@ -280,9 +290,14 @@ namespace kyun.GameModes.OsuMode
             updateLogic();
 
             approachObj.Position = Position;
+            approachObj.TextureColor = ComboColor;
             approachObj.Update();
             kbLast = KyunGame.Instance.KeyboardOldState;
             lastMouse = MouseHandler.GetState();
+            TextureColor = ComboColor;
+            circle_top.Position = Position;
+            circle_top.Opacity = Opacity;
+            circle_top.Update();
         }
 
         internal virtual void updateLogic()
@@ -485,7 +500,7 @@ namespace kyun.GameModes.OsuMode
                 Color.White
                 ).Scale = Scale;
 
-            Particle pr = screenInstance._particleEngine.AddNewHitObjectParticle(Texture,
+            Particle pr = screenInstance._particleEngine.AddNewHitObjectParticle(SpritesContent.Instance.osu_circle_top,
                        new Vector2(2),
                        new Vector2(Position.X, Position.Y),
                        10,
@@ -495,13 +510,13 @@ namespace kyun.GameModes.OsuMode
 
             pr.Opacity = .6f;
             pr.Scale = Scale;
-            if(finalScore == ScoreType.Miss)
+            if (finalScore == ScoreType.Miss)
             {
                 pr.Opacity = .8f;
                 pr.MoveTo(GameScreen.AnimationEffect.Linear, 5000, new Vector2(Position.X, Position.Y + 50));
                 pr.TextureColor = Color.Violet;
             }
-            
+
 
             Died = true;
         }
@@ -530,7 +545,22 @@ namespace kyun.GameModes.OsuMode
                     break;
             }
 
-            EffectsPlayer.PlayEffect(hsound, (miss) ? .2f : 1);
+            TimingPoint tm = screenInstance.ActualTimingPoint;
+
+            if (screenInstance.sampleSet != null)
+            {
+                if (tm.SampleType > 0 && tm.SampleSet > 0)
+                {
+                    var tempSound = screenInstance.sampleSet.GetSample(tm.SampleType, HitSound, tm.SampleSet);
+                    if (tempSound != 0)
+                    {
+                        hsound = tempSound;
+                    }
+                }
+
+            }
+
+            EffectsPlayer.PlayEffect(hsound, tm.Volume / 100f);
         }
 
 
@@ -542,8 +572,36 @@ namespace kyun.GameModes.OsuMode
                 return;
             }
 
+            
             base.Render();
             approachObj.Render();
+            drawCombo();
+            circle_top.Render();
+        }
+        internal void drawCombo()
+        {
+            Vector2 fontSize = Vector2.Zero;
+            switch (ComboNumber.ToString().Length)
+            {
+                case 1:
+                    fontSize = screenInstance.comboTxSize1;
+                    break;
+                case 2:
+                    fontSize = screenInstance.comboTxSize2;
+                    break;
+                case 3:
+                    fontSize = screenInstance.comboTxSize3;
+                    break;
+                case 4:
+                    fontSize = screenInstance.comboTxSize4;
+                    break;
+            }
+
+            var comboPosition = new Vector2(Position.X + (Size.X / 2 - fontSize.X / 2), Position.Y + (Size.Y / 2 - fontSize.Y / 2));
+            //comboPosition = comboPosition - new Vector2(0, 2);
+            KyunGame.Instance.SpriteBatch.DrawString(SpritesContent.instance.ScoreBig, ComboNumber.ToString(), comboPosition + new Vector2(2), Color.Black * Opacity, 0, Vector2.Zero, RenderScale, SpriteEffects.None, 0);
+
+            KyunGame.Instance.SpriteBatch.DrawString(SpritesContent.instance.ScoreBig, ComboNumber.ToString(), comboPosition, Color.White * Opacity, 0, Vector2.Zero, RenderScale, SpriteEffects.None, 0);
 
         }
 
@@ -605,5 +663,6 @@ namespace kyun.GameModes.OsuMode
 
             return new Vector2(startX + (endX - startX) * t, startY + (endY - startY) * t);
         }
+
     }
 }

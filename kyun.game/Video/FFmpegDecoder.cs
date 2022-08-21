@@ -79,6 +79,11 @@ namespace kyun.game.Video
         }
 
         /// <summary>
+        /// Flag to interpolation
+        /// </summary>
+        bool interpolate = false;
+
+        /// <summary>
         /// Initializes VideoDecoder with custom resolution
         /// </summary>
         /// <param name="filename">Video Path</param>
@@ -86,6 +91,7 @@ namespace kyun.game.Video
         /// <param name="height">Decoded height</param>
         public FFmpegDecoder(string filename, int width, int height)
         {
+            //interpolate = true;
             Instance = this;
             VIDEOWIDTH = width;
             VIDEOHEIGHT = height;
@@ -114,12 +120,23 @@ namespace kyun.game.Video
         /// </summary>
         private void ThreadedDecoder()
         {
+            
+            string vfilter = "-filter \"minterpolate=fps=60:me=ntss:mc_mode=aobmc:vsbmc=1:me_mode=bidir:mi_mode=blend:scd=fdiff\"";
+            if (interpolate)
+            {
+                vfilter = "";
+            }
+            else
+            {
+                VIDEOFRAMERATE = 60;
+            }
+
             // Process info
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
                 WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
                 FileName = "ffmpeg.exe",
-                Arguments = $"-hide_banner -loglevel error -i \"{FileName}\" -s {VIDEOWIDTH}x{VIDEOHEIGHT} -an -vf scale={VIDEOWIDTH}:{VIDEOHEIGHT}:force_original_aspect_ratio=decrease -bufsize 3 -maxrate 1600k -preset ultrafast -framerate {VIDEOFRAMERATE.ToString(CultureInfo.InvariantCulture)} -f rawvideo -pix_fmt bgr32 pipe:1",
+                Arguments = $"-hide_banner -loglevel error -i \"{FileName}\" -s {VIDEOWIDTH}x{VIDEOHEIGHT} -an -vf scale={VIDEOWIDTH}:{VIDEOHEIGHT}:force_original_aspect_ratio=decrease -bufsize 3 -maxrate 1600k -preset ultrafast {vfilter} -framerate {VIDEOFRAMERATE.ToString(CultureInfo.InvariantCulture)} -f rawvideo -pix_fmt bgr32 pipe:1",
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
@@ -159,7 +176,7 @@ namespace kyun.game.Video
                     while (current > 0)
                     {
                         // Waits if buffer is full
-                        while (frameList.Count >= 35)
+                        while (frameList.Count >= VIDEOFRAMERATE + 5)
                         {
                             Thread.Sleep(1);
                         }
@@ -196,9 +213,9 @@ namespace kyun.game.Video
                             bytesPosition = 0;
                             output.BaseStream.Flush();
                         }
-
+                        Thread.Sleep(1);
                     }
-
+                    Thread.Sleep(1);
                 }
                 var strerr = err.ReadToEnd();
                 Console.WriteLine(strerr);
@@ -239,7 +256,7 @@ namespace kyun.game.Video
 
         public int GetBufferCount()
         {
-            return frameList.Count;
+            return frameList.Keys.Count;
         }
 
         /// <summary>
@@ -249,42 +266,47 @@ namespace kyun.game.Video
         /// <returns>byte[] BGR32 frame | null if is not decoding or something bad happens (lost frames|empty buffer)</returns>
         public byte[] GetFrame(long time)
         {
-            if (!Decoding)
-                return null;
-
+            
             if (frameList.Keys.Count < 1)
                 return null;
             try
             {
-
                 long key = 0;
-                int frameInd = 0;
-                for (int a = 0; a < time; a++)
+                lock (frameList)
                 {
-                    key = (long)(a * (1000 / VIDEOFRAMERATE));
-                    if (key > time)
+                   
+                    int frameInd = 0;
+                    for (int a = 0; a < time; a++)
                     {
-                        key = Math.Max((long)((a - 1) * (1000 / VIDEOFRAMERATE)), 0);
-                        frameInd = a;
-                        break;
+                        key = (long)Math.Floor(a * (1000f / VIDEOFRAMERATE));
+                        if (key > time)
+                        {
+                            key = Math.Max((long)((a - 1) * (1000f / VIDEOFRAMERATE)), 0);
+                            frameInd = a;
+                            break;
+                        }
                     }
-                }
 
-                foreach (var s in frameList.Where(kv => kv.Key <= key).ToList())
-                {
-                    frameList[s.Key] = null;
-                    frameList.Remove(s.Key);
-                }
+                    foreach (var s in frameList.Where(kv => kv.Key <= key).ToList())
+                    {
+                        frameList[s.Key] = null;
+                        try
+                        {
+                            frameList.Remove(s.Key);
+                        }
+                        catch { }
+                    }
 
-                key = Math.Max((long)(frameInd * (1000 / VIDEOFRAMERATE)), 0);
+                    key = Math.Max((long)Math.Floor(frameInd * (1000 / VIDEOFRAMERATE)), 0);
 
-                lastFrameId = (int)key;
-                if (!frameList.ContainsKey(key))
-                    return null;
+                    lastFrameId = (int)key;
+                    if (!frameList.ContainsKey(key))
+                        return null;
 
-                var frame = frameList[key];
+                    var frame = frameList[key];
 
-                return frame;
+                    return frame;
+                }               
 
             }
             catch

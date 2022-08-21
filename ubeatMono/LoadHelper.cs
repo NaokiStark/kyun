@@ -78,7 +78,7 @@ namespace kyunMono
                 kyun.Logger.Instance.Severe(e.StackTrace);
                 kyun.Logger.Instance.Info("Press any key to exit");
                 new kyun.game.Winforms.FailForm().ShowForm(e);
-                Console.Read();
+                //Console.Read();
                 return;
             }
         }

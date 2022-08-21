@@ -114,16 +114,16 @@ namespace kyun.game.GameScreen.UI
                 return;
 
             
-            Position = new Vector2(MouseHandler.GetState().Position.X + KyunGame.WinForm.Cursor.Size.Width / 2, MouseHandler.GetState().Position.Y + KyunGame.WinForm.Cursor.Size.Height / 2);
+            Position = new Vector2(MouseHandler.GetState().Position.X + 10 / 2, MouseHandler.GetState().Position.Y + 10 / 2);
 
             if(Position.Y + rectBorder.Texture.Height > ScreenModeManager.GetActualMode().Height)
             {
-                Position = new Vector2(Position.X, MouseHandler.GetState().Position.Y - KyunGame.WinForm.Cursor.Size.Height);
+                Position = new Vector2(Position.X, MouseHandler.GetState().Position.Y - /*ScreenModeManager.GetActualMode().Height*/rectBorder.Texture.Height);
             }
 
             if(Position.X +  boxSize.X > ScreenModeManager.GetActualMode().Width)
             {
-                Position = new Vector2(Position.X - boxSize.X - KyunGame.WinForm.Cursor.Size.Width, Position.Y);
+                Position = new Vector2(Position.X - boxSize.X - 10, Position.Y);
             }
 
             rectBorder?.Update();
@@ -135,6 +135,10 @@ namespace kyun.game.GameScreen.UI
         {
             if (!lblcontent.Visible)
                 return;
+            if (!Visible)
+            {
+                return;
+            }
             //base.Render();
 
             lblcontent?.Render();

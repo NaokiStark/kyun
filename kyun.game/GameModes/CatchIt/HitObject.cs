@@ -113,6 +113,16 @@ namespace kyun.game.GameModes.CatchIt
                 Texture = SpritesContent.Instance.Holder_End;
                 chechAndAdd(hitObject, beatmap, Instance);
             }
+            else
+            {
+                if(i._osuBeatmapSkin != null)
+                {
+                    if(i._osuBeatmapSkin.skinFiles["hitcircle"] != null)
+                    {
+                        Texture = i._osuBeatmapSkin.skinFiles["hitcircle"];
+                    }
+                }
+            }
 
             Visible = true;
             Opacity = 1;
@@ -227,7 +237,7 @@ namespace kyun.game.GameModes.CatchIt
                 instance.HitObjectsRemain.Add(cobj);
                 cobj.Texture = SpritesContent.instance.MenuSnow;
                 cobj.Scale = .5f;
-                
+
                 instance.Controls.Add(cobj);
             }
         }
@@ -389,7 +399,15 @@ namespace kyun.game.GameModes.CatchIt
                 }
             }
 
-
+            // ToDo: debug this 
+            if(i.playerLinePosition != PositionInRow && _longNote && _parent != null && !Died)
+            {
+                if (_parent.Died) { 
+                    Combo.Instance.Miss();
+                    i.catcherToIdle = 0;
+                    i.changeCatcherTx(PlayerTxType.Miss);
+                }
+            }
         }
 
         internal void updateOpacity()
@@ -401,12 +419,23 @@ namespace kyun.game.GameModes.CatchIt
         {
 
             Texture2D particle = SpritesContent.Instance.MissTx; //Using a no assingned var
+            if (i._osuBeatmapSkin != null)
+            {
+                particle = i._osuBeatmapSkin.skinFiles["hit0"] == null ? SpritesContent.Instance.MissTx : i._osuBeatmapSkin.skinFiles["hit0"];
+            }
 
             if (/*CollisionAt >= Time - (_beatmap.Timing300 * 2) &&*/ CollisionAt <= Time + (_beatmap.Timing300 * 2))
             {
                 //Perfect
                 score = ScoreType.Perfect;
-                particle = SpritesContent.Instance.PerfectTx;
+                if (i._osuBeatmapSkin != null)
+                {
+                    particle = i._osuBeatmapSkin.skinFiles["hit300"] == null ? SpritesContent.Instance.PerfectTx : i._osuBeatmapSkin.skinFiles["hit300"];
+                }
+                else
+                {
+                    particle = SpritesContent.Instance.PerfectTx;
+                }
                 i._healthbar.Add(4);
 
             }
@@ -414,21 +443,42 @@ namespace kyun.game.GameModes.CatchIt
             {
 
                 score = ScoreType.Excellent;
-                particle = SpritesContent.Instance.ExcellentTx;
+                if (i._osuBeatmapSkin != null)
+                {
+                    particle = i._osuBeatmapSkin.skinFiles["hit100"] == null ? SpritesContent.Instance.ExcellentTx : i._osuBeatmapSkin.skinFiles["hit100"];
+                }
+                else
+                {
+                    particle = SpritesContent.Instance.ExcellentTx;
+                }
                 i._healthbar.Add(2);
             }
             else if (CollisionAt >= Time - (_beatmap.Timing100 * 2) && CollisionAt <= Time + (_beatmap.Timing100 * 2))
             {
                 //Excellent
                 score = ScoreType.Excellent;
-                particle = SpritesContent.Instance.ExcellentTx;
+                if (i._osuBeatmapSkin != null)
+                {
+                    particle = i._osuBeatmapSkin.skinFiles["hit100"] == null ? SpritesContent.Instance.ExcellentTx : i._osuBeatmapSkin.skinFiles["hit100"];
+                }
+                else
+                {
+                    particle = SpritesContent.Instance.ExcellentTx;
+                }
                 i._healthbar.Add(2);
             }
             else if (CollisionAt >= Time - (_beatmap.Timing50 * 2) && CollisionAt <= Time + (_beatmap.Timing50 * 2))
             {
                 //Bad
                 score = ScoreType.Good;
-                particle = SpritesContent.Instance.GoodTx;
+                if (i._osuBeatmapSkin != null)
+                {
+                    particle = i._osuBeatmapSkin.skinFiles["hit50"] == null ? SpritesContent.Instance.GoodTx : i._osuBeatmapSkin.skinFiles["hit50"];
+                }
+                else
+                {
+                    particle = SpritesContent.Instance.GoodTx;
+                }
             }
 
             Texture2D donePartice = Texture;
@@ -450,14 +500,32 @@ namespace kyun.game.GameModes.CatchIt
             i._scoreDisplay.Add((((int)score / 50) * Math.Max(Combo.Instance.ActualMultiplier, 1)) / 2);
             i._scoreDisplay.CalcAcc(score);
 
-            i.particleEngine.AddNewScoreParticle(particle,
-                new Vector2(.05f),
-                new Vector2(0, Position.Y + (particle.Height + 10) * 1.5f),
-                10,
-                0,
-                Color.White
-                );
+            if(score != ScoreType.Miss && HitSound == 8)
+            {
+                i.showGuide();
+            }
 
+            if (particle == SpritesContent.instance.MissTx || particle == SpritesContent.instance.ExcellentTx || particle == SpritesContent.instance.PerfectTx || particle == SpritesContent.instance.GoodTx)
+            {
+                i.particleEngine.AddNewScoreParticle(particle,
+                    new Vector2(.05f),
+                    new Vector2(0, Position.Y + (particle.Height + 10) * 1.5f),
+                    10,
+                    0,
+                    Color.White
+                    );
+            }
+            else
+            {
+                var cpart = i.particleEngine.AddNewScoreParticle(particle,
+                    new Vector2(.05f),
+                    new Vector2(2, Position.Y),
+                    10,
+                    0,
+                    Color.White
+                    );
+                cpart.Size = i.PlayerSize;
+            }
         }
 
         internal override ScoreType GetScore()
@@ -484,7 +552,7 @@ namespace kyun.game.GameModes.CatchIt
                     break;
             }
 
-            TimingPoint tm = (i.InheritedPoint == null) ? i.NonInheritedPoint : i.InheritedPoint;
+            TimingPoint tm = i.ActualTimingPoint;
 
             if (i.sampleSet != null)
             {
@@ -518,7 +586,7 @@ namespace kyun.game.GameModes.CatchIt
                 return;
             }
 
-            if (_longNote && ((OsuUtils.OsuBeatMap)_beatmap).osuBeatmapType <= 1)
+            if (_longNote)
             {
                 int posx = (int)(_parent.Position.X + _parent.Size.X / 2) - 1;
                 int posy = (int)_parent.Position.Y;

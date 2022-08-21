@@ -83,8 +83,7 @@ namespace kyun.Utils
 
         void StartInstance()
         {
-            try
-            {
+            try { 
                 do
                 {
                     IsRunning = false;
@@ -98,6 +97,9 @@ namespace kyun.Utils
             }
             catch (Exception nsgdex)
             {
+                ubeat?.Exit();
+                Logger.Instance.Severe(nsgdex.Message);
+                Logger.Instance.Severe(nsgdex.StackTrace);
                 var frm = new FailForm();
                 frm.ShowForm(nsgdex);
             }

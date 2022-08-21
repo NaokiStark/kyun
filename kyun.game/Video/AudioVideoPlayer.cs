@@ -19,6 +19,8 @@ namespace kyun.Video
         public string Audio { get; private set; }
         public string Video { get; private set; }
 
+        public int VideoOffset { get; set; }
+
         public bool hasGotFrame { get; set; }
 
         static Texture2D bgxd = null;
@@ -139,7 +141,7 @@ namespace kyun.Video
             audioplayer.Play(audio, 1, 1, true);
 
             Audio = audio;
-
+            lastWorkingFrame = null;
         }
 
         public void Stop()
@@ -199,7 +201,7 @@ namespace kyun.Video
                 for (int a = 0; a < frameBuffer.Length; a++)
                 {
                     workingOn = a;
-                    byte[] frame = videoplayer.GetFrame((long)((float)position + pos));
+                    byte[] frame = videoplayer.GetFrame((long)((float)position + pos) + VideoOffset);
 
                     if (frame != null)
                     {
@@ -290,7 +292,7 @@ namespace kyun.Video
                         pos = 500;
                     }
 
-                    byte[] frame = videoplayer.GetFrame((long)((float)position + pos));
+                    byte[] frame = videoplayer.GetFrame((long)((float)position + pos) + VideoOffset);
                     hasGotFrame = true;
 
 
@@ -340,7 +342,10 @@ namespace kyun.Video
 
 
             if (audioplayer.PlayState == BassPlayState.Stopped)
+            {
+                lastWorkingFrame = null;
                 return;
+            }
 
             if (videoplayer.vdc == null)
             {
@@ -369,9 +374,9 @@ namespace kyun.Video
                 screenVideoRectangle = new Rectangle(screenVideoRectangle.X, screenVideoRectangle.Y, (int)screenWidth, (int)(((float)tx.Height / (float)tx.Width) * (float)screenWidth));
             }
 
-            long position = audioplayer.Position;
+            long position = audioplayer.PositionV2;
 
-            byte[] frame = videoplayer.GetFrame(position);
+            byte[] frame = videoplayer.GetFrame(position + VideoOffset);
 
             if (frame != null)
             {
@@ -381,8 +386,7 @@ namespace kyun.Video
 
                 lastWorkingFrame = frame;
             }
-
-            if (lastWorkingFrame != null && frame == null)
+            else if (lastWorkingFrame != null && frame == null)
             {
                 tx.SetData(lastWorkingFrame);
                 KyunGame.Instance.SpriteBatch.Draw(tx, screenVideoRectangle, null, Color.White * .8f, 0, new Vector2(tx.Width / 2, tx.Height / 2), SpriteEffects.None, 0);

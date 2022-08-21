@@ -96,6 +96,7 @@ namespace kyun.GameModes.Classic
                 //Position = new Vector2(aMode.Width / 2 - (SpritesContent.Instance.RankingPanel.Width / 2), aMode.Height / 2 - (SpritesContent.Instance.RankingPanel.Height / 2)),
                 Position = rnkPnlPos,
                 BeatReact = false,
+                Scale = .8f,
             };
 
 
@@ -115,6 +116,7 @@ namespace kyun.GameModes.Classic
                 Font = SpritesContent.Instance.ScoreBig,
                 //Centered = true,
                 Position = new Vector2(rankingPanel.Position.X + 70, rankingPanel.Position.Y + 20),
+                Scale = .8f,
             };
 
 
@@ -122,26 +124,29 @@ namespace kyun.GameModes.Classic
             perfectimg = new Image(SpritesContent.Instance.PerfectTx)
             {
                 Position = scoreLabel.Position + new Vector2(0, mStr.Y + cmargin),
-                BeatReact = false
-
+                BeatReact = false,
+                Scale = .8f,
             };
 
             greatimg = new Image(SpritesContent.Instance.ExcellentTx)
             {
                 Position = perfectimg.Position + new Vector2(200, 0),
-                BeatReact = false
+                BeatReact = false,
+                Scale = .8f,
             };
 
             badimg = new Image(SpritesContent.Instance.GoodTx)
             {
                 Position = greatimg.Position + new Vector2(0, mStr.Y + cmargin),
-                BeatReact = false
+                BeatReact = false,
+                Scale = .8f,
             };
 
             missimg = new Image(SpritesContent.Instance.MissTx)
             {
                 Position = badimg.Position + new Vector2(0, mStr.Y + cmargin),
-                BeatReact = false
+                BeatReact = false,
+                Scale = .8f,
             };
 
             perfectlbl = new Label(0)
@@ -149,6 +154,7 @@ namespace kyun.GameModes.Classic
                 Text = "",
                 Font = SpritesContent.Instance.ScoreBig,
                 Position = perfectimg.Position + new Vector2(perfectimg.Texture.Height + 100, 0),
+                Scale = .8f,
             };
 
 
@@ -157,6 +163,7 @@ namespace kyun.GameModes.Classic
                 Text = "",
                 Font = SpritesContent.Instance.ScoreBig,
                 Position = greatimg.Position + new Vector2(perfectimg.Texture.Height + 50, 0),
+                Scale = .8f,
             };
 
 
@@ -165,6 +172,7 @@ namespace kyun.GameModes.Classic
                 Text = "",
                 Font = SpritesContent.Instance.ScoreBig,
                 Position = badimg.Position + new Vector2(perfectimg.Texture.Height + 100, 0),
+                Scale = .8f,
             };
 
             misslbl = new Label(0)
@@ -172,6 +180,7 @@ namespace kyun.GameModes.Classic
                 Text = "",
                 Font = SpritesContent.Instance.ScoreBig,
                 Position = missimg.Position + new Vector2(perfectimg.Texture.Height + 100, 0),
+                Scale = .8f,
             };
 
 
@@ -180,6 +189,7 @@ namespace kyun.GameModes.Classic
                 Text = "",
                 Font = SpritesContent.Instance.ScoreBig,
                 Position = missimg.Position + new Vector2(0, mStr.Y + cmargin),
+                Scale = .8f,
             };
 
 
@@ -188,6 +198,7 @@ namespace kyun.GameModes.Classic
                 Text = "",
                 Font = SpritesContent.Instance.ScoreBig,
                 Position = combolbl.Position + new Vector2(300, 0),
+                Scale = .8f,
             };
 
             backButton = new ButtonStandard(Color.DarkRed)
@@ -332,9 +343,9 @@ namespace kyun.GameModes.Classic
             
             Displaying = true;
             ChangeImgDisplay(ins.Beatmap.Background);
-            beatmapDisplayLabel.Text = StringHelper.WrapText(beatmapDisplayLabel.Font, $"{ins.Beatmap.Artist} - {ins.Beatmap.Title}", ActualScreenMode.Width - 200);
+            beatmapDisplayLabel.Text = StringHelper.WrapText(beatmapDisplayLabel.Font, $"{ins.Beatmap.Artist} - {ins.Beatmap.Title}", ActualScreenMode.Width / 2 - 200);
             detailsLabel.Text = $"Difficulty: {ins.Beatmap.Version}\r\nBy {ins.Beatmap.Creator}";
-
+            detailsLabel.Position = new Vector2(detailsLabel.Position.X, beatmapDisplayLabel.Position.Y +  beatmapDisplayLabel.Font.MeasureString(beatmapDisplayLabel.Text).Y + 5);
             i = ins;
             AVPlayer.audioplayer.SetVelocity(1);
             EffectsPlayer.PlayEffect(SpritesContent.Instance.Applause);
@@ -357,7 +368,7 @@ namespace kyun.GameModes.Classic
                 mmods += "NoFail ";
             }
 
-            mapNameLabel.Text = $" {i.Beatmap.Artist} - {i.Beatmap.Title} [{i.Beatmap.Version}]";
+            mapNameLabel.Text = StringHelper.WrapText(beatmapDisplayLabel.Font, $" {i.Beatmap.Artist} - {i.Beatmap.Title} [{i.Beatmap.Version}]", ActualScreenMode.Width / 2 - 100);
             scoreLabel.Text = $"{i._scoreDisplay.TotalScore.ToString("00000000")} {mmods}";
             combolbl.Text = $"{Combo.Instance.MaxMultiplier}";
 
@@ -571,18 +582,22 @@ namespace kyun.GameModes.Classic
                 }
                 timetoEnd += KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds;
             }
-
+            cmargin = (int)(65f * .9f);
+            var rnkPnlPos = new Vector2(ActualScreenMode.Width / 2 - 100,
+                ActualScreenMode.Height / 2 - (SpritesContent.Instance.RankingPanel.Height / 2));
+            rankingPanel.Position = rnkPnlPos;
+            scoreLabel.Position = new Vector2(rankingPanel.Position.X + 100, rankingPanel.Position.Y + 70);
             perfectlbl.Position = perfectimg.Position + new Vector2(perfectimg.Texture.Width + 10, -12);
             greatlbl.Position = greatimg.Position + new Vector2(perfectimg.Texture.Width + 50, -12);
             badlbl.Position = badimg.Position + new Vector2(perfectimg.Texture.Height + 100, -12);
             misslbl.Position = missimg.Position + new Vector2(perfectimg.Texture.Width + 50, -12);
-            acclbl.Position = missimg.Position + new Vector2(0, (missimg.Texture.Height + cmargin) * 2 - 12);
-            combolbl.Position = badimg.Position + new Vector2(0, (badimg.Texture.Height + cmargin) * 2 - 12);
+            acclbl.Position = missimg.Position + new Vector2(20, (missimg.Texture.Height + cmargin) * 2 - 40);
+            combolbl.Position = badimg.Position + new Vector2(20, (badimg.Texture.Height + cmargin) * 2 - 40);
 
-            perfectimg.Position = scoreLabel.Position + new Vector2(-50, mStr.Y + cmargin);
-            greatimg.Position = perfectimg.Position + new Vector2(300, 0);
-            badimg.Position = perfectimg.Position + new Vector2(0, perfectimg.Texture.Height + cmargin);
-            missimg.Position = badimg.Position + new Vector2(300, 0);
+            perfectimg.Position = scoreLabel.Position + new Vector2(-40, mStr.Y + cmargin);
+            greatimg.Position = perfectimg.Position + new Vector2(250, 0);
+            badimg.Position = perfectimg.Position + new Vector2(0, perfectimg.Texture.Height + cmargin - 20);
+            missimg.Position = badimg.Position + new Vector2(250, 0);
 
             ScoreLetter.Position = new Vector2(coverimg.Position.X + 160, coverimg.Position.Y);
             ScoreLetter.AngleRotation = 0;

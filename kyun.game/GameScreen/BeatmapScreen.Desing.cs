@@ -139,7 +139,7 @@ namespace kyun.GameScreen
             lblSearch = new Label(0f)
             {
                 Scale = 1,
-                Text = "",
+                Text = "*Type to search*",
                 Position = new Vector2(actualMode.Width / 2, 48),
                 Centered = true,
                 Font = SpritesContent.Instance.SettingsFont
@@ -202,8 +202,10 @@ namespace kyun.GameScreen
                 Position = new Vector2(osuModeBtn.Position.X - SpritesContent.Instance.ButtonStandard.Width - buttonSpace, (filledRectBottom.Position.Y + 75 / 2) - (SpritesContent.Instance.ButtonStandard.Height / 2)),
 
                 //Scale=.85f,
+                Visible = false,
                 ForegroundColor = Color.White,
-                Caption = "osu!"
+                Caption = "Crazy!",
+                Tooltip = new game.GameScreen.UI.Tooltip() { Text = "Let's move some circles." },
 
             };
 
@@ -325,7 +327,7 @@ namespace kyun.GameScreen
             Controls.Add(lblTitleDesc);
                       
 
-            //Controls.Add(osuModeBtn2);
+            Controls.Add(osuModeBtn2);
 
             Controls.Add(btnStart);
 
@@ -370,23 +372,15 @@ namespace kyun.GameScreen
         {
             if (_gamemode == GameMode.Osu)
             {
-
-                _gamemode = GameMode.CatchIt;
-
-                //autoBtn.Texture = SpritesContent.Instance.AutoModeButton;
-                osuModeBtn2.TextureColor = Color.DimGray;
-            }
-            else
-            {
-                if (_gamemode == GameMode.Classic)
+                CrazyMode = !CrazyMode;
+                if (CrazyMode)
                 {
-                    osuModeBtn.TextureColor = Color.DimGray;
+                    osuModeBtn2.TextureColor = Color.Red;
                 }
-
-                _gamemode = GameMode.Osu;
-
-                //autoBtn.Texture = SpritesContent.Instance.AutoModeButtonSel;
-                osuModeBtn2.TextureColor = Color.DarkRed;
+                else
+                {
+                    osuModeBtn2.TextureColor = Color.DimGray;
+                }
             }
         }
 
@@ -452,6 +446,7 @@ namespace kyun.GameScreen
                     break;
                 case GameMode.Osu:
                     GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items.Beatmaps[lBDff.selectedIndex], OsuMode.GetInstance(), modes);
+                    OsuMode.GetInstance().MoveEnabled = CrazyMode;
                     break;
                 case GameMode.CatchIt:
                     GameLoader.GetInstance().LoadBeatmapAndRun(lBDff.Items.Beatmaps[lBDff.selectedIndex], CatchItMode.GetInstance(), modes);
@@ -579,7 +574,7 @@ namespace kyun.GameScreen
 
         public int coverSize;
         private ButtonStandard osuModeBtn;
-        private ButtonStandard osuModeBtn2;
+        public ButtonStandard osuModeBtn2;
         private Scoreboard _scoreboard;
         private Image coverImage;
 
@@ -614,5 +609,6 @@ namespace kyun.GameScreen
         public ButtonStandard doubleBtn { get; private set; }
         public ButtonStandard randomBtn { get; private set; }
         public bool doubleTime { get; private set; }
+        public bool CrazyMode { get; set; }
     }
 }

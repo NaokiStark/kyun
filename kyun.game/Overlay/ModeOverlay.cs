@@ -53,7 +53,7 @@ namespace kyun.game.Overlay
 
             ladditional = new Label(0)
             {
-                Text = "Choose your flavor",
+                Text = "Choose your style",
                 Position = new Vector2(ActualScreenMode.Width / 2, ltitle.Position.Y + 70),
                 Centered = true,
                 Font = SpritesContent.Instance.ListboxFont
@@ -100,7 +100,7 @@ namespace kyun.game.Overlay
 
             Controls.Add(ltitle);
             Controls.Add(ladditional);
-            Controls.Add(osuModeBtn);
+            //Controls.Add(osuModeBtn);
             Controls.Add(osuModeBtn2);
             Controls.Add(osuModeBtn3);
 
@@ -110,7 +110,7 @@ namespace kyun.game.Overlay
         {
             BeatmapScreen i = (BeatmapScreen.Instance as BeatmapScreen);
             i._gamemode = GameMode.CatchIt;
-
+            i.osuModeBtn2.Visible = false;
             ScreenManager.RemoveOverlay();
         }
 
@@ -119,7 +119,8 @@ namespace kyun.game.Overlay
             BeatmapScreen i = (BeatmapScreen.Instance as BeatmapScreen);
 
             i._gamemode = GameMode.Osu;
-
+            i.osuModeBtn2.Visible = true;
+            i.CrazyMode = false;
             ScreenManager.RemoveOverlay();
             //if (i._gamemode == GameMode.Osu)
             //{

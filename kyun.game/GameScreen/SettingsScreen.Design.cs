@@ -321,18 +321,18 @@ namespace kyun.GameScreen
 
                 if (isFullScreen)
                     KyunGame.Instance.ToggleFullscreen(false);
-
-                var msgboxResult = MessageBox.Show("kyun!", "Do you want to import osu! beatmaps now?\r\n\r\nThis can take time if you have too many beatmaps", new[] { "Forget", "Yes!" });
+                /*
+                var msgboxResult = Microsoft.Xna.Framework.Input.MessageBox.Show("kyun!", "Do you want to import osu! beatmaps now?\r\n\r\nThis can take time if you have too many beatmaps", new[] { "Forget", "Yes!" });
                 var r = await msgboxResult;
                 if(r == 0)
                 {
                     return;
-                }
+                }*/
 
                 var path = Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\osu!\Songs");
                 if(!(new DirectoryInfo(path).Exists))
                 {
-                    await MessageBox.Show("kyun!", "osu! Songs folder not found, please select osu!'s Songs folder", new[] { "Ok" });
+                    //await MessageBox.Show("kyun!", "osu! Songs folder not found, please select osu!'s Songs folder", new[] { "Ok" });
                     var fdlg = new System.Windows.Forms.FolderBrowserDialog();
 
                     System.Windows.Forms.DialogResult rst = fdlg.ShowDialog();

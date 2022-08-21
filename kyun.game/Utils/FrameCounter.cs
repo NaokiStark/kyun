@@ -36,14 +36,21 @@ namespace kyun.Utils
 
             frames++;
             time+= deltaTime.ElapsedGameTime.Milliseconds;
+            if (time >= 500)
+            {
+                AverageFramesPerSecond = frames * 2;
+                frames = 0;
+                time = 0;
+            }
+            /*
             if (time >= 1000)
             {
                 AverageFramesPerSecond = frames;
                 frames = 0;
                 time = 0;
-            }          
-            
-            
+            }          */
+
+
             //frameCounter = 0;
         }
 

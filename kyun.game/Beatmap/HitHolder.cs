@@ -37,9 +37,12 @@ namespace kyun.Beatmap
         public OldApproachObj apo { get; set; }
         public decimal StartTime { get; set; }
         public IBeatmap BeatmapContainer { get; set; }
+        public bool isNewCombo { get; set; }
         public int Location { get; set; }
         private decimal EndTimeLocal = 0;
         public int osuRepeat = 0;
+
+        public osuBMParser.HitObject osuHitObject { get; set; }
         public decimal EndTime
         {
             get

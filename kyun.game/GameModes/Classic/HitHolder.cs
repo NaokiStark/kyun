@@ -28,7 +28,7 @@ namespace kyun.GameModes.Classic
         private Texture2D fillCache;
 
         public HitHolder(IHitObj hitObject, IBeatmap beatmap, ClassicModeScreen Instance, int gridPosition, bool _shared = false)
-            :base(hitObject, beatmap, Instance, gridPosition)
+            : base(hitObject, beatmap, Instance, gridPosition)
         {
             shared = _shared;
             Texture = SpritesContent.Instance.ButtonHolder;
@@ -44,10 +44,10 @@ namespace kyun.GameModes.Classic
             base.calculateScore();
         }
 
-        
+
         internal override void updateLogic()
         {
-           
+
 
             if ((screenInstance.gameMod & GameMod.Auto) == GameMod.Auto)
             {
@@ -71,11 +71,11 @@ namespace kyun.GameModes.Classic
 
                 porcent = (float)position / (float)(EndTime - Time) * 100f;
 
-                
+
                 return;
             }
 
-            if((screenInstance.gameMod & GameMod.Replay) == GameMod.Replay)
+            if ((screenInstance.gameMod & GameMod.Replay) == GameMod.Replay)
             {
                 var pressedd = screenInstance.replay.Hits[ReplayId].PressedAt;
                 var leaved = screenInstance.replay.Hits[ReplayId].LeaveAt;
@@ -160,8 +160,8 @@ namespace kyun.GameModes.Classic
             position = (EndTime - Time) - position;
 
             porcent = (float)position / (float)(EndTime - Time) * 100f;
-            
-            
+
+
 
             if (!actualPressed && holding)
             {
@@ -185,10 +185,11 @@ namespace kyun.GameModes.Classic
                 pressed = false;
             }
 
-            if (screenInstance.GamePosition > EndTime - _beatmap.Timing50) 
+            if (screenInstance.GamePosition > EndTime - _beatmap.Timing50)
             {
 
-                if (screenInstance.GamePosition >= EndTime) {
+                if (screenInstance.GamePosition >= EndTime)
+                {
                     if (!hasLeaveKey)
                         leaveTime = screenInstance.GamePosition;
 
@@ -201,8 +202,8 @@ namespace kyun.GameModes.Classic
                 {
                     //leaveTime = screenInstance.GamePosition;
                     calculateScore();
-                }   */                 
-                
+                }   */
+
 
             }
             lastIntersects = intersecs;
@@ -259,7 +260,50 @@ namespace kyun.GameModes.Classic
             }
         }
 
+
+
         public override void Render()
+        {
+            if (_hitButton.osuHitObject is osuBMParser.HitSpinner)
+            {
+                renderHolder();
+            }
+            else
+            {
+                renderHolder();
+
+            }
+
+            base.Render();
+        }
+
+        private void renderSlider()
+        {/*
+            var sld = _hitButton.osuHitObject as osuBMParser.HitSlider;
+            SpriteBatch sp = KyunGame.Instance.SpriteBatch;
+            if(sld.Type == osuBMParser.HitSlider.SliderType.BREZIER || sld.Type == osuBMParser.HitSlider.SliderType.CATMULL)
+            {
+                List<Vector2> points = new List<Vector2>();
+                
+                foreach(osuBMParser.HitSliderSegment segm in sld.HitSliderSegments)
+                {
+                    points.Add(new Vector2(segm.position.x, segm.position.y));
+                }
+                MonoGame.Primitives2D.DrawBezierv2(sp, ,Position, points, Color.Red);
+            }
+            else if (sld.Type == osuBMParser.HitSlider.SliderType.LINEAR)
+            {
+                osuBMParser.HitSliderSegment sgm = sld.HitSliderSegments.Last();
+                MonoGame.Primitives2D.DrawLine(sp, Position, new Vector2(sgm.position.x, sgm.position.y), Color.Green);
+            }
+            else
+            {
+                renderHolder();
+            }*/
+
+        }
+
+        private void renderHolder()
         {
             float ppeak = (KyunGame.Instance.maxPeak / 4) + 1;
 
@@ -270,21 +314,21 @@ namespace kyun.GameModes.Classic
 
             if (holding)
             {
-                
+
                 Texture2D fill = null;
                 fill = SpritesContent.Instance.Fill_1;
 
-                
+
 
 
                 float circlepresition = 1.07f;
-                for(float a = 0; a < porcent;)
+                for (float a = 0; a < porcent;)
                 {
                     a += circlepresition;
                     float circle = (float)(Math.PI * 2d);
                     float cp = circle * (a - circlepresition) / 100;
-                                       
-                    if((int)a % 4 != 0)
+
+                    if ((int)a % 4 != 0)
                     {
                         KyunGame.Instance.SpriteBatch.Draw(fill,
                             new Vector2(this.Position.X + (Size.X / 2),
@@ -297,7 +341,7 @@ namespace kyun.GameModes.Classic
                             SpriteEffects.None, 0);
                     }
 
-                        
+
                     if (a - circlepresition <= 0)
                     {
 
@@ -311,11 +355,11 @@ namespace kyun.GameModes.Classic
                             ppeak,
                             SpriteEffects.None, 0);
                     }
-                    if (porcent <= a && (int) porcent < 96)
+                    if (porcent <= a && (int)porcent < 96)
                     {
                         float cc = cp + 0.25f;
                         KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.FillStartEnd,
-                            new Vector2(this.Position.X + (Size.X/ 2),
+                            new Vector2(this.Position.X + (Size.X / 2),
                             this.Position.Y + (Size.Y / 2)),
                             null,
                             Color.White,
@@ -330,7 +374,7 @@ namespace kyun.GameModes.Classic
 
 
                 KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.Radiance,
-                       new Vector2(this.Position.X - ((Size.X * Math.Max(ppeak,.9f)) - Size.X) / 2,
+                       new Vector2(this.Position.X - ((Size.X * Math.Max(ppeak, .9f)) - Size.X) / 2,
                        this.Position.Y - ((Size.Y * Math.Max(ppeak, .9f)) - Size.Y) / 2),
                        null,
                        ((pressed || (screenInstance.gameMod & GameMod.Auto) == GameMod.Auto) ? Color.White : Color.Red) * cpeak,
@@ -340,10 +384,6 @@ namespace kyun.GameModes.Classic
                        SpriteEffects.None, 0);
                 //Scale = Math.Max(0.99f, Math.Min(ppeak / 1.2f, 1.04f));
             }
-
-           
-
-            base.Render();
         }
     }
 }

@@ -18,6 +18,7 @@ using Newtonsoft.Json.Linq;
 using kyun.game;
 using kyun.game.GameScreen.UI;
 using kyun.game.Database;
+using kyun.game.GameModes.Test;
 
 namespace kyun.GameScreen
 {
@@ -319,7 +320,8 @@ namespace kyun.GameScreen
             //bplayer.Play(selected_song[0]);
             //auplayer.Play(AppDomain.CurrentDomain.BaseDirectory + @"\Assets\Junk - enchanted.mp3", "", true);
 
-            KyunGame.Instance.Notifications.ShowDialog(suggestions[OsuBeatMap.rnd.Next(0, suggestions.Length - 1)], 15000, Notifications.NotificationType.Info);
+           // KyunGame.Instance.Notifications.ShowDialog(suggestions[OsuBeatMap.rnd.Next(0, suggestions.Length - 1)], 15000, Notifications.NotificationType.Info);
+           
 
             //UbeatGame.Instance.OnPeak += Instance_OnPeak;
         }

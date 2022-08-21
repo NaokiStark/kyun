@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kyun.game</RootNamespace>
     <AssemblyName>kyun.game</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
@@ -68,17 +68,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\ubeat\ubeat\ubeat\bin\x86\Debug\Microsoft.Ink.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Input.Touch, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ubeat\ubeat\ubeat\bin\x86\Debug\Microsoft.Xna.Framework.Input.Touch.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoGame.Framework, Version=3.7.1.189, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoGame.Framework.Net, Version=3.7.1.189, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.Net.dll</HintPath>
+    <Reference Include="MonoGame.Framework, Version=3.8.0.1641, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoGame.Framework.DesktopGL.3.8.0.1641\lib\net452\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -91,34 +82,6 @@
     <Reference Include="PommaLabs.Thrower, Version=4.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
       <HintPath>..\packages\Thrower.4.3.0\lib\net45\PommaLabs.Thrower.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="SharpDX, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct2D1, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.Direct2D1.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D11, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.Direct3D11.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.DXGI, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.DXGI.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.MediaFoundation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.MediaFoundation.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.XAudio2, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.XAudio2.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.XInput, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.XInput.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -156,6 +119,7 @@
   <ItemGroup>
     <Compile Include="Audio\BPlayer.cs" />
     <Compile Include="Audio\EffectsPlayer.cs" />
+    <Compile Include="Audio\TimeScroller.cs" />
     <Compile Include="Beatmap\Break.cs" />
     <Compile Include="Beatmap\Generators\RandomGenerator.cs" />
     <Compile Include="Beatmap\HitButton.cs" />
@@ -164,6 +128,7 @@
     <Compile Include="Beatmap\IHitObj.cs" />
     <Compile Include="Beatmap\Mapset.cs" />
     <Compile Include="Beatmap\CustomSampleSet.cs" />
+    <Compile Include="Beatmap\osuBeatmapSkin.cs" />
     <Compile Include="Beatmap\ubeatBeatMap.cs" />
     <Compile Include="Database\DatabaseInterface.cs" />
     <Compile Include="Dialog\DialogLayer.cs" />
@@ -174,6 +139,22 @@
     <Compile Include="GameModes\CatchIt\HitObject.cs" />
     <Compile Include="GameModes\Classic\ClassicModeScreen.cs" />
     <Compile Include="GameModes\Classic\Grid.cs" />
+    <None Include="Content\osu_circle.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\osu_circle_top.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\powerup_guide.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\RoundLine.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\slider.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="GameModes\Classic\HitHolder.cs.old" />
     <Compile Include="GameModes\Classic\HitHolder.cs" />
     <Compile Include="GameModes\Classic\HitSingle.cs" />
     <Compile Include="GameModes\Classic\ModeConstants.cs" />
@@ -185,6 +166,8 @@
     <Compile Include="GameModes\Midi\HitHolder.cs" />
     <Compile Include="GameModes\Midi\HitSingle.cs" />
     <Compile Include="GameModes\Midi\MidiModeScreen.cs" />
+    <None Include="GameModes\OsuMode\HitHolder.cs.old" />
+    <Compile Include="GameModes\OsuMode\HitSlider.cs" />
     <Compile Include="GameModes\OsuMode\HitHolder.cs" />
     <Compile Include="GameModes\OsuMode\HitSingle.cs" />
     <Compile Include="GameModes\OsuMode\ModeConstants.cs" />
@@ -301,12 +284,14 @@
     <Compile Include="Utils\SongInfo.cs" />
     <Compile Include="Utils\SpritesContent.cs" />
     <Compile Include="Utils\StringHelper.cs" />
+    <Compile Include="Utils\Texture2DRenderer.cs" />
     <Compile Include="Utils\TouchHandler.cs" />
     <Compile Include="Utils\VerticalProgressBar.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Video\AudioVideoPlayer.cs" />
     <Compile Include="Video\FFmpeg.cs" />
+    <Compile Include="Video\FFmpegDecoderv2.cs" />
     <Compile Include="Video\FFmpegDecoder.cs" />
     <Compile Include="Video\FrameBuffer.cs" />
     <Compile Include="Video\VideoDecoder.cs" />
@@ -378,10 +363,10 @@
     <Content Include="Assets\Effects\welcome.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\songs\1\Tenkitsune - To The Phantomile!.mp3">
+    <Content Include="Assets\songs\1\grape_soda.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\songs\1\tenkitsune.jpg">
+    <Content Include="Assets\songs\1\Snails_House_Grape_Soda.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\songs\2\cover.jpg">
@@ -658,6 +643,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\DiffSelector.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\DxRGBShift.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\fscore.xnb">
@@ -1458,6 +1446,10 @@
       <Project>{8bb35046-3b18-4aec-b598-b84325d6f9c9}</Project>
       <Name>kyun.Logger</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MonoGame.Primitives2D\Primitives2D.csproj">
+      <Project>{39ad1482-1881-4852-a05d-dc61b0d3446a}</Project>
+      <Name>Primitives2D</Name>
+    </ProjectReference>
     <ProjectReference Include="..\osupar\osuBMParser-master\osuBMParser\osuBMParser.csproj">
       <Project>{92f06458-ccf1-4574-be26-a9ffe3b77310}</Project>
       <Name>osuBMParser</Name>
@@ -1467,12 +1459,12 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\MonoGame.Framework.WindowsDX.3.8.0.1641\build\MonoGame.Framework.WindowsDX.targets" Condition="Exists('..\packages\MonoGame.Framework.WindowsDX.3.8.0.1641\build\MonoGame.Framework.WindowsDX.targets')" />
+  <Import Project="..\packages\MonoGame.Framework.DesktopGL.3.8.0.1641\build\MonoGame.Framework.DesktopGL.targets" Condition="Exists('..\packages\MonoGame.Framework.DesktopGL.3.8.0.1641\build\MonoGame.Framework.DesktopGL.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>Este proyecto hace referencia a los paquetes NuGet que faltan en este equipo. Use la restauración de paquetes NuGet para descargarlos. Para obtener más información, consulte http://go.microsoft.com/fwlink/?LinkID=322105. El archivo que falta es {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\MonoGame.Framework.WindowsDX.3.8.0.1641\build\MonoGame.Framework.WindowsDX.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MonoGame.Framework.WindowsDX.3.8.0.1641\build\MonoGame.Framework.WindowsDX.targets'))" />
+    <Error Condition="!Exists('..\packages\MonoGame.Framework.DesktopGL.3.8.0.1641\build\MonoGame.Framework.DesktopGL.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MonoGame.Framework.DesktopGL.3.8.0.1641\build\MonoGame.Framework.DesktopGL.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

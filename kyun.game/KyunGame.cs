@@ -38,9 +38,6 @@ namespace kyun
     {
         //Puto
 
-        [DllImport("kernel32.dll")]
-        public static extern int GetCurrentThreadId();
-
         public GraphicsDeviceManager Graphics;
         public SpriteBatch SpriteBatch;
         public BPlayer Player;
@@ -92,7 +89,7 @@ namespace kyun
         delegate void shit(GameTime tm);
         event shit updateEvent;
         public System.Threading.SynchronizationContext syncContext;
-
+        public List<Tooltip> tooltips = new List<Tooltip>();
         bool gameIsRunning;
 
         public bool CallStop { get; private set; }
@@ -105,7 +102,7 @@ namespace kyun
         public bool stopping;
         double timeToCrash = 0;
 
-
+        bool disableMultiThread = true;
 
         public Notifier Notifications { get; private set; }
 
@@ -115,6 +112,7 @@ namespace kyun
 
         public static string MainSite = "https://kyun.mokyu.pw/";
 
+  
         public float GeneralVolume
         {
             get
@@ -150,7 +148,6 @@ namespace kyun
 
             }
 
-
             syncContext = System.Threading.SynchronizationContext.Current;
 
             if (Settings1.Default.Token != "" && Settings1.Default.User != "")
@@ -164,12 +161,12 @@ namespace kyun
             var db = DatabaseInterface.Instance;
 
             WinForm = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(Window.Handle);
-            WinForm?.Focus();
-            windHandle = WinForm.Handle;
+            //WinForm?.Focus();
+            windHandle = Window.Handle;
 
             System.Drawing.Bitmap bmcursor = (System.Drawing.Bitmap)System.Drawing.Bitmap.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets/cursor.png"));
 
-            WinForm.Cursor = CreateCursor(bmcursor, bmcursor.Width / 2, bmcursor.Height / 2);
+            //WinForm.Cursor = CreateCursor(bmcursor, bmcursor.Width / 2, bmcursor.Height / 2);
 
             RunningOverWine = false;
             if (Process.GetProcessesByName("winlogon").Count() < 1)
@@ -249,29 +246,34 @@ namespace kyun
 
             if (srcm[Settings1.Default.ScreenMode].WindowMode != Screen.WindowDisposition.Windowed)
             {
+                Window.IsBorderless = true;/*
                 WinForm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-                WinForm.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+                WinForm.WindowState = System.Windows.Forms.FormWindowState.Maximized;*/
             }
 #if DEBUG
             Logger.Instance.Debug("!!!! GRAPHICS CARD !!!!");
             Logger.Instance.Debug("======================");
             Logger.Instance.Debug("");
             Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.Description);
+            /*
             Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.DeviceName);
             Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.VendorId.ToString());
-            Logger.Instance.Debug((Graphics.GraphicsDevice.Adapter.IsDefaultAdapter) ? "Default adapter: True" : "Default adapter: False");
+            Logger.Instance.Debug((Graphics.GraphicsDevice.Adapter.IsDefaultAdapter) ? "Default adapter: True" : "Default adapter: False");*/
             Logger.Instance.Debug("");
             Logger.Instance.Debug("======================");
 
 #endif
 
             Graphics.ApplyChanges();
-            WinForm.AllowDrop = true;
 
-            //ToDo: add sprite
+            //WinForm.AllowDrop = true;
+
+            //ToDo: Monogame file drag and drop not supported yet
+            /*
             WinForm.DragEnter += FormGame_DragEnter;
             WinForm.DragLeave += FormGame_DragLeave;
-            WinForm.DragDrop += FormGame_DragDrop;
+            WinForm.DragDrop += FormGame_DragDrop;*/
+
 
             gameIsRunning = true;
 
@@ -281,127 +283,21 @@ namespace kyun
             timeStart = stopwatch.Elapsed;
 
             gameStart = DateTime.Now;
-            updateEvent = cUpdate;
-
-
-            bool disableMultiThread = false;
-            if (!disableMultiThread)
-                RecallAndNotify(null);
-        }
-
-        public void RecallAndNotify(Exception ex)
-        {
-            if (ex != null)
-            {
-                if (Attemps >= 5)
-                {
-                    var frm = new FailForm();
-                    Player.Stop();
-                    WinForm.Hide();
-                    gameIsRunning = false;
-                    frm.ShowForm(ex);
-                    return;
-                }
-
-                try
-                {
-                    Notifications.ShowDialog("Ups, kyun! has experienced an error, this will be notified, sorry about that.", 10000, NotificationType.Critical);
-                }
-                catch (Exception rex)
-                {
-                    Attemps++;
-                    RecallAndNotify(rex);
-                    return;
-                }
-            }
-
-
-            updateEvent = cUpdate;
-
-            gameIsRunning = true;
-
-            CallStop = false;
-
-            bool disableMulticore = false;
-
-            tk = new Thread(() =>
-            {
-                int thisThreadId = GetCurrentThreadId();
-
-                ProcessThread CurrentThread = (from ProcessThread th in Process.GetCurrentProcess().Threads
-                                               where th.Id == thisThreadId
-                                               select th).Single();
-                // Run on another core as possible
-                if (Environment.ProcessorCount > 1 && !disableMulticore)
-                {
-                    Thread.BeginThreadAffinity();
-
-
-                    CurrentThread.ProcessorAffinity = (IntPtr)0x0002;
-
-
-                }
-                // rise thread priority
-                CurrentThread.PriorityLevel = ThreadPriorityLevel.TimeCritical;
-
-                DateTime startTime;
-                startTime = DateTime.Now;
-                while (gameIsRunning)
-                {
-                    try
-                    {
-                        elapsed = (DateTime.Now - startTime).TotalMilliseconds;
-                        startTime = DateTime.Now;
-                        TimeSpan startedGT = stopwatch.Elapsed - timeStart;
-                        //cUpdate(new GameTime(startedGT, TimeSpan.FromMilliseconds(elapsed), false));
-                        syncContext.Send(state =>
-                        {
-                            cUpdate(new GameTime(startedGT, TimeSpan.FromMilliseconds(elapsed), false));
-                        }, null);
-
-                        if (Settings1.Default.VSync)
-                        {
-                            //Wait for sync
-                            Thread.Sleep(1); //much as possible
-                        }
-                        else
-                        {
-                            System.Threading.Thread.Sleep((int)(750f / Settings1.Default.FrameRate));
-                        }
-
-                    }
-                    catch (Exception pex)
-                    {
-                        Logger.Instance.Severe($"{pex.Message} \r\n {pex.StackTrace}");
-                        gameIsRunning = false;
-                        syncContext.Send(state =>
-                        {
-                            RecallAndNotify(pex);
-                        }, null);
-                        return;
-                    }
-                }
-                stopped = true; //Avoid thread abortion ex
-                if (Environment.ProcessorCount > 1)
-                {
-                    Thread.EndThreadAffinity();
-                }
-            });
-
-            gameIsRunning = true;
-            if (!CallStop)
-            {
-                tk.Start();
-
-                Attemps++;
-            }
+            //updateEvent = cUpdate;
         }
 
         protected override void Update(GameTime tm)
         {
-
+            TimeSpan elapsed = stopwatch.Elapsed;
+            float maxAllowd = TargetElapsedTime.Milliseconds;
+            GameTime gm = new GameTime(elapsed, elapsed - lastElapsed);
+           
             //Double
-            //cUpdate(tm);
+            if (disableMultiThread)
+            {
+                cUpdate(tm, gm);
+            }
+            lastElapsed = elapsed;
         }
 
         private void FormGame_DragLeave(object sender, EventArgs e)
@@ -471,6 +367,23 @@ namespace kyun
 
         public void ToggleVSync(bool b)
         {
+            if (b)
+            {
+                //ChangeFrameRate(1001);
+                isvSync = true;
+                IsFixedTimeStep = false;
+                Graphics.SynchronizeWithVerticalRetrace = b;
+            }
+            else
+            {
+                Graphics.SynchronizeWithVerticalRetrace = b;
+                IsFixedTimeStep = true;
+                isvSync = false;
+                ChangeFrameRate(Settings1.Default.FrameRate);
+            }
+
+            Graphics.ApplyChanges();
+            /* unnecesary syncontext update
             syncContext.Send(state =>
             {
                 if (b)
@@ -486,7 +399,7 @@ namespace kyun
                 }
 
                 Graphics.ApplyChanges();
-            }, null);
+            }, null);*/
 
         }
 
@@ -569,6 +482,8 @@ namespace kyun
 
         }
 
+        public static string[] roundLineTechniqueNames;
+
         #region TEXTURES
 
         public TouchHandler touchHandler;
@@ -580,7 +495,7 @@ namespace kyun
         public Image Cursor { get; private set; }
         public bool AutoMode { get; set; }
 
-        private RenderTarget2D renderTarget2D;
+        public RenderTarget2D renderTarget2D;
         public bool stopped;
         private DateTime lastCheckedDay;
 
@@ -588,6 +503,9 @@ namespace kyun
         public KeyboardState KeyboardOldState;
         public KeyboardState KeyboardActualState;
         private float rScale;
+        private bool isvSync;
+        private TimeSpan lastElapsed;
+        private double elapsedToVolume;
 
         protected override void LoadContent()
         {
@@ -604,7 +522,7 @@ namespace kyun
             SpriteBatch = new SpriteBatch(GraphicsDevice);
 
             SpritesContent.Instance.LoadContent(SpriteBatch, GraphicsDevice);
-
+           
             touchHandler = new TouchHandler(WinForm);
             Logger.Instance.Info("");
             Logger.Instance.Info("Done.");
@@ -630,6 +548,7 @@ namespace kyun
 
         }
 
+     
         #endregion
 
         void updatePeak(GameTime gm)
@@ -701,8 +620,9 @@ namespace kyun
         }
 
         #region GameUpdates
-        protected void cUpdate(GameTime gameTime)
+        protected void cUpdate(GameTime gameTime, GameTime realGameTime)
         {
+            Player.Update(gameTime);
             updated = DateTime.Now;
             //IsMouseVisible = false;
 
@@ -712,7 +632,7 @@ namespace kyun
 
             //Update Gametime FIRST
             GameTimeP = gameTime;
-            frameCounter.Update(gameTime);
+            frameCounter.Update(realGameTime);
 
             touchHandler?.Update();
             updatePeak(gameTime);
@@ -755,7 +675,39 @@ namespace kyun
 
             VolumeControl.Instance.Update();
 
+            isMainWindowActive = System.Windows.Forms.Form.ActiveForm == WinForm;
+            KeyBoardManager.Update(gameTime);
+            if (Player.PlayState == BassPlayState.Playing)
+            {
 
+                if (SelectedBeatmap != null)
+                {
+                    Window.Title = "kyun! - Playing: " + SelectedBeatmap.Artist + " - " + SelectedBeatmap.Title;
+                }
+
+            }
+            else if (Window.Title != "kyun!")
+            {
+                Window.Title = "kyun!";
+            }
+
+            elapsedToVolume += gameTime.ElapsedGameTime.TotalMilliseconds;
+            KeyboardActualState = Keyboard.GetState();
+            if (ScreenManager.ActualScreen != null)
+            {
+                (ScreenManager.ActualScreen as ScreenBase).checkKeyboardEvents(KeyboardOldState, KeyboardActualState, GamePad.GetState(PlayerIndex.One));
+            }
+            KeyboardOldState = KeyboardActualState;
+            if(elapsedToVolume > 16d)
+            {
+                if (Keyboard.GetState().IsKeyDown(Keys.Add) || Keyboard.GetState().IsKeyDown(Keys.PageUp))
+                    GeneralVolume = GeneralVolume + (gameTime.ElapsedGameTime.Milliseconds) * .005f;
+
+                if (Keyboard.GetState().IsKeyDown(Keys.Subtract) || Keyboard.GetState().IsKeyDown(Keys.PageDown))
+                    GeneralVolume = GeneralVolume - (gameTime.ElapsedGameTime.Milliseconds) * .005f;
+
+                elapsedToVolume = 0;
+            }            
         }
 
         protected override void Draw(GameTime gameTime)
@@ -764,38 +716,12 @@ namespace kyun
                 return;
 
 
-            KeyboardActualState = Keyboard.GetState();
-            if (ScreenManager.ActualScreen != null)
-            {
-                (ScreenManager.ActualScreen as ScreenBase).checkKeyboardEvents(KeyboardOldState, KeyboardActualState, GamePad.GetState(PlayerIndex.One));
-            }
-            KeyboardOldState = KeyboardActualState;
+
 
 
             lastCheckedDay = DateTime.Now;
 
-            isMainWindowActive = System.Windows.Forms.Form.ActiveForm == WinForm;
-            KeyBoardManager.Update(gameTime);
-            if (Player.PlayState == BassPlayState.Playing)
-            {
 
-                if (SelectedBeatmap != null)
-                {
-                    WinForm.Text = "kyun! - Playing: " + SelectedBeatmap.Artist + " - " + SelectedBeatmap.Title;
-                }
-
-            }
-            else
-            {
-                WinForm.Text = "kyun!";
-            }
-
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Add) || Keyboard.GetState().IsKeyDown(Keys.PageUp))
-                GeneralVolume = GeneralVolume + (gameTime.ElapsedGameTime.Milliseconds) * .0005f;
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Subtract) || Keyboard.GetState().IsKeyDown(Keys.PageDown))
-                GeneralVolume = GeneralVolume - (gameTime.ElapsedGameTime.Milliseconds) * .0005f;
 
 
             //Help time hack
@@ -809,6 +735,7 @@ namespace kyun
 
             VideoCounter.Update(gameTime);
 
+
             if (Settings1.Default.DoubleRender)
             {
                 DrawRenderTarget();
@@ -819,16 +746,19 @@ namespace kyun
             }
 
 
-            base.Draw(gameTime);
+            //base.Draw(gameTime);
         }
 
         public void DrawRenderTarget()
         {
+
+            bool linear = false;
+            tooltips.Clear();
             GraphicsDevice.SetRenderTarget(renderTarget2D);
 
             GraphicsDevice.Clear(Color.Black);
 
-            if (Settings1.Default.Shaders)
+            if (Settings1.Default.Shaders && (ScreenManager.ActualScreen != null && ScreenManager.ActualScreen.renderBeat))
             {
                 if (ScreenManager.ActualBackground != null)
                 {
@@ -861,12 +791,21 @@ namespace kyun
                     float distorsion = Math.Max(0, Math.Min(.1f, dPeak / 5));
                     SpritesContent.Instance.RGBShiftEffect.Parameters["DisplacementDist"].SetValue(-distorsion);
                     //SpritesContent.Instance.RGBShiftEffect.Parameters["DisplacementScroll"].SetValue(0f);
-                    SpritesContent.Instance.RGBShiftEffect.Parameters["DisplacementScroll"].SetValue((dPeak <=0f)?0f:(peak / 1000) *magic);
+                    SpritesContent.Instance.RGBShiftEffect.Parameters["DisplacementScroll"].SetValue((dPeak <= 0f) ? 0f : (peak / 1000) * magic);
                     SpritesContent.Instance.RGBShiftEffect.CurrentTechnique = SpritesContent.Instance.RGBShiftEffect.Techniques["Technique1"];
 
                 }
 
-                SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone, SpritesContent.Instance.RGBShiftEffect);
+                //SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone, SpritesContent.Instance.RGBShiftEffect);
+                if (!isvSync)
+                {
+                    SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, (linear) ? SamplerState.LinearClamp : SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
+                }
+                else
+                {
+                    SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, (linear) ? SamplerState.LinearClamp : SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
+                }
+
                 if (ScreenManager.ActualBackground != null)
                 {
                     foreach (EffectPass pass in SpritesContent.Instance.RGBShiftEffect.CurrentTechnique.Passes)
@@ -891,7 +830,7 @@ namespace kyun
             {
                 if (ScreenManager.ActualBackground != null)
                 {
-                    SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
+                    SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, (linear) ? SamplerState.LinearClamp : SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
                     if (ScreenManager.ActualScreen != null)
                     {
                         ((ScreenBase)ScreenManager.ActualScreen)?.RenderBg();
@@ -905,7 +844,7 @@ namespace kyun
             }
 
 
-            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
+            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, (linear) ? SamplerState.LinearClamp : SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
 
 
             ScreenManager.Render();
@@ -915,7 +854,7 @@ namespace kyun
 #endif
             touchHandler?.Render();
 
-            //FrameDisplay?.Render();
+            FrameDisplay?.Render();
 
             Notifications?.Render();
 
@@ -932,7 +871,15 @@ namespace kyun
             GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Clear(Color.Black);
 
-            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
+            if (!isvSync)
+            {
+                SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, (linear) ? SamplerState.LinearClamp : SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
+            }
+            else
+            {
+                SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, (linear) ? SamplerState.LinearClamp : SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
+            }
+            //SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
 
 
             var actualMode = Screen.ScreenModeManager.GetActualMode();
@@ -978,7 +925,13 @@ namespace kyun
             Cursor.Position = new Vector2(mouseState.X - Cursor.Size.X / 2, mouseState.Y - Cursor.Size.Y / 2);
             Cursor.Update();
             Cursor.Render();
-
+            tooltips.ForEach((obj) =>
+            {
+                if (obj.Visible)
+                {
+                    obj.Render();
+                }
+            });
 
             SpriteBatch.End();
         }
@@ -1065,7 +1018,14 @@ namespace kyun
                 }
             }
 
-            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
+            if (!isvSync)
+            {
+                SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
+            }
+            else
+            {
+                SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
+            }
 
 
             ScreenManager.Render();
@@ -1094,6 +1054,7 @@ namespace kyun
 
 
             SpriteBatch.End();
+
         }
 
         #endregion
@@ -1109,13 +1070,11 @@ namespace kyun
 
             if (screenMode.WindowMode != Screen.WindowDisposition.Windowed)
             {
-                WinForm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-                WinForm.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+                Window.IsBorderless = true;
             }
             else
             {
-                WinForm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-                WinForm.WindowState = System.Windows.Forms.FormWindowState.Normal;
+                Window.IsBorderless = false;
 
             }
 
@@ -1125,10 +1084,7 @@ namespace kyun
             this.Graphics.PreferredBackBufferWidth = (int)wSize.X;
             this.Graphics.PreferredBackBufferHeight = (int)wSize.Y;
 
-            InstanceManager.Instance.Reload();
-            return;
 
-            Screen.ScreenModeManager.Change();
             ((ScreenBase)MainScreen.Instance)?.Dispose();
             ((ScreenBase)BeatmapScreen.Instance)?.Dispose();
             ((ScreenBase)SettingsScreen.Instance)?.Dispose();
@@ -1157,9 +1113,9 @@ namespace kyun
             CatchItMode.Instance = null;
             OsuMode.Instance = null;
 
+
             GC.Collect();
-
-
+            ScreenModeManager.Change();
             this.Graphics.ApplyChanges();
 
             ScreenManager.ChangeTo(SettingsScreen.Instance); //return 
@@ -1184,8 +1140,8 @@ namespace kyun
 
             if (enabled)
             {
-                WinForm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-                WinForm.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+                Window.IsBorderless = true;
+
             }
             else
             {
@@ -1193,20 +1149,23 @@ namespace kyun
 
                 if (modd.WindowMode == Screen.WindowDisposition.Windowed)
                 {
+                    Window.IsBorderless = false;
+                    /*
                     WinForm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-                    WinForm.WindowState = System.Windows.Forms.FormWindowState.Normal;
+                    WinForm.WindowState = System.Windows.Forms.FormWindowState.Normal;*/
                 }
                 else
                 {
+                    Window.IsBorderless = true;/*
                     WinForm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-                    WinForm.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+                    WinForm.WindowState = System.Windows.Forms.FormWindowState.Maximized;*/
                 }
             }
         }
 
         public void ChangeFrameRate(float fps)
         {
-            IsFixedTimeStep = true;
+            //IsFixedTimeStep = true;
             TargetElapsedTime = TimeSpan.FromSeconds(1.0f / fps);
             //TargetElapsedTime = TimeSpan.FromTicks(5000);
         }
@@ -1220,35 +1179,5 @@ namespace kyun
             GC.SuppressFinalize(this);
 
         }
-
-        public struct IconInfo
-        {
-            public bool fIcon;
-            public int xHotspot;
-            public int yHotspot;
-            public IntPtr hbmMask;
-            public IntPtr hbmColor;
-        }
-
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetIconInfo(IntPtr hIcon, ref IconInfo pIconInfo);
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr CreateIconIndirect(ref IconInfo icon);
-
-        public static System.Windows.Forms.Cursor CreateCursor(System.Drawing.Bitmap bmp, int xHotSpot, int yHotSpot)
-        {
-            IntPtr ptr = bmp.GetHicon();
-            IconInfo tmp = new IconInfo();
-            GetIconInfo(ptr, ref tmp);
-            tmp.xHotspot = xHotSpot;
-            tmp.yHotspot = yHotSpot;
-            tmp.fIcon = false;
-            ptr = CreateIconIndirect(ref tmp);
-            return new System.Windows.Forms.Cursor(ptr);
-        }
-
     }
 }

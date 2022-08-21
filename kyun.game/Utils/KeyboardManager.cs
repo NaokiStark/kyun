@@ -25,7 +25,7 @@ namespace Redux.Utilities.Managers
         KeyboardState mainState;
         KeyboardState prevState;
         public bool Enabled { get; set; }
-        public delegate void KeyEvents();
+        public delegate void KeyEvents(bool clear = false);
         public event KeyEvents OnKeyPress;
         public event KeyEvents OnKeyDown;
         public event KeyEvents OnKeyUp;
@@ -34,14 +34,57 @@ namespace Redux.Utilities.Managers
 
         public KeyboardManager(Game game) :
             base(game) {
-
+            game.Window.TextInput += Window_TextInput;/*
             gameForm = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(game.Window.Handle);
             if(gameForm != null)
             {
                 gameForm.KeyPreview = true;
                 gameForm.KeyUp += GameForm_KeyUp;
+            }*/
+
+        }
+
+        private void Window_TextInput(object sender, TextInputEventArgs e)
+        {
+            if (!Enabled)
+                return;
+
+            if (e.Key == Keys.Back)
+            {
+                if(Text == null)
+                {
+                    EffectsPlayer.PlayEffect(SpritesContent.Instance.ButtonOver);
+                    return;
+                }
+
+                if (Text.Length < 1)
+                {
+                    EffectsPlayer.PlayEffect(SpritesContent.Instance.ButtonOver);
+                    return;
+                }
+
+                Text = Text.Remove(Text.Length - 1, 1);
+            }
+            else
+            {
+                int charval = (int)e.Character;
+
+                if (charval != 13)
+                {
+                    if (char.IsLetterOrDigit(e.Character)
+                        || char.IsWhiteSpace(e.Character)
+                        || char.IsSymbol(e.Character)
+                        || char.IsPunctuation(e.Character)
+                       ) //??
+                    {
+                        Text += e.Character;
+                    }
+                    EffectsPlayer.PlayEffect(SpritesContent.Instance.ButtonOver);
+                    OnKeyPress?.Invoke();
+                }
             }
 
+           
         }
 
         private void GameForm_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)

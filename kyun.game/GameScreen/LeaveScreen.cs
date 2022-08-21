@@ -44,7 +44,7 @@ namespace kyun.GameScreen
             {
                 vol = true;
                 KyunGame.Instance.Player.Volume = KyunGame.Instance.GeneralVolume / 2;
-                ((System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(KyunGame.Instance.Window.Handle)).FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+                //((System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(KyunGame.Instance.Window.Handle)).FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             }
             
             ///base.Update(tm);

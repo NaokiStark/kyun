@@ -125,6 +125,8 @@ namespace kyun.GameScreen
 
             if (!AVPlayer.videoplayer.Stopped) return;
 
+            if (!renderBeat) return;
+
             Screen.ScreenMode actualMode = Screen.ScreenModeManager.GetActualMode();
 
             int randomNumber = OsuUtils.OsuBeatMap.GetRnd(1, 10, -1);
@@ -256,6 +258,8 @@ namespace kyun.GameScreen
 
                 //AVPlayer.Play(KyunGame.Instance.SelectedMapset[0].SongPath);
                 AVPlayer.Play(KyunGame.Instance.Player.ActualSong);
+                ActualTimingPoint = KyunGame.Instance.SelectedBeatmap.TimingPoints[0];
+                NextTimingPoint = KyunGame.Instance.SelectedBeatmap.GetNextTimingPointFor(ActualTimingPoint.Offset + 50);
             }
             else if(KyunGame.Instance.Player.PlayState == BassPlayState.Paused)
             {
@@ -328,6 +332,10 @@ namespace kyun.GameScreen
 
         void CnfBtn_Click(object sender, EventArgs e)
         {
+            if(showing || hidding)
+            {
+                return;
+            }
             /*new ElCosoQueSirveParaLasOpcionesDelJuegoYOtrasWeas.Settings().Show();*/
             //ScreenManager.ChangeTo(new SettingsScreen());
             ScreenManager.ChangeTo(SettingsScreen.Instance);
@@ -335,6 +343,11 @@ namespace kyun.GameScreen
 
         void StrBtn_Click(object sender, EventArgs e)
         {
+            if (showing || hidding)
+            {
+                return;
+            }
+
             leaving = true;
            
             ScreenManager.ChangeTo(BeatmapScreen.Instance);
@@ -342,10 +355,14 @@ namespace kyun.GameScreen
 
         void ExtBtn_Click(object sender, EventArgs e)
         {
+            if (showing || hidding)
+            {
+                return;
+            }
 
             leaving = true;
            
-          ScreenManager.ChangeTo(new LeaveScreen());
+            ScreenManager.ChangeTo(new LeaveScreen());
         }
 
         public void PlayUbeatMain()
@@ -428,7 +445,8 @@ namespace kyun.GameScreen
 
             ChangeBeatmapDisplay(ubm);
             KyunGame.Instance.SelectedBeatmap = ubm;
-
+            ActualTimingPoint = KyunGame.Instance.SelectedBeatmap.TimingPoints[0];
+            NextTimingPoint = KyunGame.Instance.SelectedBeatmap.GetNextTimingPointFor(ActualTimingPoint.Offset + 50);
             //ChangeBackground(ubm.Background);
             changingSong = false;
 
@@ -452,9 +470,10 @@ namespace kyun.GameScreen
         {
             changingSong = true;
             base.ChangeBeatmapDisplay(bm, true);
+            ActualTimingPoint = bm.TimingPoints[0] ?? new osuBMParser.TimingPoint {KiaiMode = false};
+            NextTimingPoint = bm.GetNextTimingPointFor(ActualTimingPoint.Offset + 50) ?? new osuBMParser.TimingPoint { KiaiMode = false }; ;
 
-
-           // Background = SpritesContent.Instance.DefaultBackground;
+            // Background = SpritesContent.Instance.DefaultBackground;
             changeCoverDisplay(bm.Background);
 
             changeEmphasis();
@@ -507,12 +526,12 @@ namespace kyun.GameScreen
             KyunGame.Instance.maxPeak = 2f;
         }
 
-        public void ChangeMainDisplay(int mps)
+        public void ChangeMainDisplay(Mapset mps)
         {
-            KyunGame.Instance.SelectedMapset = InstanceManager.AllBeatmaps[mps];
+            KyunGame.Instance.SelectedMapset = mps;
             Label1.Text = KyunGame.Instance.SelectedMapset.Artist + " - " + KyunGame.Instance.SelectedMapset.Title;
 
-            lastIndex = mps;
+            lastIndex = 0;
 
             changeEmphasis();
         }
@@ -534,6 +553,9 @@ namespace kyun.GameScreen
             KyunGame.Instance.SelectedMapset = InstanceManager.AllBeatmaps[mstIndex];
             
             ChangeBeatmapDisplay(KyunGame.Instance.SelectedMapset.Beatmaps[0]);
+            KyunGame.Instance.SelectedBeatmap = KyunGame.Instance.SelectedMapset.Beatmaps[0];
+            ActualTimingPoint = KyunGame.Instance.SelectedBeatmap.TimingPoints[0];
+            NextTimingPoint = KyunGame.Instance.SelectedBeatmap.GetNextTimingPointFor(ActualTimingPoint.Offset + 50);
             var ubm = KyunGame.Instance.SelectedMapset.Beatmaps[0];
             //ChangeBackground(UbeatGame.Instance.SelectedMapset[0].Background);
             lastIndex = mstIndex;
@@ -564,6 +586,9 @@ namespace kyun.GameScreen
             KyunGame.Instance.SelectedMapset = InstanceManager.AllBeatmaps[mstIndex];
            
             ChangeBeatmapDisplay(KyunGame.Instance.SelectedMapset.Beatmaps[0]);
+            KyunGame.Instance.SelectedBeatmap = KyunGame.Instance.SelectedMapset.Beatmaps[0];
+            ActualTimingPoint = KyunGame.Instance.SelectedBeatmap.TimingPoints[0];
+            NextTimingPoint = KyunGame.Instance.SelectedBeatmap.GetNextTimingPointFor(ActualTimingPoint.Offset + 50);
             var ubm = KyunGame.Instance.SelectedMapset.Beatmaps[0];
             //ChangeBackground(UbeatGame.Instance.SelectedMapset[0].Background);
             lastIndex = mstIndex;
