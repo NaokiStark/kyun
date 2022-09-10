@@ -130,7 +130,7 @@ namespace kyun.game.Video
         /// </summary>
         private void ThreadedDecoder()
         {
-            
+
             string vfilter = "-filter \"minterpolate=fps=60:me=ntss:mc_mode=aobmc:vsbmc=1:me_mode=bidir:mi_mode=blend:scd=fdiff\"";
             if (interpolate)
             {
@@ -152,14 +152,14 @@ namespace kyun.game.Video
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 StandardOutputEncoding = Encoding.UTF8,
-                
+
             };
 
             ffmpegProc = new Process
             {
                 StartInfo = startInfo
             };
-            
+
             ffmpegProc.Start();
             ffmpegProc.PriorityClass = ProcessPriorityClass.High;
             //STDOUT
@@ -187,7 +187,7 @@ namespace kyun.game.Video
                     {
                         // Waits if buffer is full
 
-                        while(BufferWriteIndex >= VIDEOFRAMERATE + 5)
+                        while (BufferWriteIndex >= VIDEOFRAMERATE + 5)
                         {
                             Thread.Sleep(1);
                         }
@@ -216,8 +216,8 @@ namespace kyun.game.Video
 
                             // Copy to buffer
                             buffer[BufferIndex].CopyTo(buffer[BufferWriteIndex], 0);
-                                                        
-                            
+
+
                             //frameList.Add((long)(frameIndex * (1000 / VIDEOFRAMERATE)), frm);
 
                             frameIndex++;
@@ -281,7 +281,7 @@ namespace kyun.game.Video
         {
             long frameId = (long)((float)time / VIDEOFRAMERATE);
 
-
+            return new byte[] { 0 };
         }
 
         /// <summary>
@@ -291,7 +291,7 @@ namespace kyun.game.Video
         /// <returns>byte[] BGR32 frame | null if is not decoding or something bad happens (lost frames|empty buffer)</returns>
         public byte[] GetFrame(long time)
         {
-            
+
             if (frameList.Keys.Count < 1)
                 return null;
             try
@@ -299,7 +299,7 @@ namespace kyun.game.Video
                 long key = 0;
                 lock (frameList)
                 {
-                   
+
                     int frameInd = 0;
                     for (int a = 0; a < time; a++)
                     {
@@ -331,7 +331,7 @@ namespace kyun.game.Video
                     var frame = frameList[key];
 
                     return frame;
-                }               
+                }
 
             }
             catch
@@ -364,7 +364,7 @@ namespace kyun.game.Video
                 StartInfo = startInfo
             };
             ffmpegInfoProc.Start();
-                                  
+
 
             //STDERR 
             var err = ffmpegInfoProc.StandardError;

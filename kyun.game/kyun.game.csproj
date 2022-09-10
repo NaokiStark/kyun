@@ -1,38 +1,37 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{06CD9D47-BD50-443E-BE33-ACE5D110EEC5}</ProjectGuid>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>kyun.game</RootNamespace>
-    <AssemblyName>kyun.game</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <Platforms>AnyCPU;x86;x64</Platforms>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;WINDOWS BETA</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <DefineConstants>TRACE;DEBUG;WINDOWS BETA</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DefineConstants>TRACE;DEBUG;WINDOWS BETA</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;BETA</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <DefineConstants>TRACE;BETA</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DefineConstants>TRACE;BETA</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UITests|AnyCPU'">
@@ -40,73 +39,48 @@
     <OutputPath>bin\UITests\</OutputPath>
     <DefineConstants>TRACE;DEBUG;WINDOWS BETA UITEST</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UITests|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\UITests\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINDOWS BETA UITEST</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UITests|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\UITests\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINDOWS BETA UITEST</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Bass.Net">
-      <HintPath>..\..\ubeat\lib\Bass.Net.dll</HintPath>
+      <HintPath>..\lib\Bass.Net.dll</HintPath>
     </Reference>
-    <Reference Include="Gma.System.MouseKeyHook, Version=5.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MouseKeyHook.5.4.0\lib\net40\Gma.System.MouseKeyHook.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Lidgren.Network, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\Lidgren.Network.dll</HintPath>
-    </Reference>
-    <Reference Include="LiteDB, Version=5.0.8.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
-      <HintPath>..\packages\LiteDB.5.0.8\lib\net45\LiteDB.dll</HintPath>
-    </Reference>
+    <Reference Include="Lidgren.Network, Version=3.8.1, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Ink, Version=6.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\ubeat\ubeat\ubeat\bin\x86\Debug\Microsoft.Ink.dll</HintPath>
     </Reference>
-    <Reference Include="MonoGame.Framework, Version=3.8.0.1641, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoGame.Framework.DesktopGL.3.8.0.1641\lib\net452\MonoGame.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="MonoGame.Framework">
+      <HintPath>..\packages\MonoGame.Framework.DesktopGL.3.8.1.303\lib\net6.0\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="Nuclex.Fonts.Content.TrueTypeImporter, Version=4.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Nuclex.Fonts.Content.TrueTypeImporter.dll</HintPath>
     </Reference>
-    <Reference Include="PommaLabs.Thrower, Version=4.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\Thrower.4.3.0\lib\net45\PommaLabs.Thrower.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Design" />
-    <Reference Include="System.Management" />
     <Reference Include="System.Management.Instrumentation" />
     <Reference Include="System.Runtime" />
     <Reference Include="System.Windows" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Troschuetz.Random, Version=4.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\Troschuetz.Random.4.2.0\lib\net45\Troschuetz.Random.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="websocket-sharp.clone, Version=1.0.2.39869, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\websocket-sharp.clone.3.0.0\lib\net45\websocket-sharp.clone.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Windows7.Multitouch, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Windows7.Multitouch.dll</HintPath>
@@ -117,231 +91,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Audio\BPlayer.cs" />
-    <Compile Include="Audio\EffectsPlayer.cs" />
-    <Compile Include="Audio\TimeScroller.cs" />
-    <Compile Include="Beatmap\Break.cs" />
-    <Compile Include="Beatmap\Generators\RandomGenerator.cs" />
-    <Compile Include="Beatmap\HitButton.cs" />
-    <Compile Include="Beatmap\HitHolder.cs" />
-    <Compile Include="Beatmap\IBeatmap.cs" />
-    <Compile Include="Beatmap\IHitObj.cs" />
-    <Compile Include="Beatmap\Mapset.cs" />
-    <Compile Include="Beatmap\CustomSampleSet.cs" />
-    <Compile Include="Beatmap\osuBeatmapSkin.cs" />
-    <Compile Include="Beatmap\ubeatBeatMap.cs" />
-    <Compile Include="Database\DatabaseInterface.cs" />
-    <Compile Include="Dialog\DialogLayer.cs" />
-    <Compile Include="GameModes\CatchItCollab\CatchItCollabMode.cs" />
-    <Compile Include="GameModes\CatchItCollab\HitObjectCollab.cs" />
-    <Compile Include="GameModes\CatchIt\CatchItMode.cs" />
-    <Compile Include="GameModes\CatchIt\FakeHitObject.cs" />
-    <Compile Include="GameModes\CatchIt\HitObject.cs" />
-    <Compile Include="GameModes\Classic\ClassicModeScreen.cs" />
-    <Compile Include="GameModes\Classic\Grid.cs" />
-    <None Include="Content\osu_circle.xnb">
+    <None Update="Content\osu_circle.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\osu_circle_top.xnb">
+    <None Update="Content\osu_circle_top.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\powerup_guide.xnb">
+    <None Update="Content\powerup_guide.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\RoundLine.xnb">
+    <None Update="Content\RoundLine.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\slider.xnb">
+    <None Update="Content\slider.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="GameModes\Classic\HitHolder.cs.old" />
-    <Compile Include="GameModes\Classic\HitHolder.cs" />
-    <Compile Include="GameModes\Classic\HitSingle.cs" />
-    <Compile Include="GameModes\Classic\ModeConstants.cs" />
-    <Compile Include="GameModes\Classic\ScorePanel.cs" />
-    <Compile Include="GameModes\GameMode.cs" />
-    <Compile Include="GameModes\GameModeScreenBase.cs" />
-    <Compile Include="GameModes\HitBase.cs" />
-    <Compile Include="GameModes\IScreenGameMode.cs" />
-    <Compile Include="GameModes\Midi\HitHolder.cs" />
-    <Compile Include="GameModes\Midi\HitSingle.cs" />
-    <Compile Include="GameModes\Midi\MidiModeScreen.cs" />
-    <None Include="GameModes\OsuMode\HitHolder.cs.old" />
-    <Compile Include="GameModes\OsuMode\HitSlider.cs" />
-    <Compile Include="GameModes\OsuMode\HitHolder.cs" />
-    <Compile Include="GameModes\OsuMode\HitSingle.cs" />
-    <Compile Include="GameModes\OsuMode\ModeConstants.cs" />
-    <Compile Include="GameModes\OsuMode\OsuMode.cs" />
-    <Compile Include="GameModes\OsuMode\OsuTutorial.cs" />
-    <Compile Include="GameModes\Test\Egg.cs" />
-    <Compile Include="GameModes\Test\TestPlayer.cs" />
-    <Compile Include="GameModes\Test\TestScreen.cs" />
-    <Compile Include="GameScreen\AnimatedScreenBase.cs" />
-    <Compile Include="GameScreen\BeatmapLoader.cs" />
-    <Compile Include="GameScreen\BeatmapScreen.cs" />
-    <Compile Include="GameScreen\BeatmapScreen.Desing.cs" />
-    <Compile Include="GameScreen\GameLoader.cs" />
-    <Compile Include="GameScreen\Grid.cs" />
-    <Compile Include="GameScreen\InputEvents\KeyPressEventArgs.cs" />
-    <Compile Include="GameScreen\IScreen.cs" />
-    <Compile Include="GameScreen\Jukebox.cs" />
-    <Compile Include="GameScreen\LeaveScreen.cs" />
-    <Compile Include="GameScreen\LoadScreen.cs" />
-    <Compile Include="GameScreen\LogoScreen.cs" />
-    <Compile Include="GameScreen\MainScreen.cs" />
-    <Compile Include="GameScreen\MainScreen.Desing.cs" />
-    <Compile Include="GameScreen\ScoreScreen.cs" />
-    <Compile Include="GameScreen\ScoreScreen.Desing.cs" />
-    <Compile Include="GameScreen\ScreenBase.cs" />
-    <Compile Include="GameScreen\ScreenManager.cs" />
-    <Compile Include="GameScreen\SettingsScreen.cs" />
-    <Compile Include="GameScreen\SettingsScreen.Design.cs" />
-    <Compile Include="GameScreen\UIObjectBase.cs" />
-    <Compile Include="GameScreen\UI\Button.cs" />
-    <Compile Include="GameScreen\UI\Buttons\AutoModeButton.cs" />
-    <Compile Include="GameScreen\UI\Buttons\ButtonStandard.cs" />
-    <Compile Include="GameScreen\UI\Buttons\ConfigButton.cs" />
-    <Compile Include="GameScreen\UI\Buttons\ExitButton.cs" />
-    <Compile Include="GameScreen\UI\Buttons\SquareButton.cs" />
-    <Compile Include="GameScreen\UI\Buttons\StartButton.cs" />
-    <Compile Include="GameScreen\UI\CheckBox.cs" />
-    <Compile Include="GameScreen\UI\ComboBox.cs" />
-    <Compile Include="GameScreen\UI\Effects\EffectParametersBase.cs" />
-    <Compile Include="GameScreen\UI\Effects\RGBShiftEffect.cs" />
-    <Compile Include="GameScreen\UI\EffectWrapper.cs" />
-    <Compile Include="GameScreen\UI\ElementExample.cs" />
-    <Compile Include="GameScreen\UI\FilledRectangle.cs" />
-    <Compile Include="GameScreen\UI\Image.cs" />
-    <Compile Include="GameScreen\UI\InputControl.cs" />
-    <Compile Include="GameScreen\UI\Label.cs" />
-    <Compile Include="GameScreen\UI\Listbox.cs" />
-    <Compile Include="GameScreen\UI\ListboxDiff.cs" />
-    <Compile Include="GameScreen\UI\ObjectListbox.cs" />
-    <Compile Include="GameScreen\UI\Particles\HitObjectParticle.cs" />
-    <Compile Include="GameScreen\UI\Particles\Particle.cs" />
-    <Compile Include="GameScreen\UI\Particles\ParticleEngine.cs" />
-    <Compile Include="GameScreen\UI\Particles\ParticleScore.cs" />
-    <Compile Include="GameScreen\UI\Particles\SquareParticle.cs" />
-    <Compile Include="GameScreen\UI\ProgressBar.cs" />
-    <Compile Include="GameScreen\UI\RoundedRectangle.cs" />
-    <Compile Include="GameScreen\UI\Scoreboard\Scoreboard.cs" />
-    <Compile Include="GameScreen\UI\Scoreboard\ScoreItem.cs" />
-    <Compile Include="GameScreen\UI\Tooltip.cs" />
-    <Compile Include="GameScreen\UI\UserBox.cs" />
-    <Compile Include="GameScreen\UI\VolumeControl.cs" />
-    <Compile Include="GameScreen\VideoScreenBase.cs" />
-    <Compile Include="KyunGame.cs" />
-    <Compile Include="NikuClient\HttpQueryString.cs" />
-    <Compile Include="NikuClient\HttpRequest.cs" />
-    <Compile Include="NikuClient\NikuClientApi.cs" />
-    <Compile Include="NikuClient\ServerList.cs" />
-    <Compile Include="NikuClient\UserData.cs" />
-    <Compile Include="Notifications\NotificationBox.cs" />
-    <Compile Include="Notifications\Notifier.cs" />
-    <Compile Include="OsuUtils\OsuBeatMap.cs" />
-    <Compile Include="Overlay\IOverlay.cs" />
-    <Compile Include="Overlay\ModeOverlay.cs" />
-    <Compile Include="Overlay\OverlayScreen.cs" />
-    <Compile Include="Overlay\PauseOverlay.cs" />
-    <Compile Include="Overlay\QuestionOverlay.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resource1.Designer.cs" />
-    <Compile Include="Resource11.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resource1.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Score\Combo.cs" />
-    <Compile Include="Score\ComboDisplay.cs" />
-    <Compile Include="Score\HealthBar.cs" />
-    <Compile Include="Score\ScoreDisplay.cs" />
-    <Compile Include="Score\ScoreInfo.cs" />
-    <Compile Include="Score\ScoreType.cs" />
-    <Compile Include="Screen\BaseResolution.cs" />
-    <Compile Include="Screen\ScreenMode.cs" />
-    <Compile Include="Screen\ScreenModeManager.cs" />
-    <Compile Include="Settings11.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings1.settings</DependentUpon>
-    </Compile>
-    <Compile Include="UIObjs\ApproachObj.cs" />
-    <Compile Include="UIObjs\IUIObject.cs" />
-    <Compile Include="UIObjs\OldApproachObj.cs" />
-    <Compile Include="UIObjs\ScoreObj.cs" />
-    <Compile Include="Utils\BeatmapSearchEngine.cs" />
-    <Compile Include="Utils\ContentLoader.cs" />
-    <Compile Include="Utils\Discord_Handler.cs" />
-    <Compile Include="Utils\FrameCounter.cs" />
-    <Compile Include="Utils\GaussianBlur.cs" />
-    <Compile Include="Utils\InstanceManager.cs" />
-    <Compile Include="Utils\KeyboardManager.cs" />
-    <Compile Include="Utils\MouseHandler.cs" />
-    <Compile Include="Utils\ReplayBuilder.cs" />
-    <Compile Include="Utils\ReplayParser.cs" />
-    <Compile Include="Utils\Skin.cs" />
-    <Compile Include="Utils\SkinManager.cs" />
-    <Compile Include="Utils\SongInfo.cs" />
-    <Compile Include="Utils\SpritesContent.cs" />
-    <Compile Include="Utils\StringHelper.cs" />
-    <Compile Include="Utils\Texture2DRenderer.cs" />
-    <Compile Include="Utils\TouchHandler.cs" />
-    <Compile Include="Utils\VerticalProgressBar.cs">
+    <Compile Update="Utils\VerticalProgressBar.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Video\AudioVideoPlayer.cs" />
-    <Compile Include="Video\FFmpeg.cs" />
-    <Compile Include="Video\FFmpegDecoderv2.cs" />
-    <Compile Include="Video\FFmpegDecoder.cs" />
-    <Compile Include="Video\FrameBuffer.cs" />
-    <Compile Include="Video\VideoDecoder.cs" />
-    <Compile Include="Video\VideoPlayer.cs" />
-    <Compile Include="Winforms\bmDiff.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Winforms\bmDiff.Designer.cs">
-      <DependentUpon>bmDiff.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Winforms\Experiments.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Winforms\Experiments.Designer.cs">
-      <DependentUpon>Experiments.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Winforms\FailForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Winforms\FailForm.Designer.cs">
-      <DependentUpon>FailForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Winforms\LoginForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Winforms\LoginForm.Designer.cs">
-      <DependentUpon>LoginForm.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resource1.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource11.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Winforms\bmDiff.resx">
-      <DependentUpon>bmDiff.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Winforms\Experiments.resx">
-      <DependentUpon>Experiments.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Winforms\FailForm.resx">
-      <DependentUpon>FailForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Winforms\LoginForm.resx">
-      <DependentUpon>LoginForm.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="app.manifest" />
     <Content Include="Assets\cursor.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -582,46 +351,46 @@
     <Content Include="Content\OsuTip.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Assets\songs\1\songinfo.json">
+    <None Update="Assets\songs\1\songinfo.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\songs\2\songinfo.json">
+    <None Update="Assets\songs\2\songinfo.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\songs\3\songinfo.json">
+    <None Update="Assets\songs\3\songinfo.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\songs\4\songinfo.json">
+    <None Update="Assets\songs\4\songinfo.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\songs\5\songinfo.json">
+    <None Update="Assets\songs\5\songinfo.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\ascore.xnb">
+    <None Update="Content\ascore.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\bscore.xnb">
+    <None Update="Content\bscore.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Catcher.xnb">
+    <None Update="Content\Catcher.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\CatcherCombo.xnb">
+    <None Update="Content\CatcherCombo.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\CatcherCombo2.xnb">
+    <None Update="Content\CatcherCombo2.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\CatcherFire.xnb">
+    <None Update="Content\CatcherFire.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\CatcherFire2.xnb">
+    <None Update="Content\CatcherFire2.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\CatcherMiss.xnb">
+    <None Update="Content\CatcherMiss.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\CatcherMiss2.xnb">
+    <None Update="Content\CatcherMiss2.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Content Include="Content\Note.xnb">
@@ -636,40 +405,40 @@
     <Content Include="Content\cinta_testing.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Content\cscore.xnb">
+    <None Update="Content\cscore.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\dascore.xnb">
+    <None Update="Content\dascore.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\DiffSelector.xnb">
+    <None Update="Content\DiffSelector.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\DxRGBShift.xnb">
+    <None Update="Content\DxRGBShift.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\fscore.xnb">
+    <None Update="Content\fscore.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Note_Holder_End.xnb">
+    <None Update="Content\Note_Holder_End.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Note_Holder_Middle.xnb">
+    <None Update="Content\Note_Holder_Middle.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Note_Holder_Start.xnb">
+    <None Update="Content\Note_Holder_Start.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Content Include="Content\scorebar.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Content\rgbs.xnb">
+    <None Update="Content\rgbs.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\RGBShift.xnb">
+    <None Update="Content\RGBShift.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\tascore.xnb">
+    <None Update="Content\tascore.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Maps\1014936 Thaehan - Bwa !\Thaehan - Bwa ! %28Sonnyc%29 [Bwa].osu">
@@ -743,11 +512,6 @@
     </None>
     <None Include="Maps\657084 Nasko - Break Through\Nasko - Break Through %28Evgerable%29 [Ultra].osu">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="packages.config" />
-    <None Include="Settings1.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings11.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -1438,39 +1202,29 @@
     <Folder Include="Extensions\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DiscordRPC\src\DiscordRpcNet\DiscordRpcNet.csproj">
-      <Project>{981827b2-076d-4047-a798-aec81054f1dd}</Project>
-      <Name>DiscordRpcNet</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kyun.Logger\kyun.Logger.csproj">
-      <Project>{8bb35046-3b18-4aec-b598-b84325d6f9c9}</Project>
-      <Name>kyun.Logger</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MonoGame.Primitives2D\Primitives2D.csproj">
-      <Project>{39ad1482-1881-4852-a05d-dc61b0d3446a}</Project>
-      <Name>Primitives2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\osupar\osuBMParser-master\osuBMParser\osuBMParser.csproj">
-      <Project>{92f06458-ccf1-4574-be26-a9ffe3b77310}</Project>
-      <Name>osuBMParser</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\DiscordRPC\src\DiscordRpcNet\DiscordRpcNet.csproj" />
+    <ProjectReference Include="..\kyun.Logger\kyun.Logger.csproj" />
+    <ProjectReference Include="..\MonoGame.Primitives2D\Primitives2D.csproj" />
+    <ProjectReference Include="..\osupar\osuBMParser-master\osuBMParser\osuBMParser.csproj" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\MonoGame.Framework.DesktopGL.3.8.0.1641\build\MonoGame.Framework.DesktopGL.targets" Condition="Exists('..\packages\MonoGame.Framework.DesktopGL.3.8.0.1641\build\MonoGame.Framework.DesktopGL.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>Este proyecto hace referencia a los paquetes NuGet que faltan en este equipo. Use la restauración de paquetes NuGet para descargarlos. Para obtener más información, consulte http://go.microsoft.com/fwlink/?LinkID=322105. El archivo que falta es {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\MonoGame.Framework.DesktopGL.3.8.0.1641\build\MonoGame.Framework.DesktopGL.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MonoGame.Framework.DesktopGL.3.8.0.1641\build\MonoGame.Framework.DesktopGL.targets'))" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <PackageReference Include="LiteDB" Version="5.0.8" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
+    <PackageReference Include="MouseKeyHook" Version="5.6.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="SharpZipLib" Version="0.86.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageReference Include="Troschuetz.Random" Version="4.2.0" />
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.336902">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="NAudio" Version="1.10.0" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
+    <PackageReference Include="websocket-sharp-Net6.0" Version="1.0.3.1" />
+  </ItemGroup>
 </Project>
