@@ -22,7 +22,7 @@ namespace kyun.GameScreen
         int lastIndex = 0;
         public static IScreen instance = null;
 
-        
+
         public static IScreen Instance
         {
             get
@@ -38,7 +38,7 @@ namespace kyun.GameScreen
             }
         }
 
-        public MainScreen(bool LoadRandom=true) 
+        public MainScreen(bool LoadRandom = true)
             : base("MainScreen")
         {
 
@@ -57,7 +57,7 @@ namespace kyun.GameScreen
             }
 
 
-            
+
 
             ScreenInstance = this;
 
@@ -97,10 +97,10 @@ namespace kyun.GameScreen
             KyunGame.Instance.discordHandler.SetState("Idle", "Waiting for something...");
 
             //Check launcher version
-            
-            if(KyunGame.LauncherVersion < KyunGame.DesiredLauncher)
+
+            if (KyunGame.LauncherVersion < KyunGame.DesiredLauncher)
             {
-                ntfr.ShowDialog("Woops! your launcher needs to be updated now, download it by clicking me.", 20000, Notifications.NotificationType.Warning, ()=>
+                ntfr.ShowDialog("Woops! your launcher needs to be updated now, download it by clicking me.", 20000, Notifications.NotificationType.Warning, () =>
                 {
                     Process.Start($"{KyunGame.MainSite}");
                 });
@@ -131,7 +131,7 @@ namespace kyun.GameScreen
 
             int randomNumber = OsuUtils.OsuBeatMap.GetRnd(1, 10, -1);
 
-            for(int a = 0; a < randomNumber; a++)
+            for (int a = 0; a < randomNumber; a++)
             {
                 switchParticle = OsuBeatMap.rnd.NextBoolean();
                 int startLeft = 0;
@@ -147,12 +147,14 @@ namespace kyun.GameScreen
                         (30 + OsuUtils.OsuBeatMap.rnd.Next(40)) * 100,
                         0.01f * (float)(OsuUtils.OsuBeatMap.rnd.NextDouble() * 2f - 1)
                         );
-
-                    particle.Opacity = 0.6f;
-                    particle.Scale = (float)OsuUtils.OsuBeatMap.rnd.NextDouble(0.1, 0.6);
-                    if (KyunGame.xmas)
-                        particle.TextureColor = Color.Yellow;
-                    particle.StopAtBottom = true;
+                    if (particle != null)
+                    {
+                        particle.Opacity = 0.6f;
+                        particle.Scale = (float)OsuUtils.OsuBeatMap.rnd.NextDouble(0.1, 0.6);
+                        if (KyunGame.xmas)
+                            particle.TextureColor = Color.Yellow;
+                        particle.StopAtBottom = true;
+                    }
                 }
                 else
                 {
@@ -193,8 +195,11 @@ namespace kyun.GameScreen
                         0.01f * (float)(OsuUtils.OsuBeatMap.rnd.NextDouble() * 2f - 1),
                         ccolor
                         );
-                    particle.Scale = (float)OsuUtils.OsuBeatMap.rnd.NextDouble(0.35, 0.7);
-                    particle.Opacity = /*(float)OsuUtils.OsuBeatMap.rnd.NextDouble(0.4, 0.9)*/0.8f;
+                    if (particle != null)
+                    {
+                        particle.Scale = (float)OsuUtils.OsuBeatMap.rnd.NextDouble(0.35, 0.7);
+                        particle.Opacity = /*(float)OsuUtils.OsuBeatMap.rnd.NextDouble(0.4, 0.9)*/0.8f;
+                    }
                     squareYesNo = !squareYesNo;
                 }
 
@@ -224,7 +229,7 @@ namespace kyun.GameScreen
                     //ntfr.ShowDialog($"Jukebox mode {((Jukebox)?act:deact)}, press F10 to toggle");
                     (Jukebox.Instance as Jukebox).ChangeSongDisplay();
                     ScreenManager.ChangeTo(Jukebox.Instance);
-                    break;                
+                    break;
                 case Microsoft.Xna.Framework.Input.Keys.F5:
                     AVPlayer.Play(KyunGame.Instance.Player.ActualSong);
                     break;
@@ -253,7 +258,7 @@ namespace kyun.GameScreen
 
         private void BtnPlay_Click(object sender, EventArgs e)
         {
-            if(KyunGame.Instance.Player.PlayState == BassPlayState.Stopped)
+            if (KyunGame.Instance.Player.PlayState == BassPlayState.Stopped)
             {
 
                 //AVPlayer.Play(KyunGame.Instance.SelectedMapset[0].SongPath);
@@ -261,7 +266,7 @@ namespace kyun.GameScreen
                 ActualTimingPoint = KyunGame.Instance.SelectedBeatmap.TimingPoints[0];
                 NextTimingPoint = KyunGame.Instance.SelectedBeatmap.GetNextTimingPointFor(ActualTimingPoint.Offset + 50);
             }
-            else if(KyunGame.Instance.Player.PlayState == BassPlayState.Paused)
+            else if (KyunGame.Instance.Player.PlayState == BassPlayState.Paused)
             {
                 KyunGame.Instance.Player.Paused = !KyunGame.Instance.Player.Paused;
             }
@@ -269,14 +274,14 @@ namespace kyun.GameScreen
 
         private void BtnPause_Click(object sender, EventArgs e)
         {
-            if(KyunGame.Instance.Player.PlayState != BassPlayState.Stopped)
+            if (KyunGame.Instance.Player.PlayState != BassPlayState.Stopped)
                 KyunGame.Instance.Player.Paused = !KyunGame.Instance.Player.Paused;
         }
 
         private void BtnNext_Click(object sender, EventArgs e)
         {
             _next();
-           
+
         }
 
         void MainScreen_OnLoad(object sender, EventArgs e)
@@ -315,7 +320,7 @@ namespace kyun.GameScreen
                     titleSize = SpritesContent.Instance.MSGothic2.MeasureString(((LoadScreen)LoadScreen.Instance).selected_song.Title).X;
                     artSize = SpritesContent.Instance.MSGothic2.MeasureString(((LoadScreen)LoadScreen.Instance).selected_song.Artist).X;
                 }
-                
+
 
                 float maxSize = Math.Max(titleSize, artSize);
 
@@ -324,15 +329,15 @@ namespace kyun.GameScreen
                 coverLabelArt.Text = ((LoadScreen)LoadScreen.Instance).selected_song.Artist;
                 ChangeBackground((Texture2D)null);
             }
-            
+
             KyunGame.Instance.Player.OnStopped += player_OnStopped;
 
 
-        } 
+        }
 
         void CnfBtn_Click(object sender, EventArgs e)
         {
-            if(showing || hidding)
+            if (showing || hidding)
             {
                 return;
             }
@@ -349,7 +354,7 @@ namespace kyun.GameScreen
             }
 
             leaving = true;
-           
+
             ScreenManager.ChangeTo(BeatmapScreen.Instance);
         }
 
@@ -361,18 +366,18 @@ namespace kyun.GameScreen
             }
 
             leaving = true;
-           
+
             ScreenManager.ChangeTo(new LeaveScreen());
         }
 
         public void PlayUbeatMain()
         {
             PlayingInit = true;
-            
 
-            
+
+
             //AVPlayer.Play(mainBm.SongPath, "", true);
-           
+
             ChangeBeatmapDisplay(mainBm);
 
         }
@@ -387,28 +392,28 @@ namespace kyun.GameScreen
             else */
 
             BassPlayState pbs = KyunGame.Instance.Player.PlayState;
-            if(pbs == BassPlayState.Stopped)
+            if (pbs == BassPlayState.Stopped)
             {
                 playRandomSong();
             }
-                
+
         }
 
         int getRndNotRepeated(int min, int max)
         {
             NR3Q2Generator rnd = new NR3Q2Generator(DateTime.Now.Millisecond);
 
-            int nummm = rnd.Next(min,max);
+            int nummm = rnd.Next(min, max);
             int cnt = 0;
             while (nummm == Settings1.Default.LastScr)
             {
                 nummm = rnd.Next(max);
-                if(nummm == Settings1.Default.LastScr)
+                if (nummm == Settings1.Default.LastScr)
                     if (cnt != Settings1.Default.LastScr && cnt <= max)
                         nummm = cnt;
                 cnt++;
             }
-            
+
             Settings1.Default.LastScr = nummm;
             Settings1.Default.Save();
             return nummm;
@@ -470,7 +475,7 @@ namespace kyun.GameScreen
         {
             changingSong = true;
             base.ChangeBeatmapDisplay(bm, true);
-            ActualTimingPoint = bm.TimingPoints[0] ?? new osuBMParser.TimingPoint {KiaiMode = false};
+            ActualTimingPoint = bm.TimingPoints[0] ?? new osuBMParser.TimingPoint { KiaiMode = false };
             NextTimingPoint = bm.GetNextTimingPointFor(ActualTimingPoint.Offset + 50) ?? new osuBMParser.TimingPoint { KiaiMode = false }; ;
 
             // Background = SpritesContent.Instance.DefaultBackground;
@@ -487,7 +492,7 @@ namespace kyun.GameScreen
             coverBox.Resize(new Vector2((maxSize * .8f) + 20, coverSize));
             coverLabel.Text = bm.Title;
             coverLabelArt.Text = bm.Artist;
-            changingSong = false ;
+            changingSong = false;
         }
 
         private void changeEmphasis()
@@ -499,12 +504,12 @@ namespace kyun.GameScreen
 
             sColors.Clear();
             int lcc = 0;
-            for(int a = 0; a < coverimg.Texture.Width; a++)
+            for (int a = 0; a < coverimg.Texture.Width; a++)
             {
                 int[] lc = new int[3];
-                lc[0] = colors[a*lcc].R;
-                lc[1] = colors[a*lcc].G;
-                lc[2] = colors[a*lcc].B;
+                lc[0] = colors[a * lcc].R;
+                lc[1] = colors[a * lcc].G;
+                lc[2] = colors[a * lcc].B;
                 sColors.Add(lc);
                 lcc++;
             }
@@ -522,7 +527,7 @@ namespace kyun.GameScreen
                     (particleEngine.particles[a] as SquareParticle).squareColor = ccolor;
                 }
             }
-         
+
             KyunGame.Instance.maxPeak = 2f;
         }
 
@@ -551,7 +556,7 @@ namespace kyun.GameScreen
             }
 
             KyunGame.Instance.SelectedMapset = InstanceManager.AllBeatmaps[mstIndex];
-            
+
             ChangeBeatmapDisplay(KyunGame.Instance.SelectedMapset.Beatmaps[0]);
             KyunGame.Instance.SelectedBeatmap = KyunGame.Instance.SelectedMapset.Beatmaps[0];
             ActualTimingPoint = KyunGame.Instance.SelectedBeatmap.TimingPoints[0];
@@ -584,7 +589,7 @@ namespace kyun.GameScreen
 
 
             KyunGame.Instance.SelectedMapset = InstanceManager.AllBeatmaps[mstIndex];
-           
+
             ChangeBeatmapDisplay(KyunGame.Instance.SelectedMapset.Beatmaps[0]);
             KyunGame.Instance.SelectedBeatmap = KyunGame.Instance.SelectedMapset.Beatmaps[0];
             ActualTimingPoint = KyunGame.Instance.SelectedBeatmap.TimingPoints[0];
@@ -595,7 +600,7 @@ namespace kyun.GameScreen
             if (BeatmapScreen.Instance != null)
             {
                 ((BeatmapScreen)BeatmapScreen.Instance).lbox.selectedIndex = mstIndex;
-                ((BeatmapScreen)BeatmapScreen.Instance).lbox.vertOffset = (mstIndex > 2)? mstIndex - 1 : 0;
+                ((BeatmapScreen)BeatmapScreen.Instance).lbox.vertOffset = (mstIndex > 2) ? mstIndex - 1 : 0;
             }
             KyunGame.Instance.discordHandler.SetState($"{ubm.Artist} - {ubm.Title}", "Playing music");
         }

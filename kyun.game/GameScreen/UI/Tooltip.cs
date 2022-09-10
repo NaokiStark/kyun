@@ -133,6 +133,10 @@ namespace kyun.game.GameScreen.UI
 
         public void Render()
         {
+            if (Vector2.Zero.Equals(Position))
+            {
+                return;
+            }
             if (!lblcontent.Visible)
                 return;
             if (!Visible)

@@ -26,7 +26,7 @@ namespace kyun.GameScreen.UI.Particles
         /// </summary>
         public ParticleEngine()
         {
-            
+
         }
 
         /// <summary>
@@ -40,40 +40,47 @@ namespace kyun.GameScreen.UI.Particles
         /// <returns>A new Particle instance</returns>
         public Particle AddNewParticle(Texture2D tx, Vector2 velocity, Vector2 startUpPosition, int timeToDie, float angleVelocity)
         {
-            
-            Particle particle = new Particle(tx, velocity, startUpPosition, timeToDie, angleVelocity);
-
             if (!Settings1.Default.MyPCSucks)
+            {
+                Particle particle = new Particle(tx, velocity, startUpPosition, timeToDie, angleVelocity);
+
+
                 particles.Add(particle);
 
-            return particle;
+                return particle;
+            }
+            return null;
         }
         public Particle AddNewSquareParticle(Texture2D tx, Vector2 velocity, Vector2 startUpPosition, int timeToDie, float angleVelocity, Color pColor)
         {
-            SquareParticle particle = new SquareParticle(tx, velocity, startUpPosition, timeToDie, angleVelocity, pColor);
-
             if (!Settings1.Default.MyPCSucks)
+            {
+                SquareParticle particle = new SquareParticle(tx, velocity, startUpPosition, timeToDie, angleVelocity, pColor);
+
                 particles.Add(particle);
 
-            return particle;
+                return particle;
+            }
+
+            return null;
         }
 
         public Particle AddNewScoreParticle(Texture2D tx, Vector2 velocity, Vector2 startUpPosition, int timeToDie, float angleVelocity, Color pColor)
         {
             ParticleScore particle = new ParticleScore(tx, velocity, startUpPosition, timeToDie, angleVelocity, pColor);
 
-            if (!Settings1.Default.MyPCSucks)
-                particles.Add(particle);
+            particles.Add(particle);
 
             return particle;
         }
 
         public Particle AddNewHitObjectParticle(Texture2D tx, Vector2 velocity, Vector2 startUpPosition, int timeToDie, float angleVelocity, Color pColor)
         {
-            HitObjectParticle particle = new HitObjectParticle(tx, velocity, startUpPosition, timeToDie, angleVelocity) { TextureColor = pColor};
 
-            if (!Settings1.Default.MyPCSucks)
-                particles.Add(particle);
+            HitObjectParticle particle = new HitObjectParticle(tx, velocity, startUpPosition, timeToDie, angleVelocity) { TextureColor = pColor };
+
+
+            particles.Add(particle);
 
             return particle;
         }
@@ -88,23 +95,17 @@ namespace kyun.GameScreen.UI.Particles
         /// </summary>
         public override void Update()
         {
-            if (Settings1.Default.MyPCSucks)
-                return;
-
-            /*
-            for (int particle = 0; particle < particles.Count; particle++)
-            {
-                particles[particle].Update();
-                if (particles[particle].TimeToDie <= 0)
-                {
-                    particles.RemoveAt(particle);
-                    particle--;
-                }
-            }*/
-
+           
             foreach (Particle particle in particles)
             {
-                particle.Update();
+                if(particle is ParticleScore || particle is HitObjectParticle)
+                {
+                    particle.Update();
+                }
+                else if (!Settings1.Default.MyPCSucks)
+                {
+                    particle.Update();
+                }
             }
 
             particles.RemoveAll(p => p.TimeToDie <= 0);
@@ -118,16 +119,20 @@ namespace kyun.GameScreen.UI.Particles
         /// </summary>
         public override void Render()
         {
-            if (Settings1.Default.MyPCSucks)
-                return;
 
-            for(int a = 0; a < particles.Count; a++)
+
+            for (int a = 0; a < particles.Count; a++)
             {
 
                 Particle particle = particles[a];
 
                 if (particle is SquareParticle)
                 {
+                    if (Settings1.Default.MyPCSucks)
+                    {
+                        continue;
+                    }
+
                     ((SquareParticle)particle).Render();
                 }
                 else if (particle is ParticleScore)
@@ -140,9 +145,13 @@ namespace kyun.GameScreen.UI.Particles
                 }
                 else
                 {
+                    if (Settings1.Default.MyPCSucks)
+                    {
+                        continue;
+                    }
                     ((Particle)particle).Render();
                 }
-            }         
+            }
         }
     }
 }

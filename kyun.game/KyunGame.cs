@@ -31,13 +31,12 @@ using kyun.GameModes.OsuMode;
 using kyun.game.GameModes;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
+using static System.Net.WebRequestMethods;
 
 namespace kyun
 {
     public class KyunGame : Game, IDisposable
     {
-        //Puto
-
         public GraphicsDeviceManager Graphics;
         public SpriteBatch SpriteBatch;
         public BPlayer Player;
@@ -86,8 +85,6 @@ namespace kyun
         float magic = 0;
         float dPeak = 0;
 
-        delegate void shit(GameTime tm);
-        event shit updateEvent;
         public System.Threading.SynchronizationContext syncContext;
         public List<Tooltip> tooltips = new List<Tooltip>();
         bool gameIsRunning;
@@ -172,7 +169,7 @@ namespace kyun
             if (Process.GetProcessesByName("winlogon").Count() < 1)
                 RunningOverWine = true; //A cup of wine
 
-            DateTime lastComp = File.GetLastWriteTime(Path.Combine(Environment.CurrentDirectory, "kyun.game.dll"));
+            DateTime lastComp = System.IO.File.GetLastWriteTime(Path.Combine(Environment.CurrentDirectory, "kyun.game.dll"));
 
             CompilationVersion = CompilationStatus + " | " + lastComp.ToString("ddMMyy");
 
@@ -180,7 +177,7 @@ namespace kyun
             VideoCounter = new FrameCounter();
             Instance = this;
             Graphics = new GraphicsDeviceManager(this);
-
+            //Graphics.PreferMultiSampling = false;
             if (Settings1.Default.Shaders)
             {
                 if (GraphicsAdapter.DefaultAdapter.IsProfileSupported(GraphicsProfile.HiDef))
@@ -205,10 +202,10 @@ namespace kyun
             if (false)
             {
                 m_GlobalHook = Hook.AppEvents();
-
+                /*
                 m_GlobalHook.MouseDown += MouseHandler.setMouseDownStateWinform;
                 m_GlobalHook.MouseUp += MouseHandler.setMouseUpStateWinform;
-                m_GlobalHook.MouseMove += MouseHandler.SetMousePosWinFrm;
+                m_GlobalHook.MouseMove += MouseHandler.SetMousePosWinFrm;*/
                 m_GlobalHook.MouseWheel += MouseHandler.SetMouseWheelPos;
             }
 
@@ -243,22 +240,18 @@ namespace kyun
             ToggleVSync(Settings1.Default.VSync);
             ToggleFullscreen(Settings1.Default.FullScreen);
 
+            
+
 
             if (srcm[Settings1.Default.ScreenMode].WindowMode != Screen.WindowDisposition.Windowed)
             {
-                Window.IsBorderless = true;/*
-                WinForm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-                WinForm.WindowState = System.Windows.Forms.FormWindowState.Maximized;*/
+                Window.IsBorderless = true;
             }
 #if DEBUG
             Logger.Instance.Debug("!!!! GRAPHICS CARD !!!!");
             Logger.Instance.Debug("======================");
             Logger.Instance.Debug("");
             Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.Description);
-            /*
-            Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.DeviceName);
-            Logger.Instance.Debug(Graphics.GraphicsDevice.Adapter.VendorId.ToString());
-            Logger.Instance.Debug((Graphics.GraphicsDevice.Adapter.IsDefaultAdapter) ? "Default adapter: True" : "Default adapter: False");*/
             Logger.Instance.Debug("");
             Logger.Instance.Debug("======================");
 
@@ -266,14 +259,9 @@ namespace kyun
 
             Graphics.ApplyChanges();
 
-            //WinForm.AllowDrop = true;
 
-            //ToDo: Monogame file drag and drop not supported yet
-            /*
-            WinForm.DragEnter += FormGame_DragEnter;
-            WinForm.DragLeave += FormGame_DragLeave;
-            WinForm.DragDrop += FormGame_DragDrop;*/
-
+            // Implemented on MonoGame 3.8.1
+            Window.FileDrop += Window_FileDrop;
 
             gameIsRunning = true;
 
@@ -283,7 +271,15 @@ namespace kyun
             timeStart = stopwatch.Elapsed;
 
             gameStart = DateTime.Now;
-            //updateEvent = cUpdate;
+        }
+
+        private void Window_FileDrop(object sender, FileDropEventArgs e)
+        {
+            string[] files = e.Files;
+            if (files[0].EndsWith(".osz"))
+            {
+                BeatmapLoader.GetInstance().LoadBeatmaps(files, (ScreenBase)ScreenManager.ActualScreen);
+            }
         }
 
         protected override void Update(GameTime tm)
@@ -300,9 +296,7 @@ namespace kyun
             lastElapsed = elapsed;
         }
 
-        private void FormGame_DragLeave(object sender, EventArgs e)
-        {
-        }
+      
 
         /// <summary>
         /// This isn't work
@@ -313,7 +307,7 @@ namespace kyun
             gameIsRunning = false;
 
             //UnloadContent();
-            tk.Abort();
+            //tk.Abort();
             //while (!stopped) { } //Wait for thread end
 
             SpritesContent.instance = null; //this is a buggy thing
@@ -321,39 +315,6 @@ namespace kyun
 
             Dispose();
             Exit();
-        }
-
-        private void FormGame_DragEnter(object sender, System.Windows.Forms.DragEventArgs e)
-        {
-            e.Effect = System.Windows.Forms.DragDropEffects.All;
-
-        }
-
-        private void FormGame_DragDrop(object sender, System.Windows.Forms.DragEventArgs e)
-        {
-
-            string[] files = (string[])e.Data.GetData(System.Windows.Forms.DataFormats.FileDrop);
-
-            if (files[0].ToLower().EndsWith(".mp3"))
-            {
-
-                switch ((BeatmapScreen.Instance as BeatmapScreen)._gamemode)
-                {
-                    case GameMode.Classic:
-                        GameLoader.GetInstance().LoadBeatmapAndRun(files[0], ClassicModeScreen.GetInstance());
-                        break;
-                    case GameMode.Osu:
-                        GameLoader.GetInstance().LoadBeatmapAndRun(files[0], OsuMode.GetInstance());
-                        break;
-                    case GameMode.CatchIt:
-                        GameLoader.GetInstance().LoadBeatmapAndRun(files[0], CatchItMode.GetInstance());
-                        break;
-                }
-            }
-            else
-            {
-                BeatmapLoader.GetInstance().LoadBeatmaps(files, (ScreenBase)ScreenManager.ActualScreen);
-            }
         }
 
         protected override void Initialize()
@@ -624,11 +585,15 @@ namespace kyun
         {
             Player.Update(gameTime);
             updated = DateTime.Now;
+            
+            
+            MouseHandler.UpdateCursor();
+
             //IsMouseVisible = false;
 
             //Cursor.Position = new Vector2(MouseHandler.GetState().X - (SpritesContent.Instance.GameCursor.Width / 2), MouseHandler.GetState().Y - (SpritesContent.Instance.GameCursor.Height / 2));
             //Cursor.Update();
-            checkHaxOrLag(gameTime);
+            //checkHaxOrLag(gameTime);
 
             //Update Gametime FIRST
             GameTimeP = gameTime;
@@ -715,14 +680,7 @@ namespace kyun
             if (!gameIsRunning)
                 return;
 
-
-
-
-
             lastCheckedDay = DateTime.Now;
-
-
-
 
             //Help time hack
             //updated == lastCheckedDay
@@ -752,7 +710,7 @@ namespace kyun
         public void DrawRenderTarget()
         {
 
-            bool linear = false;
+            bool linear = true;
             tooltips.Clear();
             GraphicsDevice.SetRenderTarget(renderTarget2D);
 
@@ -919,12 +877,14 @@ namespace kyun
                 SpriteEffects.None,
                 0);
 
+            
             MouseEvent mouseState = MouseHandler.GetStateNonScaled();
             Cursor.Scale = .8f;
 
             Cursor.Position = new Vector2(mouseState.X - Cursor.Size.X / 2, mouseState.Y - Cursor.Size.Y / 2);
             Cursor.Update();
             Cursor.Render();
+
             tooltips.ForEach((obj) =>
             {
                 if (obj.Visible)

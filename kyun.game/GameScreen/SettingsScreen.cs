@@ -66,7 +66,8 @@ namespace kyun.GameScreen
 
             //InstanceManager.deleg.Invoke();
 
-            KyunGame.Instance.ChangeResolution(Screen.ScreenModeManager.GetSupportedModes()[Settings1.Default.ScreenMode]);
+            //KyunGame.Instance.ChangeResolution(Screen.ScreenModeManager.GetSupportedModes()[Settings1.Default.ScreenMode]);
+            InstanceManager.Instance.Reload();
 
         }
     }

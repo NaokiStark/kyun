@@ -320,8 +320,8 @@ namespace kyun.GameScreen
             //bplayer.Play(selected_song[0]);
             //auplayer.Play(AppDomain.CurrentDomain.BaseDirectory + @"\Assets\Junk - enchanted.mp3", "", true);
 
-           // KyunGame.Instance.Notifications.ShowDialog(suggestions[OsuBeatMap.rnd.Next(0, suggestions.Length - 1)], 15000, Notifications.NotificationType.Info);
-           
+            // KyunGame.Instance.Notifications.ShowDialog(suggestions[OsuBeatMap.rnd.Next(0, suggestions.Length - 1)], 15000, Notifications.NotificationType.Info);
+
 
             //UbeatGame.Instance.OnPeak += Instance_OnPeak;
         }
@@ -405,8 +405,11 @@ namespace kyun.GameScreen
                     0.01f * (float)(OsuUtils.OsuBeatMap.rnd.NextDouble() * 2f - 1),
                     ccolor
                     );
-                particle.Scale = (float)OsuUtils.OsuBeatMap.rnd.NextDouble(0.4, 0.7);
-                particle.Opacity = (float)OsuUtils.OsuBeatMap.rnd.NextDouble(0.4, 0.9);
+                if (particle != null)
+                {
+                    particle.Scale = (float)OsuUtils.OsuBeatMap.rnd.NextDouble(0.4, 0.7);
+                    particle.Opacity = (float)OsuUtils.OsuBeatMap.rnd.NextDouble(0.4, 0.9);
+                }
 
                 squareYesNo = !squareYesNo;
                 stwp = !stwp;
@@ -809,7 +812,7 @@ namespace kyun.GameScreen
 
         private string[] suggestions = new string[] { "You can add your osu! library on Config",
                                                       "You can breathe",
-                                                      "Use [X] or [Y] to make fast combos on Circles! mode",                                                      
+                                                      "Use [X] or [Y] to make fast combos on Circles! mode",
                                                       "To add beatmaps, Drag And Drop \".osz\" files in this window",
                                                       "Need beatmaps? Download in bloodcat.com/osu/ and drop \".osz\" files here!",
                                                       "Here should be a suggestion, but I could not think of one, sorry"};

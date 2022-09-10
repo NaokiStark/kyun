@@ -83,17 +83,15 @@ namespace kyun.Utils
 
         void StartInstance()
         {
-            try { 
-                do
-                {
-                    IsRunning = false;
-                    kyun.Logger.Instance.Debug(System.Threading.Thread.GetDomainID().ToString());
-                    ubeat = new KyunGame(SoftwareRendering, Repair);
+            try
+            {
 
-                    ubeat.Run();
-                }
-                while (IsRunning);
-               
+                kyun.Logger.Instance.Debug(System.Threading.Thread.GetDomainID().ToString());
+
+                ubeat = new KyunGame(SoftwareRendering, Repair);
+
+                ubeat.Run();
+
             }
             catch (Exception nsgdex)
             {
@@ -109,15 +107,18 @@ namespace kyun.Utils
 
         public void Reload()
         {
-            IsRunning = false;
+            IsRunning = true;
+            ubeat?.Exit();
+            
             var process = Process.GetCurrentProcess();
+            
             Process.Start(process.MainModule.FileName);
             Environment.Exit(0);
         }
 
         private void Ubeat_Disposed(object sender, EventArgs e)
         {
-           
+
         }
 
         public void Dispose()

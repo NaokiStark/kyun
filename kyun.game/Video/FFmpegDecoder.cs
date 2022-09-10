@@ -289,7 +289,6 @@ namespace kyun.game.Video
 
                     foreach (var s in frameList.Where(kv => kv.Key <= key).ToList())
                     {
-                        frameList[s.Key] = null;
                         try
                         {
                             frameList.Remove(s.Key);
