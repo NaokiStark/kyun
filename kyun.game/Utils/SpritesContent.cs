@@ -230,6 +230,7 @@ namespace kyun.Utils
             MissTx = Content.Load<Texture2D>("miss");
 
             Logo = Content.Load<Texture2D>("logo");
+            FabiCorpLogo = Content.Load<Texture2D>("fabicorplogo");
 
             LogoAtTwo = Content.Load<Texture2D>("logo@2");
 
@@ -313,11 +314,11 @@ namespace kyun.Utils
             try
             {
                 RGBShiftEffect = Content.Load<Effect>("RGBShift");
-               // RGBShiftEffect = new Effect(KyunGame.Instance.GraphicsDevice, File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Content/RGBShift.xnb")));
+                // RGBShiftEffect = new Effect(KyunGame.Instance.GraphicsDevice, File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Content/RGBShift.xnb")));
                 //Settings1.Default.Shaders = true;
                 //Settings1.Default.Save();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 try
                 {
@@ -334,7 +335,7 @@ namespace kyun.Utils
                     Logger.Instance.Warn(ex.Message);
                 }
             }
-            
+
 
             ApproachCircle = Content.Load<Texture2D>("approachcircle");
             CircleNote = Content.Load<Texture2D>("Note");
@@ -461,10 +462,30 @@ namespace kyun.Utils
                 0);
 
             Color[] rdc = new Color[rConnr.Width * rConnr.Height];
-            rConnr.GetData<Color>(rdc);
+            try
+            {
+                rConnr.GetData<Color>(rdc);
+            }
+            catch
+            {
+                KyunGame.Instance.syncContext.Send(state =>
+                {
+                    rConnr.GetData<Color>(rdc);
+                }, null);
+            }
 
             Color[] hdc = new Color[tx.Width * tx.Height];
-            tx.GetData<Color>(hdc);
+            try
+            {
+                tx.GetData<Color>(hdc);
+            }
+            catch
+            {
+                KyunGame.Instance.syncContext.Send(state =>
+                {
+                    tx.GetData<Color>(hdc);
+                }, null);
+            }
 
             Color[] final = new Color[rConnr.Width * rConnr.Height];
 
@@ -486,8 +507,17 @@ namespace kyun.Utils
                 a++;
             }
 
-            rConnr.SetData<Color>(final);
-
+            try
+            {
+                rConnr.SetData<Color>(final);
+            }
+            catch
+            {
+                KyunGame.Instance.syncContext.Send(state =>
+                {
+                    rConnr.SetData<Color>(final);
+                }, null);
+            }
             return rConnr;
         }
 
@@ -508,7 +538,7 @@ namespace kyun.Utils
 
             bm = cropAtRect(bm, new System.Drawing.Rectangle(bm.Width / 2 - 800 / 2, bm.Height / 2 - 450 / 2, 800, 450));
             var blur = new GaussianBlur(bm);
-            
+
             bm = blur.Process(radial);
 
             return ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, BitmapToStream(bm));
@@ -644,6 +674,7 @@ namespace kyun.Utils
         public Texture2D AutoModeButton { get; set; }
         public Texture2D AutoModeButtonSel { get; set; }
         public Texture2D Logo { get; set; }
+        public Texture2D FabiCorpLogo { get; set; }
         public Texture2D LogoAtTwo { get; set; }
         public Texture2D SpaceSkip { get; set; }
         public Texture2D TopEffect { get; set; }

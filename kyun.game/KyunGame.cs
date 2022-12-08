@@ -33,6 +33,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
 using static System.Net.WebRequestMethods;
 
+
 namespace kyun
 {
     public class KyunGame : Game, IDisposable
@@ -109,7 +110,9 @@ namespace kyun
 
         public static string MainSite = "https://kyun.mokyu.pw/";
 
-  
+        public static bool VideoInterpolation;
+
+
         public float GeneralVolume
         {
             get
@@ -223,7 +226,7 @@ namespace kyun
             wSize.X = srcm[Settings1.Default.ScreenMode].ScaledWidth;
             wSize.Y = srcm[Settings1.Default.ScreenMode].ScaledHeight;
 
-            this.Graphics.PreferredBackBufferWidth = (int)wSize.X;
+            Graphics.PreferredBackBufferWidth = (int)wSize.X;
             this.Graphics.PreferredBackBufferHeight = (int)wSize.Y;
 
             try
@@ -240,7 +243,7 @@ namespace kyun
             ToggleVSync(Settings1.Default.VSync);
             ToggleFullscreen(Settings1.Default.FullScreen);
 
-            
+
 
 
             if (srcm[Settings1.Default.ScreenMode].WindowMode != Screen.WindowDisposition.Windowed)
@@ -259,10 +262,26 @@ namespace kyun
 
             Graphics.ApplyChanges();
 
-
+#if WINDOWS
+            var frm = System.Windows.Forms.Form.FromHandle(Window.Handle);
+            frm.AllowDrop = true;
+            frm.DragEnter += (obj, args) =>
+            {                
+                args.Effect = System.Windows.Forms.DragDropEffects.All;
+            };
+            frm.DragDrop += (obj, args) =>
+            {
+                string[] files = (string[])args.Data.GetData(System.Windows.Forms.DataFormats.FileDrop);
+                if (files[0].EndsWith(".osz"))
+                {
+                    BeatmapLoader.GetInstance().LoadBeatmaps(files, (ScreenBase)ScreenManager.ActualScreen);
+                }
+            };
+            
+#else
             // Implemented on MonoGame 3.8.1
             Window.FileDrop += Window_FileDrop;
-
+#endif
             gameIsRunning = true;
 
             stopwatch = new Stopwatch();
@@ -287,7 +306,7 @@ namespace kyun
             TimeSpan elapsed = stopwatch.Elapsed;
             float maxAllowd = TargetElapsedTime.Milliseconds;
             GameTime gm = new GameTime(elapsed, elapsed - lastElapsed);
-           
+
             //Double
             if (disableMultiThread)
             {
@@ -296,7 +315,7 @@ namespace kyun
             lastElapsed = elapsed;
         }
 
-      
+
 
         /// <summary>
         /// This isn't work
@@ -483,7 +502,7 @@ namespace kyun
             SpriteBatch = new SpriteBatch(GraphicsDevice);
 
             SpritesContent.Instance.LoadContent(SpriteBatch, GraphicsDevice);
-           
+
             touchHandler = new TouchHandler(WinForm);
             Logger.Instance.Info("");
             Logger.Instance.Info("Done.");
@@ -509,7 +528,7 @@ namespace kyun
 
         }
 
-     
+
         #endregion
 
         void updatePeak(GameTime gm)
@@ -585,8 +604,8 @@ namespace kyun
         {
             Player.Update(gameTime);
             updated = DateTime.Now;
-            
-            
+
+
             MouseHandler.UpdateCursor();
 
             //IsMouseVisible = false;
@@ -663,7 +682,7 @@ namespace kyun
                 (ScreenManager.ActualScreen as ScreenBase).checkKeyboardEvents(KeyboardOldState, KeyboardActualState, GamePad.GetState(PlayerIndex.One));
             }
             KeyboardOldState = KeyboardActualState;
-            if(elapsedToVolume > 16d)
+            if (elapsedToVolume > 16d)
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.Add) || Keyboard.GetState().IsKeyDown(Keys.PageUp))
                     GeneralVolume = GeneralVolume + (gameTime.ElapsedGameTime.Milliseconds) * .005f;
@@ -672,7 +691,7 @@ namespace kyun
                     GeneralVolume = GeneralVolume - (gameTime.ElapsedGameTime.Milliseconds) * .005f;
 
                 elapsedToVolume = 0;
-            }            
+            }
         }
 
         protected override void Draw(GameTime gameTime)
@@ -757,7 +776,7 @@ namespace kyun
                 //SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone, SpritesContent.Instance.RGBShiftEffect);
                 if (!isvSync)
                 {
-                    SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, (linear) ? SamplerState.LinearClamp : SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
+                    SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, (linear) ? Microsoft.Xna.Framework.Graphics.SamplerState.LinearClamp : SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone);
                 }
                 else
                 {
@@ -877,7 +896,7 @@ namespace kyun
                 SpriteEffects.None,
                 0);
 
-            
+
             MouseEvent mouseState = MouseHandler.GetStateNonScaled();
             Cursor.Scale = .8f;
 

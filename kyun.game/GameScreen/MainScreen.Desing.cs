@@ -605,7 +605,7 @@ namespace kyun.GameScreen
 
         Vector2[] objectsInitialPosition = { Vector2.Zero, Vector2.Zero, Vector2.Zero, Vector2.Zero };
         private UI.FilledRectangle filledRect1;
-        private Image coverimg;
+        public Image coverimg;
         public FilledRectangle coverBox;
         public Label coverLabel;
         public Label coverLabelArt;

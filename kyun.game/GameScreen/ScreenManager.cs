@@ -31,6 +31,7 @@ namespace kyun.GameScreen
                             EffectsPlayer.PlayEffect(SpritesContent.Instance.MenuTransition);
             showing = true;
             ToBeChanged = ToScreen;
+            ScreenBase.avp.use_gametime = false;
 
         }
 

@@ -37,19 +37,22 @@ namespace kyun.GameScreen
                 bgcolor[a] = Color.White;
             }
 
-            Background.SetData(bgcolor);         
+            Background.SetData(bgcolor);
 
-            Vector2 logoPosition = new Vector2((mode.Width / 2) - (SpritesContent.Instance.Logo.Width / 2), (mode.Height / 2) - (SpritesContent.Instance.Logo.Height / 2) - SpritesContent.Instance.Logo.Height / 2);
+            var logoSize = new Vector2(200);
 
-            Logo = new Image(SpritesContent.Instance.IsoLogo)
+            Vector2 logoPosition = new Vector2((mode.Width / 2) - (logoSize.X / 2), (mode.Height / 2) - (logoSize.Y / 2) - logoSize.Y / 2);
+
+            Logo = new Image(SpritesContent.Instance.FabiCorpLogo)
             {
                 Position = logoPosition,
                 BeatReact = false,
+                Size = logoSize,
             };
 
             lComp = new Label(0) {
                 Text = KyunGame.CompilationVersion,
-                Position = new Vector2(Logo.Position.X + Logo.Texture.Width / 2, Logo.Position.Y + 20 + Logo.Texture.Height),
+                Position = new Vector2(Logo.Position.X + Logo.Size.X / 2, Logo.Position.Y + 20 + Logo.Size.Y),
                 ForegroundColor = Color.Black,
                 Shadow = false,
                 Centered = true          
@@ -57,7 +60,7 @@ namespace kyun.GameScreen
 
             EWarnImage = new Image(SpritesContent.Instance.EpWarn)
             {
-                Position = new Vector2(Logo.Position.X - 20, lComp.Position.Y + 40),
+                Position = new Vector2((mode.Width / 2) - (SpritesContent.Instance.EpWarn.Width / 2), lComp.Position.Y + 40),
                 BeatReact = false,
                 Scale = .5f
             };
@@ -78,7 +81,14 @@ namespace kyun.GameScreen
             EWarnImage.FadeIn(AnimationEffect.Ease, 1000);
             KyunGame.Instance.Notifications.ShowDialog("Volume control: PageUP | PageDown keys", 2000, Notifications.NotificationType.Critical);
 
-
+            onKeyPress += (obj, args) =>
+            {
+                if (args.Key == Microsoft.Xna.Framework.Input.Keys.P)
+                {
+                    DONT_UPDATE = !DONT_UPDATE;
+                    KyunGame.Instance.Notifications.ShowDialog(DONT_UPDATE ? "GAME LOADING PAUSED" : "GAME LOADING UNPAUSED", 5000, Notifications.NotificationType.Critical);
+                }
+            };
         }
 
         public override void Update(GameTime tm)

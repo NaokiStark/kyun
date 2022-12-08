@@ -74,8 +74,12 @@ namespace kyun.Video
         private int workingOn;
         private Texture2D lastAliveFrameTexture;
 
+        public bool use_gametime = false;
+        public long game_time = 0;
+
         Texture2D tx;
         private byte[] lastWorkingFrame;
+        private bool eventSubscribed;
 
         public AudioVideoPlayer()
         {
@@ -92,10 +96,11 @@ namespace kyun.Video
             //videoplayer.FFmpegDecoder?.Seek(tm);
         }
 
-        public void Play(string audio, string video = "", bool fadein = false, float opacity = 0.75f)
+        public void Play(string audio, string video = "", bool fadein = false, float opacity = 0.75f, bool _use_gametime = false)
         {
 
             this.Video = video;
+            use_gametime = _use_gametime;
 
             anotherfuckingvideovar = video;
 
@@ -122,25 +127,37 @@ namespace kyun.Video
                 if (File.Exists(anotherfuckingvideovar))
                 {
                     isDir = IsFolder(anotherfuckingvideovar);
-                }               
+                }
             }
-                                  
 
-            if (KyunGame.Instance.VideoEnabled && anotherfuckingvideovar != "" && !isDir)
+            Audio = audio;
+
+            if (KyunGame.Instance.VideoEnabled && anotherfuckingvideovar != "" && !anotherfuckingvideovar.EndsWith(Path.DirectorySeparatorChar) && !isDir)
             {
-
+                if (!eventSubscribed)
+                {
+                    videoplayer.OnDecoderReady += (e, a) =>
+                    {
+                        audioplayer.Play(Audio, 1, 1, true);
+                    };
+                    eventSubscribed = true;
+                }
                 videoplayer.Play(anotherfuckingvideovar);
+                //videoplayer.vdc.WaitForDecoder(); // Works!
                 //updateBuffer(true);
             }
+            else
+            {
+                audioplayer.Play(audio, 1, 1, true);
+
+            }
+
             frameIndex = 0;
 
             videoFramerate = 3;
 
             frameBuffer = new Texture2D[videoFramerate];
 
-            audioplayer.Play(audio, 1, 1, true);
-
-            Audio = audio;
             lastWorkingFrame = null;
         }
 
@@ -341,7 +358,7 @@ namespace kyun.Video
                 return;
 
 
-            if (audioplayer.PlayState == BassPlayState.Stopped)
+            if (audioplayer.PlayState == BassPlayState.Stopped && !use_gametime)
             {
                 lastWorkingFrame = null;
                 return;
@@ -355,7 +372,7 @@ namespace kyun.Video
             if (videoplayer.vdc.GetBufferCount() < 1)
                 return;
 
-            if(tx == null)
+            if (tx == null)
             {
                 tx = new Texture2D(KyunGame.Instance.GraphicsDevice, videoplayer.vdc.VIDEOWIDTH, videoplayer.vdc.VIDEOHEIGHT);
 
@@ -376,7 +393,16 @@ namespace kyun.Video
 
             long position = audioplayer.PositionV2;
 
-            byte[] frame = videoplayer.GetFrame(position + VideoOffset);
+            byte[] frame;
+            if (use_gametime)
+            {
+                frame = videoplayer.GetFrame(game_time);
+            }
+            else
+            {
+                frame = videoplayer.GetFrame(position - VideoOffset);
+            }
+
 
             if (frame != null)
             {

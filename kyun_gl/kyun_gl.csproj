@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.1.303" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\kyun.game\kyun.game.csproj" />
     <ProjectReference Include="..\kyun.Logger\kyun.Logger.csproj" />
   </ItemGroup>

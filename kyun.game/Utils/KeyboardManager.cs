@@ -64,6 +64,8 @@ namespace Redux.Utilities.Managers
                 }
 
                 Text = Text.Remove(Text.Length - 1, 1);
+                EffectsPlayer.PlayEffect(SpritesContent.Instance.ButtonOver);
+                OnKeyPress?.Invoke();
             }
             else
             {
@@ -75,6 +77,7 @@ namespace Redux.Utilities.Managers
                         || char.IsWhiteSpace(e.Character)
                         || char.IsSymbol(e.Character)
                         || char.IsPunctuation(e.Character)
+                        || e.Character == 32
                        ) //??
                     {
                         Text += e.Character;

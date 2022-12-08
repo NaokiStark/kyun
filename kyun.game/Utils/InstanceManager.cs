@@ -89,7 +89,6 @@ namespace kyun.Utils
                 kyun.Logger.Instance.Debug(System.Threading.Thread.GetDomainID().ToString());
 
                 ubeat = new KyunGame(SoftwareRendering, Repair);
-
                 ubeat.Run();
 
             }
@@ -109,9 +108,9 @@ namespace kyun.Utils
         {
             IsRunning = true;
             ubeat?.Exit();
-            
+
             var process = Process.GetCurrentProcess();
-            
+
             Process.Start(process.MainModule.FileName);
             Environment.Exit(0);
         }

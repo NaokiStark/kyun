@@ -41,6 +41,7 @@ namespace kyun.GameScreen
         public MainScreen(bool LoadRandom = true)
             : base("MainScreen")
         {
+    
 
             ecolors = new List<int[]>();
             ecolors.Add(new int[] { 206, 53, 39 });
@@ -105,6 +106,7 @@ namespace kyun.GameScreen
                     Process.Start($"{KyunGame.MainSite}");
                 });
             }
+            _ = Jukebox.Instance;
         }
 
         private void MainScreen_OnMouseMove(object sender, EventArgs e)
@@ -227,6 +229,7 @@ namespace kyun.GameScreen
                     //string act = "activated";
                     //string deact = "disabled";
                     //ntfr.ShowDialog($"Jukebox mode {((Jukebox)?act:deact)}, press F10 to toggle");
+
                     (Jukebox.Instance as Jukebox).ChangeSongDisplay();
                     ScreenManager.ChangeTo(Jukebox.Instance);
                     break;

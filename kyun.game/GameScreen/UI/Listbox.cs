@@ -48,14 +48,16 @@ namespace kyun.GameScreen.UI
 
         public List<Mapset> Items = new List<Mapset>();
 
-        public int selectedIndex {
-            get{
+        public int selectedIndex
+        {
+            get
+            {
                 return sIndex;
             }
             set
             {
                 sIndex = value;
-               
+
             }
         }
 
@@ -80,7 +82,7 @@ namespace kyun.GameScreen.UI
             this.Position = position;
             this.height = height;
             this.width = width;
-            
+
 
             this.textFont = font;
             this.Scale = 1;
@@ -129,14 +131,14 @@ namespace kyun.GameScreen.UI
                 rnd = -rnd;
                 stpsrnd = 5;
             }
-            
+
         }
 
         public void Select(bool up)
         {
             if (up)
             {
-                if(selectedIndex < 1)
+                if (selectedIndex < 1)
                 {
                     return;
                 }
@@ -145,27 +147,27 @@ namespace kyun.GameScreen.UI
 
                 if (selectedIndex < vertOffset)
                 {
-                    if(selectedIndex < vertOffset + (maxCanHold / 2))
+                    if (selectedIndex < vertOffset + (maxCanHold / 2))
                         vertOffset--;
                 }
             }
             else
             {
-                if(selectedIndex > Items.Count - 1)
+                if (selectedIndex > Items.Count - 1)
                 {
                     return;
                 }
 
                 selectedIndex++;
-                if(selectedIndex > vertOffset + maxCanHold - 1)
+                if (selectedIndex > vertOffset + maxCanHold - 1)
                 {
                     vertOffset++;
                 }
             }
 
-            
+
         }
-        
+
         void Listbox_Click(object sender, EventArgs e)
         {
             computeSelected();
@@ -193,7 +195,7 @@ namespace kyun.GameScreen.UI
             }
         }
 
-      
+
         public int textOverflows()
         {
             int ret = 0;
@@ -218,10 +220,10 @@ namespace kyun.GameScreen.UI
         }
 
         public int maxCanHold;
-        
+
         public override void Render()
         {
-             
+
 
 
             //Take the width divided by the width of a monospace character in the current font, minus 1 (for spacing)
@@ -231,13 +233,13 @@ namespace kyun.GameScreen.UI
             Vector2 drawTextPos = startBoxPos + new Vector2(0, -2);
             Vector2 bottomRightBoxPos = new Vector2(startBoxPos.X + (width - 4), startBoxPos.Y + perEntryHeight);
 
-            
+
             //DrawManager.Draw_Box(Position + new Vector2(width / 2, height / 2), width, height, Color.Black, sb, 0, 200);
             //DrawManager.Draw_Outline(Position + new Vector2(width / 2, height / 2), width, height, Color.Black, sb);
-            
-             horizontalOffset = 0;
 
-             Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, Texture.Width, Texture.Height);
+            horizontalOffset = 0;
+
+            Rectangle rg = new Rectangle((int)this.Position.X, (int)this.Position.Y, Texture.Width, Texture.Height);
             //UbeatGame.Instance.SpriteBatch.Draw(this.Texture, rg, Color.White);
             Rectangle mrg = new Rectangle((int)MouseHandler.GetState().X, (int)MouseHandler.GetState().Y, 10, 10);
 
@@ -263,7 +265,7 @@ namespace kyun.GameScreen.UI
                     artistDrw += oartistDrw[a];
                 }
 
-                for (int a = horizontalOffset; a < omapCreator.Length && a < maxCharsCanHold + horizontalOffset; a++)
+                for (int a = horizontalOffset; a < (omapCreator == null ? "" : omapCreator).Length && a < maxCharsCanHold + horizontalOffset; a++)
                 {
                     mapCreator += omapCreator[a];
                 }
@@ -287,7 +289,7 @@ namespace kyun.GameScreen.UI
                 }
 
                 int middle = maxCanHold / 2;
-                if(i > middle)
+                if (i > middle)
                 {
                     //fBox += new Vector2(20 * (maxCanHold - i), 0);
                 }
@@ -296,7 +298,7 @@ namespace kyun.GameScreen.UI
                     //fBox += new Vector2(20 * i, 0);
                 }
 
-                if(i + vertOffset == selectedIndex)
+                if (i + vertOffset == selectedIndex)
                 {
                     fBox += new Vector2(20, 0);
                 }
@@ -306,12 +308,13 @@ namespace kyun.GameScreen.UI
 
                 float pscale = 1;
 
-                if(mrg.Intersects(new Rectangle((int)fBox.X, (int)fBox.Y, SpritesContent.Instance.ScrollListBeatmap_alt.Width, SpritesContent.Instance.ScrollListBeatmap_alt.Height))){
+                if (mrg.Intersects(new Rectangle((int)fBox.X, (int)fBox.Y, SpritesContent.Instance.ScrollListBeatmap_alt.Width, SpritesContent.Instance.ScrollListBeatmap_alt.Height)))
+                {
                     pscale = 1.01f;
                 }
 
-                
-                KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.ScrollListBeatmap_alt, fBox, null, Color.White, 0, Vector2.Zero, pscale ,SpriteEffects.None , 0);
+
+                KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.ScrollListBeatmap_alt, fBox, null, Color.White, 0, Vector2.Zero, pscale, SpriteEffects.None, 0);
                 if (drawFront)
                     //KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.ScrollListBeatmap, fBox, Color.White*0.8f);
                     KyunGame.Instance.SpriteBatch.Draw(SpritesContent.Instance.ScrollListBeatmap, fBox, null, Color.White, 0, Vector2.Zero, pscale, SpriteEffects.None, 0);
@@ -319,7 +322,7 @@ namespace kyun.GameScreen.UI
 
                 KyunGame.Instance.SpriteBatch.DrawString(textFont, o, drTxPs, textColor, 0f, Vector2.Zero, RenderScale * pscale, SpriteEffects.None, 0);
                 KyunGame.Instance.SpriteBatch.DrawString(textFont, artistDrw, drTxPs + new Vector2(10, 25), textColor, 0f, Vector2.Zero, RenderScale * .85f * pscale, SpriteEffects.None, 0);
-                KyunGame.Instance.SpriteBatch.DrawString(textFont, mapCreator, drTxPs + new Vector2(10, 25*2-5), textColor, 0f, Vector2.Zero, RenderScale * .75f * pscale, SpriteEffects.None, 0);
+                KyunGame.Instance.SpriteBatch.DrawString(textFont, mapCreator, drTxPs + new Vector2(10, 25 * 2 - 5), textColor, 0f, Vector2.Zero, RenderScale * .75f * pscale, SpriteEffects.None, 0);
 
                 startBoxPos.Y += perEntryHeight;
 
@@ -361,7 +364,7 @@ namespace kyun.GameScreen.UI
             {
                 oldSel = selectedIndex;
                 if (IndexChanged != null)
-                {                    
+                {
                     vertOffset = Math.Max(selectedIndex - (maxCanHold / 2), 0);
                     IndexChanged(this, new EventArgs());
                 }

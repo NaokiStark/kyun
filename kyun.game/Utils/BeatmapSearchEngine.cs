@@ -28,7 +28,7 @@ namespace kyun.Utils
 
                     var searchedMaps = from Mapset in mapsetArr
                                        where Mapset.Title.ToLower().Contains(keyword)
-                                       || Mapset.Creator.ToLower().Contains(keyword)
+                                       || (Mapset.Creator != null ? Mapset.Creator : "").ToLower().Contains(keyword)
                                        || Mapset.Artist.ToLower().Contains(keyword)
                                        || Mapset.Tags.Contains(keyword)
                                        select Mapset;

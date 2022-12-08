@@ -663,7 +663,7 @@ namespace kyun.GameScreen
 
                 if (cobj.IsListVisible)
                 {
-                    cobj.Update();
+                    cobj?.Update();
                     return;
                 }
 
@@ -671,7 +671,7 @@ namespace kyun.GameScreen
 
 
             foreach (UIObjectBase obj in Controls)
-                obj.Update();
+                obj?.Update();
 
         }
 

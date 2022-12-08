@@ -18,6 +18,10 @@ namespace kyun.Utils
         static Vector2 Position = Vector2.Zero;
         static int ScrollWheelValue = 0;
 
+        static MouseState actualState;
+
+        static MouseEvent main_event = new();
+
         public static void SetMousePosWinFrm(object obj, System.Windows.Forms.MouseEventArgs args)
         {
             /*
@@ -106,9 +110,14 @@ namespace kyun.Utils
 
         }
 
-       
+#if WINDOWS
+        public static void UpdateCursor()
+        {
+            actualState = Mouse.GetState();
+        }
+#endif
 
-        
+
         public static MouseEvent GetState()
         {
 
@@ -116,11 +125,11 @@ namespace kyun.Utils
             {
                 return WineHandler();
             }
-#if WINDOWS
+#if !WINDOWS
             return getWindowsApiPoint();
 #else
 
-            MouseState actualState = Mouse.GetState();
+            
             var actualMode = Screen.ScreenModeManager.GetActualMode();
 
             return new MouseEvent()
@@ -143,11 +152,10 @@ namespace kyun.Utils
                 return WineHandler();
             }
 
-#if WINDOWS
+#if !WINDOWS
             return getWindowsApiPointNotScaled();
 #else
 
-            MouseState actualState = Mouse.GetState();
             var actualMode = Screen.ScreenModeManager.GetActualMode();
 
             return new MouseEvent()
@@ -165,18 +173,9 @@ namespace kyun.Utils
 
         private static MouseEvent WineHandler()
         {
-            return new MouseEvent()
-            {
-                MiddleButton = MiddleButton,
-                LeftButton = LeftButton,
-                RightButton = RightButton,
-                Position = Position,
-                X = Position.X,
-                Y = Position.Y,
-                ScrollWheelValue = ScrollWheelValue
-            };
+            return main_event;
         }
-#if WINDOWS
+#if !WINDOWS
         // use of raw input (Windows api)
 
         /// <summary>
@@ -231,7 +230,12 @@ namespace kyun.Utils
             MiddleButton = IsMouseDown(0x04) ? ButtonState.Pressed : ButtonState.Released;
             LeftButton = IsMouseDown(0x01) ? ButtonState.Pressed : ButtonState.Released;
             RightButton = IsMouseDown(0x02) ? ButtonState.Pressed : ButtonState.Released;
-            Position = actualState;            
+            Position = actualState;
+
+            main_event.MiddleButton = MiddleButton;
+            main_event.LeftButton = LeftButton;
+            main_event.RightButton = RightButton;
+            main_event.Position = Position;
         }
 
         private static MouseEvent getWindowsApiPoint()

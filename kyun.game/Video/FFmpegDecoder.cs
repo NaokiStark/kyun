@@ -15,6 +15,7 @@ namespace kyun.game.Video
     {
 
         public static FFmpegDecoder Instance = null;
+        public event EventHandler<EventArgs> OnDecoderReady;
 
         /// <summary>
         /// Raw Video Buffer
@@ -24,7 +25,7 @@ namespace kyun.game.Video
         /// <summary>
         /// Buffer AS IS [time, frame]
         /// </summary>
-        public SortedDictionary<long, byte[]> frameList = new SortedDictionary<long, byte[]>();
+        public SortedDictionary<uint, byte[]> frameList = new SortedDictionary<uint, byte[]>();
 
         /// <summary>
         /// Decoded frames
@@ -83,6 +84,12 @@ namespace kyun.game.Video
         /// </summary>
         bool interpolate = false;
 
+
+        /// <summary>
+        /// Event decoded called flag
+        /// </summary>
+        bool onDecodeEventCalled = false;
+
         /// <summary>
         /// Initializes VideoDecoder with custom resolution
         /// </summary>
@@ -97,7 +104,7 @@ namespace kyun.game.Video
             VIDEOHEIGHT = height;
             FileName = filename;
             VIDEOFRAMERATE = GetVideoFramerate();
-            Console.WriteLine(VIDEOFRAMERATE);
+            kyun.Logger.Instance.Debug($"Video Framerate: {VIDEOFRAMERATE}");
         }
 
         /// <summary>
@@ -105,12 +112,16 @@ namespace kyun.game.Video
         /// </summary>
         public void Decode()
         {
+            onDecodeEventCalled = false;
             if (!File.Exists(FileName))
             {
                 Decoding = false;
+                onDecodeEventCalled = true;
+                OnDecoderReady?.Invoke(this, new EventArgs());
                 return;
             }
-            // I've used Thread instead Task, 'z is more flexible, but is a little more dangerous and unsafe
+            interpolate = KyunGame.VideoInterpolation;
+
             Thread vThread = new Thread(new ThreadStart(ThreadedDecoder));
             vThread.Start();
         }
@@ -120,9 +131,9 @@ namespace kyun.game.Video
         /// </summary>
         private void ThreadedDecoder()
         {
-            
-            string vfilter = "-filter \"minterpolate=fps=60:me=ntss:mc_mode=aobmc:vsbmc=1:me_mode=bidir:mi_mode=blend:scd=fdiff\"";
-            if (interpolate)
+
+            string vfilter = "-filter:v \"minterpolate=fps=60:me=ntss:mc_mode=aobmc:vsbmc=1:me_mode=bidir:mi_mode=blend:scd=fdiff\"";
+            if (!interpolate)
             {
                 vfilter = "";
             }
@@ -142,14 +153,14 @@ namespace kyun.game.Video
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 StandardOutputEncoding = Encoding.UTF8,
-                
+
             };
 
             ffmpegProc = new Process
             {
                 StartInfo = startInfo
             };
-            
+
             ffmpegProc.Start();
             ffmpegProc.PriorityClass = ProcessPriorityClass.High;
             //STDOUT
@@ -165,7 +176,7 @@ namespace kyun.game.Video
             {
                 buffer[a] = new byte[VIDEOWIDTH * VIDEOHEIGHT * 4];
             }
-
+            frameList.Clear();
             int current = 4;
             try
             {
@@ -173,12 +184,21 @@ namespace kyun.game.Video
 
                 while (!ffmpegProc.HasExited)
                 {
+                    // decoding started event
+
+
                     while (current > 0)
                     {
                         // Waits if buffer is full
                         while (frameList.Count >= VIDEOFRAMERATE + 5)
                         {
                             Thread.Sleep(1);
+                        }
+                        
+                        if (frameIndex > VIDEOFRAMERATE + 4 && Decoding && !onDecodeEventCalled)
+                        {
+                            onDecodeEventCalled = true;
+                            OnDecoderReady?.Invoke(this, new EventArgs());
                         }
 
                         // Get the frame
@@ -203,7 +223,14 @@ namespace kyun.game.Video
 
                             buffer[BufferIndex].CopyTo(frm, 0);
                             // Add to buffer
-                            frameList.Add((long)(frameIndex * (1000 / VIDEOFRAMERATE)), frm);
+                            try
+                            {
+                                frameList.Add((uint)(frameIndex * (1000 / VIDEOFRAMERATE)), frm);
+                            }
+                            catch
+                            {
+                                frameList.Clear();
+                            }
 
                             frameIndex++;
 
@@ -220,6 +247,12 @@ namespace kyun.game.Video
                 var strerr = err.ReadToEnd();
                 Console.WriteLine(strerr);
                 Decoding = false;
+                if (!onDecodeEventCalled)
+                {
+                    onDecodeEventCalled = true;
+                    OnDecoderReady?.Invoke(this, new EventArgs());
+
+                }
                 if (!ffmpegProc.HasExited)
                     ffmpegProc?.Kill();
 
@@ -239,7 +272,7 @@ namespace kyun.game.Video
         /// </summary>
         public void WaitForDecoder()
         {
-            while (frameIndex < 32)
+            while (frameIndex < VIDEOFRAMERATE + 5 && Decoding)
             {
                 Thread.Sleep(1);
             }
@@ -266,22 +299,22 @@ namespace kyun.game.Video
         /// <returns>byte[] BGR32 frame | null if is not decoding or something bad happens (lost frames|empty buffer)</returns>
         public byte[] GetFrame(long time)
         {
-            
+
             if (frameList.Keys.Count < 1)
                 return null;
             try
             {
-                long key = 0;
+                uint key = 0;
                 lock (frameList)
                 {
-                   
+
                     int frameInd = 0;
                     for (int a = 0; a < time; a++)
                     {
-                        key = (long)Math.Floor(a * (1000f / VIDEOFRAMERATE));
+                        key = (uint)Math.Floor(a * (1000f / VIDEOFRAMERATE));
                         if (key > time)
                         {
-                            key = Math.Max((long)((a - 1) * (1000f / VIDEOFRAMERATE)), 0);
+                            key = Math.Max((uint)((a - 1) * (1000f / VIDEOFRAMERATE)), 0);
                             frameInd = a;
                             break;
                         }
@@ -296,13 +329,13 @@ namespace kyun.game.Video
                         catch { }
                     }
 
-                    key = Math.Max((long)Math.Floor(frameInd * (1000 / VIDEOFRAMERATE)), 0);
+                    key = Math.Max((uint)Math.Floor(frameInd * (1000 / VIDEOFRAMERATE)), 0);
 
                     lastFrameId = (int)key;
-                    if (!frameList.ContainsKey(key))
+                    if (!frameList.ContainsKey((uint)key))
                         return null;
 
-                    var frame = frameList[key];
+                    var frame = frameList[(uint)key];
 
                     return frame;
                 }               
@@ -338,7 +371,7 @@ namespace kyun.game.Video
                 StartInfo = startInfo
             };
             ffmpegInfoProc.Start();
-                                  
+
 
             //STDERR 
             var err = ffmpegInfoProc.StandardError;

@@ -20,7 +20,7 @@ namespace kyun.game.Winforms
         private void Experiments_Load(object sender, EventArgs e)
         {
             checkBox1.Checked = Settings1.Default.DoubleRender;
-
+            checkBox3.Checked = KyunGame.VideoInterpolation;
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -32,6 +32,11 @@ namespace kyun.game.Winforms
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
             KyunGame.Instance.AutoMode = checkBox2.Checked;
+        }
+
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            KyunGame.VideoInterpolation = checkBox3.Checked;
         }
     }
 }

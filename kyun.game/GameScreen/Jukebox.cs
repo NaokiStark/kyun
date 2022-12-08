@@ -43,12 +43,16 @@ namespace kyun.game.GameScreen
         {
             particleEngine = new ParticleEngine();
 
+
             ChangeCoverDispl();
-            
 
-            ChangeBackground(KyunGame.Instance.SelectedBeatmap.Background);
+            if (KyunGame.Instance.SelectedMapset != null)
+            {
 
-            changeEmphasis();
+                ChangeBackground(KyunGame.Instance.SelectedBeatmap.Background);
+            }
+
+           //changeEmphasis();
             Controls.Add(particleEngine);
             Controls.Add(coverimg);
 
@@ -58,6 +62,10 @@ namespace kyun.game.GameScreen
 
         private void ChangeCoverDispl()
         {
+            if (KyunGame.Instance.SelectedMapset == null)
+            {
+                return;
+            }
             System.Drawing.Image cimg = System.Drawing.Image.FromFile(KyunGame.Instance.SelectedMapset.Beatmaps[0].Background);
 
             System.Drawing.Bitmap cbimg = SpritesContent.ResizeImage(cimg, (int)(((float)cimg.Width / (float)cimg.Height) * coverSize), (int)coverSize);
@@ -74,7 +82,7 @@ namespace kyun.game.GameScreen
                 istream = SpritesContent.BitmapToStream(cbimg);
             }
 
-            if(coverimg == null)
+            if (coverimg == null)
             {
                 coverimg = new Image(ContentLoader.FromStream(KyunGame.Instance.GraphicsDevice, (Stream)istream))
                 {
@@ -94,14 +102,18 @@ namespace kyun.game.GameScreen
 
             ChangeCoverDispl();
 
-            changeEmphasis();
+            //changeEmphasis();
+            if (KyunGame.Instance.SelectedMapset == null)
+            {
+                return;
+            }
             ChangeBackground(KyunGame.Instance.SelectedMapset.Beatmaps[0].Background);
         }
 
         private void Jukebox_onKeyPress(object sender, kyun.GameScreen.InputEvents.KeyPressEventArgs args)
         {
             AllowVideo = true;
-                        
+
             switch (args.Key)
             {
                 case Keys.Escape:
@@ -112,6 +124,10 @@ namespace kyun.game.GameScreen
 
         private void changeEmphasis()
         {
+            if (KyunGame.Instance.SelectedMapset == null)
+            {
+                return;
+            }
             Color[] colors = new Color[coverimg.Texture.Width * coverimg.Texture.Height];
             coverimg.Texture.GetData(colors);
 
@@ -129,9 +145,9 @@ namespace kyun.game.GameScreen
                 lcc++;
             }
 
-            for(int a = 0; a < particleEngine.particles.Count; a++)
+            for (int a = 0; a < particleEngine.particles.Count; a++)
             {
-                if(particleEngine.particles[a] is SquareParticle)
+                if (particleEngine.particles[a] is SquareParticle)
                 {
                     int[] selectedEnph = new int[3];
                     int magicColor = OsuBeatMap.rnd.Next(0, sColors.Count - 1);
@@ -141,7 +157,7 @@ namespace kyun.game.GameScreen
 
                     (particleEngine.particles[a] as SquareParticle).squareColor = ccolor;
                 }
-            }            
+            }
 
         }
 
@@ -205,7 +221,7 @@ namespace kyun.game.GameScreen
                     selectedEnph = sColors[magicColor];
 
                     Color ccolor = Color.FromNonPremultiplied(selectedEnph[0], selectedEnph[1], selectedEnph[2], 255)/*Color.FromNonPremultiplied(black_rand, black_rand, black_rand, 255)Color.Lerp(Color.FromNonPremultiplied(selectedEnph[0], selectedEnph[1], selectedEnph[2], 255), Color.Black,.7f)*/;
-                                       
+
 
                     Particle particle = particleEngine.AddNewSquareParticle(SpritesContent.Instance.SquareParticle,
                         new Vector2(0, vel),

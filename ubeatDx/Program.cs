@@ -22,6 +22,8 @@ namespace kyunMono
         static void Main(string[] args)
         {
             AppDomain.CurrentDomain.SetPrincipalPolicy(PrincipalPolicy.WindowsPrincipal);
+            using (Process p = Process.GetCurrentProcess())
+                p.PriorityClass = ProcessPriorityClass.High;
 
             Start(args);
 

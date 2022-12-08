@@ -9,13 +9,15 @@ namespace kyun.Video
     public class VideoPlayer
     {
 
+        public event EventHandler<EventArgs> OnDecoderReady;
+
         static VideoPlayer instance = null;
 
         public static VideoPlayer Instance
         {
             get
             {
-                if(instance==null)
+                if (instance == null)
                     instance = new VideoPlayer();
                 return instance;
             }
@@ -24,20 +26,20 @@ namespace kyun.Video
         public Texture2D FrameVideo { get; set; }
         public int width = 0;
         public int height = 0;
-        
+
         public Queue<byte[]> Buffer = new System.Collections.Generic.Queue<byte[]>();
         public Queue<Texture2D> BufferTx = new System.Collections.Generic.Queue<Texture2D>();
         public bool Stopped = true;
         public FFmpegDecoder vdc;
 
-        
+
 
         public VideoPlayer()
         {
-            
+
         }
 
-        public void Play(string VideoPath)
+        public void Play(string VideoPath, bool cancelEvent = false)
         {
             FileInfo fi = new FileInfo(VideoPath);
             if (fi.Extension == "")
@@ -47,19 +49,29 @@ namespace kyun.Video
             }
             Stopped = false;
 
-            if(FFmpegDecoder.Instance != null)
+            if (FFmpegDecoder.Instance != null)
                 FFmpegDecoder.Instance?.Dispose(); //CLEANUP SHIT BUFFER
 
             int ratio = (int)((480f / 853f) * (float)Math.Min(1280f, Screen.ScreenModeManager.GetActualMode().Width));
 
             //vdc = new FFmpegDecoder(VideoPath, Screen.ScreenModeManager.GetActualMode().Width, ratio);
             vdc = new FFmpegDecoder(VideoPath);
+
+            if (!cancelEvent)
+            {
+                vdc.OnDecoderReady += (o, a) =>
+                {
+                    OnDecoderReady?.Invoke(this, new EventArgs());
+
+                };
+            }
+
             vdc.Decode();
             width = vdc.VIDEOWIDTH;
             height = vdc.VIDEOHEIGHT;
             //vdc.WaitForDecoder();
 
-           
+
         }
 
         public void Stop()
@@ -67,7 +79,7 @@ namespace kyun.Video
             if (Stopped) return;
             Stopped = true;
             vdc.Dispose();
-            
+
         }
 
         public byte[] GetFrame()
@@ -75,7 +87,7 @@ namespace kyun.Video
             if (Stopped) return null;
             if (vdc == null) return null;
 
-             byte[] frame = vdc.GetFrame((int)KyunGame.Instance.Player.Position);
+            byte[] frame = vdc.GetFrame((int)KyunGame.Instance.Player.Position);
             if (frame == null) return null;
             return frame;
         }
@@ -89,5 +101,5 @@ namespace kyun.Video
             if (frame == null) return null;
             return frame;
         }
-    }    
+    }
 }

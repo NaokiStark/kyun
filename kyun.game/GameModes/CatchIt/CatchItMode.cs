@@ -75,6 +75,8 @@ namespace kyun.game.GameModes.CatchIt
 
         public Texture2D LongTail { get; set; }
 
+        private bool isVideoPlaying;
+
         public bool End { get; private set; }
         public float FailsCount { get { return 1; } }
 
@@ -335,7 +337,8 @@ namespace kyun.game.GameModes.CatchIt
 
         public void showGuide()
         {
-            if(powerup_guide.Opacity > 0f) {
+            if (powerup_guide.Opacity > 0f)
+            {
                 return;
             }
             powerup_guide.Visible = true;
@@ -553,9 +556,10 @@ namespace kyun.game.GameModes.CatchIt
             renderBeat = showingFail = false;
             velocity = SmoothVelocity = 3;
             beatmap.ApproachRate = Math.Min(beatmap.ApproachRate, 10);
+            isVideoPlaying = false;
             End = false;
             skipped = false;
-            GamePosition = -3000;
+            GamePosition = (int)beatmap.VideoStartUp < -2999 ? (int)beatmap.VideoStartUp : -2999;
             lastIndex = objectIndx = 0;
             countToScores = 0;
             _healthbar.Reset();
@@ -666,7 +670,7 @@ namespace kyun.game.GameModes.CatchIt
             }
 
 
-            
+
 
             KyunGame.Instance.discordHandler.SetState("Catching things", $"{Beatmap.Artist} - {Beatmap.Title}", "idle_large", "classic_small");
             clearObjects();
@@ -784,27 +788,49 @@ namespace kyun.game.GameModes.CatchIt
                 }
             }
 
-
-            if (InGame && GamePosition > 0 && KyunGame.Instance.Player.PlayState == BassPlayState.Stopped)
+            if (!isVideoPlaying)
             {
-                GamePosition = 0;
-                KyunGame.Instance.Player.Play(Beatmap.SongPath, ((gameMod & GameMod.DoubleTime) == GameMod.DoubleTime) ? 1.5f : 1f);
-                ActualTimingPoint = Beatmap.TimingPoints[0];
-                NextTimingPoint = Beatmap.GetNextTimingPointFor(ActualTimingPoint.Offset + 50);
-                KyunGame.Instance.Player.Volume = KyunGame.Instance.GeneralVolume;
-
                 if (System.IO.File.Exists(Beatmap.Video))
                 {
                     if (System.IO.File.GetAttributes(Beatmap.Video) != System.IO.FileAttributes.Directory)
                     {
                         if (Settings1.Default.Video)
                         {
-                            
+
                             AVPlayer.VideoOffset = (int)Beatmap.VideoStartUp;
-                            AVPlayer.videoplayer.Play(Beatmap.Video);
+                            AVPlayer.use_gametime = true;
+                            AVPlayer.videoplayer.Play(Beatmap.Video, true);
+                            isVideoPlaying = true;
+                        }
+                        else
+                        {
+                            isVideoPlaying = true;
                         }
                     }
+                    else
+                    {
+                        isVideoPlaying = true;
+                    }
                 }
+                else
+                {
+                    isVideoPlaying = true;
+                }
+            }
+            
+            AVPlayer.game_time = GamePosition - (long)Beatmap.VideoStartUp;
+
+            if (InGame && GamePosition > 0 && KyunGame.Instance.Player.PlayState == BassPlayState.Stopped)
+            {
+                GamePosition = 0;
+                AVPlayer.use_gametime = false;
+
+                KyunGame.Instance.Player.Play(Beatmap.SongPath, ((gameMod & GameMod.DoubleTime) == GameMod.DoubleTime) ? 1.5f : 1f);
+                ActualTimingPoint = Beatmap.TimingPoints[0];
+                NextTimingPoint = Beatmap.GetNextTimingPointFor(ActualTimingPoint.Offset + 50);
+                KyunGame.Instance.Player.Volume = KyunGame.Instance.GeneralVolume;
+
+
 
                 if ((long)OriginalHitObjects.First().StartTime > 3500)
                     skipButton.Visible = true;

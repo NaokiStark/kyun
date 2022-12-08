@@ -252,7 +252,7 @@ namespace kyun.GameModes.OsuMode
             GamePosition = -3000;
             InGame = true;
             lastIndex = 0;
-            ChangeBackground(KyunGame.Instance.SelectedBeatmap.Background);
+            ChangeBackground(beatmap.Background);
             hitbaseObjects.Clear();
             HitObjects.Clear();
             Combo.Instance.ResetAll();
