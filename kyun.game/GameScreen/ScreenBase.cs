@@ -128,6 +128,14 @@ namespace kyun.GameScreen
             {
                 new Experiments().Show();
             }
+            else if(args.Key == Keys.PageUp || args.Key == Keys.Add)
+            {
+                KyunGame.Instance.GeneralVolume += .05f;
+            }
+            else if(args.Key == Keys.PageDown || args.Key == Keys.Subtract)
+            {
+                KyunGame.Instance.GeneralVolume -= .05f;
+            }
         }
 
         private void ScreenBase_OnLoad(object sender, EventArgs e)

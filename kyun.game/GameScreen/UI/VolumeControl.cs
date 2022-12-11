@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace kyun.game.GameScreen.UI
 {
-    public class VolumeControl:UIObjectBase
+    public class VolumeControl : UIObjectBase
     {
 
         static VolumeControl _instance;
@@ -37,6 +37,8 @@ namespace kyun.game.GameScreen.UI
         int barWidth = 500;
         int barHeight = 20;
         Color barColor = Color.CornflowerBlue;
+
+        bool showed = false;
 
         public VolumeControl()
         {
@@ -68,6 +70,12 @@ namespace kyun.game.GameScreen.UI
             textLabel.Position = _progressbar.Position;
 
             _progressbar.Visible = textLabel.Visible = true;
+            if (!showed)
+            {
+                _progressbar.FadeIn(AnimationEffect.Linear, 200);
+                textLabel.FadeIn(AnimationEffect.Linear, 200);
+            }
+            showed = true;
         }
 
         public override void Update()
@@ -82,16 +90,28 @@ namespace kyun.game.GameScreen.UI
 
         private void updateTick()
         {
-            if (!_progressbar.Visible)
+
+            if (!showed)
+            {
                 return;
+            }
 
             counter += KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds;
 
             if (counter >= timeToHide)
             {
+                if (!_progressbar.animating && _progressbar.Opacity == 1f)
+                {
+                    _progressbar.FadeOut(AnimationEffect.Linear, 200);
+                }
+                if (!textLabel.animating && textLabel.Opacity == 1f)
+                {
+                    textLabel.FadeOut(AnimationEffect.Linear, 200);
+
+                }
                 counter = 0;
-                _progressbar.Visible = textLabel.Visible = false;
-            }                
+                showed = false;
+            }
 
         }
 

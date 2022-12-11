@@ -24,7 +24,7 @@ namespace kyun.GameScreen.UI
 
         public override void Update()
         {
-            //base.Update();
+            base.Update();
             
         }
         public override void Render()

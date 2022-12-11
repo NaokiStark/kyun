@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Content;
 using kyun;
 using kyun.Audio;
 using kyun.Utils;
+using kyun.GameScreen;
 
 namespace Redux.Utilities.Managers
 {
@@ -46,9 +47,12 @@ namespace Redux.Utilities.Managers
 
         private void Window_TextInput(object sender, TextInputEventArgs e)
         {
-            if (!Enabled)
+            if (ScreenManager.ActualScreen is not BeatmapScreen)
+            {
                 return;
+            }
 
+            
             if (e.Key == Keys.Back)
             {
                 if(Text == null)
@@ -164,41 +168,7 @@ namespace Redux.Utilities.Managers
         public override void Update(GameTime gameTime)
         {
 
-            if (!Enabled)
-                return;
-
-            return;
-
-            mainState = Keyboard.GetState();
-            string input = Convert(mainState.GetPressedKeys());
-            string prevInput = Convert(prevState.GetPressedKeys());
-            DateTime now = DateTime.Now;
-            //make sure 100ms (with a few measurements) has passed
-            int time = MustPass+50;
-            if (input == "\b")
-                time -= 25;
-            if (Text == null)
-                Text = "";
-            if (now.Subtract(prevUpdate).Milliseconds >= time)
-            {
-                foreach (char x in input)
-                {
-                    //process backspace
-                    if (x == '\b')
-                    {
-                        if (Text.Length >= 1)
-                        {
-                            Text = Text.Remove(Text.Length - 1, 1);
-                        }
-                    }
-                    else
-                        Text += x;
-                }
-                if (!string.IsNullOrEmpty(input))
-                    prevUpdate = now;
-            }
-            prevState = mainState;
-           // base.Update(gameTime);
+           
         }
 
         public string Convert(Keys[] keys)

@@ -33,8 +33,6 @@ namespace kyun.GameScreen
                     ((BeatmapScreen)instance).Random();
                 }
 
-                KyunGame.Instance.KeyBoardManager.Enabled = true;
-
                 return instance;
             }
             set
@@ -417,7 +415,6 @@ namespace kyun.GameScreen
         {
             if (lBDff.selectedIndex < 0 || lBDff.selectedIndex > lBDff.Items.Count - 1) return;
 
-            KyunGame.Instance.KeyBoardManager.Enabled = false;
 
             //UbeatGame.Instance.GameStart(lBDff.Items[lBDff.selectedIndex], this.AMode);
 

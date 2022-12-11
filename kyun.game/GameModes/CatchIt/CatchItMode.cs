@@ -153,7 +153,8 @@ namespace kyun.game.GameModes.CatchIt
 
             Player.Size = PlayerSize;
 
-            Color lineColor = Color.FromNonPremultiplied(255, 229, 51, 255);
+            //Color lineColor = Color.FromNonPremultiplied(255, 229, 51, 255);
+            Color lineColor = Color.White;
 
             for (int a = 0; a < fieldSlots; a++)
             {

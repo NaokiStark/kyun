@@ -438,10 +438,9 @@ namespace kyun
                 Text = ""
             };
 
-            Cursor = new Image(SpritesContent.Instance.GameCursor)
+            Cursor = new Cursor(SpritesContent.Instance.GameCursor)
             {
                 Position = new Vector2(MouseHandler.GetState().X - (SpritesContent.Instance.GameCursor.Width / 2), MouseHandler.GetState().Y - (SpritesContent.Instance.GameCursor.Height / 2)),
-                BeatReact = false
             };
 
             Notifications = new Notifier();
@@ -675,23 +674,26 @@ namespace kyun
                 Window.Title = "kyun!";
             }
 
-            elapsedToVolume += gameTime.ElapsedGameTime.TotalMilliseconds;
+            elapsedToVolume += gameTime.ElapsedGameTime.Milliseconds;
             KeyboardActualState = Keyboard.GetState();
             if (ScreenManager.ActualScreen != null)
             {
                 (ScreenManager.ActualScreen as ScreenBase).checkKeyboardEvents(KeyboardOldState, KeyboardActualState, GamePad.GetState(PlayerIndex.One));
             }
             KeyboardOldState = KeyboardActualState;
-            if (elapsedToVolume > 16d)
-            {
-                if (Keyboard.GetState().IsKeyDown(Keys.Add) || Keyboard.GetState().IsKeyDown(Keys.PageUp))
-                    GeneralVolume = GeneralVolume + (gameTime.ElapsedGameTime.Milliseconds) * .005f;
 
-                if (Keyboard.GetState().IsKeyDown(Keys.Subtract) || Keyboard.GetState().IsKeyDown(Keys.PageDown))
-                    GeneralVolume = GeneralVolume - (gameTime.ElapsedGameTime.Milliseconds) * .005f;
+            
 
-                elapsedToVolume = 0;
-            }
+            //if (elapsedToVolume > 100)
+            //{
+            //    if (Keyboard.GetState().IsKeyDown(Keys.Add) || Keyboard.GetState().IsKeyDown(Keys.PageUp))
+            //        GeneralVolume = GeneralVolume + (gameTime.ElapsedGameTime.Milliseconds) * .005f;
+
+            //    if (Keyboard.GetState().IsKeyDown(Keys.Subtract) || Keyboard.GetState().IsKeyDown(Keys.PageDown))
+            //        GeneralVolume = GeneralVolume - (gameTime.ElapsedGameTime.Milliseconds) * .005f;
+
+            //    elapsedToVolume = 0;
+            //}
         }
 
         protected override void Draw(GameTime gameTime)

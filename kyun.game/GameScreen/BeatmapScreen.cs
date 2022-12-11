@@ -12,6 +12,7 @@ using kyun.game.GameScreen;
 using kyun.game.GameModes.CatchItCollab;
 using kyun.game.GameScreen.UI.Scoreboard;
 using kyun.game.GameScreen.UI;
+using kyun.Notifications;
 
 namespace kyun.GameScreen
 {
@@ -38,7 +39,7 @@ namespace kyun.GameScreen
             }
         }
 
-       
+
 
         public BeatmapScreen()
             : base("BeatmapScreen")
@@ -66,7 +67,7 @@ namespace kyun.GameScreen
                 btnStart.Caption = "Play!";
                 btnStart.Tooltip.Text = "Play now!";
                 autoBtn.Visible = true;
-                
+
             }
         }
 
@@ -93,8 +94,12 @@ namespace kyun.GameScreen
                     lBDff_MouseDoubleClick(new object(), new EventArgs());
                     break;
                 case Keys.F5:
-                    LoadScreen.Instance = null;
-                    ScreenManager.ChangeTo(new LoadScreen(true));
+                    KyunGame.Instance.Notifications.ShowDialog("Click here to perform beatmap reload (if you added manually or added by osu!)", 5000, NotificationType.Info,
+                        () =>
+                        {
+                            LoadScreen.Instance = null;
+                            ScreenManager.ChangeTo(new LoadScreen(true));
+                        });
                     break;
                 case Keys.F3:
                     _scoreboard.Add(ScoreItem.BuildNew(UserBox.GetInstance().userAvatar.Texture, UserBox.GetInstance().nickLabel.Text, OsuUtils.OsuBeatMap.rnd.Next(10, 9999999), OsuUtils.OsuBeatMap.rnd.Next(10, 99999)));
@@ -139,7 +144,7 @@ namespace kyun.GameScreen
             {
                 KyunGame.Instance.KeyBoardManager.Text = "";
             }
-            lblSearch.Text = string.IsNullOrWhiteSpace(lastStr)?"*Type to search*":lastStr;            
+            lblSearch.Text = string.IsNullOrWhiteSpace(lastStr) ? "*Type to search*" : lastStr;
             if (string.IsNullOrWhiteSpace(lastStr))
             {
                 lbox.Items = InstanceManager.AllBeatmaps;
@@ -172,7 +177,6 @@ namespace kyun.GameScreen
 
         void BeatmapScreen_OnLoad(object sender, EventArgs e)
         {
-            KyunGame.Instance.KeyBoardManager.Enabled = true;
             if (InstanceManager.AllBeatmaps.Count < 1)
             {
                 var mpset = new Mapset();
@@ -200,7 +204,7 @@ namespace kyun.GameScreen
             //    UserBox.GetInstance().nickLabel.Text,
             //    999999,
             //    99999);           
-            
+
 
             //_scoreboard.Add(sItem);
         }
@@ -209,9 +213,8 @@ namespace kyun.GameScreen
         {
             if (lBDff.selectedIndex < 0 || lBDff.selectedIndex > lBDff.Items.Count - 1) return;
 
-            KyunGame.Instance.KeyBoardManager.Enabled = false;
 
-        
+
             GameModes.GameMod modes = GameModes.GameMod.None;
 
             if (AMode)
@@ -279,7 +282,7 @@ namespace kyun.GameScreen
 
                 lastDiffIndex = lBDff.selectedIndex;
 
-                
+
             }
             _scoreboard.Items.Clear();
             _scoreboard.AddList(ScoreItem.GetFromDb(lBDff.Items.Beatmaps[lBDff.selectedIndex]));
@@ -304,16 +307,16 @@ namespace kyun.GameScreen
 
             ubeatBeatMap selectd = lbox.Items[lbox.selectedIndex].Beatmaps[0];
 
-            if(selectd != null)
+            if (selectd != null)
             {
                 lblTitleDesc.Text = selectd.Artist + " - " + selectd.Title;
                 lbldesc.Text = $"Mapped by " + selectd.Creator;
                 lblDiffDesc.Text = $"Length: {getTotalTime(selectd)} | Diff: {selectd.Version} | OD: {selectd.OverallDifficulty} | AR: {selectd.ApproachRate} | CS: {selectd.CircleSize} | HD: {selectd.HPDrainRate}";
             }
 
-           
-            
-            
+
+
+
             //lblTitleDesc.Text = lbox.Items[lbox.selectedIndex].Beatmaps[0].Artist + " - " + lbox.Items[lbox.selectedIndex].Beatmaps[0].Title;
 
             ChangeBeatmapDisplay(selectd);

@@ -254,7 +254,6 @@ namespace kyun.game.GameScreen
             detailsLabel.Text = $"Generating beatmap, please wait";
             //coverimg.Texture = BmScr.coverimg.Texture;
             //Start update
-            KyunGame.Instance.KeyBoardManager.Enabled = false;
             ScreenManager.ChangeTo(this);
 
             generatingBm = loading = true;
@@ -309,7 +308,6 @@ namespace kyun.game.GameScreen
             {
                 //Better than "goto"
                 _gameScreen.Play(_beatmap, _mods);
-                KyunGame.Instance.KeyBoardManager.Enabled = false;
                 ScreenManager.ChangeTo(_gameScreen);
                 return;
             }
@@ -320,7 +318,6 @@ namespace kyun.game.GameScreen
                 _beatmap = OsuUtils.OsuBeatMap.FromFile(path, true);
 
                 _gameScreen.Play(_beatmap, _mods);
-                KyunGame.Instance.KeyBoardManager.Enabled = false;
                 ScreenManager.ChangeTo(_gameScreen);
             }
             catch (Exception ex)

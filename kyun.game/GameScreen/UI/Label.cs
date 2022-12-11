@@ -130,13 +130,13 @@ namespace kyun.GameScreen.UI
             {
                 if (Size == null || Size == Vector2.Zero)
                 {
-                    KyunGame.Instance.SpriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(messStr.X), (int)(messStr.Y)), Color.White * BackgroundOpacity);
+                    KyunGame.Instance.SpriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(messStr.X), (int)(messStr.Y)), Color.White * BackgroundOpacity * Opacity);
                     //SpriteBatchExtensions.DrawRoundedRect(UbeatGame.Instance.spriteBatch, new Rectangle((int)pos.X, (int)pos.Y, (int)(messStr.X), (int)(messStr.Y)), Texture, 16, Color.White);
                     TotalSize = new Vector2(messStr.X, messStr.Y); //TODO: Make this better
                 }
                 else
                 {
-                    KyunGame.Instance.SpriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(Size.X), (int)(Size.Y)), Color.White * BackgroundOpacity);
+                    KyunGame.Instance.SpriteBatch.Draw(this.Texture, new Rectangle((int)pos.X, (int)pos.Y, (int)(Size.X), (int)(Size.Y)), Color.White * BackgroundOpacity * Opacity);
                     TotalSize = Size; //TODO: Make this better
                 }
             }

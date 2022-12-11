@@ -154,7 +154,14 @@ namespace kyun.GameScreen
 
             //No Texture, no input update
             if (Texture == null)
+            {
+                if(this is ProgressBar)
+                {
+                    updateAnimation();
+                }
                 return;
+
+            }
 
             updateAnimation();
 
