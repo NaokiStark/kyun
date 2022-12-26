@@ -92,9 +92,9 @@ namespace kyun.GameScreen.UI
             EffectsPlayer.PlayEffect(SpritesContent.Instance.ScrollHit);
             if (!Up)
             {
-                if (vertOffset + (maxCanHold / 2) > Items.Beatmaps.Count) return;
+                if (vertOffset + (maxCanHold / 2) > Items.Beatmaps.Count - 1) return;
 
-                vertOffset += 3;
+                vertOffset = Math.Min(vertOffset + 3, vertOffset + (maxCanHold / 2));
             }
             else
             {
@@ -166,7 +166,7 @@ namespace kyun.GameScreen.UI
             int maxCanHold = (int)(height / perEntryHeight);
 
             //Take the width divided by the width of a monospace character in the current font, minus 1 (for spacing)
-            int maxCharsCanHold = (int)(width / measuredTextWidth) - 1;
+            int maxCharsCanHold = (int)(width / measuredTextWidth) - 2;
 
             Vector2 startBoxPos = Position + new Vector2(2, 2);
             Vector2 drawTextPos = startBoxPos + new Vector2(0, -2);
@@ -244,12 +244,14 @@ namespace kyun.GameScreen.UI
             }
             else
             {
+                selectedIndex++;
+
                 if (selectedIndex > Items.Count - 1)
                 {
+                    selectedIndex--;
                     return;
                 }
 
-                selectedIndex++;
                 if (selectedIndex > vertOffset + maxCanHold - 1)
                 {
                     vertOffset++;

@@ -192,7 +192,8 @@ namespace kyun.GameScreen
                 //Scale=.85f,
                 ForegroundColor = Color.White,
                 Caption = "Modes",
-                Tooltip = new game.GameScreen.UI.Tooltip() { Text = "Choose between 3 game modes." }
+                Tooltip = new game.GameScreen.UI.Tooltip() { Text = "Choose between 3 game modes." },
+                Visible = false,                
             };
 
             osuModeBtn2 = new ButtonStandard(Color.DimGray)

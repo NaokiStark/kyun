@@ -153,12 +153,13 @@ namespace kyun.GameScreen.UI
             }
             else
             {
+                selectedIndex++;
+
                 if (selectedIndex > Items.Count - 1)
                 {
+                    selectedIndex--;
                     return;
                 }
-
-                selectedIndex++;
                 if (selectedIndex > vertOffset + maxCanHold - 1)
                 {
                     vertOffset++;
@@ -227,7 +228,7 @@ namespace kyun.GameScreen.UI
 
 
             //Take the width divided by the width of a monospace character in the current font, minus 1 (for spacing)
-            int maxCharsCanHold = (int)(width / measuredTextWidth) - 1;
+            int maxCharsCanHold = (int)(width / measuredTextWidth) - 4;
 
             Vector2 startBoxPos = Position + new Vector2(2, stpsrnd);
             Vector2 drawTextPos = startBoxPos + new Vector2(0, -2);

@@ -32,7 +32,6 @@ namespace kyun.game.GameScreen.UI
         {
             base.Update();
 
-            OriginalSize = Size;
             MouseEvent mouseState = MouseHandler.GetState();
 
 
@@ -46,7 +45,6 @@ namespace kyun.game.GameScreen.UI
             {
                 Opacity = Math.Max(Opacity - KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * .0005f, 0f);
 
-                Size = new Vector2(Math.Max(Size.X - KyunGame.Instance.GameTimeP.ElapsedGameTime.Milliseconds * .0005f, 0f));
             }
             
             if (mouseState.Position.Equals(lastState.Position))
@@ -55,7 +53,6 @@ namespace kyun.game.GameScreen.UI
             }
             countToHide = 0;
             Opacity = 1f;
-            Size = OriginalSize;
             lastState = mouseState;
         }
     }

@@ -194,16 +194,18 @@ namespace kyun.game.GameModes.CatchIt
             switch (hitObject.HitSound)
             {
                 case 2:
-                    TextureColor = Color.FromNonPremultiplied(0, 203, 255, 255);
+                    //TextureColor = Color.FromNonPremultiplied(0, 203, 255, 255);
+                    TextureColor = Color.White;
                     break;
                 case 4:
-                    TextureColor = Color.FromNonPremultiplied(9, 229, 27, 255);
+                    //TextureColor = Color.FromNonPremultiplied(9, 229, 27, 255);
+                    TextureColor = Color.White;
                     break;
                 case 8:
                     TextureColor = Color.FromNonPremultiplied(255, 61, 58, 255);
                     break;
                 default:
-                    TextureColor = /*Color.FromNonPremultiplied(255, 229, 244, 255)*/ Color.White;
+                    TextureColor = Color.White;
                     break;
 
             }
