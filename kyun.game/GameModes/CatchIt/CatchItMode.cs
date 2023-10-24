@@ -826,7 +826,10 @@ namespace kyun.game.GameModes.CatchIt
                 GamePosition = 0;
                 AVPlayer.use_gametime = false;
 
+
                 KyunGame.Instance.Player.Play(Beatmap.SongPath, ((gameMod & GameMod.DoubleTime) == GameMod.DoubleTime) ? 1.5f : 1f);
+                KyunGame.Instance.ChangeWindowTitle("kyun! - Playing: " + Beatmap.Artist + " - " + Beatmap.Title);
+
                 ActualTimingPoint = Beatmap.TimingPoints[0];
                 NextTimingPoint = Beatmap.GetNextTimingPointFor(ActualTimingPoint.Offset + 50);
                 KyunGame.Instance.Player.Volume = KyunGame.Instance.GeneralVolume;

@@ -461,6 +461,8 @@ namespace kyun.GameModes.OsuMode
             {
                 if (!End)
                 {
+                    KyunGame.Instance.ChangeWindowTitle("kyun! - Playing: " + Beatmap.Artist + " - " + Beatmap.Title);
+
                     KyunGame.Instance.Player.Play(Beatmap.SongPath);
                     ActualTimingPoint = Beatmap.TimingPoints[0];
                     NextTimingPoint = Beatmap.GetNextTimingPointFor(ActualTimingPoint.Offset + 50);

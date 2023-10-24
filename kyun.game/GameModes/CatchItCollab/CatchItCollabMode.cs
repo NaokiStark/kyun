@@ -95,6 +95,8 @@ namespace kyun.game.GameModes.CatchItCollab
 
             if (InGame && GamePosition > Beatmap.SleepTime && KyunGame.Instance.Player.PlayState == BassPlayState.Stopped)
             {
+                KyunGame.Instance.ChangeWindowTitle("kyun! - Playing: " + Beatmap.Artist + " - " + Beatmap.Title);
+
                 KyunGame.Instance.Player.Play(Beatmap.SongPath, ((gameMod & GameMod.DoubleTime) == GameMod.DoubleTime) ? 1.5f : 1f);
 
                 KyunGame.Instance.Player.Volume = KyunGame.Instance.GeneralVolume;

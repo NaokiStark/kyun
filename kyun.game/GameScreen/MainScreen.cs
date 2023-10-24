@@ -469,7 +469,7 @@ namespace kyun.GameScreen
 
         private void playSong(string path)
         {
-
+            KyunGame.Instance.ChangeWindowTitle("kyun!");
             KyunGame.Instance.Player.Play(path);
             KyunGame.Instance.Player.Volume = KyunGame.Instance.GeneralVolume;
         }

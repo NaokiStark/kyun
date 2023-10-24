@@ -76,7 +76,14 @@ namespace kyun.game.Video
             FileName = filename;
 
             VIDEOFRAMERATE = GetVideoFramerate();
-            Console.WriteLine(VIDEOFRAMERATE);
+            if (VIDEOFRAMERATE == 0)
+            {
+                kyun.Logger.Instance.Debug($"Video not found (not an error)");
+            }
+            else
+            {
+                kyun.Logger.Instance.Debug($"Video Framerate: {VIDEOFRAMERATE}");
+            }
         }
 
         /// <summary>
@@ -104,7 +111,14 @@ namespace kyun.game.Video
             VIDEOHEIGHT = height;
             FileName = filename;
             VIDEOFRAMERATE = GetVideoFramerate();
-            kyun.Logger.Instance.Debug($"Video Framerate: {VIDEOFRAMERATE}");
+            if (VIDEOFRAMERATE == 0)
+            {
+                kyun.Logger.Instance.Debug($"Video not found (not an error)");
+            }
+            else
+            {
+                kyun.Logger.Instance.Debug($"Video Framerate: {VIDEOFRAMERATE}");
+            }
         }
 
         /// <summary>
@@ -113,6 +127,14 @@ namespace kyun.game.Video
         public void Decode()
         {
             onDecodeEventCalled = false;
+            if (VIDEOFRAMERATE == 0)
+            {
+                Decoding = false;
+                onDecodeEventCalled = true;
+                OnDecoderReady?.Invoke(this, new EventArgs());
+                return;
+            }
+
             if (!File.Exists(FileName))
             {
                 Decoding = false;
@@ -132,10 +154,10 @@ namespace kyun.game.Video
         private void ThreadedDecoder()
         {
 
-            string vfilter = "-filter:v \"minterpolate=fps=60:me=ntss:mc_mode=aobmc:vsbmc=1:me_mode=bidir:mi_mode=blend:scd=fdiff\"";
+            string vfilter = "-filter:v \"unsharp=luma_msize_x=5:luma_msize_y=5:luma_amount=1.0,minterpolate=fps=60:me=ntss:mc_mode=aobmc:vsbmc=1:me_mode=bidir:mi_mode=blend:scd=fdiff\"";
             if (!interpolate)
             {
-                vfilter = "";
+                vfilter = "-filter:v \"unsharp=luma_msize_x=5:luma_msize_y=5:luma_amount=1.0\"";
             }
             else
             {
@@ -245,7 +267,10 @@ namespace kyun.game.Video
                     Thread.Sleep(1);
                 }
                 var strerr = err.ReadToEnd();
-                Console.WriteLine(strerr);
+
+                if (!string.IsNullOrWhiteSpace(strerr)){
+                    Logger.Instance.Severe(strerr);
+                }
                 Decoding = false;
                 if (!onDecodeEventCalled)
                 {
@@ -351,7 +376,7 @@ namespace kyun.game.Video
         {
             if (!File.Exists(FileName))
             {
-                return 25;
+                return 0;
             }
             // Process info
             ProcessStartInfo startInfo = new ProcessStartInfo

@@ -161,6 +161,8 @@ namespace kyun.Audio
                 {
                     if (Bass.BASS_ChannelGetPosition(stream) >= Bass.BASS_ChannelGetLength(stream))
                     {
+                        KyunGame.Instance.ChangeWindowTitle("kyun!");
+
                         PlayState = BassPlayState.Stopped;
                         OnStopped?.Invoke();
                     }
@@ -229,6 +231,8 @@ namespace kyun.Audio
                 {
                     // error creating the stream
                     Console.WriteLine("Stream error: {0}", Bass.BASS_ErrorGetCode());
+                    KyunGame.Instance.ChangeWindowTitle("kyun!");
+
                 }
 
 
@@ -236,7 +240,11 @@ namespace kyun.Audio
             else
             {
                 if (stream == 0)
+                {
+                    KyunGame.Instance.ChangeWindowTitle("kyun!");
                     throw new Exception("No audio");
+                }
+
                 Volume = KyunGame.Instance.GeneralVolume;
                 Bass.BASS_ChannelPlay(stream, false);
                 timer.SetTime(Position);
@@ -298,6 +306,7 @@ namespace kyun.Audio
         {
             Bass.BASS_ChannelStop(stream);
             PlayState = BassPlayState.Stopped;
+            KyunGame.Instance.ChangeWindowTitle("kyun!");
         }
 
         public static int FFTFrequency2Index(int frequency, int length, int samplerate)

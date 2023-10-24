@@ -132,9 +132,12 @@ namespace kyun.GameScreen
             {
                 KyunGame.Instance.GeneralVolume += .05f;
             }
-            else if(args.Key == Keys.PageDown || args.Key == Keys.Subtract)
+            else if (args.Key == Keys.PageDown || args.Key == Keys.Subtract)
             {
                 KyunGame.Instance.GeneralVolume -= .05f;
+            }
+            else if(args.Key == Keys.F3){
+                KyunGame.Instance.TakeScreenShot();
             }
         }
 
@@ -661,7 +664,7 @@ namespace kyun.GameScreen
         internal virtual void UpdateControls()
         {
             //List<ComboBox> cmbs = new List<ComboBox>();
-
+            
             foreach (UIObjectBase obj in Controls)
             {
                 if (!(obj is ComboBox))
@@ -677,9 +680,7 @@ namespace kyun.GameScreen
 
             }
 
-
-            foreach (UIObjectBase obj in Controls)
-                obj?.Update();
+            Controls.ForEach(obj => obj?.Update());
 
         }
 

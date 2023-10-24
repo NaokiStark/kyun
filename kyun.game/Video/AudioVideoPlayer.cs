@@ -408,14 +408,14 @@ namespace kyun.Video
             {
                 tx.SetData(frame);
 
-                KyunGame.Instance.SpriteBatch.Draw(tx, screenVideoRectangle, null, Color.White * .8f, 0, new Vector2(tx.Width / 2, tx.Height / 2), SpriteEffects.None, 0);
+                KyunGame.Instance.SpriteBatch.Draw(tx, screenVideoRectangle, null, Color.White, 0, new Vector2(tx.Width / 2, tx.Height / 2), SpriteEffects.None, 0);
 
                 lastWorkingFrame = frame;
             }
             else if (lastWorkingFrame != null && frame == null)
             {
                 tx.SetData(lastWorkingFrame);
-                KyunGame.Instance.SpriteBatch.Draw(tx, screenVideoRectangle, null, Color.White * .8f, 0, new Vector2(tx.Width / 2, tx.Height / 2), SpriteEffects.None, 0);
+                KyunGame.Instance.SpriteBatch.Draw(tx, screenVideoRectangle, null, Color.White, 0, new Vector2(tx.Width / 2, tx.Height / 2), SpriteEffects.None, 0);
 
             }
         }

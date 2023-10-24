@@ -99,7 +99,7 @@ namespace kyun.game.GameScreen
 
         public void ChangeSongDisplay()
         {
-
+            BackgroundDim = 1;
             ChangeCoverDispl();
 
             //changeEmphasis();

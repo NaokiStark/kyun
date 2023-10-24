@@ -32,7 +32,7 @@ using kyun.game.GameModes;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
 using static System.Net.WebRequestMethods;
-
+//using System.Windows.Forms;
 
 namespace kyun
 {
@@ -266,7 +266,7 @@ namespace kyun
             var frm = System.Windows.Forms.Form.FromHandle(Window.Handle);
             frm.AllowDrop = true;
             frm.DragEnter += (obj, args) =>
-            {                
+            {
                 args.Effect = System.Windows.Forms.DragDropEffects.All;
             };
             frm.DragDrop += (obj, args) =>
@@ -277,7 +277,7 @@ namespace kyun
                     BeatmapLoader.GetInstance().LoadBeatmaps(files, (ScreenBase)ScreenManager.ActualScreen);
                 }
             };
-            
+
 #else
             // Implemented on MonoGame 3.8.1
             Window.FileDrop += Window_FileDrop;
@@ -557,6 +557,50 @@ namespace kyun
 
         }
 
+        public void ChangeWindowTitle(string title)
+        {
+#if WINDOWS
+
+            syncContext.Send(state =>
+            {
+                Window.Title = title;
+            }, null);
+#endif
+        }
+
+        public void TakeScreenShot()
+        {
+#if WINDOWS
+            syncContext.Send(state =>
+            {
+                MemoryStream mstr = new MemoryStream();
+
+                DirectoryInfo screenshotPath = new DirectoryInfo(Path.Combine(System.Windows.Forms.Application.StartupPath, "Screenshots"));
+                Stream imgstream = System.IO.File.Create($"{screenshotPath.FullName}{Path.DirectorySeparatorChar}kyun!-{(int)DateTime.Now.ToFileTime()}.png");
+                
+                Texture2D screenshot = (Texture2D)renderTarget2D;
+
+                screenshot.SaveAsPng(mstr, screenshot.Width, screenshot.Height);
+
+                System.Windows.Forms.Clipboard.SetImage(new System.Drawing.Bitmap(mstr));
+                if (!screenshotPath.Exists)
+                {
+                    screenshotPath.Create();
+                }
+                screenshot.SaveAsPng(imgstream, screenshot.Width, screenshot.Height);
+
+                imgstream.Dispose();
+
+                mstr.Dispose();
+                Notifications.ShowDialog("Screenshot saved and added to clipboard", 5000, NotificationType.Info, () =>
+                {
+                    Process.Start("explorer", screenshotPath.FullName);
+                });
+            }, null);
+#else
+                Notifications.ShowDialog("Screenshot only works on Windows, sorry");
+#endif
+        }
 
         /// <summary>
         /// This fails
@@ -660,19 +704,20 @@ namespace kyun
 
             isMainWindowActive = System.Windows.Forms.Form.ActiveForm == WinForm;
             KeyBoardManager.Update(gameTime);
-            if (Player.PlayState == BassPlayState.Playing)
-            {
 
-                if (SelectedBeatmap != null)
-                {
-                    Window.Title = "kyun! - Playing: " + SelectedBeatmap.Artist + " - " + SelectedBeatmap.Title;
-                }
+            //if (Player.PlayState == BassPlayState.Playing)
+            //{
 
-            }
-            else if (Window.Title != "kyun!")
-            {
-                Window.Title = "kyun!";
-            }
+            //    if (SelectedBeatmap != null)
+            //    {
+            //        Window.Title = "kyun! - Playing: " + SelectedBeatmap.Artist + " - " + SelectedBeatmap.Title;
+            //    }
+
+            //}
+            //else if (Window.Title != "kyun!")
+            //{
+            //    Window.Title = "kyun!";
+            //}
 
             elapsedToVolume += gameTime.ElapsedGameTime.Milliseconds;
             KeyboardActualState = Keyboard.GetState();
@@ -682,7 +727,7 @@ namespace kyun
             }
             KeyboardOldState = KeyboardActualState;
 
-            
+
 
             //if (elapsedToVolume > 100)
             //{
@@ -695,6 +740,8 @@ namespace kyun
             //    elapsedToVolume = 0;
             //}
         }
+
+
 
         protected override void Draw(GameTime gameTime)
         {
